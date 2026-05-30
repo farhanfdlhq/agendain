@@ -7,6 +7,7 @@ import { toast } from "react-hot-toast"
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
   const [formData, setFormData] = useState({
     site_name: "Agendain",
     whatsapp_number: "6281234567890",
@@ -14,6 +15,33 @@ export default function SettingsPage() {
     payment_instructions: "Silakan transfer ke rekening BCA 1234567890 a.n PT Agendain.",
     site_logo: "/logo.png"
   })
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingLogo(true)
+    const uploadData = new FormData()
+    uploadData.append('file', file)
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadData,
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setFormData(prev => ({ ...prev, site_logo: data.url }))
+        toast.success("Logo berhasil diunggah!")
+      } else {
+        toast.error("Upload gagal: " + data.error)
+      }
+    } catch (err) {
+      toast.error("Terjadi kesalahan saat upload gambar.")
+    } finally {
+      setUploadingLogo(false)
+    }
+  }
 
   useEffect(() => {
     fetch("/api/settings")
@@ -116,18 +144,37 @@ export default function SettingsPage() {
               
               <div>
                 <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
-                  URL Logo Website (Opsional)
+                  Logo Website
                 </label>
-                <input
-                  type="text"
-                  name="site_logo"
-                  value={formData.site_logo}
-                  onChange={handleChange}
-                  placeholder="/logo.png atau URL gambar eksternal"
-                  style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s" }}
-                  onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
-                  onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
-                />
+                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  {formData.site_logo && formData.site_logo !== "/logo.png" ? (
+                    <img src={formData.site_logo} alt="Logo" style={{ width: "64px", height: "64px", objectFit: "contain", borderRadius: "8px", border: "1px solid var(--color-hairline)" }} />
+                  ) : (
+                    <div style={{ width: "64px", height: "64px", borderRadius: "8px", background: "var(--color-surface-soft)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed var(--color-border)" }}>
+                      <LayoutTemplate size={24} color="var(--color-muted)" />
+                    </div>
+                  )}
+                  <div style={{ flex: 1 }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      style={{ display: "none" }}
+                      id="logo-upload"
+                    />
+                    <label htmlFor="logo-upload" style={{
+                      display: "inline-flex", alignItems: "center", gap: "8px",
+                      padding: "8px 16px", background: "white", border: "1px solid var(--color-border-strong)",
+                      borderRadius: "var(--radius-md)", fontSize: "0.875rem", fontWeight: 500,
+                      color: "var(--color-ink)", cursor: "pointer", transition: "all 0.2s"
+                    }}>
+                      {uploadingLogo ? <Loader2 size={16} className="animate-spin" /> : "Pilih Gambar Logo"}
+                    </label>
+                    <p style={{ fontSize: "0.75rem", color: "var(--color-muted)", marginTop: "8px" }}>
+                      Disarankan menggunakan gambar PNG dengan latar belakang transparan (rasio 1:1 atau 3:1).
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

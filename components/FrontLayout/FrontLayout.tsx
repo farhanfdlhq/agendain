@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import Navbar from "@/components/Navbar/Navbar"
 import Footer from "@/components/Footer/Footer"
 
-export default function FrontLayout({ children }: { children: React.ReactNode }) {
+export default function FrontLayout({ children, settings }: { children: React.ReactNode, settings?: any }) {
   const pathname = usePathname()
   
   // Hide global Navbar and Footer on admin routes
@@ -14,9 +14,9 @@ export default function FrontLayout({ children }: { children: React.ReactNode })
 
   return (
     <>
-      <Navbar />
+      <Navbar settings={settings} />
       <main>{children}</main>
-      <Footer />
+      <Footer settings={settings} />
     </>
   )
 }
