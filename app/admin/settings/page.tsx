@@ -1,21 +1,204 @@
-import { Settings } from "lucide-react"
+"use client"
+
+import { useState, useEffect } from "react"
+import { Settings, Save, Loader2, Link as LinkIcon, MessageSquare, CreditCard, LayoutTemplate } from "lucide-react"
+import { toast } from "react-hot-toast"
 
 export default function SettingsPage() {
+  const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(true)
+  const [formData, setFormData] = useState({
+    site_name: "Agendain",
+    whatsapp_number: "6281234567890",
+    whatsapp_message: "Halo Agendain, saya ingin bertanya tentang paket wisata.",
+    payment_instructions: "Silakan transfer ke rekening BCA 1234567890 a.n PT Agendain.",
+    site_logo: "/logo.png"
+  })
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(res => res.json())
+      .then(data => {
+        if (data && !data.error && Object.keys(data).length > 0) {
+          setFormData(prev => ({ ...prev, ...data }))
+        }
+      })
+      .catch(err => console.error(err))
+      .finally(() => setFetching(false))
+  }, [])
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      const res = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      })
+
+      if (res.ok) {
+        toast.success("Pengaturan berhasil disimpan!")
+      } else {
+        toast.error("Gagal menyimpan pengaturan.")
+      }
+    } catch (err) {
+      toast.error("Terjadi kesalahan server.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (fetching) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
+        <Loader2 size={32} className="animate-spin" color="var(--color-primary)" />
+      </div>
+    )
+  }
+
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px" }}>
-      <div style={{ marginBottom: "32px" }}>
-        <h2 style={{ fontSize: "1.75rem", fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--color-ink)", marginBottom: "8px" }}>
-          Pengaturan Sistem
-        </h2>
-        <p style={{ color: "var(--color-muted)" }}>Konfigurasi parameter dan identitas website Agendain Anda.</p>
+    <div style={{ maxWidth: "800px", margin: "0 auto", paddingBottom: "40px" }}>
+      <div style={{ marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+        <div>
+          <h2 style={{ fontSize: "1.75rem", fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--color-ink)", marginBottom: "8px" }}>
+            Pengaturan Sistem
+          </h2>
+          <p style={{ color: "var(--color-muted)" }}>Konfigurasi parameter dan identitas utama website Agendain.</p>
+        </div>
+        <button 
+          onClick={handleSubmit}
+          disabled={loading}
+          style={{
+            display: "flex", alignItems: "center", gap: "8px",
+            backgroundColor: "var(--color-primary)", color: "white",
+            border: "none", padding: "10px 20px", borderRadius: "var(--radius-md)",
+            fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
+            opacity: loading ? 0.7 : 1, transition: "background-color 0.2s"
+          }}
+        >
+          {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+          Simpan Perubahan
+        </button>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "64px 24px", background: "white", borderRadius: "var(--radius-xl)", border: "1px dashed var(--color-border-strong)" }}>
-        <Settings size={48} color="var(--color-muted)" style={{ marginBottom: "16px", opacity: 0.5 }} />
-        <h3 style={{ fontSize: "1.25rem", fontWeight: 600, color: "var(--color-ink)", marginBottom: "8px" }}>Menu Pengaturan Sedang Dalam Pengembangan</h3>
-        <p style={{ color: "var(--color-muted)", textAlign: "center", maxWidth: "500px" }}>
-          Fitur pengaturan ini akan segera hadir. Anda nantinya dapat mengubah nama web, logo, kontak WhatsApp, dan metode pembayaran melalui halaman ini.
-        </p>
+      <div style={{ background: "white", borderRadius: "var(--radius-xl)", border: "1px solid var(--color-hairline)", overflow: "hidden" }}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column" }}>
+          
+          {/* Section: Identitas Website */}
+          <div style={{ padding: "24px", borderBottom: "1px solid var(--color-hairline)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", color: "var(--color-ink)" }}>
+              <LayoutTemplate size={20} />
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Identitas Website</h3>
+            </div>
+            
+            <div style={{ display: "grid", gap: "16px" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
+                  Nama Website
+                </label>
+                <input
+                  type="text"
+                  name="site_name"
+                  value={formData.site_name}
+                  onChange={handleChange}
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s" }}
+                  onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
+                  onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
+                  URL Logo Website (Opsional)
+                </label>
+                <input
+                  type="text"
+                  name="site_logo"
+                  value={formData.site_logo}
+                  onChange={handleChange}
+                  placeholder="/logo.png atau URL gambar eksternal"
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s" }}
+                  onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
+                  onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Kontak & Komunikasi */}
+          <div style={{ padding: "24px", borderBottom: "1px solid var(--color-hairline)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", color: "var(--color-ink)" }}>
+              <MessageSquare size={20} />
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Kontak & Pesan</h3>
+            </div>
+            
+            <div style={{ display: "grid", gap: "16px" }}>
+              <div>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
+                  Nomor WhatsApp Utama (Gunakan format 62xxx)
+                </label>
+                <input
+                  type="text"
+                  name="whatsapp_number"
+                  value={formData.whatsapp_number}
+                  onChange={handleChange}
+                  placeholder="6281234567890"
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s" }}
+                  onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
+                  onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
+                  Teks Pesan WhatsApp Default
+                </label>
+                <textarea
+                  name="whatsapp_message"
+                  value={formData.whatsapp_message}
+                  onChange={handleChange}
+                  rows={3}
+                  style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s", resize: "vertical" }}
+                  onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
+                  onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+                />
+                <p style={{ fontSize: "0.75rem", color: "var(--color-muted)", marginTop: "4px" }}>Pesan ini akan otomatis terisi saat kustomer menekan tombol chat WhatsApp di frontend.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Pembayaran */}
+          <div style={{ padding: "24px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", color: "var(--color-ink)" }}>
+              <CreditCard size={20} />
+              <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Instruksi Pembayaran</h3>
+            </div>
+            
+            <div>
+              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
+                Informasi Rekening / Metode Pembayaran
+              </label>
+              <textarea
+                name="payment_instructions"
+                value={formData.payment_instructions}
+                onChange={handleChange}
+                rows={4}
+                style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s", resize: "vertical" }}
+                onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
+                onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+              />
+              <p style={{ fontSize: "0.75rem", color: "var(--color-muted)", marginTop: "4px" }}>Instruksi ini akan ditampilkan kepada kustomer setelah mereka melakukan booking.</p>
+            </div>
+          </div>
+
+        </form>
       </div>
     </div>
   )
