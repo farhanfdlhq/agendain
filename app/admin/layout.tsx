@@ -12,17 +12,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const router = useRouter()
 
+  // Handle unauthenticated state manually just in case middleware is bypassed
+  useEffect(() => {
+    if (status === "unauthenticated" && pathname !== "/admin/login") {
+      router.push("/admin/login")
+    }
+  }, [status, router, pathname])
+
   // Avoid wrapping the login page itself with the dashboard UI
   if (pathname === "/admin/login") {
     return <>{children}</>
   }
-
-  // Handle unauthenticated state manually just in case middleware is bypassed
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/admin/login")
-    }
-  }, [status, router])
 
   if (status === "loading") {
     return (
