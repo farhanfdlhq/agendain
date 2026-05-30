@@ -30,7 +30,7 @@ export default async function PaketPage({
       orderBy: { createdAt: 'desc' }
     })
     
-    packages = dbPackages.map(p => {
+    packages = dbPackages.map((p: any) => {
       const foto = p.foto as any;
       return {
         ...p,
