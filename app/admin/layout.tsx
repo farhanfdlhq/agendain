@@ -5,12 +5,13 @@ import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2 } from "lucide-react"
 import styles from "./layout.module.css"
-import { useEffect } from "react"
+import { useState, useEffect } from "react"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   // Handle unauthenticated state manually just in case middleware is bypassed
   useEffect(() => {
@@ -18,6 +19,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.push("/admin/login")
     }
   }, [status, router, pathname])
+
+  // Close sidebar on mobile when navigating
+  useEffect(() => {
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false)
+    }
+  }, [pathname])
 
   // Avoid wrapping the login page itself with the dashboard UI
   if (pathname === "/admin/login") {
@@ -45,9 +53,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Pengaturan", href: "/admin/settings", icon: <Settings size={20} /> },
   ]
 
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
+
   return (
     <div className={styles.adminContainer}>
-      <aside className={styles.sidebar}>
+      <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.overlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+      <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         <div className={styles.sidebarHeader}>
           <h2 className={styles.logo}>Agendain</h2>
           <span className={styles.badge}>Admin Panel</span>
@@ -86,11 +97,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      <main className={styles.mainContent}>
+      <main className={`${styles.mainContent} ${isSidebarOpen ? styles.mainShifted : ''}`}>
         <header className={styles.topbar}>
-          <h1 className={styles.pageTitle}>
-            {menuItems.find(m => m.href === pathname)?.name || "Dashboard"}
-          </h1>
+          <div className={styles.topbarLeft}>
+            <button onClick={toggleSidebar} className={styles.menuBtn}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <h1 className={styles.pageTitle}>
+              {menuItems.find(m => m.href === pathname)?.name || "Dashboard"}
+            </h1>
+          </div>
           <div className={styles.topActions}>
             <Link href="/" target="_blank" className={styles.viewSiteBtn}>
               Lihat Website

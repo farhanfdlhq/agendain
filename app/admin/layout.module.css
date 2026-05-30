@@ -4,6 +4,24 @@
   background-color: #f8fafc;
 }
 
+.sidebarOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 45;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.overlayOpen {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .sidebar {
   width: 280px;
   background-color: white;
@@ -15,6 +33,15 @@
   bottom: 0;
   left: 0;
   z-index: 50;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebarOpen {
+  transform: translateX(0);
+}
+
+.sidebarClosed {
+  transform: translateX(-100%);
 }
 
 .sidebarHeader {
@@ -131,6 +158,7 @@
   color: var(--color-ink);
   font-weight: 500;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .logoutBtn:hover {
@@ -141,9 +169,16 @@
 
 .mainContent {
   flex: 1;
-  margin-left: 280px;
   display: flex;
   flex-direction: column;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: 0;
+  width: 100%;
+}
+
+.mainShifted {
+  margin-left: 280px;
+  width: calc(100% - 280px);
 }
 
 .topbar {
@@ -157,6 +192,31 @@
   position: sticky;
   top: 0;
   z-index: 40;
+}
+
+.topbarLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.menuBtn {
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s;
+  margin-left: -8px;
+}
+
+.menuBtn:hover {
+  background-color: var(--color-surface-soft);
+  color: var(--color-ink);
 }
 
 .pageTitle {
@@ -187,6 +247,7 @@
 .content {
   padding: var(--space-xl);
   flex: 1;
+  overflow-x: hidden;
 }
 
 .loadingScreen {
@@ -207,4 +268,23 @@
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1024px) {
+  .mainShifted {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .sidebarOverlay.overlayOpen {
+    display: block;
+  }
+  
+  .content {
+    padding: var(--space-md);
+  }
+  
+  .topbar {
+    padding: 0 var(--space-lg);
+  }
 }
