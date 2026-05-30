@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { MapPin, Clock, Users, ShieldCheck } from 'lucide-react'
 import styles from './page.module.css'
 
 export default function PrivateTripPage() {
@@ -26,28 +27,36 @@ export default function PrivateTripPage() {
               <h2 className={styles.sectionTitle}>Mengapa Memilih Private Trip?</h2>
               <div className={styles.features}>
                 <div className={styles.feature}>
-                  <span className={styles.icon}>🎯</span>
+                  <div className={styles.icon}>
+                    <MapPin size={28} strokeWidth={1.5} color="var(--color-primary)" />
+                  </div>
                   <div>
                     <h3>Itinerary Custom</h3>
                     <p>Bebas menentukan negara, kota, dan durasi sesuai keinginan Anda tanpa terikat jadwal grup.</p>
                   </div>
                 </div>
                 <div className={styles.feature}>
-                  <span className={styles.icon}>🕒</span>
+                  <div className={styles.icon}>
+                    <Clock size={28} strokeWidth={1.5} color="var(--color-primary)" />
+                  </div>
                   <div>
                     <h3>Waktu Fleksibel</h3>
                     <p>Tidak perlu terburu-buru. Anda bebas menentukan kapan ingin berangkat dan bersantai.</p>
                   </div>
                 </div>
                 <div className={styles.feature}>
-                  <span className={styles.icon}>👨‍👩‍👧‍👦</span>
+                  <div className={styles.icon}>
+                    <Users size={28} strokeWidth={1.5} color="var(--color-primary)" />
+                  </div>
                   <div>
                     <h3>Eksklusif & Privat</h3>
                     <p>Nikmati perjalanan hanya bersama keluarga atau kerabat terdekat Anda dengan privasi penuh.</p>
                   </div>
                 </div>
                 <div className={styles.feature}>
-                  <span className={styles.icon}>🚗</span>
+                  <div className={styles.icon}>
+                    <ShieldCheck size={28} strokeWidth={1.5} color="var(--color-primary)" />
+                  </div>
                   <div>
                     <h3>Fasilitas VIP</h3>
                     <p>Dari mobil pribadi hingga rekomendasi restoran Michelin Star, kami atur semuanya.</p>
