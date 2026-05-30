@@ -47,7 +47,7 @@ export default async function Home() {
       include: { _count: { select: { pakets: true } } }
     })
     
-    destinations = dbDest.map(d => ({
+    destinations = dbDest.map((d: any) => ({
       ...d,
       paketCount: d._count.pakets,
       foto: d.foto || DUMMY_DESTINATIONS[0].foto
