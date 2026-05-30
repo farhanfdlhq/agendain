@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Paket perjalanan terbaik dari Indonesia ke Eropa dengan guide profesional.",
 };
 
+import { Providers } from "@/components/Providers/Providers";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -16,9 +18,11 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body suppressHydrationWarning>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <Providers>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
