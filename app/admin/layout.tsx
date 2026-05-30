@@ -94,7 +94,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <button onClick={() => signOut()} className={styles.logoutBtn}>
             <LogOut size={18} />
-            Keluar
+            <span>Keluar</span>
           </button>
         </div>
       </aside>
