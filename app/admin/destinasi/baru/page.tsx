@@ -27,6 +27,34 @@ export default function TambahDestinasiPage() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
+  const [uploadingImage, setUploadingImage] = useState(false)
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploadingImage(true)
+    const uploadData = new FormData()
+    uploadData.append('file', file)
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadData,
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setFormData(prev => ({ ...prev, foto: data.url }))
+      } else {
+        alert("Upload gagal: " + data.error)
+      }
+    } catch (err) {
+      alert("Terjadi kesalahan saat upload gambar.")
+    } finally {
+      setUploadingImage(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -105,14 +133,39 @@ export default function TambahDestinasiPage() {
               </div>
 
               <div className={styles.inputGroup}>
-                <label>URL Gambar Utama</label>
-                <div className={styles.inputWithIcon}>
-                  <ImageIcon size={18} className={styles.inputIcon} />
-                  <input 
-                    type="url" name="foto" className={styles.inputPl} 
-                    placeholder="https://..."
-                    value={formData.foto} onChange={handleChange} required 
-                  />
+                <label>Upload Foto Utama</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div className={styles.inputWithIcon} style={{ border: '2px dashed var(--color-border-strong)', padding: '24px', textAlign: 'center', background: 'var(--color-surface-soft)', borderRadius: 'var(--radius-lg)' }}>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      style={{ display: 'none' }}
+                      id="upload-foto"
+                    />
+                    <label htmlFor="upload-foto" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                      {uploadingImage ? (
+                        <Loader2 size={32} className={styles.spinner} color="var(--color-primary)" />
+                      ) : (
+                        <ImageIcon size={32} color="var(--color-primary)" />
+                      )}
+                      <span style={{ fontWeight: 500, color: 'var(--color-ink)' }}>
+                        {uploadingImage ? 'Mengupload gambar...' : 'Klik untuk memilih gambar'}
+                      </span>
+                    </label>
+                  </div>
+                  
+                  {formData.foto && (
+                    <div style={{ padding: '12px', background: 'var(--color-surface-soft)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
+                        <img src={formData.foto} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                      <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--color-muted)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{formData.foto}</p>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--color-primary)', margin: 0, fontWeight: 500 }}>Berhasil diupload</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

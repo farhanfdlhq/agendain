@@ -75,17 +75,20 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
     }
   }
 
-  const fotos = pkg.foto as any || {}
+  const fotos = pkg?.foto as any || {}
   const mainImage = fotos.large || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1280&auto=format&fit=crop'
   const gallery = fotos.gallery || [mainImage, mainImage, mainImage, mainImage]
 
-  const formattedHarga = new Intl.NumberFormat('id-ID', {
-    style: 'currency', currency: 'IDR', minimumFractionDigits: 0
-  }).format(Number(pkg.harga))
+  const { formatIDR, formatUSD, formatEUR, fetchExchangeRates } = await import('@/lib/currency')
+  const rates = await fetchExchangeRates()
+  const hargaIDRNum = Number(pkg?.harga || 0)
+  const formattedHarga = formatIDR(hargaIDRNum)
+  const formattedUSD = formatUSD(hargaIDRNum * (rates.USD || 0.000063))
+  const formattedEUR = formatEUR(hargaIDRNum * (rates.EUR || 0.000058))
 
-  const itinerary = (pkg.itinerary as any[]) || []
-  const termasuk = (pkg.termasuk as string[]) || []
-  const tidakTermasuk = (pkg.tidakTermasuk as string[]) || []
+  const itinerary = (pkg?.itinerary as any[]) || []
+  const termasuk = (pkg?.termasuk as string[]) || []
+  const tidakTermasuk = (pkg?.tidakTermasuk as string[]) || []
 
   return (
     <div className={styles.page}>
@@ -94,20 +97,20 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
         <div className={styles.breadcrumb}>
           <Link href="/">Beranda</Link> <span className={styles.separator}>/</span>
           <Link href="/paket">Paket</Link> <span className={styles.separator}>/</span>
-          <span className={styles.current}>{pkg.nama}</span>
+          <span className={styles.current}>{pkg?.nama}</span>
         </div>
 
         {/* Title */}
-        <h1 className={styles.title}>{pkg.nama}</h1>
+        <h1 className={styles.title}>{pkg?.nama}</h1>
         <div className={styles.meta}>
-          <span className={styles.badge}>{pkg.destinasi.nama}</span>
-          <span>{pkg.durasi} Hari</span>
+          <span className={styles.badge}>{pkg?.destinasi?.nama}</span>
+          <span>{pkg?.durasi} Hari</span>
         </div>
 
         {/* Photo Gallery (Airbnb style) */}
         <div className={styles.gallery}>
           <div className={styles.mainPhoto}>
-            <Image src={mainImage} alt={pkg.nama} fill priority className={styles.img} />
+            <Image src={mainImage} alt={pkg?.nama || 'Package'} fill priority className={styles.img} />
           </div>
           <div className={styles.subPhotos}>
             {gallery.slice(0, 4).map((src: string, i: number) => (
@@ -124,7 +127,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
           <div className={styles.mainContent}>
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>Deskripsi</h2>
-              <p className={styles.descText}>{pkg.deskripsi}</p>
+              <p className={styles.descText}>{pkg?.deskripsi}</p>
             </section>
 
             <div className={styles.divider} />
@@ -132,7 +135,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>Fasilitas</h2>
               <div className={styles.amenities}>
-                {((pkg.fasilitas as string[]) || []).map((f, i) => (
+                {((pkg?.fasilitas as string[]) || []).map((f, i) => (
                   <div key={i} className={styles.amenityItem}>
                     <span className={styles.check}>✓</span> {f}
                   </div>
@@ -185,6 +188,9 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
                 <span className={styles.priceAmount}>{formattedHarga}</span>
                 <span className={styles.priceUnit}>/ pax</span>
               </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--color-muted)', marginBottom: '16px', display: 'flex', gap: '8px' }}>
+                <span>≈ {formattedUSD}</span> • <span>{formattedEUR}</span>
+              </div>
               
               <form className={styles.form}>
                 <div className={styles.inputGroup}>
@@ -200,7 +206,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
               
               <div className={styles.waOption}>
                 <p>Atau konsultasi via WhatsApp</p>
-                <a href={`https://wa.me/6281234567890?text=Halo%20Agendain,%20saya%20tertarik%20dengan%20paket%20${pkg.nama}`} 
+                <a href={`https://wa.me/6281234567890?text=Halo%20Agendain,%20saya%20tertarik%20dengan%20paket%20${pkg?.nama}`} 
                    target="_blank" rel="noreferrer" className={styles.waBtn}>
                   Chat WhatsApp
                 </a>
