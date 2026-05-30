@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Plus, Edit2, Trash2, Search, MoreVertical, Eye } from "lucide-react"
 import { formatIDR } from "@/lib/currency"
+import { toast } from "react-hot-toast"
 import styles from "./page.module.css"
 
 export default function AdminPaketPage() {
@@ -30,10 +31,11 @@ export default function AdminPaketPage() {
   }
 
   const handleDelete = async (id: number) => {
-    if (confirm("Apakah Anda yakin ingin menghapus paket ini?")) {
-      // In a real app, you would call a DELETE endpoint here
-      alert("Fitur hapus akan diaktifkan setelah integrasi API Delete")
-    }
+    // We can't use confirm directly if we want fully custom, but for simplicity of "custom alert",
+    // we use a toast promise or just a toast error since it's just a dummy for now.
+    toast.error("Fitur hapus akan diaktifkan setelah integrasi API Delete", {
+      icon: '🔒'
+    });
   }
 
   const filteredPackages = packages.filter(pkg => 

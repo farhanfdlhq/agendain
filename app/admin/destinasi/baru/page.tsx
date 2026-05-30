@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Save, Loader2, Image as ImageIcon } from "lucide-react"
+import { toast } from "react-hot-toast"
 import styles from "../../paket/baru/page.module.css" // Reusing form CSS
 
 export default function TambahDestinasiPage() {
@@ -46,10 +47,10 @@ export default function TambahDestinasiPage() {
       if (res.ok) {
         setFormData(prev => ({ ...prev, foto: data.url }))
       } else {
-        alert("Upload gagal: " + data.error)
+        toast.error("Upload gagal: " + data.error)
       }
     } catch (err) {
-      alert("Terjadi kesalahan saat upload gambar.")
+      toast.error("Terjadi kesalahan saat upload gambar.")
     } finally {
       setUploadingImage(false)
     }
@@ -67,13 +68,14 @@ export default function TambahDestinasiPage() {
       })
 
       if (res.ok) {
+        toast.success("Destinasi berhasil ditambahkan!")
         router.push("/admin/destinasi")
         router.refresh()
       } else {
-        alert("Gagal menambahkan destinasi.")
+        toast.error("Gagal menambahkan destinasi.")
       }
     } catch (err) {
-      alert("Terjadi kesalahan server.")
+      toast.error("Terjadi kesalahan server.")
     } finally {
       setLoading(false)
     }
@@ -82,10 +84,6 @@ export default function TambahDestinasiPage() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <Link href="/admin/destinasi" className={styles.backBtn}>
-          <ArrowLeft size={18} />
-          Kembali
-        </Link>
         <div className={styles.headerContent}>
           <div>
             <h2 className={styles.title}>Tambah Destinasi</h2>

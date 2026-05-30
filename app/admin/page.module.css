@@ -180,6 +180,52 @@
   margin-top: 12px;
 }
 
+.recentList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.recentItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s;
+}
+
+.recentItem:hover {
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.recentIcon {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+.recentText {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  line-height: 1.4;
+}
+
+.recentDate {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
 @media (max-width: 1024px) {
   .grid {
     grid-template-columns: 1fr;

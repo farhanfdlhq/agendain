@@ -61,7 +61,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         <div className={styles.sidebarHeader}>
           <h2 className={styles.logo}>Agendain</h2>
-          <span className={styles.badge}>Admin Panel</span>
+          <button onClick={toggleSidebar} className={styles.menuBtnSidebar}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
         </div>
         
         <nav className={styles.nav}>
@@ -100,7 +102,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className={`${styles.mainContent} ${isSidebarOpen ? styles.mainShifted : ''}`}>
         <header className={styles.topbar}>
           <div className={styles.topbarLeft}>
-            <button onClick={toggleSidebar} className={styles.menuBtn}>
+            <button onClick={toggleSidebar} className={styles.mobileMenuBtn}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
             <h1 className={styles.pageTitle}>

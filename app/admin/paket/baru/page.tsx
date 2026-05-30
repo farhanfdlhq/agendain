@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Save, Loader2, Image as ImageIcon } from "lucide-react"
+import { toast } from "react-hot-toast"
 import styles from "./page.module.css"
 
 export default function TambahPaketPage() {
@@ -132,13 +133,14 @@ export default function TambahPaketPage() {
       })
 
       if (res.ok) {
+        toast.success("Paket berhasil ditambahkan!");
         router.push("/admin/paket")
         router.refresh()
       } else {
-        alert("Gagal menambahkan paket. Pastikan data terisi dengan benar.")
+        toast.error("Gagal menambahkan paket. Pastikan data terisi dengan benar.")
       }
     } catch (err) {
-      alert("Terjadi kesalahan server.")
+      toast.error("Terjadi kesalahan server.")
     } finally {
       setLoading(false)
     }
@@ -147,10 +149,6 @@ export default function TambahPaketPage() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <Link href="/admin/paket" className={styles.backBtn}>
-          <ArrowLeft size={18} />
-          Kembali
-        </Link>
         <div className={styles.headerContent}>
           <div>
             <h2 className={styles.title}>Tambah Paket Wisata</h2>
