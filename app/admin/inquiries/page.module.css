@@ -1,0 +1,260 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--color-muted);
+  font-size: 0.9375rem;
+}
+
+.tabs {
+  display: flex;
+  gap: var(--space-md);
+  border-bottom: 1px solid var(--color-hairline);
+  padding-bottom: 0;
+}
+
+.tabBtn {
+  background: none;
+  border: none;
+  padding: 12px 20px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+
+.tabBtn:hover {
+  color: var(--color-ink);
+}
+
+.activeTab {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.badge {
+  background: var(--color-surface-soft);
+  color: var(--color-ink);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.activeTab .badge {
+  background: var(--color-primary);
+  color: white;
+}
+
+.tableCard {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-hairline);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  overflow: hidden;
+}
+
+.tableToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.searchBox {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 12px 10px 40px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 14px 20px;
+  background-color: #f8fafc;
+  color: var(--color-muted);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--color-hairline);
+  color: var(--color-body);
+  font-size: 0.9375rem;
+  vertical-align: top;
+}
+
+.boldCell {
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 4px;
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.budget {
+  margin-top: 4px;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusNew {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.statusProgress {
+  background-color: #fef9c3;
+  color: #854d0e;
+}
+
+.topicBadge {
+  display: inline-block;
+  background: var(--color-surface-soft);
+  color: var(--color-primary);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.messageText {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.textRight {
+  text-align: right !important;
+}
+
+.actionsCell {
+  text-align: right;
+}
+
+.btnPrimarySm {
+  display: inline-block;
+  background-color: #25D366; /* WhatsApp Green */
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.btnPrimarySm:hover {
+  opacity: 0.9;
+}
+
+.btnSecondarySm {
+  background-color: white;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-ink);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btnSecondarySm:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.loadingCell, .emptyCell {
+  text-align: center;
+  padding: var(--space-xxl) !important;
+  color: var(--color-muted) !important;
+  font-style: italic;
+  vertical-align: middle !important;
+}
