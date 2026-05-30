@@ -45,12 +45,6 @@ next-env.d.ts
 # Agent and Documentation files
 /.agents/
 /docs/
+AGENTS.md
+CLAUDE.md
 
-# IDE and OS files
-.idea/
-.vscode/
-Thumbs.db
-
-# Other local files
-*.log
-.eslintcache
