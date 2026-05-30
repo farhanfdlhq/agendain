@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Plus, Edit2, Trash2, Search, MoreVertical, Eye } from "lucide-react"
+import { formatIDR } from "@/lib/currency"
 import styles from "./page.module.css"
 
 export default function AdminPaketPage() {
@@ -41,9 +42,7 @@ export default function AdminPaketPage() {
   )
 
   const formatPrice = (price: any) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency', currency: 'IDR', minimumFractionDigits: 0
-    }).format(Number(price))
+    return formatIDR(Number(price))
   }
 
   return (

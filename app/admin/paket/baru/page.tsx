@@ -17,10 +17,14 @@ export default function TambahPaketPage() {
     slug: "",
     destinasiId: "",
     durasi: 1,
-    harga: 0,
+    hargaString: "",
     deskripsi: "",
     fotoUrl: "",
-    status: "draft"
+    status: "draft",
+    fasilitasText: "",
+    termasukText: "",
+    tidakTermasukText: "",
+    itineraryText: ""
   })
 
   useEffect(() => {
@@ -73,8 +77,18 @@ export default function TambahPaketPage() {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'durasi' || name === 'harga' || name === 'destinasiId' ? Number(value) : value
+      [name]: name === 'durasi' || name === 'destinasiId' ? Number(value) : value
     }))
+  }
+
+  const handleHargaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\D/g, "");
+    if (!rawValue) {
+      setFormData(prev => ({ ...prev, hargaString: "" }));
+      return;
+    }
+    const formatted = new Intl.NumberFormat('id-ID').format(Number(rawValue));
+    setFormData(prev => ({ ...prev, hargaString: formatted }));
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,13 +96,31 @@ export default function TambahPaketPage() {
     setLoading(true)
 
     try {
+      const hargaNum = Number(formData.hargaString.replace(/\./g, ""));
+      const fasilitas = formData.fasilitasText.split('\n').filter(s => s.trim());
+      const termasuk = formData.termasukText.split('\n').filter(s => s.trim());
+      const tidakTermasuk = formData.tidakTermasukText.split('\n').filter(s => s.trim());
+      
+      const itineraryRaw = formData.itineraryText.split('\n').filter(s => s.trim());
+      const itinerary = itineraryRaw.map((text, idx) => ({
+        hari: idx + 1,
+        judul: `Hari ${idx + 1}`,
+        deskripsi: text.trim()
+      }));
+
       const payload = {
-        ...formData,
-        foto: { medium: formData.fotoUrl, thumb: formData.fotoUrl }, // Basic implementation for now
-        itinerary: [],
-        fasilitas: [],
-        termasuk: [],
-        tidakTermasuk: []
+        nama: formData.nama,
+        slug: formData.slug,
+        destinasiId: formData.destinasiId,
+        durasi: formData.durasi,
+        harga: hargaNum,
+        deskripsi: formData.deskripsi,
+        status: formData.status,
+        foto: { medium: formData.fotoUrl, thumb: formData.fotoUrl },
+        itinerary,
+        fasilitas,
+        termasuk,
+        tidakTermasuk
       }
 
       const res = await fetch("/api/paket", {
@@ -183,6 +215,66 @@ export default function TambahPaketPage() {
             </div>
 
             <div className={styles.card}>
+              <h3 className={styles.cardTitle}>Fasilitas & Layanan</h3>
+              
+              <div className={styles.inputGroup}>
+                <label>Fasilitas Utama</label>
+                <textarea 
+                  name="fasilitasText" 
+                  className={styles.textarea} 
+                  placeholder="Hotel Bintang 4&#10;Transportasi Bus Private&#10;Guide Berbahasa Indonesia"
+                  rows={4}
+                  value={formData.fasilitasText}
+                  onChange={handleChange}
+                ></textarea>
+                <span className={styles.hint}>Tulis setiap fasilitas di baris baru (Enter).</span>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-lg)' }}>
+                <div className={styles.inputGroup}>
+                  <label>Termasuk (Included)</label>
+                  <textarea 
+                    name="termasukText" 
+                    className={styles.textarea} 
+                    placeholder="Tiket Pesawat PP&#10;Visa Schengen&#10;Makan 3x Sehari"
+                    rows={4}
+                    value={formData.termasukText}
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
+                
+                <div className={styles.inputGroup}>
+                  <label>Tidak Termasuk (Excluded)</label>
+                  <textarea 
+                    name="tidakTermasukText" 
+                    className={styles.textarea} 
+                    placeholder="Asuransi Perjalanan&#10;Pengeluaran Pribadi&#10;Tipping"
+                    rows={4}
+                    value={formData.tidakTermasukText}
+                    onChange={handleChange}
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.card}>
+              <h3 className={styles.cardTitle}>Itinerary Perjalanan</h3>
+              
+              <div className={styles.inputGroup}>
+                <label>Rencana Perjalanan per Hari</label>
+                <textarea 
+                  name="itineraryText" 
+                  className={styles.textarea} 
+                  placeholder="Penerbangan dari Jakarta ke Paris&#10;City tour Paris (Eiffel, Louvre)&#10;Perjalanan menuju Swiss"
+                  rows={6}
+                  value={formData.itineraryText}
+                  onChange={handleChange}
+                ></textarea>
+                <span className={styles.hint}>Tuliskan agenda untuk setiap hari di baris baru secara berurutan. Hari ke-1 di baris 1, Hari ke-2 di baris 2, dst.</span>
+              </div>
+            </div>
+
+            <div className={styles.card}>
               <h3 className={styles.cardTitle}>Media & Gambar</h3>
               
               <div className={styles.inputGroup}>
@@ -272,13 +364,12 @@ export default function TambahPaketPage() {
               <div className={styles.inputGroup}>
                 <label>Harga Dasar (Rp)</label>
                 <input 
-                  type="number" 
+                  type="text" 
                   name="harga" 
                   className={styles.input} 
-                  min="0"
-                  step="100000"
-                  value={formData.harga}
-                  onChange={handleChange}
+                  placeholder="15.000.000"
+                  value={formData.hargaString}
+                  onChange={handleHargaChange}
                   required 
                 />
               </div>
