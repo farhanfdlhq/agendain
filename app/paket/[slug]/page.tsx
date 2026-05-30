@@ -4,8 +4,8 @@ import styles from './page.module.css'
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 
-export default async function PaketDetail({ params }: { params: { slug: string } }) {
-  const { slug } = await params
+export default async function PaketDetail(props: { params: Promise<{ slug: string }> }) {
+  const { slug } = await props.params
   
   let pkg = await prisma.paket.findUnique({
     where: { slug },
@@ -14,17 +14,12 @@ export default async function PaketDetail({ params }: { params: { slug: string }
   
   // Fallback to dummy data for development
   if (!pkg) {
-    if (slug === 'romantic-paris-5d') {
-      pkg = {
+    const dummyData: Record<string, any> = {
+      'romantic-paris-5d': {
         id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', 
         harga: 15000000 as any, durasi: 5, destinasiId: 1, 
-        destinasi: { id: 1, nama: 'Prancis', slug: 'prancis', negara: 'Prancis', deskripsi: '', foto: '', bahasa: '', matauang: '', waktuTerbaik: '', infoVisa: '' },
-        foto: { large: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1280&auto=format&fit=crop', gallery: [
-          'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=800',
-          'https://images.unsplash.com/photo-1520939817895-060bdaf4ed1b?q=80&w=800',
-          'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?q=80&w=800',
-          'https://images.unsplash.com/photo-1431274172761-fca41d930114?q=80&w=800'
-        ]},
+        destinasi: { id: 1, nama: 'Prancis', slug: 'prancis' },
+        foto: { large: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1280&auto=format&fit=crop' },
         deskripsi: 'Jelajahi keindahan romantis Paris selama 5 hari bersama pasangan atau keluarga Anda. Kunjungi landmark ikonik dan nikmati kuliner khas.',
         itinerary: [
           { hari: 1, judul: 'Kedatangan di Paris', desc: 'Penjemputan di bandara Charles de Gaulle, check-in hotel, free program.' },
@@ -33,10 +28,48 @@ export default async function PaketDetail({ params }: { params: { slug: string }
         fasilitas: ['Hotel bintang 4', 'Transportasi AC', 'Tour Guide Berbahasa Indonesia'],
         termasuk: ['Tiket pesawat', 'Hotel', 'Sarapan'],
         tidakTermasuk: ['Visa', 'Makan siang & malam', 'Pengeluaran pribadi'],
-        status: 'published',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      } as any
+        status: 'published'
+      },
+      'swiss-alps-7d': {
+        id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', 
+        harga: 22000000 as any, durasi: 7, destinasiId: 2, 
+        destinasi: { id: 2, nama: 'Swiss', slug: 'swiss' },
+        foto: { large: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=1280&auto=format&fit=crop' },
+        deskripsi: 'Jelajahi pegunungan Alpen Swiss yang megah. Naik kereta Glacier Express dan nikmati pemandangan bersalju abadi.',
+        itinerary: [{ hari: 1, judul: 'Zurich Arrival', desc: 'Tiba di Zurich.' }],
+        fasilitas: ['Hotel 4 Star', 'Swiss Travel Pass'],
+        termasuk: ['Hotel', 'Train Tickets'],
+        tidakTermasuk: ['Visa', 'Meals'],
+        status: 'published'
+      },
+      'classic-italy-8d': {
+        id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', 
+        harga: 18500000 as any, durasi: 8, destinasiId: 3, 
+        destinasi: { id: 3, nama: 'Italia', slug: 'italia' },
+        foto: { large: 'https://images.unsplash.com/photo-1516483638261-f40889c28a5d?q=80&w=1280&auto=format&fit=crop' },
+        deskripsi: 'Menjelajahi Roma, Florence, dan Venice dalam 8 hari penuh keajaiban sejarah dan kuliner.',
+        itinerary: [{ hari: 1, judul: 'Rome Arrival', desc: 'Tiba di Roma.' }],
+        fasilitas: ['Hotel 4 Star', 'Tour Guide'],
+        termasuk: ['Hotel', 'Transport'],
+        tidakTermasuk: ['Visa', 'Meals'],
+        status: 'published'
+      },
+      'london-scotland-10d': {
+        id: 4, slug: 'london-scotland-10d', nama: 'London & Scotland 10D', 
+        harga: 28000000 as any, durasi: 10, destinasiId: 4, 
+        destinasi: { id: 4, nama: 'UK', slug: 'uk' },
+        foto: { large: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1280&auto=format&fit=crop' },
+        deskripsi: 'Eksplorasi budaya Inggris dan keindahan alam Skotlandia yang magis selama 10 hari.',
+        itinerary: [{ hari: 1, judul: 'London Arrival', desc: 'Tiba di London.' }],
+        fasilitas: ['Hotel 4 Star', 'Transport'],
+        termasuk: ['Hotel', 'Flight'],
+        tidakTermasuk: ['Visa', 'Meals'],
+        status: 'published'
+      }
+    }
+
+    if (dummyData[slug]) {
+      pkg = dummyData[slug]
     } else {
       notFound()
     }
