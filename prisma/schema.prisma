@@ -1,13 +1,91 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
+}
+
+model Destinasi {
+  id           Int     @id @default(autoincrement())
+  nama         String
+  slug         String  @unique
+  negara       String
+  deskripsi    String  @db.Text
+  foto         String
+  bahasa       String?
+  matauang     String?
+  waktuTerbaik String?
+  infoVisa     String? @db.Text
+  pakets       Paket[]
+}
+
+model Paket {
+  id            Int       @id @default(autoincrement())
+  nama          String
+  slug          String    @unique
+  deskripsi     String    @db.Text
+  harga         Decimal   @db.Decimal(15, 2)
+  durasi        Int
+  destinasiId   Int
+  destinasi     Destinasi @relation(fields: [destinasiId], references: [id])
+  foto          Json
+  itinerary     Json
+  fasilitas     Json
+  termasuk      Json
+  tidakTermasuk Json
+  status        String    @default("draft")
+  bookings      Booking[]
+  inquiries     Inquiry[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Booking {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  email     String
+  noWa      String
+  paketId   Int
+  paket     Paket    @relation(fields: [paketId], references: [id])
+  tanggal   DateTime
+  jumlahPax Int
+  total     Decimal  @db.Decimal(15, 2)
+  status    String   @default("pending")
+  catatan   String?  @db.Text
+  createdAt DateTime @default(now())
+}
+
+model Inquiry {
+  id           Int      @id @default(autoincrement())
+  nama         String
+  email        String
+  noWa         String?
+  pesan        String   @db.Text
+  paketId      Int?
+  paket        Paket?   @relation(fields: [paketId], references: [id])
+  sudahDibalas Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
+model PrivateTrip {
+  id        Int      @id @default(autoincrement())
+  nama      String
+  email     String
+  noWa      String
+  destinasi String
+  tanggal   DateTime
+  jumlahPax Int
+  budget    String
+  catatan   String?  @db.Text
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+model AdminUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  nama      String
+  createdAt DateTime @default(now())
 }
