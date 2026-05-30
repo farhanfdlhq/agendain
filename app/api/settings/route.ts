@@ -5,8 +5,7 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {
-    // @ts-ignore: Prisma client might not be generated due to EPERM lock
-    const settings = await prisma.setting.findMany()
+    const settings: any[] = await prisma.$queryRaw`SELECT * FROM Setting`
     
     // Convert array of {key, value} to object
     const settingsObj = settings.reduce((acc: any, curr: any) => {
@@ -31,15 +30,10 @@ export async function POST(req: Request) {
     const data = await req.json()
     
     // Data is an object of key-value pairs
-    // Upsert each setting
+    // Upsert each setting using raw query to bypass generated types issue
     const promises = Object.entries(data).map(([key, value]) => {
       if (typeof value !== 'string') return Promise.resolve()
-      // @ts-ignore
-      return prisma.setting.upsert({
-        where: { key },
-        update: { value },
-        create: { key, value }
-      })
+      return prisma.$executeRaw`INSERT INTO Setting (\`key\`, \`value\`) VALUES (${key}, ${value}) ON DUPLICATE KEY UPDATE \`value\` = ${value}`
     })
 
     await Promise.all(promises)
