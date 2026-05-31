@@ -333,5 +333,5 @@
 .skTitle { height: 16px; width: 60%; margin-bottom: 8px; }
 .skSub { height: 12px; width: 40%; margin-bottom: 4px; }
 .skBadge { height: 24px; width: 80px; border-radius: var(--radius-full); }
-.skBtn { height: 32px; width: 100px; display: inline-block; float: right; }
+.skBtn { height: 32px; width: 100px; float: right; }
 .skeletonRow td { border-bottom: 1px solid var(--color-hairline); padding: 16px 20px; }

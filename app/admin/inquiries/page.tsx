@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock, WifiOff, AlertCircle, RefreshCw, Inbox } from "lucide-react"
+import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock, WifiOff, AlertCircle, RefreshCw, Inbox, MessageSquare } from "lucide-react"
 import { toast } from "react-hot-toast"
 import styles from "./page.module.css"
 
