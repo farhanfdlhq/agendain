@@ -190,7 +190,7 @@
   width: 100%;
   padding: 10px;
   border-radius: var(--radius-sm);
-  background: var(--color-surface-card);
+  background: transparent;
   border: 1px solid var(--color-border-strong);
   color: var(--color-ink);
   font-weight: 500;

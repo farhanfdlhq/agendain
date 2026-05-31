@@ -30,7 +30,7 @@
 }
 
 .statCard {
-  background: var(--color-surface-card);
+  background: transparent;
   padding: var(--space-xl);
   border-radius: var(--radius-md);
   border: 1px solid var(--color-hairline);
@@ -84,7 +84,7 @@
 }
 
 .panel {
-  background: var(--color-surface-card);
+  background: transparent;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-hairline);
   padding: var(--space-xl);
@@ -141,7 +141,7 @@
 }
 
 .actionBtn:hover {
-  background-color: var(--color-surface-card);
+  background-color: transparent;
   border-color: var(--color-primary);
   color: var(--color-primary);
   transform: translateX(4px);
@@ -182,13 +182,15 @@
 }
 
 .recentItem:hover {
-  background: var(--color-surface-card);
+  background: transparent;
+  border: 1px solid var(--color-border-strong);
+  margin: -1px;
 }
 
 .recentIcon {
   width: 40px;
   height: 40px;
-  background: var(--color-surface-card);
+  background: transparent;
   border-radius: 10px;
   display: flex;
   align-items: center;
