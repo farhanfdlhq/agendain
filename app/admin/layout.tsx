@@ -12,6 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const router = useRouter()
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [siteLogo, setSiteLogo] = useState("/agendain.jpeg")
 
   // Handle unauthenticated state manually just in case middleware is bypassed
   useEffect(() => {
@@ -19,6 +20,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.push("/admin/login")
     }
   }, [status, router, pathname])
+
+  // Fetch settings for logo
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data.site_logo && data.site_logo !== "/logo.png") {
+          setSiteLogo(data.site_logo)
+        }
+      })
+      .catch(console.error)
+  }, [])
 
   // Close sidebar on mobile when navigating
   useEffect(() => {
@@ -59,8 +72,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className={styles.adminContainer}>
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.overlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
-        <div className={styles.sidebarHeader}>
-          <h2 className={styles.logo}>Agendain</h2>
+        <div className={styles.sidebarHeader} style={{ padding: '24px 20px', borderBottom: '1px solid var(--color-hairline)' }}>
+          <img src={siteLogo} alt="Agendain Logo" style={{ height: "40px", objectFit: "contain" }} />
           <button onClick={toggleSidebar} className={styles.menuBtnSidebar}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
