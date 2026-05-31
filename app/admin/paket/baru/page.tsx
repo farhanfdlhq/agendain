@@ -20,7 +20,7 @@ export default function TambahPaketPage() {
     durasi: 1,
     hargaString: "",
     deskripsi: "",
-    fotoUrl: "",
+    fotoUrls: [] as string[],
     status: "draft",
     fasilitasText: "",
     termasukText: "",
@@ -49,29 +49,45 @@ export default function TambahPaketPage() {
   const [uploadingImage, setUploadingImage] = useState(false)
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
 
     setUploadingImage(true)
-    const uploadData = new FormData()
-    uploadData.append('file', file)
-
+    
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: uploadData,
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setFormData(prev => ({ ...prev, fotoUrl: data.url }))
-      } else {
-        alert("Upload gagal: " + data.error)
+      const uploadedUrls: string[] = []
+      
+      for (const file of files) {
+        const uploadData = new FormData()
+        uploadData.append('file', file)
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadData,
+        })
+        const data = await res.json()
+        if (res.ok) {
+          uploadedUrls.push(data.url)
+        } else {
+          toast.error(`Gagal upload ${file.name}: ${data.error}`)
+        }
+      }
+      
+      if (uploadedUrls.length > 0) {
+        setFormData(prev => ({ ...prev, fotoUrls: [...prev.fotoUrls, ...uploadedUrls] }))
       }
     } catch (err) {
-      alert("Terjadi kesalahan saat upload gambar.")
+      toast.error("Terjadi kesalahan saat upload gambar.")
     } finally {
       setUploadingImage(false)
     }
+  }
+
+  const removeImage = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      fotoUrls: prev.fotoUrls.filter((_, i) => i !== index)
+    }))
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -117,7 +133,12 @@ export default function TambahPaketPage() {
         harga: hargaNum,
         deskripsi: formData.deskripsi,
         status: formData.status,
-        foto: { medium: formData.fotoUrl, thumb: formData.fotoUrl },
+        foto: { 
+          medium: formData.fotoUrls[0] || "", 
+          large: formData.fotoUrls[0] || "", 
+          thumb: formData.fotoUrls[0] || "",
+          gallery: formData.fotoUrls 
+        },
         itinerary,
         fasilitas,
         termasuk,
@@ -276,12 +297,13 @@ export default function TambahPaketPage() {
               <h3 className={styles.cardTitle}>Media & Gambar</h3>
               
               <div className={styles.inputGroup}>
-                <label>Upload Foto Utama</label>
+                <label>Upload Foto (Bisa pilih banyak sekaligus)</label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div className={styles.inputWithIcon} style={{ border: '2px dashed var(--color-border-strong)', padding: '24px', textAlign: 'center', background: 'var(--color-surface-soft)', borderRadius: 'var(--radius-lg)' }}>
                     <input 
                       type="file" 
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      multiple
                       onChange={handleImageUpload}
                       style={{ display: 'none' }}
                       id="upload-foto"
@@ -293,20 +315,28 @@ export default function TambahPaketPage() {
                         <ImageIcon size={32} color="var(--color-primary)" />
                       )}
                       <span style={{ fontWeight: 500, color: 'var(--color-ink)' }}>
-                        {uploadingImage ? 'Mengupload gambar...' : 'Klik untuk memilih gambar'}
+                        {uploadingImage ? 'Mengupload gambar...' : 'Klik untuk memilih banyak gambar (Maks 2MB/file)'}
                       </span>
                     </label>
                   </div>
                   
-                  {formData.fotoUrl && (
-                    <div style={{ padding: '12px', background: 'var(--color-surface-soft)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
-                        <img src={formData.fotoUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                      </div>
-                      <div style={{ flex: 1, overflow: 'hidden' }}>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--color-muted)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{formData.fotoUrl}</p>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--color-primary)', margin: 0, fontWeight: 500 }}>Berhasil diupload</p>
-                      </div>
+                  {formData.fotoUrls.length > 0 && (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '12px' }}>
+                      {formData.fotoUrls.map((url, idx) => (
+                        <div key={idx} style={{ position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: idx === 0 ? '2px solid var(--color-primary)' : '1px solid var(--color-border)' }}>
+                          <img src={url} alt={`Preview ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {idx === 0 && (
+                            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '10px', textAlign: 'center', padding: '2px 0' }}>Thumbnail</div>
+                          )}
+                          <button 
+                            type="button" 
+                            onClick={() => removeImage(idx)}
+                            style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.8)', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
