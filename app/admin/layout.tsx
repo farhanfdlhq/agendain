@@ -6,6 +6,7 @@ import Link from "next/link"
 import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2 } from "lucide-react"
 import styles from "./layout.module.css"
 import { useState, useEffect } from "react"
+import { Toaster } from "react-hot-toast"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -70,6 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className={styles.adminContainer}>
+      <Toaster position="bottom-right" toastOptions={{ style: { background: 'var(--color-surface-card)', color: 'var(--color-ink)', border: '1px solid var(--color-border-strong)' } }} />
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.overlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         <div className={styles.sidebarHeader}>

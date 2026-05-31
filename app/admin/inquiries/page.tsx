@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock } from "lucide-react"
+import { toast } from "react-hot-toast"
 import styles from "./page.module.css"
 
 export default function AdminInquiriesPage() {
@@ -36,10 +37,14 @@ export default function AdminInquiriesPage() {
         body: JSON.stringify({ id, type, sudahDibalas: true })
       })
       if (res.ok) {
+        toast.success("Status berhasil diperbarui")
         fetchData()
+      } else {
+        toast.error("Gagal memperbarui status")
       }
     } catch (err) {
       console.error("Failed to update status", err)
+      toast.error("Terjadi kesalahan sistem")
     }
   }
 
