@@ -44,13 +44,6 @@ export default function LoginPage() {
         
         {/* Left Side - Image/Branding */}
         <div className={styles.brandingPanel}>
-          <Image 
-            src="https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=1080&auto=format&fit=crop"
-            alt="Agendain Admin"
-            fill
-            className={styles.bgImage}
-            priority
-          />
           <div className={styles.overlay} />
           <div className={styles.brandingContent}>
             <h1 className={styles.logo}>Agendain</h1>

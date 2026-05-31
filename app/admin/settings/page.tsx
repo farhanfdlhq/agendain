@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { Settings, Save, Loader2, Link as LinkIcon, MessageSquare, CreditCard, LayoutTemplate } from "lucide-react"
 import { toast } from "react-hot-toast"
 
+import styles from "./page.module.css"
+
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
@@ -85,76 +87,62 @@ export default function SettingsPage() {
 
   if (fetching) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '100px' }}>
-        <Loader2 size={32} className="animate-spin" color="var(--color-primary)" />
+      <div className={styles.loadingWrapper}>
+        <Loader2 size={32} className={styles.spinner} />
       </div>
     )
   }
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", paddingBottom: "40px" }}>
-      <div style={{ marginBottom: "32px", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+    <div className={styles.page}>
+      <div className={styles.header}>
         <div>
-          <h2 style={{ fontSize: "1.75rem", fontWeight: 700, fontFamily: "var(--font-display)", color: "var(--color-ink)", marginBottom: "8px" }}>
-            Pengaturan Sistem
-          </h2>
-          <p style={{ color: "var(--color-muted)" }}>Konfigurasi parameter dan identitas utama website Agendain.</p>
+          <h2 className={styles.title}>Pengaturan Sistem</h2>
+          <p className={styles.subtitle}>Konfigurasi parameter dan identitas utama website Agendain.</p>
         </div>
         <button 
           onClick={handleSubmit}
           disabled={loading}
-          style={{
-            display: "flex", alignItems: "center", gap: "8px",
-            backgroundColor: "var(--color-primary)", color: "white",
-            border: "none", padding: "10px 20px", borderRadius: "var(--radius-md)",
-            fontWeight: 600, cursor: loading ? "not-allowed" : "pointer",
-            opacity: loading ? 0.7 : 1, transition: "background-color 0.2s"
-          }}
+          className={styles.saveBtn}
         >
-          {loading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+          {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
           Simpan Perubahan
         </button>
       </div>
 
-      <div style={{ background: "white", borderRadius: "var(--radius-xl)", border: "1px solid var(--color-hairline)", overflow: "hidden" }}>
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column" }}>
+      <div className={styles.card}>
+        <form onSubmit={handleSubmit}>
           
           {/* Section: Identitas Website */}
-          <div style={{ padding: "24px", borderBottom: "1px solid var(--color-hairline)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", color: "var(--color-ink)" }}>
+          <div className={`${styles.section} ${styles.sectionBorder}`}>
+            <div className={styles.sectionHeader}>
               <LayoutTemplate size={20} />
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Identitas Website</h3>
+              <h3 className={styles.sectionTitle}>Identitas Website</h3>
             </div>
             
-            <div style={{ display: "grid", gap: "16px" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
-                  Nama Website
-                </label>
+            <div className={styles.grid}>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Nama Website</label>
                 <input
                   type="text"
                   name="site_name"
                   value={formData.site_name}
                   onChange={handleChange}
-                  style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s" }}
-                  onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
-                  onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+                  className={styles.input}
                 />
               </div>
               
-              <div>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
-                  Logo Website
-                </label>
-                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Logo Website</label>
+                <div className={styles.logoUploadRow}>
                   {formData.site_logo && formData.site_logo !== "/logo.png" ? (
-                    <img src={formData.site_logo} alt="Logo" style={{ width: "64px", height: "64px", objectFit: "contain", borderRadius: "8px", border: "1px solid var(--color-hairline)" }} />
+                    <img src={formData.site_logo} alt="Logo" className={styles.logoPreview} />
                   ) : (
-                    <div style={{ width: "64px", height: "64px", borderRadius: "8px", background: "var(--color-surface-soft)", display: "flex", alignItems: "center", justifyContent: "center", border: "1px dashed var(--color-border)" }}>
+                    <div className={styles.logoPlaceholder}>
                       <LayoutTemplate size={24} color="var(--color-muted)" />
                     </div>
                   )}
-                  <div style={{ flex: 1 }}>
+                  <div className={styles.logoContent}>
                     <input
                       type="file"
                       accept="image/*"
@@ -162,15 +150,10 @@ export default function SettingsPage() {
                       style={{ display: "none" }}
                       id="logo-upload"
                     />
-                    <label htmlFor="logo-upload" style={{
-                      display: "inline-flex", alignItems: "center", gap: "8px",
-                      padding: "8px 16px", background: "white", border: "1px solid var(--color-border-strong)",
-                      borderRadius: "var(--radius-md)", fontSize: "0.875rem", fontWeight: 500,
-                      color: "var(--color-ink)", cursor: "pointer", transition: "all 0.2s"
-                    }}>
-                      {uploadingLogo ? <Loader2 size={16} className="animate-spin" /> : "Pilih Gambar Logo"}
+                    <label htmlFor="logo-upload" className={styles.uploadLabel}>
+                      {uploadingLogo ? <Loader2 size={16} className={styles.spinner} /> : "Pilih Gambar Logo"}
                     </label>
-                    <p style={{ fontSize: "0.75rem", color: "var(--color-muted)", marginTop: "8px" }}>
+                    <p className={styles.hint}>
                       Disarankan menggunakan gambar PNG dengan latar belakang transparan (rasio 1:1 atau 3:1).
                     </p>
                   </div>
@@ -180,68 +163,56 @@ export default function SettingsPage() {
           </div>
 
           {/* Section: Kontak & Komunikasi */}
-          <div style={{ padding: "24px", borderBottom: "1px solid var(--color-hairline)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", color: "var(--color-ink)" }}>
+          <div className={`${styles.section} ${styles.sectionBorder}`}>
+            <div className={styles.sectionHeader}>
               <MessageSquare size={20} />
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Kontak & Pesan</h3>
+              <h3 className={styles.sectionTitle}>Kontak & Pesan</h3>
             </div>
             
-            <div style={{ display: "grid", gap: "16px" }}>
-              <div>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
-                  Nomor WhatsApp Utama (Gunakan format 62xxx)
-                </label>
+            <div className={styles.grid}>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Nomor WhatsApp Utama (Gunakan format 62xxx)</label>
                 <input
                   type="text"
                   name="whatsapp_number"
                   value={formData.whatsapp_number}
                   onChange={handleChange}
                   placeholder="6281234567890"
-                  style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s" }}
-                  onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
-                  onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+                  className={styles.input}
                 />
               </div>
               
-              <div>
-                <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
-                  Teks Pesan WhatsApp Default
-                </label>
+              <div className={styles.formGroup}>
+                <label className={styles.label}>Teks Pesan WhatsApp Default</label>
                 <textarea
                   name="whatsapp_message"
                   value={formData.whatsapp_message}
                   onChange={handleChange}
                   rows={3}
-                  style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s", resize: "vertical" }}
-                  onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
-                  onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+                  className={`${styles.input} ${styles.textarea}`}
                 />
-                <p style={{ fontSize: "0.75rem", color: "var(--color-muted)", marginTop: "4px" }}>Pesan ini akan otomatis terisi saat kustomer menekan tombol chat WhatsApp di frontend.</p>
+                <p className={styles.hint}>Pesan ini akan otomatis terisi saat kustomer menekan tombol chat WhatsApp di frontend.</p>
               </div>
             </div>
           </div>
 
           {/* Section: Pembayaran */}
-          <div style={{ padding: "24px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px", color: "var(--color-ink)" }}>
+          <div className={styles.section}>
+            <div className={styles.sectionHeader}>
               <CreditCard size={20} />
-              <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Instruksi Pembayaran</h3>
+              <h3 className={styles.sectionTitle}>Instruksi Pembayaran</h3>
             </div>
             
-            <div>
-              <label style={{ display: "block", fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", marginBottom: "8px" }}>
-                Informasi Rekening / Metode Pembayaran
-              </label>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Informasi Rekening / Metode Pembayaran</label>
               <textarea
                 name="payment_instructions"
                 value={formData.payment_instructions}
                 onChange={handleChange}
                 rows={4}
-                style={{ width: "100%", padding: "10px 14px", borderRadius: "var(--radius-md)", border: "1px solid var(--color-border)", outline: "none", transition: "border-color 0.2s", resize: "vertical" }}
-                onFocus={e => e.target.style.borderColor = 'var(--color-primary)'}
-                onBlur={e => e.target.style.borderColor = 'var(--color-border)'}
+                className={`${styles.input} ${styles.textarea}`}
               />
-              <p style={{ fontSize: "0.75rem", color: "var(--color-muted)", marginTop: "4px" }}>Instruksi ini akan ditampilkan kepada kustomer setelah mereka melakukan booking.</p>
+              <p className={styles.hint}>Instruksi ini akan ditampilkan kepada kustomer setelah mereka melakukan booking.</p>
             </div>
           </div>
 
