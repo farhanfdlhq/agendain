@@ -84,7 +84,7 @@ export default async function AdminDashboard() {
           </div>
           {recentBookings.length > 0 ? (
             <div className={styles.recentList}>
-              {recentBookings.map(b => (
+              {recentBookings.map((b: any) => (
                 <div key={b.id} className={styles.recentItem}>
                   <div className={styles.recentIcon}><Activity size={18} /></div>
                   <div className={styles.recentText}>
