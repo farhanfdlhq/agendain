@@ -9,18 +9,17 @@ export async function GET(
 ) {
   try {
     const { slug } = await params
-    const pkg = await prisma.paket.findUnique({
-      where: { slug },
-      include: { destinasi: true }
+    const dest = await prisma.destinasi.findUnique({
+      where: { slug }
     })
     
-    if (!pkg) {
-      return NextResponse.json({ error: 'Package not found' }, { status: 404 })
+    if (!dest) {
+      return NextResponse.json({ error: 'Destinasi not found' }, { status: 404 })
     }
     
-    return NextResponse.json(pkg)
+    return NextResponse.json(dest)
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch package details' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch destinasi' }, { status: 500 })
   }
 }
 
@@ -39,28 +38,20 @@ export async function PUT(
       data.slug = data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
     }
 
-    const updatedPackage = await prisma.paket.update({
+    const updatedDest = await prisma.destinasi.update({
       where: { slug },
       data: {
         nama: data.nama,
         slug: data.slug,
         deskripsi: data.deskripsi,
-        harga: data.harga,
-        durasi: data.durasi,
-        destinasiId: data.destinasiId,
         foto: data.foto,
-        itinerary: data.itinerary,
-        fasilitas: data.fasilitas,
-        termasuk: data.termasuk,
-        tidakTermasuk: data.tidakTermasuk,
-        status: data.status,
       }
     })
 
-    return NextResponse.json(updatedPackage)
+    return NextResponse.json(updatedDest)
   } catch (error) {
     console.error(error)
-    return NextResponse.json({ error: 'Failed to update package' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to update destinasi' }, { status: 500 })
   }
 }
 
@@ -73,12 +64,12 @@ export async function DELETE(
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { slug } = await params
-    await prisma.paket.delete({
+    await prisma.destinasi.delete({
       where: { slug }
     })
 
-    return NextResponse.json({ message: 'Package deleted successfully' })
+    return NextResponse.json({ message: 'Destinasi deleted successfully' })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete package' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to delete destinasi' }, { status: 500 })
   }
 }

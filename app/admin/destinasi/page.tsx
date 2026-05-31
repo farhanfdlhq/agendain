@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Plus, Edit2, Trash2, Search, MapPin } from "lucide-react"
+import { toast } from "react-hot-toast"
 import styles from "../paket/page.module.css" // We can reuse the Paket list CSS!
 
 export default function AdminDestinasiPage() {
@@ -28,15 +29,26 @@ export default function AdminDestinasiPage() {
     }
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (slug: string) => {
     if (confirm("Hapus destinasi ini? Semua paket yang terkait mungkin akan kehilangan relasinya.")) {
-      alert("Fitur hapus belum diaktifkan")
+      try {
+        const res = await fetch(`/api/destinasi/${slug}`, {
+          method: "DELETE"
+        });
+        if (res.ok) {
+          toast.success("Destinasi berhasil dihapus");
+          fetchDestinasi();
+        } else {
+          toast.error("Gagal menghapus destinasi");
+        }
+      } catch (e) {
+        toast.error("Terjadi kesalahan server");
+      }
     }
   }
 
   const filteredData = destinasi.filter(d => 
-    d.nama.toLowerCase().includes(search.toLowerCase()) || 
-    d.negara.toLowerCase().includes(search.toLowerCase())
+    d.nama.toLowerCase().includes(search.toLowerCase())
   )
 
   return (
@@ -58,7 +70,7 @@ export default function AdminDestinasiPage() {
             <Search size={18} className={styles.searchIcon} />
             <input 
               type="text" 
-              placeholder="Cari nama destinasi atau negara..." 
+              placeholder="Cari nama destinasi..." 
               className={styles.searchInput}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -71,16 +83,15 @@ export default function AdminDestinasiPage() {
             <thead>
               <tr>
                 <th>Nama Destinasi</th>
-                <th>Negara</th>
-                <th>Mata Uang</th>
-                <th>Waktu Terbaik</th>
+                <th>Slug</th>
+                <th>Jumlah Paket</th>
                 <th className={styles.textRight}>Aksi</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={5} className={styles.loadingCell}>Memuat data...</td>
+                  <td colSpan={4} className={styles.loadingCell}>Memuat data...</td>
                 </tr>
               ) : filteredData.length > 0 ? (
                 filteredData.map((d) => (
@@ -91,14 +102,13 @@ export default function AdminDestinasiPage() {
                         {d.nama}
                       </div>
                     </td>
-                    <td><span className={styles.badgeNeutral}>{d.negara}</span></td>
-                    <td>{d.matauang || '-'}</td>
-                    <td>{d.waktuTerbaik || '-'}</td>
+                    <td><span className={styles.badgeNeutral}>{d.slug}</span></td>
+                    <td>-</td>
                     <td className={styles.actionsCell}>
-                      <button className={styles.iconBtn} title="Edit">
+                      <Link href={`/admin/destinasi/edit/${d.slug}`} className={styles.iconBtn} title="Edit">
                         <Edit2 size={18} />
-                      </button>
-                      <button className={styles.iconBtnDanger} onClick={() => handleDelete(d.id)} title="Hapus">
+                      </Link>
+                      <button className={styles.iconBtnDanger} onClick={() => handleDelete(d.slug)} title="Hapus">
                         <Trash2 size={18} />
                       </button>
                     </td>
@@ -106,7 +116,7 @@ export default function AdminDestinasiPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5} className={styles.emptyCell}>Tidak ada destinasi ditemukan.</td>
+                  <td colSpan={4} className={styles.emptyCell}>Tidak ada destinasi ditemukan.</td>
                 </tr>
               )}
             </tbody>

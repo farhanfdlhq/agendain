@@ -30,12 +30,22 @@ export default function AdminPaketPage() {
     }
   }
 
-  const handleDelete = async (id: number) => {
-    // We can't use confirm directly if we want fully custom, but for simplicity of "custom alert",
-    // we use a toast promise or just a toast error since it's just a dummy for now.
-    toast.error("Fitur hapus akan diaktifkan setelah integrasi API Delete", {
-      icon: '🔒'
-    });
+  const handleDelete = async (slug: string) => {
+    if (!confirm("Apakah Anda yakin ingin menghapus paket ini?")) return;
+    
+    try {
+      const res = await fetch(`/api/paket/${slug}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        toast.success("Paket berhasil dihapus");
+        fetchPackages();
+      } else {
+        toast.error("Gagal menghapus paket");
+      }
+    } catch (e) {
+      toast.error("Terjadi kesalahan server");
+    }
   }
 
   const filteredPackages = packages.filter(pkg => 
@@ -116,10 +126,10 @@ export default function AdminPaketPage() {
                       <Link href={`/paket/${pkg.slug}`} target="_blank" className={styles.iconBtn} title="Lihat di Web">
                         <Eye size={18} />
                       </Link>
-                      <button className={styles.iconBtn} title="Edit">
+                      <Link href={`/admin/paket/edit/${pkg.slug}`} className={styles.iconBtn} title="Edit">
                         <Edit2 size={18} />
-                      </button>
-                      <button className={styles.iconBtnDanger} onClick={() => handleDelete(pkg.id)} title="Hapus">
+                      </Link>
+                      <button className={styles.iconBtnDanger} onClick={() => handleDelete(pkg.slug)} title="Hapus">
                         <Trash2 size={18} />
                       </button>
                     </td>

@@ -12,6 +12,12 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
     include: { destinasi: true }
   })
   
+  let settingsObj: any = {}
+  try {
+    const settingsArr: any[] = await prisma.$queryRaw`SELECT * FROM Setting`
+    settingsObj = settingsArr.reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {})
+  } catch (e) {}
+  
   // Fallback to dummy data for development
   if (!pkg) {
     const dummyData: Record<string, any> = {
@@ -76,7 +82,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
   }
 
   const fotos = pkg?.foto as any || {}
-  const mainImage = fotos.large || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1280&auto=format&fit=crop'
+  const mainImage = fotos.large || fotos.medium || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1280&auto=format&fit=crop'
   const gallery = fotos.gallery || [mainImage, mainImage, mainImage, mainImage]
 
   const { formatIDR, formatUSD, formatEUR, fetchExchangeRates } = await import('@/lib/currency')
@@ -173,7 +179,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
                     <div className={styles.dayLabel}>Hari {it.hari}</div>
                     <div className={styles.dayContent}>
                       <h4>{it.judul}</h4>
-                      <p>{it.desc}</p>
+                      <p>{it.deskripsi || it.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -206,7 +212,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
               
               <div className={styles.waOption}>
                 <p>Atau konsultasi via WhatsApp</p>
-                <a href={`https://wa.me/6281234567890?text=Halo%20Agendain,%20saya%20tertarik%20dengan%20paket%20${pkg?.nama}`} 
+                <a href={`https://wa.me/${settingsObj.whatsapp_number?.replace(/\D/g, '') || "6281234567890"}?text=Halo%20Agendain,%20saya%20tertarik%20dengan%20paket%20${encodeURIComponent(pkg?.nama || '')}`} 
                    target="_blank" rel="noreferrer" className={styles.waBtn}>
                   Chat WhatsApp
                 </a>
