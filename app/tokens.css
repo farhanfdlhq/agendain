@@ -2,29 +2,33 @@
 
 :root {
   /* Brand */
-  --color-primary: oklch(0.42 0.18 22);        /* #d92028 */
-  --color-primary-active: oklch(0.36 0.18 22); /* #b8181e */
-  --color-primary-disabled: oklch(0.85 0.07 22);
-  --color-dominant: oklch(0.24 0.07 148);      /* #103a20 */
-  --color-dominant-hover: oklch(0.32 0.08 148);
-  --color-dominant-surface: oklch(0.18 0.06 148); /* #0d2e19 */
-  --color-dominant-tint: oklch(0.95 0.02 148);
+  --color-primary: #c32d31;        
+  --color-primary-active: #a12326; 
+  --color-primary-disabled: #f1b3b5;
+  --color-dominant: #193f26;      
+  --color-dominant-hover: #102d1a;
+  --color-dominant-surface: #0e2415; 
+  --color-dominant-tint: #e1ede6;
+  
+  /* Accent */
+  --color-accent-blue: #5e7a93;
+  --color-accent-rose: #ad737e;
 
   /* Surface */
-  --color-canvas: oklch(1 0 0);
-  --color-surface-soft: oklch(0.98 0.005 148);
-  --color-surface-card: oklch(0.99 0 0);
+  --color-canvas: #efeae5;
+  --color-surface-soft: #e5ded8;
+  --color-surface-card: #ffffff;
 
   /* Text */
-  --color-ink: oklch(0.13 0.005 148);
-  --color-body: oklch(0.28 0.005 148);
-  --color-muted: oklch(0.52 0.01 148);
-  --color-on-primary: oklch(1 0 0);
-  --color-on-dominant: oklch(1 0 0);
+  --color-ink: #1c1c1c;
+  --color-body: #333333;
+  --color-muted: #666666;
+  --color-on-primary: #ffffff;
+  --color-on-dominant: #ffffff;
 
   /* Border */
-  --color-hairline: oklch(0.92 0.005 148);
-  --color-border-strong: oklch(0.85 0.01 148);
+  --color-hairline: #e0d7ce;
+  --color-border-strong: #d0c5b8;
 
   /* Spacing */
   --space-xxs: 0.125rem;

@@ -15,7 +15,7 @@ export default function Navbar({ settings }: { settings?: any }) {
   const [open, setOpen] = useState(false)
   
   const siteName = settings?.site_name || "Agendain"
-  const siteLogo = settings?.site_logo && settings.site_logo !== "/logo.png" ? settings.site_logo : null
+  const siteLogo = settings?.site_logo && settings.site_logo !== "/logo.png" ? settings.site_logo : "/agendain.jpeg"
 
   return (
     <header className={styles.header}>

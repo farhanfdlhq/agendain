@@ -3,7 +3,7 @@ import styles from './Footer.module.css'
 
 export default function Footer({ settings }: { settings?: any }) {
   const siteName = settings?.site_name || "Agendain"
-  const siteLogo = settings?.site_logo && settings.site_logo !== "/logo.png" ? settings.site_logo : null
+  const siteLogo = settings?.site_logo && settings.site_logo !== "/logo.png" ? settings.site_logo : "/agendain.jpeg"
 
   return (
     <footer className={styles.footer}>
