@@ -73,7 +73,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className={`${styles.sidebarOverlay} ${isSidebarOpen ? styles.overlayOpen : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
         <div className={styles.sidebarHeader} style={{ padding: '24px 20px', borderBottom: '1px solid var(--color-hairline)' }}>
-          <img src={siteLogo} alt="Agendain Logo" style={{ height: "40px", objectFit: "contain" }} />
+          <h2 className={styles.logo} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, letterSpacing: '-0.02em', fontSize: '1.5rem', color: 'var(--color-primary)' }}>Agendain</h2>
           <button onClick={toggleSidebar} className={styles.menuBtnSidebar}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
           </button>
