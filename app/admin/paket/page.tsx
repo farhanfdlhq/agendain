@@ -11,6 +11,7 @@ export default function AdminPaketPage() {
   const [packages, setPackages] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const [statusFilter, setStatusFilter] = useState("")
 
   useEffect(() => {
     fetchPackages()
@@ -48,10 +49,12 @@ export default function AdminPaketPage() {
     }
   }
 
-  const filteredPackages = packages.filter(pkg => 
-    pkg.nama.toLowerCase().includes(search.toLowerCase()) || 
-    pkg.destinasi.nama.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredPackages = packages.filter(pkg => {
+    const matchesSearch = pkg.nama.toLowerCase().includes(search.toLowerCase()) || 
+      pkg.destinasi.nama.toLowerCase().includes(search.toLowerCase())
+    const matchesStatus = !statusFilter || pkg.status === statusFilter
+    return matchesSearch && matchesStatus
+  })
 
   const formatPrice = (price: any) => {
     return formatIDR(Number(price))
@@ -83,7 +86,7 @@ export default function AdminPaketPage() {
             />
           </div>
           <div className={styles.filters}>
-            <select className={styles.select}>
+            <select className={styles.select} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">Semua Status</option>
               <option value="published">Published</option>
               <option value="draft">Draft</option>

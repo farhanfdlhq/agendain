@@ -11,11 +11,10 @@
 }
 
 .welcome h2 {
-  font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-ink);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   margin-bottom: 8px;
 }
 
@@ -31,33 +30,23 @@
 }
 
 .statCard {
-  background: white;
+  background: var(--color-surface-card);
   padding: var(--space-xl);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-hairline);
   display: flex;
   align-items: center;
   gap: var(--space-lg);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.02);
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
-  cursor: default;
-}
-
-.statCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.05);
 }
 
 .statIconWrap {
-  width: 64px;
-  height: 64px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, var(--color-surface-soft) 0%, #ffffff 100%);
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--color-surface-soft);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-hairline);
-  box-shadow: inset 0 2px 4px rgba(255,255,255,0.5);
 }
 
 .statIcon {
@@ -71,7 +60,7 @@
 }
 
 .statInfo h3 {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--color-muted);
   text-transform: uppercase;
@@ -80,8 +69,7 @@
 }
 
 .statValue {
-  font-family: var(--font-display);
-  font-size: 2.25rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--color-ink);
   line-height: 1;
@@ -95,11 +83,10 @@
 }
 
 .panel {
-  background: white;
-  border-radius: var(--radius-xl);
+  background: var(--color-surface-card);
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-hairline);
   padding: var(--space-xl);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.02);
   display: flex;
   flex-direction: column;
 }
@@ -112,11 +99,9 @@
 }
 
 .panelTitle {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--color-ink);
-  letter-spacing: -0.01em;
 }
 
 .panelLink {
@@ -145,7 +130,7 @@
   gap: 16px;
   padding: 16px 20px;
   background-color: var(--color-surface-soft);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   color: var(--color-ink);
   font-weight: 600;
   font-size: 1rem;
@@ -155,10 +140,9 @@
 }
 
 .actionBtn:hover {
-  background-color: white;
+  background-color: var(--color-surface-card);
   border-color: var(--color-primary);
   color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(16, 58, 32, 0.08);
   transform: translateX(4px);
 }
 
@@ -169,8 +153,8 @@
   align-items: center;
   justify-content: center;
   padding: var(--space-xxl) 0;
-  background-color: #f8fafc;
-  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-soft);
+  border-radius: var(--radius-sm);
   border: 1px dashed var(--color-border-strong);
   color: var(--color-muted);
 }
@@ -192,19 +176,18 @@
   gap: var(--space-md);
   padding: var(--space-md);
   background: var(--color-surface-soft);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   transition: background-color 0.2s;
 }
 
 .recentItem:hover {
-  background: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  background: var(--color-surface-card);
 }
 
 .recentIcon {
   width: 40px;
   height: 40px;
-  background: white;
+  background: var(--color-surface-card);
   border-radius: 10px;
   display: flex;
   align-items: center;

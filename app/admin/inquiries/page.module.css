@@ -69,10 +69,9 @@
 }
 
 .tableCard {
-  background: white;
-  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+  border-radius: var(--radius-md);
   border: 1px solid var(--color-hairline);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
   overflow: hidden;
 }
 
@@ -124,7 +123,7 @@
 .table th {
   text-align: left;
   padding: 14px 20px;
-  background-color: #f8fafc;
+  background-color: var(--color-table-header);
   color: var(--color-muted);
   font-weight: 600;
   font-size: 0.8125rem;
@@ -180,13 +179,13 @@
 }
 
 .statusNew {
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: var(--color-danger-surface);
+  color: var(--color-danger);
 }
 
 .statusProgress {
-  background-color: #fef9c3;
-  color: #854d0e;
+  background-color: var(--color-warning-surface);
+  color: var(--color-warning);
 }
 
 .topicBadge {
@@ -220,7 +219,7 @@
 
 .btnPrimarySm {
   display: inline-block;
-  background-color: #25D366; /* WhatsApp Green */
+  background-color: var(--color-whatsapp);
   color: white;
   padding: 8px 16px;
   border-radius: var(--radius-sm);
@@ -235,7 +234,7 @@
 }
 
 .btnSecondarySm {
-  background-color: white;
+  background-color: var(--color-surface-card);
   border: 1px solid var(--color-border-strong);
   color: var(--color-ink);
   padding: 8px 16px;

@@ -1,16 +1,16 @@
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { Package, Users, MessageSquare, Plus, ArrowRight, Activity } from "lucide-react"
+import { Package, Users, MessageSquare, Plus, ArrowRight, Activity, Map } from "lucide-react"
 import Link from "next/link"
 import styles from "./page.module.css"
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions)
 
-  const [paketCount, bookingCount, inquiryCount, recentBookings] = await Promise.all([
+  const [paketCount, destinasiCount, inquiryCount, recentBookings] = await Promise.all([
     prisma.paket.count(),
-    prisma.booking.count(),
+    prisma.destinasi.count(),
     prisma.inquiry.count(),
     prisma.booking.findMany({
       take: 5,
@@ -27,35 +27,35 @@ export default async function AdminDashboard() {
       </div>
 
       <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
+        <Link href="/admin/paket" className={styles.statCard}>
           <div className={styles.statIconWrap}>
-            <Package size={28} className={styles.statIcon} />
+            <Package size={24} className={styles.statIcon} />
           </div>
           <div className={styles.statInfo}>
             <h3>Total Paket</h3>
             <p className={styles.statValue}>{paketCount}</p>
           </div>
-        </div>
+        </Link>
 
-        <div className={styles.statCard}>
+        <Link href="/admin/destinasi" className={styles.statCard}>
           <div className={styles.statIconWrap}>
-            <Users size={28} className={styles.statIcon} style={{color: '#3b82f6'}} />
+            <Map size={24} className={styles.statIcon} style={{color: 'var(--color-accent-blue)'}} />
           </div>
           <div className={styles.statInfo}>
-            <h3>Total Booking</h3>
-            <p className={styles.statValue}>{bookingCount}</p>
+            <h3>Total Destinasi</h3>
+            <p className={styles.statValue}>{destinasiCount}</p>
           </div>
-        </div>
+        </Link>
 
-        <div className={styles.statCard}>
+        <Link href="/admin/inquiries" className={styles.statCard}>
           <div className={styles.statIconWrap}>
-            <MessageSquare size={28} className={styles.statIcon} style={{color: '#f59e0b'}} />
+            <MessageSquare size={24} className={styles.statIcon} style={{color: 'var(--color-accent-rose)'}} />
           </div>
           <div className={styles.statInfo}>
             <h3>Inquiries Baru</h3>
             <p className={styles.statValue}>{inquiryCount}</p>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className={styles.grid}>

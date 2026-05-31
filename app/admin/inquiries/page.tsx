@@ -28,8 +28,19 @@ export default function AdminInquiriesPage() {
     }
   }
 
-  const handleMarkAsReplied = (id: number, type: string) => {
-    alert("Fitur update status akan diaktifkan setelah integrasi API PUT")
+  const handleMarkAsReplied = async (id: number, type: string) => {
+    try {
+      const res = await fetch(`/api/inquiries`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, type, sudahDibalas: true })
+      })
+      if (res.ok) {
+        fetchData()
+      }
+    } catch (err) {
+      console.error("Failed to update status", err)
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -170,9 +181,9 @@ export default function AdminInquiriesPage() {
                       <td>{formatDate(inq.createdAt)}</td>
                       <td>
                         {inq.sudahDibalas ? (
-                          <span className={styles.statusBadge} style={{background: '#dcfce7', color: '#166534'}}><CheckCircle size={12}/> Selesai</span>
+                          <span className={`${styles.statusBadge}`} style={{background: 'var(--color-success-surface)', color: 'var(--color-success)'}}><CheckCircle size={12}/> Selesai</span>
                         ) : (
-                          <span className={styles.statusBadge} style={{background: '#fee2e2', color: '#991b1b'}}><Clock size={12}/> Menunggu</span>
+                          <span className={`${styles.statusBadge}`} style={{background: 'var(--color-danger-surface)', color: 'var(--color-danger)'}}><Clock size={12}/> Menunggu</span>
                         )}
                       </td>
                       <td className={styles.actionsCell}>

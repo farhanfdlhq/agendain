@@ -30,6 +30,21 @@
   --color-hairline: #e0d7ce;
   --color-border-strong: #d0c5b8;
 
+  /* Semantic Status */
+  --color-success: #166534;
+  --color-success-surface: #dcfce7;
+  --color-warning: #854d0e;
+  --color-warning-surface: #fef9c3;
+  --color-danger: #991b1b;
+  --color-danger-surface: #fee2e2;
+  --color-danger-hover-surface: #fef2f2;
+  --color-danger-hover: #dc2626;
+  --color-whatsapp: #25D366;
+
+  /* Admin Surface */
+  --color-table-header: #f6f1ec;
+  --color-hover-row: #f6f1ec;
+
   /* Spacing */
   --space-xxs: 0.125rem;
   --space-xs: 0.25rem;
