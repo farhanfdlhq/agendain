@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Plus, Edit2, Trash2, Search, MapPin } from "lucide-react"
+import { Plus, Edit2, Trash2, Search, MapPin, WifiOff, AlertCircle, RefreshCw, Map } from "lucide-react"
 import { toast } from "react-hot-toast"
 import styles from "../paket/page.module.css" // We can reuse the Paket list CSS!
 
@@ -10,20 +10,42 @@ export default function AdminDestinasiPage() {
   const [destinasi, setDestinasi] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [isOffline, setIsOffline] = useState(false)
 
   useEffect(() => {
+    const handleOnline = () => setIsOffline(false)
+    const handleOffline = () => setIsOffline(true)
+    
+    if (typeof navigator !== "undefined") {
+      setIsOffline(!navigator.onLine)
+    }
+    
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    
     fetchDestinasi()
+
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
   }, [])
 
   const fetchDestinasi = async () => {
+    setLoading(true)
+    setError(null)
     try {
       const res = await fetch("/api/destinasi")
       if (res.ok) {
         const data = await res.json()
         setDestinasi(data)
+      } else {
+        setError("Gagal memuat data dari server.")
       }
     } catch (error) {
       console.error("Failed to fetch destinations", error)
+      setError("Gagal terhubung ke server. Periksa koneksi internet Anda.")
     } finally {
       setLoading(false)
     }
@@ -50,6 +72,69 @@ export default function AdminDestinasiPage() {
   const filteredData = destinasi.filter(d => 
     d.nama.toLowerCase().includes(search.toLowerCase())
   )
+
+  const SkeletonRow = () => (
+    <tr className={styles.skeletonRow}>
+      <td>
+        <div className={`${styles.skeleton} ${styles.skTitle}`}></div>
+      </td>
+      <td><div className={`${styles.skeleton} ${styles.skBadge}`}></div></td>
+      <td><div className={`${styles.skeleton} ${styles.skSub}`}></div></td>
+      <td><div className={`${styles.skeleton} ${styles.skBtn}`}></div></td>
+    </tr>
+  )
+
+  const renderState = () => {
+    if (isOffline) {
+      return (
+        <tr>
+          <td colSpan={4} className={styles.loadingCell}>
+            <div className={styles.stateContent}>
+              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
+                <WifiOff size={28} />
+              </div>
+              <h3 className={styles.stateTitle}>Anda Sedang Offline</h3>
+              <p className={styles.stateDesc}>Koneksi internet terputus. Silakan periksa jaringan Anda lalu coba lagi.</p>
+              <button className={styles.retryBtn} onClick={fetchDestinasi}>
+                <RefreshCw size={16} /> Coba Ulang
+              </button>
+            </div>
+          </td>
+        </tr>
+      )
+    }
+    
+    if (error) {
+      return (
+        <tr>
+          <td colSpan={4} className={styles.loadingCell}>
+            <div className={styles.stateContent}>
+              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
+                <AlertCircle size={28} />
+              </div>
+              <h3 className={styles.stateTitle}>Terjadi Kesalahan</h3>
+              <p className={styles.stateDesc}>{error}</p>
+              <button className={styles.retryBtn} onClick={fetchDestinasi}>
+                <RefreshCw size={16} /> Coba Lagi
+              </button>
+            </div>
+          </td>
+        </tr>
+      )
+    }
+
+    if (loading) {
+      return (
+        <>
+          <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
+        </>
+      )
+    }
+
+    return null
+  }
 
   return (
     <div className={styles.page}>
@@ -89,11 +174,7 @@ export default function AdminDestinasiPage() {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={4} className={styles.loadingCell}>Memuat data...</td>
-                </tr>
-              ) : filteredData.length > 0 ? (
+              {renderState() || (filteredData.length > 0 ? (
                 filteredData.map((d) => (
                   <tr key={d.id}>
                     <td className={styles.boldCell}>
@@ -116,9 +197,20 @@ export default function AdminDestinasiPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className={styles.emptyCell}>Tidak ada destinasi ditemukan.</td>
+                  <td colSpan={4} className={styles.emptyCell}>
+                    <div className={styles.stateContent}>
+                      <div className={styles.stateIconWrapper}>
+                        <Map size={28} />
+                      </div>
+                      <h3 className={styles.stateTitle}>Tidak Ada Destinasi Ditemukan</h3>
+                      <p className={styles.stateDesc}>Belum ada destinasi wisata yang ditambahkan atau pencarian tidak cocok.</p>
+                      <Link href="/admin/destinasi/baru" className={styles.retryBtn} style={{ marginTop: '16px' }}>
+                        <Plus size={16} /> Tambah Destinasi
+                      </Link>
+                    </div>
+                  </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>

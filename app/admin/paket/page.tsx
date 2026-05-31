@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Plus, Edit2, Trash2, Search, MoreVertical, Eye } from "lucide-react"
+import { Plus, Edit2, Trash2, Search, MoreVertical, Eye, WifiOff, AlertCircle, RefreshCw, PackageX } from "lucide-react"
 import { formatIDR } from "@/lib/currency"
 import { toast } from "react-hot-toast"
 import styles from "./page.module.css"
@@ -12,20 +12,42 @@ export default function AdminPaketPage() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [isOffline, setIsOffline] = useState(false)
 
   useEffect(() => {
+    const handleOnline = () => setIsOffline(false)
+    const handleOffline = () => setIsOffline(true)
+    
+    if (typeof navigator !== "undefined") {
+      setIsOffline(!navigator.onLine)
+    }
+    
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    
     fetchPackages()
+
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
   }, [])
 
   const fetchPackages = async () => {
+    setLoading(true)
+    setError(null)
     try {
       const res = await fetch("/api/paket")
       if (res.ok) {
         const data = await res.json()
         setPackages(data)
+      } else {
+        setError("Gagal memuat data dari server.")
       }
     } catch (error) {
       console.error("Failed to fetch packages", error)
+      setError("Gagal terhubung ke server. Periksa koneksi internet Anda.")
     } finally {
       setLoading(false)
     }
@@ -58,6 +80,72 @@ export default function AdminPaketPage() {
 
   const formatPrice = (price: any) => {
     return formatIDR(Number(price))
+  }
+
+  const SkeletonRow = () => (
+    <tr className={styles.skeletonRow}>
+      <td>
+        <div className={`${styles.skeleton} ${styles.skTitle}`}></div>
+        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
+      </td>
+      <td><div className={`${styles.skeleton} ${styles.skBadge}`}></div></td>
+      <td><div className={`${styles.skeleton} ${styles.skSub}`}></div></td>
+      <td><div className={`${styles.skeleton} ${styles.skTitle}`}></div></td>
+      <td><div className={`${styles.skeleton} ${styles.skBadge}`}></div></td>
+      <td><div className={`${styles.skeleton} ${styles.skBtn}`}></div></td>
+    </tr>
+  )
+
+  const renderState = () => {
+    if (isOffline) {
+      return (
+        <tr>
+          <td colSpan={6} className={styles.loadingCell}>
+            <div className={styles.stateContent}>
+              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
+                <WifiOff size={28} />
+              </div>
+              <h3 className={styles.stateTitle}>Anda Sedang Offline</h3>
+              <p className={styles.stateDesc}>Koneksi internet terputus. Silakan periksa jaringan Anda lalu coba lagi.</p>
+              <button className={styles.retryBtn} onClick={fetchPackages}>
+                <RefreshCw size={16} /> Coba Ulang
+              </button>
+            </div>
+          </td>
+        </tr>
+      )
+    }
+    
+    if (error) {
+      return (
+        <tr>
+          <td colSpan={6} className={styles.loadingCell}>
+            <div className={styles.stateContent}>
+              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
+                <AlertCircle size={28} />
+              </div>
+              <h3 className={styles.stateTitle}>Terjadi Kesalahan</h3>
+              <p className={styles.stateDesc}>{error}</p>
+              <button className={styles.retryBtn} onClick={fetchPackages}>
+                <RefreshCw size={16} /> Coba Lagi
+              </button>
+            </div>
+          </td>
+        </tr>
+      )
+    }
+
+    if (loading) {
+      return (
+        <>
+          <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
+        </>
+      )
+    }
+
+    return null
   }
 
   return (
@@ -107,11 +195,7 @@ export default function AdminPaketPage() {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className={styles.loadingCell}>Memuat data...</td>
-                </tr>
-              ) : filteredPackages.length > 0 ? (
+              {renderState() || (filteredPackages.length > 0 ? (
                 filteredPackages.map((pkg) => (
                   <tr key={pkg.id}>
                     <td className={styles.boldCell}>{pkg.nama}</td>
@@ -140,9 +224,20 @@ export default function AdminPaketPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className={styles.emptyCell}>Tidak ada paket ditemukan.</td>
+                  <td colSpan={6} className={styles.emptyCell}>
+                    <div className={styles.stateContent}>
+                      <div className={styles.stateIconWrapper}>
+                        <PackageX size={28} />
+                      </div>
+                      <h3 className={styles.stateTitle}>Tidak Ada Paket Ditemukan</h3>
+                      <p className={styles.stateDesc}>Belum ada paket wisata yang ditambahkan atau paket yang dicari tidak ada.</p>
+                      <Link href="/admin/paket/baru" className={styles.retryBtn} style={{ marginTop: '16px' }}>
+                        <Plus size={16} /> Tambah Paket
+                      </Link>
+                    </div>
+                  </td>
                 </tr>
-              )}
+              ))}
             </tbody>
           </table>
         </div>

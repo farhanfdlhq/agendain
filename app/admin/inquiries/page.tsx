@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock } from "lucide-react"
+import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock, WifiOff, AlertCircle, RefreshCw, Inbox } from "lucide-react"
 import { toast } from "react-hot-toast"
 import styles from "./page.module.css"
 
@@ -10,20 +10,43 @@ export default function AdminInquiriesPage() {
   const [data, setData] = useState({ inquiries: [], privateTrips: [] })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const [error, setError] = useState<string | null>(null)
+  const [isOffline, setIsOffline] = useState(false)
 
   useEffect(() => {
+    // Handle offline status
+    const handleOnline = () => setIsOffline(false)
+    const handleOffline = () => setIsOffline(true)
+    
+    if (typeof navigator !== "undefined") {
+      setIsOffline(!navigator.onLine)
+    }
+    
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    
     fetchData()
+
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
   }, [])
 
   const fetchData = async () => {
+    setLoading(true)
+    setError(null)
     try {
       const res = await fetch("/api/inquiries")
       if (res.ok) {
         const json = await res.json()
         setData(json)
+      } else {
+        setError("Gagal memuat data dari server.")
       }
     } catch (error) {
       console.error("Failed to fetch inquiries", error)
+      setError("Gagal terhubung ke server. Periksa koneksi internet Anda.")
     } finally {
       setLoading(false)
     }
@@ -64,6 +87,78 @@ export default function AdminInquiriesPage() {
     i.nama.toLowerCase().includes(search.toLowerCase()) || 
     i.email.toLowerCase().includes(search.toLowerCase())
   )
+
+  const SkeletonRow = () => (
+    <tr className={styles.skeletonRow}>
+      <td>
+        <div className={`${styles.skeleton} ${styles.skTitle}`}></div>
+        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
+        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
+      </td>
+      <td>
+        <div className={`${styles.skeleton} ${styles.skTitle}`}></div>
+        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
+      </td>
+      <td>
+        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
+        <div className={`${styles.skeleton} ${styles.skTitle}`}></div>
+      </td>
+      <td><div className={`${styles.skeleton} ${styles.skBadge}`}></div></td>
+      <td><div className={`${styles.skeleton} ${styles.skBtn}`}></div></td>
+    </tr>
+  )
+
+  const renderState = () => {
+    if (isOffline) {
+      return (
+        <tr>
+          <td colSpan={5} className={styles.loadingCell}>
+            <div className={styles.stateContent}>
+              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
+                <WifiOff size={28} />
+              </div>
+              <h3 className={styles.stateTitle}>Anda Sedang Offline</h3>
+              <p className={styles.stateDesc}>Koneksi internet terputus. Silakan periksa jaringan Anda lalu coba lagi.</p>
+              <button className={styles.retryBtn} onClick={fetchData}>
+                <RefreshCw size={16} /> Coba Ulang
+              </button>
+            </div>
+          </td>
+        </tr>
+      )
+    }
+    
+    if (error) {
+      return (
+        <tr>
+          <td colSpan={5} className={styles.loadingCell}>
+            <div className={styles.stateContent}>
+              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
+                <AlertCircle size={28} />
+              </div>
+              <h3 className={styles.stateTitle}>Terjadi Kesalahan</h3>
+              <p className={styles.stateDesc}>{error}</p>
+              <button className={styles.retryBtn} onClick={fetchData}>
+                <RefreshCw size={16} /> Coba Lagi
+              </button>
+            </div>
+          </td>
+        </tr>
+      )
+    }
+
+    if (loading) {
+      return (
+        <>
+          <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
+        </>
+      )
+    }
+
+    return null
+  }
 
   return (
     <div className={styles.page}>
@@ -118,9 +213,7 @@ export default function AdminInquiriesPage() {
                 </tr>
               </thead>
               <tbody>
-                {loading ? (
-                  <tr><td colSpan={5} className={styles.loadingCell}>Memuat data...</td></tr>
-                ) : filteredTrips.length > 0 ? (
+                {renderState() || (filteredTrips.length > 0 ? (
                   filteredTrips.map((trip: any) => (
                     <tr key={trip.id}>
                       <td>
@@ -151,8 +244,18 @@ export default function AdminInquiriesPage() {
                     </tr>
                   ))
                 ) : (
-                  <tr><td colSpan={5} className={styles.emptyCell}>Tidak ada request Private Trip.</td></tr>
-                )}
+                  <tr>
+                    <td colSpan={5} className={styles.emptyCell}>
+                      <div className={styles.stateContent}>
+                        <div className={styles.stateIconWrapper}>
+                          <Inbox size={28} />
+                        </div>
+                        <h3 className={styles.stateTitle}>Belum Ada Private Trip</h3>
+                        <p className={styles.stateDesc}>Saat ini belum ada pengajuan Private Trip baru dari pelanggan.</p>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -169,9 +272,7 @@ export default function AdminInquiriesPage() {
                 </tr>
               </thead>
               <tbody>
-                {loading ? (
-                  <tr><td colSpan={5} className={styles.loadingCell}>Memuat data...</td></tr>
-                ) : filteredInquiries.length > 0 ? (
+                {renderState() || (filteredInquiries.length > 0 ? (
                   filteredInquiries.map((inq: any) => (
                     <tr key={inq.id}>
                       <td>
@@ -201,8 +302,18 @@ export default function AdminInquiriesPage() {
                     </tr>
                   ))
                 ) : (
-                  <tr><td colSpan={5} className={styles.emptyCell}>Tidak ada pesan masuk.</td></tr>
-                )}
+                  <tr>
+                    <td colSpan={5} className={styles.emptyCell}>
+                      <div className={styles.stateContent}>
+                        <div className={styles.stateIconWrapper}>
+                          <MessageSquare size={28} />
+                        </div>
+                        <h3 className={styles.stateTitle}>Inbox Kosong</h3>
+                        <p className={styles.stateDesc}>Belum ada pertanyaan masuk dari pelanggan.</p>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
