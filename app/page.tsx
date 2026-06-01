@@ -5,6 +5,8 @@ import Link from 'next/link'
 import styles from './page.module.css'
 import { prisma } from '@/lib/prisma'
 import { Map, Gem, Users, Sparkles } from 'lucide-react'
+import FadeIn from '@/components/Motion/FadeIn'
+import Stagger from '@/components/Motion/Stagger'
 
 // Dummy data fallback for development if DB is empty
 const DUMMY_PACKAGES = [
@@ -66,73 +68,79 @@ export default async function Home() {
       
       <section className={styles.section}>
         <div className={styles.container}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Paket Unggulan</h2>
-            <Link href="/paket" className={styles.viewAll}>Lihat Semua Paket →</Link>
-          </div>
+          <FadeIn direction="up">
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Paket Unggulan</h2>
+              <Link href="/paket" className={styles.viewAll}>Lihat Semua Paket →</Link>
+            </div>
+          </FadeIn>
           
-          <div className={styles.packageGrid}>
+          <Stagger className={styles.packageGrid}>
             {packages.map((pkg) => (
               <PackageCard key={pkg.slug} {...pkg} />
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
 
       <section className={styles.sectionAlt}>
         <div className={styles.container}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Destinasi Favorit</h2>
-            <Link href="/destinasi" className={styles.viewAll}>Jelajahi Eropa →</Link>
-          </div>
+          <FadeIn direction="up">
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Destinasi Favorit</h2>
+              <Link href="/destinasi" className={styles.viewAll}>Jelajahi Eropa →</Link>
+            </div>
+          </FadeIn>
           
-          <div className={styles.destinationGrid}>
+          <Stagger className={styles.destinationGrid}>
             {destinations.map((dest) => (
               <DestinationCard key={dest.slug} {...dest} />
             ))}
-          </div>
+          </Stagger>
         </div>
       </section>
       
       <section className={styles.features}>
         <div className={styles.container}>
-          <h2 className={styles.featuresTitle}>Kenapa Memilih Agendain?</h2>
-          <div className={styles.featuresGrid}>
+          <FadeIn direction="up">
+            <h2 className={styles.featuresTitle}>Kenapa Memilih Agendain?</h2>
+          </FadeIn>
+          <Stagger className={styles.featuresGrid}>
             <div className={styles.featureItem}>
               <div className={styles.featureIcon}>
-                <Map size={32} strokeWidth={1.5} color="var(--color-primary)" />
+                <Map size={32} strokeWidth={1.5} color="currentColor" />
               </div>
               <h3>Spesialis Eropa</h3>
               <p>Fokus penuh pada destinasi Italia & Eropa dengan partner lokal terpercaya.</p>
             </div>
             <div className={styles.featureItem}>
               <div className={styles.featureIcon}>
-                <Gem size={32} strokeWidth={1.5} color="var(--color-primary)" />
+                <Gem size={32} strokeWidth={1.5} color="currentColor" />
               </div>
               <h3>Harga Transparan</h3>
               <p>Tanpa biaya tersembunyi. Apa yang Anda lihat adalah apa yang Anda bayar.</p>
             </div>
             <div className={styles.featureItem}>
               <div className={styles.featureIcon}>
-                <Users size={32} strokeWidth={1.5} color="var(--color-primary)" />
+                <Users size={32} strokeWidth={1.5} color="currentColor" />
               </div>
               <h3>Guide Profesional</h3>
               <p>Didampingi oleh Tour Leader berlisensi yang memahami budaya lokal.</p>
             </div>
             <div className={styles.featureItem}>
               <div className={styles.featureIcon}>
-                <Sparkles size={32} strokeWidth={1.5} color="var(--color-primary)" />
+                <Sparkles size={32} strokeWidth={1.5} color="currentColor" />
               </div>
               <h3>Itinerary Fleksibel</h3>
               <p>Tersedia layanan Private Trip untuk pengalaman liburan yang lebih personal.</p>
             </div>
-          </div>
+          </Stagger>
         </div>
       </section>
       
       <section className={styles.ctaBand}>
         <div className={styles.container}>
-          <div className={styles.ctaContent}>
+          <FadeIn direction="up" className={styles.ctaContent}>
             <h2 className={styles.ctaTitle}>Siap Memulai Perjalanan Anda?</h2>
             <p className={styles.ctaText}>Diskusikan rencana liburan impian Anda bersama tim kami secara gratis.</p>
             <div className={styles.ctaButtons}>
@@ -141,7 +149,7 @@ export default async function Home() {
                 Chat WhatsApp
               </a>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
     </>

@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './Hero.module.css'
+import FadeIn from '../Motion/FadeIn'
 
 export default function Hero() {
   return (
@@ -17,14 +18,18 @@ export default function Hero() {
       </div>
       
       <div className={styles.content}>
-        <h1 className={styles.title}>Jelajahi Eropa Tanpa Beban</h1>
-        <p className={styles.subtitle}>
-          Rencanakan perjalanan impian Anda bersama ahlinya. Transparan, terpercaya, dan berkesan.
-        </p>
+        <FadeIn delay={0.2} direction="up">
+          <h1 className={styles.title}>Jelajahi Eropa Tanpa Beban</h1>
+        </FadeIn>
+        <FadeIn delay={0.4} direction="up">
+          <p className={styles.subtitle}>
+            Rencanakan perjalanan impian Anda bersama ahlinya. Transparan, terpercaya, dan berkesan.
+          </p>
+        </FadeIn>
         
-        <div className={styles.searchWrapper}>
+        <FadeIn delay={0.6} direction="up" className={styles.searchWrapper}>
           <SearchBar />
-        </div>
+        </FadeIn>
       </div>
     </section>
   )
