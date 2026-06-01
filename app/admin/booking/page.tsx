@@ -12,6 +12,7 @@ export default function AdminBookingPage() {
   const [search, setSearch] = useState("")
   const [statusFilter, setStatusFilter] = useState("")
   const [error, setError] = useState<string | null>(null)
+  const [selectedBooking, setSelectedBooking] = useState<any>(null)
 
   useEffect(() => {
     fetchBookings()
@@ -196,8 +197,25 @@ export default function AdminBookingPage() {
                 filteredBookings.map((b) => (
                   <tr key={b.id}>
                     <td className={styles.boldCell}>
-                      {b.nama}
-                      <div style={{ fontSize: '0.8rem', color: 'var(--color-muted)', fontWeight: 'normal' }}>{b.email} | {b.noWa}</div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                        <span>{b.nama}</span>
+                        <div style={{ fontSize: '0.8125rem', color: 'var(--color-muted)', fontWeight: 'normal', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <span>{b.email}</span>
+                          {b.noWa && (
+                            <>
+                              <span>•</span>
+                              <a 
+                                href={`https://wa.me/${b.noWa.replace(/\D/g, '')}`} 
+                                target="_blank" 
+                                rel="noreferrer"
+                                style={{ color: 'var(--color-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '2px' }}
+                              >
+                                WA
+                              </a>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </td>
                     <td>
                       <span className={styles.badgeNeutral}>{b.paket?.nama || "Paket Dihapus"}</span>
@@ -208,7 +226,7 @@ export default function AdminBookingPage() {
                         {formatDate(b.tanggal)}
                       </div>
                     </td>
-                    <td>{b.jumlahPax} org</td>
+                    <td>{b.jumlahPax} pax</td>
                     <td className={styles.priceCell}>{formatPrice(b.total)}</td>
                     <td>
                       <select 
@@ -223,6 +241,9 @@ export default function AdminBookingPage() {
                       </select>
                     </td>
                     <td className={styles.actionsCell}>
+                      <button className={styles.iconBtn} onClick={() => setSelectedBooking(b)} title="Lihat Detail">
+                        <Eye size={18} />
+                      </button>
                       <button className={styles.iconBtnDanger} onClick={() => handleDelete(b.id)} title="Hapus">
                         <Trash2 size={18} />
                       </button>
@@ -246,6 +267,67 @@ export default function AdminBookingPage() {
           </table>
         </div>
       </div>
+
+      {/* Modal Detail Booking */}
+      {selectedBooking && (
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '500px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-hairline)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600 }}>Detail Pesanan</h3>
+              <button onClick={() => setSelectedBooking(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-muted)' }}>
+                &times;
+              </button>
+            </div>
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>ID Pemesanan</span>
+                <strong style={{ fontSize: '1.1rem' }}>#BKG-{selectedBooking.id.toString().padStart(4, '0')}</strong>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>Pelanggan</span>
+                  <strong>{selectedBooking.nama}</strong>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>No. WhatsApp</span>
+                  <a href={`https://wa.me/${selectedBooking.noWa.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>
+                    {selectedBooking.noWa}
+                  </a>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>Paket Wisata</span>
+                <strong>{selectedBooking.paket?.nama || "Paket Dihapus"}</strong>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>Tanggal Trip</span>
+                  <strong>{formatDate(selectedBooking.tanggal)}</strong>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>Jumlah Pax</span>
+                  <strong>{selectedBooking.jumlahPax} Orang</strong>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>Total Tagihan</span>
+                <strong style={{ fontSize: '1.2rem', color: 'var(--color-primary)' }}>{formatPrice(selectedBooking.total)}</strong>
+              </div>
+              {selectedBooking.catatan && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '8px', padding: '12px', background: 'var(--color-surface-soft)', borderRadius: '8px' }}>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--color-muted)' }}>Catatan Tambahan:</span>
+                  <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: 1.5 }}>{selectedBooking.catatan}</p>
+                </div>
+              )}
+            </div>
+            <div style={{ padding: '16px 24px', borderTop: '1px solid var(--color-hairline)', background: 'var(--color-surface-soft)', display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={() => setSelectedBooking(null)} style={{ padding: '8px 16px', background: 'white', border: '1px solid var(--color-border-strong)', borderRadius: '6px', cursor: 'pointer', fontWeight: 500 }}>
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
