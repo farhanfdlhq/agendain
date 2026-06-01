@@ -8,16 +8,27 @@ import styles from "./page.module.css"
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions)
 
-  const [paketCount, destinasiCount, inquiryCount, recentBookings] = await Promise.all([
+  const [paketCount, destinasiCount, inquiryCount, recentInquiries, recentPrivateTrips] = await Promise.all([
     prisma.paket.count(),
     prisma.destinasi.count(),
-    prisma.inquiry.count(),
-    prisma.booking.findMany({
-      take: 5,
+    prisma.inquiry.count({ where: { sudahDibalas: false } }),
+    prisma.inquiry.findMany({
+      take: 3,
       orderBy: { createdAt: 'desc' },
       include: { paket: true }
+    }),
+    prisma.privateTrip.findMany({
+      take: 2,
+      orderBy: { createdAt: 'desc' }
     })
   ])
+
+  // Combine and sort recent activities
+  const recentActivity = [
+    ...recentInquiries.map(i => ({ ...i, type: 'inquiry' })),
+    ...recentPrivateTrips.map(p => ({ ...p, type: 'privatetrip' }))
+  ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+   .slice(0, 5)
 
   return (
     <div className={styles.dashboard}>
@@ -78,17 +89,21 @@ export default async function AdminDashboard() {
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
             <h3 className={styles.panelTitle}>Aktivitas Terbaru</h3>
-            <Link href="/admin/booking" className={styles.panelLink}>
+            <Link href="/admin/inquiries" className={styles.panelLink}>
               Lihat Semua <ArrowRight size={16} />
             </Link>
           </div>
-          {recentBookings.length > 0 ? (
+          {recentActivity.length > 0 ? (
             <div className={styles.recentList}>
-              {recentBookings.map((b: any) => (
-                <div key={b.id} className={styles.recentItem}>
-                  <div className={styles.recentIcon}><Activity size={18} /></div>
+              {recentActivity.map((b: any) => (
+                <div key={`${b.type}-${b.id}`} className={styles.recentItem}>
+                  <div className={styles.recentIcon}>
+                    {b.type === 'inquiry' ? <MessageSquare size={18} /> : <Map size={18} />}
+                  </div>
                   <div className={styles.recentText}>
-                    <strong>{b.nama}</strong> membooking paket <em>{b.paket?.nama}</em>
+                    <strong>{b.nama}</strong> {b.type === 'inquiry' 
+                      ? (b.paket ? <span>bertanya tentang paket <em>{b.paket.nama}</em></span> : 'mengirim pesan baru') 
+                      : <span>mengajukan Private Trip ke <em>{b.destinasi}</em></span>}
                   </div>
                   <div className={styles.recentDate}>
                     {new Date(b.createdAt).toLocaleDateString('id-ID')}
