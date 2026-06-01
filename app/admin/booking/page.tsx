@@ -157,8 +157,8 @@ export default function AdminBookingPage() {
         </div>
       </div>
 
-      <div className={styles.card}>
-        <div className={styles.toolbar}>
+      <div className={styles.tableCard}>
+        <div className={styles.tableToolbar}>
           <div className={styles.searchBox}>
             <Search size={18} className={styles.searchIcon} />
             <input 
