@@ -105,8 +105,8 @@ export default async function Home() {
           <FadeIn direction="up">
             <h2 className={styles.featuresTitle}>Kenapa Memilih Agendain?</h2>
           </FadeIn>
-          <Stagger className={styles.featuresGrid}>
-            <div className={styles.featureItem}>
+          <div className={styles.featuresGrid}>
+            <FadeIn delay={0.1} className={`${styles.featureItem} ${styles.featureItemFeatured}`}>
               <div className={styles.featureIcon}>
                 <Map size={32} strokeWidth={1.5} color="currentColor" />
               </div>
@@ -114,8 +114,8 @@ export default async function Home() {
                 <h3>Spesialis Eropa</h3>
                 <p>Fokus penuh pada destinasi Italia & Eropa dengan partner lokal terpercaya.</p>
               </div>
-            </div>
-            <div className={styles.featureItem}>
+            </FadeIn>
+            <FadeIn delay={0.2} className={styles.featureItem}>
               <div className={styles.featureIcon}>
                 <Gem size={32} strokeWidth={1.5} color="currentColor" />
               </div>
@@ -123,8 +123,8 @@ export default async function Home() {
                 <h3>Harga Transparan</h3>
                 <p>Tanpa biaya tersembunyi. Apa yang Anda lihat adalah apa yang Anda bayar.</p>
               </div>
-            </div>
-            <div className={styles.featureItem}>
+            </FadeIn>
+            <FadeIn delay={0.3} className={styles.featureItem}>
               <div className={styles.featureIcon}>
                 <Users size={32} strokeWidth={1.5} color="currentColor" />
               </div>
@@ -132,8 +132,8 @@ export default async function Home() {
                 <h3>Guide Profesional</h3>
                 <p>Didampingi oleh Tour Leader berlisensi yang memahami budaya lokal.</p>
               </div>
-            </div>
-            <div className={styles.featureItem}>
+            </FadeIn>
+            <FadeIn delay={0.4} className={styles.featureItem}>
               <div className={styles.featureIcon}>
                 <Sparkles size={32} strokeWidth={1.5} color="currentColor" />
               </div>
@@ -141,8 +141,8 @@ export default async function Home() {
                 <h3>Itinerary Fleksibel</h3>
                 <p>Tersedia layanan Private Trip untuk pengalaman liburan yang lebih personal.</p>
               </div>
-            </div>
-          </Stagger>
+            </FadeIn>
+          </div>
         </div>
       </section>
       

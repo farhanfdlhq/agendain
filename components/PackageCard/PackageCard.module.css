@@ -59,6 +59,14 @@
   transform: scale(1.1);
 }
 
+.saveBtn.saved {
+  color: var(--color-primary);
+}
+
+.saveBtn svg {
+  transition: fill 0.2s, color 0.2s;
+}
+
 .content {
   padding: var(--space-md) 0;
   display: flex;
