@@ -30,7 +30,7 @@ export default async function AdminDashboard() {
     })
   ])
 
-  const totalOmset = paidBookings.reduce((sum, b) => sum + Number(b.total), 0)
+  const totalOmset = paidBookings.reduce((sum: number, b: any) => sum + Number(b.total), 0)
   const formatCurrency = (val: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val)
 
   // Combine and sort recent activities
