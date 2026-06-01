@@ -52,7 +52,7 @@
   align-items: center;
   padding: var(--space-lg);
   border-bottom: 1px solid var(--color-hairline);
-  gap: var(--space-md);
+  gap: 24px;
 }
 
 .searchBox {
@@ -297,3 +297,17 @@
 .skBadge { height: 24px; width: 80px; border-radius: var(--radius-full); }
 .skBtn { height: 32px; width: 100px; float: right; }
 .skeletonRow td { border-bottom: 1px solid var(--color-hairline); padding: 16px 20px; }
+
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .searchBox {
+    max-width: 100%;
+  }
+  .filters select {
+    width: 100%;
+  }
+}
