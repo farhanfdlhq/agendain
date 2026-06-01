@@ -30,7 +30,7 @@ export default function FadeIn({ children, delay = 0, direction = "up", classNam
       variants={getVariants()}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
-      transition={{ duration, delay, ease: [0.25, 0.25, 0, 1] }}
+      transition={{ duration, delay, ease: "easeOut" }}
       className={className}
     >
       {children}
