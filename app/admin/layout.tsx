@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2 } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays } from "lucide-react"
 import styles from "./layout.module.css"
 import { useState, useEffect } from "react"
 import { Toaster } from "react-hot-toast"
@@ -79,6 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={20} /> },
     { name: "Manajemen Paket", href: "/admin/paket", icon: <Package size={20} /> },
     { name: "Manajemen Destinasi", href: "/admin/destinasi", icon: <Map size={20} /> },
+    { name: "Manajemen Pesanan", href: "/admin/booking", icon: <CalendarDays size={20} /> },
     { name: "Inquiries", href: "/admin/inquiries", icon: <MessageSquare size={20} /> },
     { name: "Pengaturan", href: "/admin/settings", icon: <Settings size={20} /> },
   ]

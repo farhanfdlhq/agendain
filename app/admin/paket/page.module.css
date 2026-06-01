@@ -171,6 +171,11 @@
   color: var(--color-warning);
 }
 
+.badgeDanger {
+  background-color: var(--color-danger-surface, #FEE2E2);
+  color: var(--color-danger, #DC2626);
+}
+
 .actionsCell {
   text-align: right;
   display: flex;
