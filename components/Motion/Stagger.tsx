@@ -1,5 +1,5 @@
 "use client"
-import { motion, useInView } from "framer-motion"
+import { motion, useInView, Variants } from "framer-motion"
 import { useRef } from "react"
 import React from "react"
 
@@ -13,7 +13,7 @@ export default function Stagger({ children, staggerDelay = 0.1, className = "" }
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-10%" })
 
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -23,7 +23,7 @@ export default function Stagger({ children, staggerDelay = 0.1, className = "" }
     }
   }
 
-  const item = {
+  const item: Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
   }
