@@ -3,6 +3,7 @@ import Link from 'next/link'
 import styles from './page.module.css'
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
+import BookingForm from '@/components/BookingForm/BookingForm'
 
 export default async function PaketDetail(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
@@ -198,17 +199,12 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
                 <span>≈ {formattedUSD}</span> • <span>{formattedEUR}</span>
               </div>
               
-              <form className={styles.form}>
-                <div className={styles.inputGroup}>
-                  <label>Tanggal Keberangkatan</label>
-                  <input type="date" className={styles.input} required />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label>Jumlah Peserta</label>
-                  <input type="number" min="1" defaultValue="2" className={styles.input} required />
-                </div>
-                <button type="submit" className={styles.reserveBtn}>Pesan Sekarang</button>
-              </form>
+              <BookingForm 
+                paketId={pkg?.id as number}
+                paketNama={pkg?.nama as string}
+                hargaString={formattedHarga}
+                whatsappNumber={settingsObj.whatsapp_number || "6281234567890"}
+              />
               
               <div className={styles.waOption}>
                 <p>Atau konsultasi via WhatsApp</p>

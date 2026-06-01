@@ -1,12 +1,26 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { MapPin, Clock, Users, ShieldCheck } from 'lucide-react'
+import { MapPin, Clock, Users, ShieldCheck, CheckCircle } from 'lucide-react'
 import styles from './page.module.css'
 
 export default function PrivateTripPage() {
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [whatsappNumber, setWhatsappNumber] = useState('6281234567890')
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data.whatsapp_number) {
+          setWhatsappNumber(data.whatsapp_number.replace(/\D/g, ''))
+        }
+      })
+      .catch(console.error)
+  }, [])
+
   const [formData, setFormData] = useState({
     nama: '',
     email: '',
@@ -34,8 +48,7 @@ export default function PrivateTripPage() {
       })
       
       if (res.ok) {
-        alert('Permintaan Anda berhasil dikirim! Tim kami akan segera menghubungi Anda.')
-        setFormData({ nama: '', email: '', noWa: '', destinasi: '', tanggal: '', pax: 2, budget: '< 20jt', catatan: '' })
+        setSuccess(true)
       } else {
         alert('Gagal mengirim permintaan. Silakan coba lagi nanti.')
       }
@@ -45,6 +58,8 @@ export default function PrivateTripPage() {
       setLoading(false)
     }
   }
+
+  const formatWa = (phone: string) => phone.replace(/\D/g, '')
 
   return (
     <div className={styles.page}>
@@ -111,53 +126,85 @@ export default function PrivateTripPage() {
           
           <div className={styles.sidebar}>
             <div className={styles.formCard}>
-              <h3 className={styles.formTitle}>Ajukan Private Trip</h3>
-              <p className={styles.formDesc}>Ceritakan rencana perjalanan Anda, Travel Consultant kami akan merancang penawaran terbaik.</p>
-              
-              <form className={styles.form} onSubmit={handleSubmit}>
-                <div className={styles.inputGroup}>
-                  <label htmlFor="nama">Nama Lengkap</label>
-                  <input type="text" id="nama" name="nama" value={formData.nama} onChange={handleChange} className={styles.input} required />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label htmlFor="email">Email</label>
-                  <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className={styles.input} required />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label htmlFor="nowa">No. WhatsApp</label>
-                  <input type="tel" id="nowa" name="noWa" value={formData.noWa} onChange={handleChange} className={styles.input} required />
-                </div>
-                <div className={styles.inputGroup}>
-                  <label htmlFor="destinasi">Destinasi yang Diinginkan</label>
-                  <input type="text" id="destinasi" name="destinasi" value={formData.destinasi} onChange={handleChange} placeholder="Misal: Swiss, Paris, Amsterdam" className={styles.input} required />
-                </div>
-                <div className={styles.inputRow}>
-                  <div className={styles.inputGroup}>
-                    <label htmlFor="tanggal">Rencana Tanggal</label>
-                    <input type="month" id="tanggal" name="tanggal" value={formData.tanggal} onChange={handleChange} className={styles.input} required />
+              {!success ? (
+                <>
+                  <h3 className={styles.formTitle}>Ajukan Private Trip</h3>
+                  <p className={styles.formDesc}>Ceritakan rencana perjalanan Anda, Travel Consultant kami akan merancang penawaran terbaik.</p>
+                  
+                  <form className={styles.form} onSubmit={handleSubmit}>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="nama">Nama Lengkap</label>
+                      <input type="text" id="nama" name="nama" value={formData.nama} onChange={handleChange} className={styles.input} required />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="email">Email</label>
+                      <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className={styles.input} required />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="nowa">No. WhatsApp</label>
+                      <input type="tel" id="nowa" name="noWa" value={formData.noWa} onChange={handleChange} className={styles.input} required />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="destinasi">Destinasi yang Diinginkan</label>
+                      <input type="text" id="destinasi" name="destinasi" value={formData.destinasi} onChange={handleChange} placeholder="Misal: Swiss, Paris, Amsterdam" className={styles.input} required />
+                    </div>
+                    <div className={styles.inputRow}>
+                      <div className={styles.inputGroup}>
+                        <label htmlFor="tanggal">Rencana Tanggal</label>
+                        <input type="month" id="tanggal" name="tanggal" value={formData.tanggal} onChange={handleChange} className={styles.input} required />
+                      </div>
+                      <div className={styles.inputGroup}>
+                        <label htmlFor="pax">Jumlah Pax</label>
+                        <input type="number" id="pax" name="pax" min="2" value={formData.pax} onChange={handleChange} className={styles.input} required />
+                      </div>
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="budget">Estimasi Budget per Orang</label>
+                      <select id="budget" name="budget" value={formData.budget} onChange={handleChange} className={styles.input}>
+                        <option value="< 20jt">&lt; Rp 20.000.000</option>
+                        <option value="20jt-30jt">Rp 20.000.000 - Rp 30.000.000</option>
+                        <option value="30jt-50jt">Rp 30.000.000 - Rp 50.000.000</option>
+                        <option value="> 50jt">&gt; Rp 50.000.000</option>
+                      </select>
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label htmlFor="catatan">Catatan Tambahan</label>
+                      <textarea id="catatan" name="catatan" value={formData.catatan} onChange={handleChange} className={styles.textarea} rows={4} placeholder="Hotel bintang 5, butuh fotografer, dsb."></textarea>
+                    </div>
+                    <button type="submit" className={styles.submitBtn} disabled={loading}>
+                      {loading ? 'Mengirim...' : 'Kirim Permintaan'}
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <div className={styles.successState}>
+                  <div className={styles.successIcon}>
+                    <CheckCircle size={64} color="var(--color-success)" />
                   </div>
-                  <div className={styles.inputGroup}>
-                    <label htmlFor="pax">Jumlah Pax</label>
-                    <input type="number" id="pax" name="pax" min="2" value={formData.pax} onChange={handleChange} className={styles.input} required />
-                  </div>
+                  <h3 className={styles.formTitle} style={{textAlign: 'center'}}>Permintaan Terkirim!</h3>
+                  <p className={styles.formDesc} style={{textAlign: 'center', marginBottom: '32px'}}>
+                    Terima kasih <strong>{formData.nama}</strong>. Tim kami akan segera menganalisa rute <strong>{formData.destinasi}</strong> Anda dan menghubungi Anda secepatnya.
+                  </p>
+                  <a 
+                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Halo Agendain, saya ${formData.nama} baru saja mengisi form Private Trip untuk ke ${formData.destinasi} pada ${formData.tanggal}. Mohon info selanjutnya.`)}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.submitBtn}
+                    style={{display: 'flex', justifyContent: 'center', textDecoration: 'none'}}
+                  >
+                    Lanjut via WhatsApp
+                  </a>
+                  <button 
+                    onClick={() => {
+                      setSuccess(false);
+                      setFormData({ nama: '', email: '', noWa: '', destinasi: '', tanggal: '', pax: 2, budget: '< 20jt', catatan: '' });
+                    }} 
+                    className={styles.resetBtn}
+                  >
+                    Ajukan Permintaan Lain
+                  </button>
                 </div>
-                <div className={styles.inputGroup}>
-                  <label htmlFor="budget">Estimasi Budget per Orang</label>
-                  <select id="budget" name="budget" value={formData.budget} onChange={handleChange} className={styles.input}>
-                    <option value="< 20jt">&lt; Rp 20.000.000</option>
-                    <option value="20jt-30jt">Rp 20.000.000 - Rp 30.000.000</option>
-                    <option value="30jt-50jt">Rp 30.000.000 - Rp 50.000.000</option>
-                    <option value="> 50jt">&gt; Rp 50.000.000</option>
-                  </select>
-                </div>
-                <div className={styles.inputGroup}>
-                  <label htmlFor="catatan">Catatan Tambahan</label>
-                  <textarea id="catatan" name="catatan" value={formData.catatan} onChange={handleChange} className={styles.textarea} rows={4} placeholder="Hotel bintang 5, butuh fotografer, dsb."></textarea>
-                </div>
-                <button type="submit" className={styles.submitBtn} disabled={loading}>
-                  {loading ? 'Mengirim...' : 'Kirim Permintaan'}
-                </button>
-              </form>
+              )}
             </div>
           </div>
         </div>
