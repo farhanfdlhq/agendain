@@ -45,6 +45,11 @@ export async function PUT(
         slug: data.slug,
         deskripsi: data.deskripsi,
         foto: data.foto,
+        negara: data.negara,
+        bahasa: data.bahasa,
+        matauang: data.matauang,
+        waktuTerbaik: data.waktuTerbaik,
+        infoVisa: data.infoVisa,
       }
     })
 

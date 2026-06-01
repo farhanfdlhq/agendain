@@ -16,8 +16,13 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
   const [formData, setFormData] = useState({
     nama: "",
     slug: "",
+    negara: "",
     deskripsi: "",
-    fotoUrl: ""
+    fotoUrl: "",
+    bahasa: "",
+    matauang: "",
+    waktuTerbaik: "",
+    infoVisa: ""
   })
 
   useEffect(() => {
@@ -32,8 +37,13 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
         setFormData({
           nama: data.nama || "",
           slug: data.slug || "",
+          negara: data.negara || "",
           deskripsi: data.deskripsi || "",
-          fotoUrl: data.foto?.medium || data.foto?.large || "",
+          fotoUrl: data.foto?.medium || data.foto?.large || data.foto || "",
+          bahasa: data.bahasa || "",
+          matauang: data.matauang || "",
+          waktuTerbaik: data.waktuTerbaik || "",
+          infoVisa: data.infoVisa || ""
         })
       } else {
         toast.error("Destinasi tidak ditemukan")
@@ -88,8 +98,13 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
       const payload = {
         nama: formData.nama,
         slug: formData.slug,
+        negara: formData.negara,
         deskripsi: formData.deskripsi,
-        foto: { medium: formData.fotoUrl, thumb: formData.fotoUrl }
+        foto: { medium: formData.fotoUrl, thumb: formData.fotoUrl },
+        bahasa: formData.bahasa,
+        matauang: formData.matauang,
+        waktuTerbaik: formData.waktuTerbaik,
+        infoVisa: formData.infoVisa
       }
 
       const res = await fetch(`/api/destinasi/${params.slug}`, {
@@ -135,16 +150,25 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
       <div className={styles.formContainer}>
         <form onSubmit={handleSubmit} className={styles.formGrid}>
           
-          <div className={styles.mainColumn} style={{ gridColumn: 'span 12' }}>
+          <div className={styles.mainColumn}>
             <div className={styles.card}>
               <h3 className={styles.cardTitle}>Informasi Utama</h3>
               
               <div className={styles.inputGroup}>
-                <label>Nama Destinasi (Kota/Wilayah/Negara)</label>
+                <label>Nama Destinasi (Kota/Wilayah)</label>
                 <input 
                   type="text" name="nama" className={styles.input} 
                   placeholder="Contoh: Paris, Swiss Alps, Cappadocia"
                   value={formData.nama} onChange={handleChange} required 
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Negara</label>
+                <input 
+                  type="text" name="negara" className={styles.input} 
+                  placeholder="Contoh: Prancis, Swiss, Turki"
+                  value={formData.negara} onChange={handleChange} required 
                 />
               </div>
 
@@ -201,6 +225,48 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.sideColumn}>
+            <div className={styles.card}>
+              <h3 className={styles.cardTitle}>Informasi Tambahan</h3>
+              
+              <div className={styles.inputGroup}>
+                <label>Bahasa Utama <span className={styles.optional}>Opsional</span></label>
+                <input 
+                  type="text" name="bahasa" className={styles.input} 
+                  placeholder="Contoh: Prancis, Inggris"
+                  value={formData.bahasa} onChange={handleChange}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Mata Uang <span className={styles.optional}>Opsional</span></label>
+                <input 
+                  type="text" name="matauang" className={styles.input} 
+                  placeholder="Contoh: Euro (EUR)"
+                  value={formData.matauang} onChange={handleChange}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Waktu Terbaik Berkunjung <span className={styles.optional}>Opsional</span></label>
+                <input 
+                  type="text" name="waktuTerbaik" className={styles.input} 
+                  placeholder="Contoh: Musim Semi (April - Juni)"
+                  value={formData.waktuTerbaik} onChange={handleChange}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Info Visa <span className={styles.optional}>Opsional</span></label>
+                <textarea 
+                  name="infoVisa" className={styles.textarea} rows={3}
+                  placeholder="Butuh Visa Schengen, dll..."
+                  value={formData.infoVisa} onChange={handleChange}
+                ></textarea>
               </div>
             </div>
           </div>
