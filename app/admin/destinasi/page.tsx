@@ -184,7 +184,7 @@ export default function AdminDestinasiPage() {
                       </div>
                     </td>
                     <td><span className={styles.badgeNeutral}>{d.slug}</span></td>
-                    <td>-</td>
+                    <td>{d._count?.pakets || 0}</td>
                     <td className={styles.actionsCell}>
                       <Link href={`/admin/destinasi/edit/${d.slug}`} className={styles.iconBtn} title="Edit">
                         <Edit2 size={18} />

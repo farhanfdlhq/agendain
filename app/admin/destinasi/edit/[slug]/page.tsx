@@ -135,10 +135,14 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
   return (
     <div className={styles.page}>
       <div className={styles.header}>
+        <Link href="/admin/destinasi" className={styles.backBtn}>
+          <ArrowLeft size={18} />
+          Kembali
+        </Link>
         <div className={styles.headerContent}>
           <div>
             <h2 className={styles.title}>Edit Destinasi: {formData.nama || params.slug}</h2>
-            <p className={styles.subtitle}>Tambahkan kota atau negara tujuan baru.</p>
+            <p className={styles.subtitle}>Perbarui detail informasi kota atau negara tujuan.</p>
           </div>
           <button onClick={handleSubmit} className={styles.saveBtn} disabled={loading || uploadingImage}>
             {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
@@ -271,6 +275,13 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
             </div>
           </div>
 
+          <div className={styles.formFooter}>
+            <Link href="/admin/destinasi" className={styles.cancelBtn}>Batal</Link>
+            <button onClick={handleSubmit} className={styles.saveBtn} disabled={loading || uploadingImage}>
+              {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
+              Simpan Perubahan
+            </button>
+          </div>
         </form>
       </div>
     </div>

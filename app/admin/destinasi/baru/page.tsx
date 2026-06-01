@@ -84,6 +84,10 @@ export default function TambahDestinasiPage() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
+        <Link href="/admin/destinasi" className={styles.backBtn}>
+          <ArrowLeft size={18} />
+          Kembali
+        </Link>
         <div className={styles.headerContent}>
           <div>
             <h2 className={styles.title}>Tambah Destinasi</h2>
@@ -211,6 +215,13 @@ export default function TambahDestinasiPage() {
             </div>
           </div>
 
+          <div className={styles.formFooter}>
+            <Link href="/admin/destinasi" className={styles.cancelBtn}>Batal</Link>
+            <button onClick={handleSubmit} className={styles.saveBtn} disabled={loading}>
+              {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
+              Simpan Destinasi
+            </button>
+          </div>
         </form>
       </div>
     </div>

@@ -228,7 +228,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
         <div className={styles.headerContent}>
           <div>
             <h2 className={styles.title}>Edit Paket: {formData.nama || params.slug}</h2>
-            <p className={styles.subtitle}>Buat paket perjalanan baru ke Eropa.</p>
+            <p className={styles.subtitle}>Perbarui detail informasi paket perjalanan.</p>
           </div>
           <button 
             onClick={handleSubmit} 
@@ -459,6 +459,13 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
             </div>
           </div>
 
+          <div className={styles.formFooter}>
+            <Link href="/admin/paket" className={styles.cancelBtn}>Batal</Link>
+            <button onClick={handleSubmit} className={styles.saveBtn} disabled={loading || uploadingImage}>
+              {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
+              Simpan Paket
+            </button>
+          </div>
         </form>
       </div>
     </div>

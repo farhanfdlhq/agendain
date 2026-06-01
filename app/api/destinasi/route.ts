@@ -6,7 +6,8 @@ import { authOptions } from "@/lib/auth"
 export async function GET() {
   try {
     const destinations = await prisma.destinasi.findMany({
-      orderBy: { nama: 'asc' }
+      orderBy: { nama: 'asc' },
+      include: { _count: { select: { pakets: true } } }
     })
     return NextResponse.json(destinations)
   } catch (error) {

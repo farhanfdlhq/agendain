@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [siteLogo, setSiteLogo] = useState("/agendain.jpeg")
 
   // Handle unauthenticated state manually just in case middleware is bypassed
@@ -32,6 +32,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
       })
       .catch(console.error)
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsSidebarOpen(true)
+      } else {
+        setIsSidebarOpen(false)
+      }
+    }
+    
+    // Initial check
+    handleResize()
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   // Close sidebar on mobile when navigating

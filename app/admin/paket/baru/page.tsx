@@ -170,10 +170,14 @@ export default function TambahPaketPage() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
+        <Link href="/admin/paket" className={styles.backBtn}>
+          <ArrowLeft size={18} />
+          Kembali
+        </Link>
         <div className={styles.headerContent}>
           <div>
-            <h2 className={styles.title}>Tambah Paket Wisata</h2>
-            <p className={styles.subtitle}>Buat paket perjalanan baru ke Eropa.</p>
+            <h2 className={styles.title}>Tambah Paket Baru</h2>
+            <p className={styles.subtitle}>Isi detail informasi untuk paket perjalanan baru.</p>
           </div>
           <button 
             onClick={handleSubmit} 
@@ -404,6 +408,13 @@ export default function TambahPaketPage() {
             </div>
           </div>
 
+          <div className={styles.formFooter}>
+            <Link href="/admin/paket" className={styles.cancelBtn}>Batal</Link>
+            <button onClick={handleSubmit} className={styles.saveBtn} disabled={loading || uploadingImage}>
+              {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
+              Simpan Paket
+            </button>
+          </div>
         </form>
       </div>
     </div>
