@@ -110,29 +110,37 @@ export default async function Home() {
               <div className={styles.featureIcon}>
                 <Map size={32} strokeWidth={1.5} color="currentColor" />
               </div>
-              <h3>Spesialis Eropa</h3>
-              <p>Fokus penuh pada destinasi Italia & Eropa dengan partner lokal terpercaya.</p>
+              <div className={styles.featureText}>
+                <h3>Spesialis Eropa</h3>
+                <p>Fokus penuh pada destinasi Italia & Eropa dengan partner lokal terpercaya.</p>
+              </div>
             </div>
             <div className={styles.featureItem}>
               <div className={styles.featureIcon}>
                 <Gem size={32} strokeWidth={1.5} color="currentColor" />
               </div>
-              <h3>Harga Transparan</h3>
-              <p>Tanpa biaya tersembunyi. Apa yang Anda lihat adalah apa yang Anda bayar.</p>
+              <div className={styles.featureText}>
+                <h3>Harga Transparan</h3>
+                <p>Tanpa biaya tersembunyi. Apa yang Anda lihat adalah apa yang Anda bayar.</p>
+              </div>
             </div>
             <div className={styles.featureItem}>
               <div className={styles.featureIcon}>
                 <Users size={32} strokeWidth={1.5} color="currentColor" />
               </div>
-              <h3>Guide Profesional</h3>
-              <p>Didampingi oleh Tour Leader berlisensi yang memahami budaya lokal.</p>
+              <div className={styles.featureText}>
+                <h3>Guide Profesional</h3>
+                <p>Didampingi oleh Tour Leader berlisensi yang memahami budaya lokal.</p>
+              </div>
             </div>
             <div className={styles.featureItem}>
               <div className={styles.featureIcon}>
                 <Sparkles size={32} strokeWidth={1.5} color="currentColor" />
               </div>
-              <h3>Itinerary Fleksibel</h3>
-              <p>Tersedia layanan Private Trip untuk pengalaman liburan yang lebih personal.</p>
+              <div className={styles.featureText}>
+                <h3>Itinerary Fleksibel</h3>
+                <p>Tersedia layanan Private Trip untuk pengalaman liburan yang lebih personal.</p>
+              </div>
             </div>
           </Stagger>
         </div>

@@ -109,12 +109,17 @@
   transform: scale(1.05) rotate(-5deg);
 }
 
+.featureText {
+  display: flex;
+  flex-direction: column;
+}
+
 .featureItem h3 {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-ink);
-  margin-top: var(--space-xl);
+  margin-top: var(--space-lg);
   margin-bottom: var(--space-sm);
 }
 
@@ -140,6 +145,7 @@
 }
 .featureItem:nth-child(1) p {
   color: rgba(255, 255, 255, 0.85);
+  max-width: 100%;
 }
 .featureItem:nth-child(1) .featureIcon {
   width: 80px;
