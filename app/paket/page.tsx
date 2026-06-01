@@ -45,7 +45,7 @@ export default async function PaketPage({
   
   try {
     const dbDest = await prisma.destinasi.findMany({ select: { nama: true } })
-    destList = dbDest.map(d => d.nama)
+    destList = dbDest.map((d: { nama: string }) => d.nama)
 
     const dbPackages = await prisma.paket.findMany({
       where,

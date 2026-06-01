@@ -1,7 +1,6 @@
 .footer {
   background: var(--color-dominant);
   color: var(--color-on-dominant);
-  margin-top: var(--space-section);
 }
 
 .container {

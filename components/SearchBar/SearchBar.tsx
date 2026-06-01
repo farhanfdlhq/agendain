@@ -36,8 +36,13 @@ export default function SearchBar() {
       <div className={styles.field}>
         <label htmlFor="waktu">Kapan?</label>
         <input 
-          type="month" 
+          type="text" 
           id="waktu"
+          placeholder="Pilih bulan"
+          onFocus={(e) => e.target.type = 'month'}
+          onBlur={(e) => {
+            if (!e.target.value) e.target.type = 'text'
+          }}
           value={waktu}
           onChange={(e) => setWaktu(e.target.value)}
         />

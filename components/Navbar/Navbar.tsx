@@ -35,7 +35,9 @@ export default function Navbar({ settings }: { settings?: any }) {
       <nav className={styles.nav}>
         <Link href="/" className={styles.logo}>
           {siteLogo ? (
-            <img src={siteLogo} alt={siteName} style={{ height: "40px", objectFit: "contain" }} />
+            <div className={styles.logoImageContainer}>
+              <img src={siteLogo} alt={siteName} className={styles.logoImage} />
+            </div>
           ) : (
             siteName
           )}
