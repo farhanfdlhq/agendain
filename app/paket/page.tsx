@@ -1,4 +1,5 @@
 import PackageCard from '@/components/PackageCard/PackageCard'
+import PaketFilter from '@/components/PaketFilter/PaketFilter'
 import styles from './page.module.css'
 import { prisma } from '@/lib/prisma'
 
@@ -8,8 +9,9 @@ export default async function PaketPage({
   searchParams: { [key: string]: string | string[] | undefined }
 }) {
   const params = await searchParams
-  const destinasiFilter = params.destinasi as string
-  const waktuFilter = params.waktu as string
+  const destinasiFilter = params?.destinasi as string
+  const durasiFilter = params?.durasi as string
+  const urutkanFilter = params?.urutkan as string
   
   // Build query
   const where: any = { status: 'published' }
@@ -20,14 +22,36 @@ export default async function PaketPage({
       }
     }
   }
+
+  if (durasiFilter) {
+    if (durasiFilter === '5-7') {
+      where.durasi = { gte: 5, lte: 7 }
+    } else if (durasiFilter === '8-10') {
+      where.durasi = { gte: 8, lte: 10 }
+    } else if (durasiFilter === '11+') {
+      where.durasi = { gte: 11 }
+    }
+  }
+
+  let orderBy: any = { createdAt: 'desc' }
+  if (urutkanFilter === 'termurah') {
+    orderBy = { harga: 'asc' }
+  } else if (urutkanFilter === 'termahal') {
+    orderBy = { harga: 'desc' }
+  }
   
   let packages: any[] = []
+  let destList: string[] = []
   
   try {
+    const dbDest = await prisma.destinasi.findMany({ select: { nama: true } })
+    destList = dbDest.map(d => d.nama)
+
     const dbPackages = await prisma.paket.findMany({
       where,
       include: { destinasi: true },
-      orderBy: { createdAt: 'desc' }
+      orderBy
+
     })
     
     packages = dbPackages.map((p: any) => {
@@ -63,34 +87,7 @@ export default async function PaketPage({
       
       <div className={styles.content}>
         <div className={styles.container}>
-          <div className={styles.filterBar}>
-            <div className={styles.filterItem}>
-              <span className={styles.filterLabel}>Destinasi</span>
-              <select className={styles.select} defaultValue={destinasiFilter || ''}>
-                <option value="">Semua Destinasi</option>
-                <option value="Italia">Italia</option>
-                <option value="Swiss">Swiss</option>
-                <option value="Prancis">Prancis</option>
-              </select>
-            </div>
-            <div className={styles.filterItem}>
-              <span className={styles.filterLabel}>Durasi</span>
-              <select className={styles.select}>
-                <option value="">Semua Durasi</option>
-                <option value="5-7">5 - 7 Hari</option>
-                <option value="8-10">8 - 10 Hari</option>
-                <option value="11+">11+ Hari</option>
-              </select>
-            </div>
-            <div className={styles.filterItem}>
-              <span className={styles.filterLabel}>Urutkan</span>
-              <select className={styles.select}>
-                <option value="terbaru">Terbaru</option>
-                <option value="termurah">Termurah</option>
-                <option value="termahal">Termahal</option>
-              </select>
-            </div>
-          </div>
+          <PaketFilter destList={destList} />
           
           <div className={styles.grid}>
             {packages.map(pkg => (
