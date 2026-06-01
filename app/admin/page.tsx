@@ -25,8 +25,8 @@ export default async function AdminDashboard() {
 
   // Combine and sort recent activities
   const recentActivity = [
-    ...recentInquiries.map(i => ({ ...i, type: 'inquiry' })),
-    ...recentPrivateTrips.map(p => ({ ...p, type: 'privatetrip' }))
+    ...recentInquiries.map((i: any) => ({ ...i, type: 'inquiry' })),
+    ...recentPrivateTrips.map((p: any) => ({ ...p, type: 'privatetrip' }))
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
    .slice(0, 5)
 

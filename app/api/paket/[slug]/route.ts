@@ -24,6 +24,31 @@ export async function GET(
   }
 }
 
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    const { slug } = await params
+    const data = await request.json()
+
+    const updatedPackage = await prisma.paket.update({
+      where: { slug },
+      data: {
+        ...(data.status && { status: data.status }),
+      }
+    })
+
+    return NextResponse.json(updatedPackage)
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json({ error: 'Failed to patch package' }, { status: 500 })
+  }
+}
+
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ slug: string }> }

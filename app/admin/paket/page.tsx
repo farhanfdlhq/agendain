@@ -53,6 +53,25 @@ export default function AdminPaketPage() {
     }
   }
 
+  const handleStatusChange = async (slug: string, newStatus: string) => {
+    try {
+      const res = await fetch(`/api/paket/${slug}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus })
+      })
+      if (res.ok) {
+        toast.success("Status berhasil diperbarui")
+        fetchPackages()
+      } else {
+        toast.error("Gagal memperbarui status")
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error("Terjadi kesalahan sistem")
+    }
+  }
+
   const handleDelete = async (slug: string) => {
     if (!confirm("Apakah Anda yakin ingin menghapus paket ini?")) return;
     
@@ -205,9 +224,15 @@ export default function AdminPaketPage() {
                     <td>{pkg.durasi} Hari</td>
                     <td className={styles.priceCell}>{formatPrice(pkg.harga)}</td>
                     <td>
-                      <span className={`${styles.badge} ${pkg.status === 'published' ? styles.badgeSuccess : styles.badgeWarning}`}>
-                        {pkg.status}
-                      </span>
+                      <select 
+                        value={pkg.status} 
+                        onChange={(e) => handleStatusChange(pkg.slug, e.target.value)}
+                        className={`${styles.badge} ${pkg.status === 'published' ? styles.badgeSuccess : styles.badgeWarning}`}
+                        style={{ border: 'none', cursor: 'pointer', outline: 'none' }}
+                      >
+                        <option value="published" className={styles.badgeSuccess}>published</option>
+                        <option value="draft" className={styles.badgeWarning}>draft</option>
+                      </select>
                     </td>
                     <td className={styles.actionsCell}>
                       <Link href={`/paket/${pkg.slug}`} target="_blank" className={styles.iconBtn} title="Lihat di Web">
