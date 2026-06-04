@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Settings, Save, Loader2, Link as LinkIcon, MessageSquare, CreditCard, LayoutTemplate } from "lucide-react"
+import { Settings, Save, Loader2, Link as LinkIcon, MessageSquare, CreditCard, LayoutTemplate, Info } from "lucide-react"
 import { toast } from "react-hot-toast"
 
 import styles from "./page.module.css"
@@ -15,7 +15,10 @@ export default function SettingsPage() {
     whatsapp_number: "6281234567890",
     whatsapp_message: "Halo Agendain, saya ingin bertanya tentang paket wisata.",
     payment_instructions: "Silakan transfer ke rekening BCA 1234567890 a.n PT Agendain.",
-    site_logo: "/logo.png"
+    site_logo: "/logo.png",
+    global_informasi_penting: "Paspor minimal masa berlaku 6 bulan dari tanggal kepulangan.\nVisa Schengen diwajibkan bagi pemegang paspor Indonesia.\nJadwal perjalanan dan akomodasi dapat berubah sewaktu-waktu menyesuaikan kondisi cuaca.",
+    global_kebijakan_pembatalan: "Pembatalan > 30 hari sebelum keberangkatan: Pengembalian 50% dari total.\nPembatalan 15-30 hari sebelum keberangkatan: Pengembalian 25% dari total.\nPembatalan < 14 hari sebelum keberangkatan: Tidak ada pengembalian dana (Non-refundable).\nJika visa ditolak, biaya visa tidak dapat dikembalikan.",
+    global_opsi_penjemputan: "Bandara Internasional Soekarno Hatta (Terminal 3).\nPenjemputan area Jakarta (sesuai konfirmasi).\nSilakan kumpul 4 jam sebelum keberangkatan."
   })
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,11 +69,15 @@ export default function SettingsPage() {
     e.preventDefault()
     setLoading(true)
 
+    const payload = {
+      ...formData
+    }
+
     try {
       const res = await fetch("/api/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       })
 
       if (res.ok) {
@@ -213,6 +220,53 @@ export default function SettingsPage() {
                 className={`${styles.input} ${styles.textarea}`}
               />
               <p className={styles.hint}>Instruksi ini akan ditampilkan kepada kustomer setelah mereka melakukan booking.</p>
+            </div>
+          </div>
+
+          {/* Section: Informasi & Kebijakan Default */}
+          <div className={`${styles.section} ${styles.sectionBorder}`}>
+            <div className={styles.sectionHeader}>
+              <Info size={20} />
+              <h3 className={styles.sectionTitle}>Informasi & Kebijakan Default (Global)</h3>
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Informasi Penting (Default)</label>
+              <textarea
+                name="global_informasi_penting"
+                value={formData.global_informasi_penting}
+                onChange={handleChange}
+                rows={4}
+                className={`${styles.input} ${styles.textarea}`}
+                placeholder="Tulis setiap poin di baris baru..."
+              />
+              <p className={styles.hint}>Ini akan digunakan pada semua paket yang tidak memiliki Informasi Penting custom.</p>
+            </div>
+            
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Kebijakan Pembatalan & Pengembalian Dana (Default)</label>
+              <textarea
+                name="global_kebijakan_pembatalan"
+                value={formData.global_kebijakan_pembatalan}
+                onChange={handleChange}
+                rows={4}
+                className={`${styles.input} ${styles.textarea}`}
+                placeholder="Tulis setiap poin di baris baru..."
+              />
+              <p className={styles.hint}>Ini akan digunakan pada semua paket yang tidak memiliki Kebijakan Pembatalan custom.</p>
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.label}>Opsi Penjemputan (Default)</label>
+              <textarea
+                name="global_opsi_penjemputan"
+                value={formData.global_opsi_penjemputan}
+                onChange={handleChange}
+                rows={4}
+                className={`${styles.input} ${styles.textarea}`}
+                placeholder="Tulis setiap poin di baris baru..."
+              />
+              <p className={styles.hint}>Ini akan digunakan pada semua paket yang tidak memiliki Opsi Penjemputan custom.</p>
             </div>
           </div>
 

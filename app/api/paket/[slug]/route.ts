@@ -39,6 +39,8 @@ export async function PATCH(
       where: { slug },
       data: {
         ...(data.status && { status: data.status }),
+        // @ts-ignore - Prisma types might not be generated yet
+        ...(data.label !== undefined && { label: data.label }),
       }
     })
 
@@ -79,6 +81,8 @@ export async function PUT(
         termasuk: data.termasuk,
         tidakTermasuk: data.tidakTermasuk,
         status: data.status,
+        // @ts-ignore - Prisma types might not be generated yet
+        label: data.label,
       }
     })
 

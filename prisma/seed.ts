@@ -1,30 +1,121 @@
 import { PrismaClient } from '@prisma/client'
-import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  const hashedPassword = await bcrypt.hash('admin123', 10)
-  
-  const admin = await prisma.adminUser.upsert({
-    where: { email: 'admin@agendain.com' },
+  console.log('Seeding Destinasi & Paket Wisata...')
+
+  const destinasiEropaBarat = await prisma.destinasi.upsert({
+    where: { slug: 'eropa-barat' },
     update: {},
     create: {
-      email: 'admin@agendain.com',
-      nama: 'Super Admin',
-      password: hashedPassword,
-    },
+      nama: 'Eropa Barat',
+      slug: 'eropa-barat',
+      negara: 'Prancis, Swiss, Italia',
+      deskripsi: 'Kumpulan negara eksotis di Eropa Barat.',
+      foto: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800',
+    }
   })
-  
-  console.log({ admin })
+
+  const destinasiSkandinavia = await prisma.destinasi.upsert({
+    where: { slug: 'skandinavia' },
+    update: {},
+    create: {
+      nama: 'Skandinavia',
+      slug: 'skandinavia',
+      negara: 'Norwegia, Swedia',
+      deskripsi: 'Pesona salju dan fenomena alam di Eropa Utara.',
+      foto: 'https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?w=800',
+    }
+  })
+
+  const destinasiTurki = await prisma.destinasi.upsert({
+    where: { slug: 'turki' },
+    update: {},
+    create: {
+      nama: 'Turki',
+      slug: 'turki',
+      negara: 'Turki',
+      deskripsi: 'Negara lintas benua dengan kekayaan sejarah peradaban Islam.',
+      foto: 'https://images.unsplash.com/photo-1527838832700-5059252407fa?w=800',
+    }
+  })
+
+  const paketData = [
+    {
+      nama: 'Eksplorasi Eropa Barat (Prancis, Swiss, Italia)',
+      slug: 'eksplorasi-eropa-barat',
+      deskripsi: 'Perjalanan 10 hari melintasi 3 negara paling memukau di Eropa. Nikmati keindahan Menara Eiffel, pemandangan salju abadi di Mount Titlis Swiss, hingga sejarah panjang Colosseum di Roma.',
+      harga: 28500000,
+      durasi: 10,
+      destinasiId: destinasiEropaBarat.id,
+      foto: ['https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800', 'https://images.unsplash.com/photo-1522818150892-6f56b6616428?w=800'],
+      itinerary: [
+        { hari: 1, judul: 'Keberangkatan Jakarta - Paris', deskripsi: 'Penerbangan dari Bandara Soekarno Hatta menuju CDG Paris.' },
+        { hari: 2, judul: 'Paris City Tour', deskripsi: 'Mengunjungi Menara Eiffel, Louvre Museum, dan Arc de Triomphe.' },
+        { hari: 3, judul: 'Perjalanan ke Swiss', deskripsi: 'Menggunakan kereta cepat menuju Lucerne, Swiss.' }
+      ],
+      fasilitas: ['Hotel Bintang 4', 'Bus Pariwisata VIP', 'Tour Leader Berbahasa Indonesia', 'Dokumentasi'],
+      termasuk: ['Tiket Pesawat PP', 'Akomodasi 9 Malam', 'Sarapan', 'Tiket Masuk Wisata'],
+      tidakTermasuk: ['Visa Schengen', 'Asuransi Perjalanan', 'Pengeluaran Pribadi'],
+      status: 'publish',
+      label: 'Best Seller'
+    },
+    {
+      nama: 'Keajaiban Skandinavia & Aurora Borealis',
+      slug: 'skandinavia-aurora',
+      deskripsi: 'Rasakan pengalaman magis melihat langsung Northern Lights (Aurora Borealis) di Tromsø, Norwegia, serta menikmati keindahan kota Stockholm dan pesona desa-desa Nordik.',
+      harga: 35000000,
+      durasi: 8,
+      destinasiId: destinasiSkandinavia.id,
+      foto: ['https://images.unsplash.com/photo-1531366936337-7c912a458b97?w=800'],
+      itinerary: [
+        { hari: 1, judul: 'Jakarta - Oslo', deskripsi: 'Penerbangan menuju Oslo, Norwegia.' },
+        { hari: 2, judul: 'Berburu Aurora', deskripsi: 'Perjalanan malam hari menuju spot Aurora terbaik di Tromsø.' }
+      ],
+      fasilitas: ['Hotel Bintang 4', 'Transportasi Musim Dingin', 'Peralatan Musim Dingin'],
+      termasuk: ['Tiket Pesawat PP', 'Akomodasi', 'Sarapan & Makan Malam'],
+      tidakTermasuk: ['Visa Schengen', 'Tipping Guide'],
+      status: 'publish',
+      label: 'Limited Seat'
+    },
+    {
+      nama: 'Halal Tour Turki & Sensasi Balon Udara',
+      slug: 'halal-tour-turki-cappadocia',
+      deskripsi: 'Jelajahi jejak sejarah peradaban Islam di Istanbul, kunjungi Blue Mosque, hingga menikmati pengalaman tak terlupakan terbang dengan Balon Udara di atas lembah eksotis Cappadocia.',
+      harga: 18900000,
+      durasi: 7,
+      destinasiId: destinasiTurki.id,
+      foto: ['https://images.unsplash.com/photo-1527838832700-5059252407fa?w=800'],
+      itinerary: [
+        { hari: 1, judul: 'Jakarta - Istanbul', deskripsi: 'Penerbangan menuju Istanbul.' },
+        { hari: 2, judul: 'Istanbul Historical Tour', deskripsi: 'Kunjungan ke Blue Mosque, Hagia Sophia, Topkapi Palace.' },
+        { hari: 3, judul: 'Cappadocia Hot Air Balloon', deskripsi: 'Penerbangan pagi hari menggunakan balon udara di Cappadocia.' }
+      ],
+      fasilitas: ['Hotel Bintang 4 & 5', 'Bus VIP AC', 'Meals Full Board (Halal)', 'Tour Guide Lokal (Berbahasa Indonesia)'],
+      termasuk: ['Tiket Pesawat PP (Turkish Airlines)', 'Akomodasi', 'Balon Udara Cappadocia (Basic)', 'Air Mineral 2 Botol/Hari'],
+      tidakTermasuk: ['Tipping Guide/Driver', 'Pengeluaran Pribadi'],
+      status: 'publish',
+      label: 'Promo Spesial'
+    }
+  ]
+
+  for (const p of paketData) {
+    await prisma.paket.upsert({
+      where: { slug: p.slug },
+      update: {},
+      create: p
+    })
+  }
+
+  console.log('Dummy Paket Wisata berhasil ditambahkan!')
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
+  .catch((e) => {
     console.error(e)
-    await prisma.$disconnect()
     process.exit(1)
+  })
+  .finally(async () => {
+    await prisma.$disconnect()
   })

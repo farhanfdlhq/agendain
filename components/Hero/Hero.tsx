@@ -2,6 +2,7 @@ import Image from 'next/image'
 import SearchBar from '../SearchBar/SearchBar'
 import styles from './Hero.module.css'
 import FadeIn from '../Motion/FadeIn'
+import { ChevronDown } from 'lucide-react'
 
 export default function Hero() {
   return (
@@ -30,6 +31,10 @@ export default function Hero() {
         <FadeIn delay={0.6} direction="up" className={styles.searchWrapper}>
           <SearchBar />
         </FadeIn>
+      </div>
+
+      <div className={styles.scrollIndicator}>
+        <ChevronDown size={32} />
       </div>
     </section>
   )

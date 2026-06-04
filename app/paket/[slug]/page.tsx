@@ -4,6 +4,8 @@ import styles from './page.module.css'
 import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import BookingForm from '@/components/BookingForm/BookingForm'
+import GalleryLightbox from '@/components/GalleryLightbox/GalleryLightbox'
+import { Clock, MapPin, Tag, CalendarClock, Info, AlertCircle, CheckCircle2, FileText, Car } from 'lucide-react'
 
 export default async function PaketDetail(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
@@ -19,72 +21,65 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
     settingsObj = settingsArr.reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {})
   } catch (e) {}
   
-  // Fallback to dummy data for development
   if (!pkg) {
-    const dummyData: Record<string, any> = {
-      'romantic-paris-5d': {
-        id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', 
-        harga: 15000000 as any, durasi: 5, destinasiId: 1, 
-        destinasi: { id: 1, nama: 'Prancis', slug: 'prancis' },
-        foto: { large: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1280&auto=format&fit=crop' },
-        deskripsi: 'Jelajahi keindahan romantis Paris selama 5 hari bersama pasangan atau keluarga Anda. Kunjungi landmark ikonik dan nikmati kuliner khas.',
-        itinerary: [
-          { hari: 1, judul: 'Kedatangan di Paris', desc: 'Penjemputan di bandara Charles de Gaulle, check-in hotel, free program.' },
-          { hari: 2, judul: 'Eiffel & Seine River', desc: 'Tour ke Menara Eiffel dan menyusuri sungai Seine dengan Bateaux Parisiens.' }
-        ],
-        fasilitas: ['Hotel bintang 4', 'Transportasi AC', 'Tour Guide Berbahasa Indonesia'],
-        termasuk: ['Tiket pesawat', 'Hotel', 'Sarapan'],
-        tidakTermasuk: ['Visa', 'Makan siang & malam', 'Pengeluaran pribadi'],
-        status: 'published'
-      },
-      'swiss-alps-7d': {
-        id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', 
-        harga: 22000000 as any, durasi: 7, destinasiId: 2, 
-        destinasi: { id: 2, nama: 'Swiss', slug: 'swiss' },
-        foto: { large: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=1280&auto=format&fit=crop' },
-        deskripsi: 'Jelajahi pegunungan Alpen Swiss yang megah. Naik kereta Glacier Express dan nikmati pemandangan bersalju abadi.',
-        itinerary: [{ hari: 1, judul: 'Zurich Arrival', desc: 'Tiba di Zurich.' }],
-        fasilitas: ['Hotel 4 Star', 'Swiss Travel Pass'],
-        termasuk: ['Hotel', 'Train Tickets'],
-        tidakTermasuk: ['Visa', 'Meals'],
-        status: 'published'
-      },
-      'classic-italy-8d': {
-        id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', 
-        harga: 18500000 as any, durasi: 8, destinasiId: 3, 
-        destinasi: { id: 3, nama: 'Italia', slug: 'italia' },
-        foto: { large: 'https://images.unsplash.com/photo-1516483638261-f40889c28a5d?q=80&w=1280&auto=format&fit=crop' },
-        deskripsi: 'Menjelajahi Roma, Florence, dan Venice dalam 8 hari penuh keajaiban sejarah dan kuliner.',
-        itinerary: [{ hari: 1, judul: 'Rome Arrival', desc: 'Tiba di Roma.' }],
-        fasilitas: ['Hotel 4 Star', 'Tour Guide'],
-        termasuk: ['Hotel', 'Transport'],
-        tidakTermasuk: ['Visa', 'Meals'],
-        status: 'published'
-      },
-      'london-scotland-10d': {
-        id: 4, slug: 'london-scotland-10d', nama: 'London & Scotland 10D', 
-        harga: 28000000 as any, durasi: 10, destinasiId: 4, 
-        destinasi: { id: 4, nama: 'UK', slug: 'uk' },
-        foto: { large: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=1280&auto=format&fit=crop' },
-        deskripsi: 'Eksplorasi budaya Inggris dan keindahan alam Skotlandia yang magis selama 10 hari.',
-        itinerary: [{ hari: 1, judul: 'London Arrival', desc: 'Tiba di London.' }],
-        fasilitas: ['Hotel 4 Star', 'Transport'],
-        termasuk: ['Hotel', 'Flight'],
-        tidakTermasuk: ['Visa', 'Meals'],
-        status: 'published'
-      }
-    }
+    notFound()
+  }
 
-    if (dummyData[slug]) {
-      pkg = dummyData[slug]
-    } else {
-      notFound()
-    }
+  // Parse custom info/policy or fallback to global settings
+  let finalInfoPenting = []
+  if (Array.isArray(pkg.informasiPenting) && pkg.informasiPenting.length > 0) {
+    finalInfoPenting = pkg.informasiPenting
+  } else if (settingsObj.global_informasi_penting) {
+    finalInfoPenting = settingsObj.global_informasi_penting.split('\n').filter((s: string) => s.trim())
+  } else {
+    finalInfoPenting = [
+      "Paspor minimal masa berlaku 6 bulan dari tanggal kepulangan.",
+      "Visa Schengen diwajibkan bagi pemegang paspor Indonesia.",
+      "Jadwal perjalanan dan akomodasi dapat berubah sewaktu-waktu menyesuaikan kondisi cuaca."
+    ]
+  }
+
+  let finalKebijakan = []
+  if (Array.isArray(pkg.kebijakanPembatalan) && pkg.kebijakanPembatalan.length > 0) {
+    finalKebijakan = pkg.kebijakanPembatalan
+  } else if (settingsObj.global_kebijakan_pembatalan) {
+    finalKebijakan = settingsObj.global_kebijakan_pembatalan.split('\n').filter((s: string) => s.trim())
+  } else {
+    finalKebijakan = [
+      "Pembatalan > 30 hari sebelum keberangkatan: Pengembalian 50% dari total.",
+      "Pembatalan 15-30 hari sebelum keberangkatan: Pengembalian 25% dari total.",
+      "Pembatalan < 14 hari sebelum keberangkatan: Tidak ada pengembalian dana (Non-refundable).",
+      "Jika visa ditolak, biaya visa tidak dapat dikembalikan."
+    ]
+  }
+
+  let finalFileDokumen: any[] = []
+  if (Array.isArray(pkg.fileDokumen) && pkg.fileDokumen.length > 0) {
+    finalFileDokumen = pkg.fileDokumen
+  }
+
+  let finalOpsiPenjemputan = []
+  if (Array.isArray(pkg.opsiPenjemputan) && pkg.opsiPenjemputan.length > 0) {
+    finalOpsiPenjemputan = pkg.opsiPenjemputan
+  } else if (settingsObj.global_opsi_penjemputan) {
+    finalOpsiPenjemputan = settingsObj.global_opsi_penjemputan.split('\n').filter((s: string) => s.trim())
+  } else {
+    finalOpsiPenjemputan = [
+      "Bandara Internasional Soekarno Hatta (Terminal 3).",
+      "Penjemputan area Jakarta (sesuai konfirmasi).",
+      "Silakan kumpul 4 jam sebelum keberangkatan."
+    ]
   }
 
   const fotos = pkg?.foto as any || {}
-  const mainImage = fotos.large || fotos.medium || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1280&auto=format&fit=crop'
-  const gallery = fotos.gallery || [mainImage, mainImage, mainImage, mainImage]
+  // Assuming the new seed might have an array directly in pkg.foto
+  let gallery = []
+  if (Array.isArray(pkg.foto)) {
+    gallery = pkg.foto
+  } else {
+    const mainImage = fotos.large || fotos.medium || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1280&auto=format&fit=crop'
+    gallery = fotos.gallery || [mainImage, mainImage, mainImage, mainImage, mainImage]
+  }
 
   const { formatIDR, formatUSD, formatEUR, fetchExchangeRates } = await import('@/lib/currency')
   const rates = await fetchExchangeRates()
@@ -94,6 +89,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
   const formattedEUR = formatEUR(hargaIDRNum * (rates.EUR || 0.000058))
 
   const itinerary = (pkg?.itinerary as any[]) || []
+  const fasilitas = (pkg?.fasilitas as string[]) || []
   const termasuk = (pkg?.termasuk as string[]) || []
   const tidakTermasuk = (pkg?.tidakTermasuk as string[]) || []
 
@@ -109,22 +105,39 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
 
         {/* Title */}
         <h1 className={styles.title}>{pkg?.nama}</h1>
-        <div className={styles.meta}>
-          <span className={styles.badge}>{pkg?.destinasi?.nama}</span>
-          <span>{pkg?.durasi} Hari</span>
-        </div>
+        
+        {/* Photo Gallery with Lightbox */}
+        <GalleryLightbox images={gallery} title={pkg.nama} />
 
-        {/* Photo Gallery (Airbnb style) */}
-        <div className={styles.gallery}>
-          <div className={styles.mainPhoto}>
-            <Image src={mainImage} alt={pkg?.nama || 'Package'} fill priority className={styles.img} />
+        {/* Quick Info Cards */}
+        <div className={styles.quickInfoGrid}>
+          <div className={styles.quickInfoCard}>
+            <Clock className={styles.quickIcon} />
+            <div className={styles.quickText}>
+              <span className={styles.quickLabel}>Durasi</span>
+              <span className={styles.quickValue}>{pkg.durasi} Hari</span>
+            </div>
           </div>
-          <div className={styles.subPhotos}>
-            {gallery.slice(0, 4).map((src: string, i: number) => (
-              <div key={i} className={styles.photoWrap}>
-                <Image src={src} alt={`Gallery ${i}`} fill className={styles.img} />
-              </div>
-            ))}
+          <div className={styles.quickInfoCard}>
+            <MapPin className={styles.quickIcon} />
+            <div className={styles.quickText}>
+              <span className={styles.quickLabel}>Destinasi</span>
+              <span className={styles.quickValue}>{pkg.destinasi?.nama}</span>
+            </div>
+          </div>
+          <div className={styles.quickInfoCard}>
+            <Tag className={styles.quickIcon} />
+            <div className={styles.quickText}>
+              <span className={styles.quickLabel}>Kategori</span>
+              <span className={styles.quickValue}>{pkg.label || 'Open Trip'}</span>
+            </div>
+          </div>
+          <div className={styles.quickInfoCard}>
+            <CalendarClock className={styles.quickIcon} />
+            <div className={styles.quickText}>
+              <span className={styles.quickLabel}>Keberangkatan</span>
+              <span className={styles.quickValue}>Fleksibel / Sesuai Jadwal</span>
+            </div>
           </div>
         </div>
 
@@ -132,19 +145,23 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
         <div className={styles.layout}>
           {/* Left Column */}
           <div className={styles.mainContent}>
+            
+            {/* Deskripsi */}
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Deskripsi</h2>
+              <h2 className={styles.sectionTitle}>Ringkasan</h2>
               <p className={styles.descText}>{pkg?.deskripsi}</p>
             </section>
 
             <div className={styles.divider} />
 
+            {/* Highlights */}
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Fasilitas</h2>
-              <div className={styles.amenities}>
-                {((pkg?.fasilitas as string[]) || []).map((f, i) => (
-                  <div key={i} className={styles.amenityItem}>
-                    <span className={styles.check}>✓</span> {f}
+              <h2 className={styles.sectionTitle}>Highlight Perjalanan</h2>
+              <div className={styles.highlights}>
+                {fasilitas.map((f, i) => (
+                  <div key={i} className={styles.highlightItem}>
+                    <CheckCircle2 className={styles.highlightIcon} size={20} />
+                    <span>{f}</span>
                   </div>
                 ))}
               </div>
@@ -152,16 +169,17 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
 
             <div className={styles.divider} />
 
+            {/* Termasuk / Tidak Termasuk */}
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Termasuk / Tidak Termasuk</h2>
+              <h2 className={styles.sectionTitle}>Termasuk & Tidak Termasuk</h2>
               <div className={styles.incExcGrid}>
-                <div>
+                <div className={styles.incBox}>
                   <h3 className={styles.subTitle}>Termasuk</h3>
                   <ul className={styles.list}>
                     {termasuk.map((t, i) => <li key={i}>{t}</li>)}
                   </ul>
                 </div>
-                <div>
+                <div className={styles.excBox}>
                   <h3 className={styles.subTitle}>Tidak Termasuk</h3>
                   <ul className={styles.listExc}>
                     {tidakTermasuk.map((t, i) => <li key={i}>{t}</li>)}
@@ -172,20 +190,100 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
 
             <div className={styles.divider} />
 
+            {/* Itinerary */}
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>Itinerary</h2>
-              <div className={styles.itinerary}>
-                {itinerary.map((it, i) => (
-                  <div key={i} className={styles.itDay}>
-                    <div className={styles.dayLabel}>Hari {it.hari}</div>
-                    <div className={styles.dayContent}>
-                      <h4>{it.judul}</h4>
-                      <p>{it.deskripsi || it.desc}</p>
+              <div className={styles.itineraryContainer}>
+                {itinerary.map((it, i) => {
+                  // Mencegah judul dobel jika user mengetik "Hari 1" di field judul
+                  const rawJudul = it.judul || ''
+                  const regex = new RegExp(`^Hari\\s*${it.hari}\\s*[-:–]*\\s*`, 'i')
+                  let cleanJudul = rawJudul.replace(regex, '').trim()
+                  // Jika judul aslinya cuma "Hari 1", cleanJudul jadi kosong
+                  if (cleanJudul.toLowerCase() === `hari ${it.hari}`) {
+                    cleanJudul = ''
+                  }
+
+                  return (
+                    <div key={i} className={styles.itDay}>
+                      <div className={styles.dayDot}></div>
+                      <div className={styles.dayContent}>
+                        <h4>
+                          <span className={styles.dayLabel}>Hari {it.hari}</span>
+                          {cleanJudul && <span className={styles.daySeparator}> – </span>}
+                          {cleanJudul}
+                        </h4>
+                        <p>{it.deskripsi || it.desc}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </section>
+
+            <div className={styles.divider} />
+
+            {finalFileDokumen.length > 0 && (
+              <div className={styles.plainSection}>
+                <h3 className={styles.plainSectionTitle}>File & Dokumen</h3>
+                <div className={styles.docBadgeList}>
+                  {finalFileDokumen.map((doc: any, idx: number) => {
+                    if (typeof doc === 'object' && doc !== null && doc.name) {
+                      return (
+                        <a key={idx} href={doc.url} target="_blank" rel="noreferrer" className={styles.docBadge} style={{ textDecoration: 'none' }}>
+                          <FileText size={16} className={styles.docBadgeIcon} />
+                          <span>{doc.name}</span>
+                        </a>
+                      )
+                    }
+                    // Fallback for legacy string data
+                    return (
+                      <div key={idx} className={styles.docBadge}>
+                        <FileText size={16} className={styles.docBadgeIcon} />
+                        <span>{doc}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className={styles.plainSection}>
+              <h3 className={styles.plainSectionTitle}>Opsi Penjemputan</h3>
+              <p className={styles.pickupText}>
+                {finalOpsiPenjemputan.join(', ')}
+              </p>
+            </div>
+
+            <div className={styles.divider} style={{ margin: '2rem 0' }} />
+
+            {/* Policies & Info */}
+            <section className={styles.section}>
+              <div className={styles.policyBox}>
+                <div className={styles.policyBoxHeader}>
+                  <AlertCircle size={20} className={styles.infoIcon} />
+                  <h3>Kebijakan Pembatalan & Pengembalian Dana</h3>
+                </div>
+                <ul className={styles.infoList}>
+                  {finalKebijakan.map((policy: string, idx: number) => (
+                    <li key={idx}>{policy}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className={styles.infoBox}>
+                <div className={styles.infoBoxHeader}>
+                  <Info size={20} className={styles.infoIcon} />
+                  <h3>Informasi Penting</h3>
+                </div>
+                <ul className={styles.infoList}>
+                  {finalInfoPenting.map((info: string, idx: number) => (
+                    <li key={idx}>{info}</li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+            
           </div>
 
           {/* Right Column (Sticky Reservation Card) */}

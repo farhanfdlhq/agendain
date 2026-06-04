@@ -22,10 +22,15 @@ export default function TambahPaketPage() {
     deskripsi: "",
     fotoUrls: [] as string[],
     status: "draft",
+    label: "",
     fasilitasText: "",
     termasukText: "",
     tidakTermasukText: "",
-    itineraryText: ""
+    informasiPentingText: "",
+    kebijakanPembatalanText: "",
+    fileDokumenList: [] as { name: string, url: string }[],
+    opsiPenjemputanText: "",
+    itinerary: [{ judul: "", deskripsi: "" }] as { judul: string, deskripsi: string }[]
   })
 
   useEffect(() => {
@@ -90,6 +95,59 @@ export default function TambahPaketPage() {
     }))
   }
 
+  const [uploadingDoc, setUploadingDoc] = useState(false)
+
+  const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    if (formData.fileDokumenList.length + files.length > 3) {
+      toast.error("Maksimal hanya 3 file dokumen yang diizinkan.")
+      return
+    }
+
+    setUploadingDoc(true)
+    try {
+      const uploadedDocs: { name: string, url: string }[] = []
+      for (const file of files) {
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`File ${file.name} terlalu besar. Maksimal 10MB.`)
+          continue
+        }
+
+        const uploadData = new FormData()
+        uploadData.append('file', file)
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadData,
+        })
+        const data = await res.json()
+        if (res.ok) {
+          uploadedDocs.push({ name: file.name, url: data.url })
+        } else {
+          toast.error(`Gagal upload ${file.name}: ${data.error}`)
+        }
+      }
+      
+      if (uploadedDocs.length > 0) {
+        setFormData(prev => ({ ...prev, fileDokumenList: [...prev.fileDokumenList, ...uploadedDocs] }))
+      }
+    } catch (err) {
+      toast.error("Terjadi kesalahan saat upload dokumen.")
+    } finally {
+      setUploadingDoc(false)
+      e.target.value = ''
+    }
+  }
+
+  const removeDoc = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      fileDokumenList: prev.fileDokumenList.filter((_, i) => i !== index)
+    }))
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -117,12 +175,15 @@ export default function TambahPaketPage() {
       const fasilitas = formData.fasilitasText.split('\n').filter(s => s.trim());
       const termasuk = formData.termasukText.split('\n').filter(s => s.trim());
       const tidakTermasuk = formData.tidakTermasukText.split('\n').filter(s => s.trim());
+      const informasiPenting = formData.informasiPentingText ? formData.informasiPentingText.split('\n').filter(s => s.trim()) : null;
+      const kebijakanPembatalan = formData.kebijakanPembatalanText ? formData.kebijakanPembatalanText.split('\n').filter(s => s.trim()) : null;
+      const fileDokumen = formData.fileDokumenList.length > 0 ? formData.fileDokumenList : null;
+      const opsiPenjemputan = formData.opsiPenjemputanText ? formData.opsiPenjemputanText.split('\n').filter(s => s.trim()) : null;
       
-      const itineraryRaw = formData.itineraryText.split('\n').filter(s => s.trim());
-      const itinerary = itineraryRaw.map((text, idx) => ({
+      const itinerary = formData.itinerary.map((it, idx) => ({
         hari: idx + 1,
-        judul: `Hari ${idx + 1}`,
-        deskripsi: text.trim()
+        judul: it.judul || `Hari ${idx + 1}`,
+        deskripsi: it.deskripsi
       }));
 
       const payload = {
@@ -133,6 +194,7 @@ export default function TambahPaketPage() {
         harga: hargaNum,
         deskripsi: formData.deskripsi,
         status: formData.status,
+        label: formData.label || null,
         foto: { 
           medium: formData.fotoUrls[0] || "", 
           large: formData.fotoUrls[0] || "", 
@@ -142,7 +204,11 @@ export default function TambahPaketPage() {
         itinerary,
         fasilitas,
         termasuk,
-        tidakTermasuk
+        tidakTermasuk,
+        informasiPenting,
+        kebijakanPembatalan,
+        fileDokumen,
+        opsiPenjemputan
       }
 
       const res = await fetch("/api/paket", {
@@ -283,17 +349,109 @@ export default function TambahPaketPage() {
             <div className={styles.card}>
               <h3 className={styles.cardTitle}>Itinerary Perjalanan</h3>
               
+              <div className={styles.itineraryList}>
+                {formData.itinerary.map((it, idx) => (
+                  <div key={idx} style={{ padding: '16px', border: '1px solid var(--color-hairline)', borderRadius: '8px', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <h4 style={{ margin: 0 }}>Hari {idx + 1}</h4>
+                      {formData.itinerary.length > 1 && (
+                        <button type="button" onClick={() => setFormData(prev => ({ ...prev, itinerary: prev.itinerary.filter((_, i) => i !== idx) }))} style={{ background: 'transparent', color: 'red', border: 'none', cursor: 'pointer' }}>Hapus</button>
+                      )}
+                    </div>
+                    <div className={styles.inputGroup} style={{ marginBottom: '12px' }}>
+                      <label>Judul Tempat/Aktivitas</label>
+                      <input type="text" className={styles.input} value={it.judul} placeholder="Contoh: Sydney to Snowy Mountains" onChange={(e) => {
+                        const newItinerary = [...formData.itinerary];
+                        newItinerary[idx].judul = e.target.value;
+                        setFormData(prev => ({ ...prev, itinerary: newItinerary }));
+                      }} />
+                    </div>
+                    <div className={styles.inputGroup}>
+                      <label>Deskripsi</label>
+                      <textarea className={styles.textarea} rows={3} value={it.deskripsi} placeholder="Deskripsi perjalanan..." onChange={(e) => {
+                        const newItinerary = [...formData.itinerary];
+                        newItinerary[idx].deskripsi = e.target.value;
+                        setFormData(prev => ({ ...prev, itinerary: newItinerary }));
+                      }}></textarea>
+                    </div>
+                  </div>
+                ))}
+                <button type="button" onClick={() => setFormData(prev => ({ ...prev, itinerary: [...prev.itinerary, { judul: '', deskripsi: '' }] }))} style={{ padding: '10px 16px', background: 'var(--color-surface-soft)', border: '1px solid var(--color-border)', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>+ Tambah Hari</button>
+              </div>
+            </div>
+
+            <div className={styles.card}>
+              <h3 className={styles.cardTitle}>Kebijakan & Informasi Custom (Opsional)</h3>
+              <p className={styles.hint} style={{ marginBottom: '16px' }}>Biarkan kosong jika ingin menggunakan pengaturan global dari menu Pengaturan.</p>
+              
               <div className={styles.inputGroup}>
-                <label>Rencana Perjalanan per Hari</label>
+                <label>Informasi Penting (Khusus Paket Ini)</label>
                 <textarea 
-                  name="itineraryText" 
+                  name="informasiPentingText" 
                   className={styles.textarea} 
-                  placeholder="Penerbangan dari Jakarta ke Paris&#10;City tour Paris (Eiffel, Louvre)&#10;Perjalanan menuju Swiss"
-                  rows={6}
-                  value={formData.itineraryText}
+                  placeholder="Paspor minimal masa berlaku 6 bulan...&#10;Tulis poin-poin di baris baru..."
+                  rows={4}
+                  value={formData.informasiPentingText}
                   onChange={handleChange}
                 ></textarea>
-                <span className={styles.hint}>Tuliskan agenda untuk setiap hari di baris baru secara berurutan. Hari ke-1 di baris 1, Hari ke-2 di baris 2, dst.</span>
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Kebijakan Pembatalan (Khusus Paket Ini)</label>
+                <textarea 
+                  name="kebijakanPembatalanText" 
+                  className={styles.textarea} 
+                  placeholder="Pembatalan > 30 hari: Pengembalian 50%...&#10;Tulis poin-poin di baris baru..."
+                  rows={4}
+                  value={formData.kebijakanPembatalanText}
+                  onChange={handleChange}
+                ></textarea>
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>File & Dokumen (Khusus Paket Ini)</label>
+                <p className={styles.hint} style={{ marginBottom: '8px' }}>
+                  Format didukung: PDF, DOC, DOCX. Maksimal ukuran file: 10MB. Maksimal jumlah file: 3.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <input 
+                    type="file" 
+                    accept=".pdf,.doc,.docx"
+                    multiple
+                    onChange={handleDocUpload}
+                    style={{ display: 'none' }}
+                    id="upload-paket-doc"
+                  />
+                  <label 
+                    htmlFor="upload-paket-doc" 
+                    style={{ cursor: 'pointer', padding: '10px 16px', background: 'var(--color-surface-soft)', border: '1px dashed var(--color-border)', borderRadius: '6px', textAlign: 'center', fontWeight: 500 }}
+                  >
+                    {uploadingDoc ? 'Mengupload...' : '+ Klik untuk Upload Dokumen (PDF, DOC)'}
+                  </label>
+                  
+                  {formData.fileDokumenList.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {formData.fileDokumenList.map((doc, idx) => (
+                        <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'white', border: '1px solid var(--color-hairline)', borderRadius: '6px' }}>
+                          <span style={{ fontSize: '0.9rem', color: 'var(--color-ink)' }}>{doc.name}</span>
+                          <button type="button" onClick={() => removeDoc(idx)} style={{ color: 'red', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>×</button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Opsi Penjemputan (Khusus Paket Ini)</label>
+                <textarea 
+                  name="opsiPenjemputanText" 
+                  className={styles.textarea} 
+                  placeholder="Bandara Soekarno Hatta...&#10;Tulis poin-poin di baris baru..."
+                  rows={4}
+                  value={formData.opsiPenjemputanText}
+                  onChange={handleChange}
+                ></textarea>
               </div>
             </div>
 
@@ -357,6 +515,17 @@ export default function TambahPaketPage() {
                 <select name="status" className={styles.select} value={formData.status} onChange={handleChange}>
                   <option value="draft">Draft (Disembunyikan)</option>
                   <option value="published">Published (Ditampilkan)</option>
+                </select>
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label>Label (Opsional)</label>
+                <select name="label" className={styles.select} value={formData.label} onChange={handleChange}>
+                  <option value="">Tidak ada label</option>
+                  <option value="Terlaris">Terlaris</option>
+                  <option value="Populer">Populer</option>
+                  <option value="Promo">Promo</option>
+                  <option value="Terbaru">Terbaru</option>
                 </select>
               </div>
 

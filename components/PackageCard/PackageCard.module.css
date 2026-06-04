@@ -1,10 +1,16 @@
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--color-surface-card);
+  background: transparent;
   transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cardLink {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 
 .card:hover {
@@ -14,10 +20,11 @@
 
 .imageWrapper {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1;
   width: 100%;
   overflow: hidden;
   border-radius: var(--radius-md);
+  z-index: 0;
 }
 
 .image {
@@ -53,6 +60,10 @@
   justify-content: center;
   color: white;
   transition: transform 0.1s;
+  z-index: 2;
+  cursor: pointer;
+  background: transparent;
+  border: none;
 }
 
 .saveBtn:hover {
@@ -68,10 +79,12 @@
 }
 
 .content {
-  padding: var(--space-md) 0;
+  padding: var(--space-sm) 4px;
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+  position: relative;
+  z-index: 0;
 }
 
 .metaRow {
@@ -81,8 +94,8 @@
 }
 
 .destination {
-  font-weight: 600;
-  color: var(--color-ink);
+  font-weight: 500;
+  color: var(--color-muted);
 }
 
 .duration {
@@ -91,8 +104,8 @@
 
 .title {
   font-size: 1rem;
-  font-weight: 500;
-  color: var(--color-muted);
+  font-weight: 600;
+  color: var(--color-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

@@ -18,16 +18,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
-    // Security: Check file size (max 2MB)
-    const MAX_SIZE = 2 * 1024 * 1024;
+    // Security: Check file size (max 10MB)
+    const MAX_SIZE = 10 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
-      return NextResponse.json({ error: 'Ukuran file terlalu besar. Maksimal 2MB.' }, { status: 400 });
+      return NextResponse.json({ error: 'Ukuran file terlalu besar. Maksimal 10MB.' }, { status: 400 });
     }
 
     // Security: Check file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    const allowedTypes = [
+      'image/jpeg', 'image/png', 'image/webp', 'image/jpg',
+      'application/pdf', 
+      'application/msword', 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ error: 'Format file tidak diizinkan. Gunakan JPG, PNG, atau WEBP.' }, { status: 400 });
+      return NextResponse.json({ error: 'Format file tidak diizinkan. Gunakan JPG, PNG, WEBP, PDF, atau DOC.' }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();

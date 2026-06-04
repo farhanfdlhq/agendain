@@ -61,6 +61,8 @@ export async function POST(request: Request) {
         termasuk: data.termasuk || [],
         tidakTermasuk: data.tidakTermasuk || [],
         status: data.status || 'draft',
+        // @ts-ignore - Prisma types might not be generated yet
+        label: data.label || null,
       }
     })
 

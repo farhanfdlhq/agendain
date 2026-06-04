@@ -25,60 +25,59 @@
 
 .title {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: var(--color-ink);
-  margin-bottom: var(--space-xs);
-}
-
-.meta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
   margin-bottom: var(--space-lg);
-  font-weight: 500;
-  color: var(--color-ink);
+  line-height: 1.2;
 }
 
-.badge {
-  background: var(--color-surface-soft);
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-}
-
-.gallery {
+/* Quick Info Grid */
+.quickInfoGrid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: repeat(2, 200px);
-  gap: var(--space-sm);
-  border-radius: var(--radius-md);
-  overflow: hidden;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
   margin-bottom: var(--space-xxl);
 }
 
-.mainPhoto {
-  grid-column: 1;
-  grid-row: 1 / 3;
-  position: relative;
+.quickInfoCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-surface-soft);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-hairline);
 }
 
-.subPhotos {
-  display: contents;
+.quickIcon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
 }
 
-.photoWrap {
-  position: relative;
+.quickText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.img {
-  object-fit: cover;
-  transition: transform 0.3s;
+.quickLabel {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-.img:hover {
-  transform: scale(1.02);
+.quickValue {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-ink);
 }
 
+/* Content Layout */
 .layout {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -91,19 +90,21 @@
 }
 
 .section {
-  padding: var(--space-xl) 0;
+  padding: var(--space-lg) 0;
 }
 
 .sectionTitle {
   font-family: var(--font-display);
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: var(--space-lg);
+  color: var(--color-ink);
 }
 
 .descText {
   color: var(--color-body);
   font-size: 1.0625rem;
+  line-height: 1.7;
   white-space: pre-wrap;
 }
 
@@ -111,84 +112,246 @@
   height: 1px;
   background: var(--color-hairline);
   width: 100%;
+  margin: var(--space-sm) 0;
 }
 
-.amenities {
+/* Highlights */
+.highlights {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-md);
 }
 
-.amenityItem {
+.highlightItem {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   color: var(--color-ink);
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
-.check {
+.highlightIcon {
   color: var(--color-primary);
-  font-weight: bold;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
+/* Termasuk / Tidak Termasuk */
 .incExcGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-xl);
 }
 
+.incBox, .excBox {
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-hairline);
+}
+
+.incBox {
+  background: rgba(34, 197, 94, 0.05);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.excBox {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
 .subTitle {
   font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: var(--space-sm);
+  font-weight: 700;
+  margin-bottom: var(--space-md);
 }
 
 .list, .listExc {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  font-size: 0.9375rem;
+}
+
+.list li {
+  display: flex;
+  align-items: flex-start;
 }
 
 .list li::before {
   content: '✓';
-  color: var(--color-primary);
-  margin-right: 8px;
+  color: #16a34a; /* green-600 */
+  font-weight: bold;
+  margin-right: 12px;
+  font-size: 1.1rem;
+}
+
+.listExc li {
+  display: flex;
+  align-items: flex-start;
 }
 
 .listExc li::before {
   content: '✕';
-  color: var(--color-muted);
-  margin-right: 8px;
+  color: #dc2626; /* red-600 */
+  font-weight: bold;
+  margin-right: 12px;
+  font-size: 1.1rem;
 }
 
-.itinerary {
+/* Itinerary Timeline UI */
+.itineraryContainer {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
+  padding-left: 14px;
+}
+
+.itineraryContainer::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 10px;
+  bottom: 20px;
+  width: 2px;
+  background-color: var(--color-hairline);
+  z-index: 1;
 }
 
 .itDay {
+  position: relative;
   display: flex;
-  gap: var(--space-lg);
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-left: var(--space-xl);
+}
+
+.dayDot {
+  position: absolute;
+  left: -6px;
+  top: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  border: 3px solid white;
+  z-index: 2;
+  box-shadow: 0 0 0 1px var(--color-hairline);
 }
 
 .dayLabel {
-  flex-shrink: 0;
-  width: 80px;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-primary);
+}
+
+.daySeparator {
+  color: var(--color-muted);
+  margin: 0 4px;
 }
 
 .dayContent h4 {
   font-size: 1.125rem;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .dayContent p {
-  color: var(--color-muted);
+  color: var(--color-body);
   font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+/* --- Plain Sections for File & Penjemputan --- */
+.plainSection {
+  margin-top: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.plainSectionTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: 1rem;
+}
+
+.docBadgeList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.docBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background-color: var(--color-surface-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.docBadgeIcon {
+  color: var(--color-primary);
+}
+
+.pickupText {
+  color: var(--color-body);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Info Boxes */
+.infoBox, .policyBox {
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+}
+
+.infoBox {
+  background: #eff6ff; /* blue-50 */
+  border: 1px solid #bfdbfe; /* blue-200 */
+}
+
+.policyBox {
+  background: #fff7ed; /* orange-50 */
+  border: 1px solid #fed7aa; /* orange-200 */
+}
+
+.infoBoxHeader, .policyBoxHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: var(--space-md);
+}
+
+.infoBoxHeader { color: #1e40af; /* blue-800 */ }
+.policyBoxHeader { color: #c2410c; /* orange-700 */ }
+
+.infoBoxHeader h3, .policyBoxHeader h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.infoList {
+  list-style: disc;
+  padding-left: 20px;
+  color: var(--color-body);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
 }
 
 /* Sidebar Reservation Card */
@@ -207,11 +370,11 @@
 }
 
 .resPrice {
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xs);
 }
 
 .priceAmount {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--color-ink);
 }
@@ -219,53 +382,6 @@
 .priceUnit {
   color: var(--color-muted);
   margin-left: 4px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.inputGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.inputGroup label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-ink);
-  text-transform: uppercase;
-}
-
-.input {
-  padding: 12px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-sm);
-  font-family: inherit;
-  font-size: 1rem;
-}
-
-.input:focus {
-  outline: none;
-  border-color: var(--color-ink);
-}
-
-.reserveBtn {
-  margin-top: var(--space-sm);
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  padding: 14px;
-  border-radius: var(--radius-sm);
-  font-size: 1rem;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-
-.reserveBtn:hover {
-  background: var(--color-primary-active);
 }
 
 .waOption {
@@ -282,9 +398,12 @@
 }
 
 .waBtn {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   background: white;
-  color: #25D366; /* WhatsApp Green */
+  color: #25D366;
   border: 1px solid #25D366;
   padding: 12px;
   border-radius: var(--radius-sm);
@@ -296,19 +415,29 @@
   background: #f0fdf4;
 }
 
-@media (max-width: 744px) {
+@media (max-width: 992px) {
+  .quickInfoGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
   .layout {
     grid-template-columns: 1fr;
     gap: var(--space-xxl);
   }
   
-  .gallery {
-    grid-template-columns: 1fr;
-    grid-template-rows: 300px;
+  .title {
+    font-size: 2rem;
   }
-  
-  .subPhotos {
-    display: none;
+
+  .quickInfoGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .highlights, .incExcGrid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
   }
   
   .resCard {
@@ -319,11 +448,14 @@
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     z-index: 100;
     padding: var(--space-lg);
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
   }
   
   .waOption { display: none; }
-  .form { flex-direction: row; align-items: flex-end; }
-  .inputGroup { display: none; }
-  .reserveBtn { flex: 1; margin: 0; }
-  .resPrice { margin: 0; }
+}
+
+@media (max-width: 480px) {
+  .quickInfoGrid {
+    grid-template-columns: 1fr;
+  }
 }
