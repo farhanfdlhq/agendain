@@ -1,7 +1,7 @@
 .adminContainer {
   display: flex;
   min-height: 100vh;
-  background-color: var(--color-canvas);
+  background-color: #f8fafc;
 }
 
 .sidebarOverlay {
@@ -25,8 +25,8 @@
 
 .sidebar {
   width: 280px;
-  background-color: var(--color-canvas);
-  border-right: 1px solid var(--color-hairline);
+  background-color: white;
+  border-right: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -91,6 +91,21 @@
   flex-direction: column;
   gap: 4px;
   overflow-y: auto;
+}
+
+.navHeading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1rem 1rem 0.5rem;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}
+
+.sidebarClosed .navHeading {
+  display: none;
 }
 
 .navItem {
@@ -227,8 +242,8 @@
 
 .topbar {
   height: 72px;
-  background-color: var(--color-canvas);
-  border-bottom: 1px solid var(--color-hairline);
+  background-color: white;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;

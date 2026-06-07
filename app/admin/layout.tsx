@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays, Palette } from "lucide-react"
 import styles from "./layout.module.css"
 import { useState, useEffect } from "react"
 import { Toaster } from "react-hot-toast"
@@ -76,12 +76,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   const menuItems = [
+    { name: "MAIN MENU", isHeading: true, href: "heading-1" },
     { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={20} /> },
     { name: "Manajemen Paket", href: "/admin/paket", icon: <Package size={20} /> },
     { name: "Manajemen Destinasi", href: "/admin/destinasi", icon: <Map size={20} /> },
     { name: "Manajemen Pesanan", href: "/admin/booking", icon: <CalendarDays size={20} /> },
     { name: "Inquiries", href: "/admin/inquiries", icon: <MessageSquare size={20} /> },
-    { name: "Pengaturan", href: "/admin/settings", icon: <Settings size={20} /> },
+    { name: "PENGATURAN", isHeading: true, href: "heading-2" },
+    { name: "Pengaturan Utama", href: "/admin/settings", icon: <Settings size={20} /> },
+    { name: "CMS & DESIGN", isHeading: true, href: "heading-3" },
+    { name: "Halaman Beranda", href: "/admin/cms/home", icon: <LayoutDashboard size={20} /> },
+    { name: "Design System", href: "/admin/settings/design", icon: <Palette size={20} /> },
   ]
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
@@ -100,11 +105,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         
         <nav className={styles.nav}>
           {menuItems.map((item) => {
+            if (item.isHeading) {
+              return (
+                <div key={item.href} className={styles.navHeading}>
+                  {item.name}
+                </div>
+              )
+            }
             const isActive = pathname === item.href
             return (
               <Link 
                 key={item.href} 
-                href={item.href} 
+                href={item.href as string} 
                 className={`${styles.navItem} ${isActive ? styles.active : ""}`}
               >
                 {item.icon}

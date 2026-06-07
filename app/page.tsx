@@ -63,9 +63,36 @@ export default async function Home() {
   if (packages.length === 0) packages = DUMMY_PACKAGES
   if (destinations.length === 0) destinations = DUMMY_DESTINATIONS
 
+  let homeSettings: any = {
+    heroTitle: 'Jelajahi Eropa Tanpa Beban',
+    heroTitleColor: '',
+    heroSubtitle: 'Rencanakan perjalanan impian Anda bersama ahlinya. Transparan, terpercaya, dan berkesan.',
+    heroSubtitleColor: '',
+    featuresTitle: 'Kenapa Memilih Agendain?',
+    featuresTitleColor: '',
+    ctaTitle: 'Siap Memulai Perjalanan Anda?',
+    ctaTitleColor: '',
+    ctaText: 'Diskusikan rencana liburan impian Anda bersama tim kami secara gratis.',
+    ctaTextColor: '',
+  }
+
+  try {
+    const setting = await prisma.setting.findUnique({ where: { key: 'home_settings' } })
+    if (setting) {
+      homeSettings = { ...homeSettings, ...JSON.parse(setting.value) }
+    }
+  } catch (error) {
+    console.error('Failed to fetch home settings', error)
+  }
+
   return (
     <>
-      <Hero />
+      <Hero 
+        title={homeSettings.heroTitle} 
+        subtitle={homeSettings.heroSubtitle} 
+        titleColor={homeSettings.heroTitleColor}
+        subtitleColor={homeSettings.heroSubtitleColor}
+      />
       
       <section className={styles.section}>
         <div className={styles.container}>
@@ -105,7 +132,9 @@ export default async function Home() {
         <div className={styles.container}>
           <div className={styles.featuresHeader}>
             <FadeIn direction="up">
-              <h2 className={styles.featuresTitle}>Kenapa Memilih Agendain?</h2>
+              <h2 className={styles.featuresTitle} style={homeSettings.featuresTitleColor ? { color: homeSettings.featuresTitleColor } : {}}>
+                {homeSettings.featuresTitle}
+              </h2>
             </FadeIn>
           </div>
           <div className={styles.featuresGrid}>
@@ -152,8 +181,12 @@ export default async function Home() {
       <section className={styles.ctaBand}>
         <div className={styles.container}>
           <FadeIn direction="up" className={styles.ctaContent}>
-            <h2 className={styles.ctaTitle}>Siap Memulai Perjalanan Anda?</h2>
-            <p className={styles.ctaText}>Diskusikan rencana liburan impian Anda bersama tim kami secara gratis.</p>
+            <h2 className={styles.ctaTitle} style={homeSettings.ctaTitleColor ? { color: homeSettings.ctaTitleColor } : {}}>
+              {homeSettings.ctaTitle}
+            </h2>
+            <p className={styles.ctaText} style={homeSettings.ctaTextColor ? { color: homeSettings.ctaTextColor } : {}}>
+              {homeSettings.ctaText}
+            </p>
             <div className={styles.ctaButtons}>
               <Link href="/private-trip" className={styles.btnPrimary}>Rencanakan Private Trip</Link>
               <a href="https://wa.me/6281234567890" target="_blank" rel="noreferrer" className={styles.btnSecondary}>

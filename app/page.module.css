@@ -102,7 +102,7 @@
   align-items: center;
   justify-content: center;
   background: var(--color-dominant-tint);
-  color: var(--color-dominant);
+  color: var(--color-primary);
   border-radius: 16px;
   margin-bottom: auto;
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -147,8 +147,8 @@
 
 /* CTA Band */
 .ctaBand {
-  background: var(--color-dominant);
-  color: var(--color-on-dominant);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
   padding: var(--space-section) 0;
   text-align: center;
 }
@@ -169,7 +169,7 @@
 }
 
 .ctaText {
-  color: rgba(255, 255, 255, 0.85);
+  color: rgba(0, 0, 0, 0.85);
   font-size: 1.125rem;
 }
 
@@ -197,13 +197,13 @@
 }
 
 .btnSecondary {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-ink);
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .btnSecondary:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 

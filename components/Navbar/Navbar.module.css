@@ -2,8 +2,8 @@
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  background: var(--color-dominant);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.1);
+  background: var(--color-navbar-bg);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
 }
 .nav {
   max-width: 1280px;
@@ -18,7 +18,7 @@
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-on-dominant);
+  color: var(--color-navbar-text);
   letter-spacing: -0.02em;
   flex-shrink: 0;
   display: flex;
@@ -51,7 +51,7 @@
   padding: 0;
 }
 .link {
-  color: rgba(255,255,255,0.85);
+  color: var(--color-navbar-text);
   font-size: 0.9375rem;
   font-weight: 500;
   transition: color 0.2s;
@@ -66,18 +66,18 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--color-on-dominant);
+  background: var(--color-navbar-hover);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.link:hover { color: var(--color-on-dominant); }
+.link:hover { color: var(--color-navbar-hover); }
 .link:hover::after, .link.active::after { transform: scaleX(1); }
 
 .cta {
   margin-left: auto;
-  background: var(--color-primary);
-  color: var(--color-on-primary);
+  background: var(--color-dominant);
+  color: var(--color-on-dominant);
   padding: 0.625rem 1.25rem;
   border-radius: var(--radius-full);
   font-size: 0.875rem;
@@ -85,7 +85,7 @@
   transition: background 0.2s, transform 0.15s;
   flex-shrink: 0;
 }
-.cta:hover { background: var(--color-primary-active); transform: translateY(-1px); }
+.cta:hover { background: var(--color-dominant-600); transform: translateY(-1px); }
 
 .burger {
   display: none;
@@ -102,7 +102,7 @@
   display: block;
   width: 24px;
   height: 2px;
-  background: var(--color-on-dominant);
+  background: var(--color-navbar-text);
   border-radius: 2px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
 }
@@ -141,7 +141,7 @@
     right: 0;
     bottom: 0;
     width: 280px;
-    background: var(--color-dominant);
+    background: var(--color-navbar-bg);
     z-index: var(--z-sticky);
     padding: 100px var(--space-xl) var(--space-xl);
     box-shadow: -4px 0 24px rgba(0,0,0,0.1);
@@ -155,7 +155,7 @@
   }
 
   .mobileLink {
-    color: var(--color-on-dominant);
+    color: var(--color-navbar-text);
     font-size: 1.25rem;
     font-weight: 500;
     text-decoration: none;
@@ -168,8 +168,8 @@
   .mobileCta {
     display: block;
     text-align: center;
-    background: var(--color-primary);
-    color: var(--color-on-primary);
+    background: var(--color-dominant);
+    color: var(--color-on-dominant);
     padding: 1rem;
     border-radius: var(--radius-full);
     font-size: 1rem;

@@ -13,13 +13,13 @@
   position: relative;
   flex: 1;
   display: none;
-  background-color: var(--color-dominant);
+  background-color: var(--color-primary);
 }
 
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--color-dominant), var(--color-primary));
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
   z-index: 2;
 }
 

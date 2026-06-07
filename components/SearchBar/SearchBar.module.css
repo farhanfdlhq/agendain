@@ -30,7 +30,7 @@
 
 .field:focus-within {
   background: var(--color-surface-card);
-  box-shadow: 0 0 0 2px var(--color-dominant);
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 
 .fieldHeader {
@@ -42,7 +42,7 @@
 }
 
 .icon {
-  color: var(--color-dominant);
+  color: var(--color-primary);
 }
 
 .fieldHeader span {

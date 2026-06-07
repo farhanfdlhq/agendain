@@ -1,22 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   /* Brand */
-  --color-primary: #c32d31;        
-  --color-primary-active: #a12326; 
-  --color-primary-disabled: #f1b3b5;
-  --color-dominant: #193f26;      
-  --color-dominant-hover: #102d1a;
-  --color-dominant-surface: #0e2415; 
-  --color-dominant-tint: #e1ede6;
+  --color-primary: #054569;        
+  --color-primary-active: #032f48; 
+  --color-primary-disabled: #82a2b4;
+  --color-dominant: #FFC704;      
+  --color-dominant-hover: #e6b300;
+  --color-dominant-surface: #fffdf5; 
+  --color-dominant-tint: #fff9e6;
   
   /* Accent */
-  --color-accent-blue: #5e7a93;
-  --color-accent-rose: #ad737e;
+  --color-accent-blue: #056da2;
+  --color-accent-rose: #ff0801;
 
   /* Surface */
-  --color-canvas: #efeae5;
-  --color-surface-soft: #e5ded8;
+  --color-canvas: #fafafa;
+  --color-surface-soft: #f4f4f5;
   --color-surface-card: #ffffff;
 
   /* Text */
@@ -24,7 +24,7 @@
   --color-body: #333333;
   --color-muted: #666666;
   --color-on-primary: #ffffff;
-  --color-on-dominant: #ffffff;
+  --color-on-dominant: #1c1c1c;
 
   /* Border */
   --color-hairline: #e0d7ce;
@@ -68,8 +68,8 @@
   --shadow-nav: 0 1px 0 var(--color-hairline);
 
   /* Typography */
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-display: 'Montserrat', system-ui, sans-serif;
+  --font-body: 'Montserrat', system-ui, sans-serif;
 
   /* Z-index */
   --z-dropdown: 100;
