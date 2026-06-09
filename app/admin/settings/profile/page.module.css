@@ -1,0 +1,119 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 0 var(--space-xl) 0;
+}
+
+.header {
+  margin-bottom: var(--space-xl);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: var(--space-xs);
+}
+
+.subtitle {
+  color: var(--color-muted);
+  font-size: 0.9375rem;
+}
+
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: var(--space-xl);
+}
+
+.cardHeader {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.cardTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.cardContent {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-weight: 500;
+  color: var(--color-ink);
+  font-size: 0.875rem;
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.input:disabled {
+  background-color: var(--color-surface-soft);
+  cursor: not-allowed;
+  color: var(--color-muted);
+}
+
+.cardFooter {
+  padding: var(--space-lg);
+  background-color: var(--color-surface-soft);
+  border-top: 1px solid var(--color-hairline);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saveBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.saveBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
