@@ -116,12 +116,12 @@ export default function ProfilePage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Edit Profil</h1>
-        <p className={styles.subtitle}>Kelola informasi akun dan preferensi keamanan Anda.</p>
+        <p className={styles.subtitle}>Atur informasi dasar akun dan pengaturan keamanan profil Anda.</p>
       </div>
 
       <form onSubmit={handleAccountSubmit} className={styles.card}>
         <div className={styles.cardHeader}>
-          <h2 className={styles.cardTitle}>Informasi Akun</h2>
+          <h2 className={styles.cardTitle}>Profil Pengguna</h2>
         </div>
         <div className={styles.cardContent}>
           <div className={styles.formGroup}>
@@ -161,7 +161,7 @@ export default function ProfilePage() {
         </div>
         <div className={styles.cardContent}>
           <div className={styles.formGroup}>
-            <label htmlFor="currentPassword">Kata Sandi Saat Ini</label>
+            <label htmlFor="currentPassword">Kata Sandi Lama</label>
             <input
               id="currentPassword"
               type="password"
@@ -199,7 +199,7 @@ export default function ProfilePage() {
         <div className={styles.cardFooter}>
           <button type="submit" className={styles.saveBtn} disabled={savingPassword}>
             {savingPassword ? <Loader2 className={styles.spinner} size={18} /> : <Save size={18} />}
-            Ubah Kata Sandi
+            Perbarui Kata Sandi
           </button>
         </div>
       </form>
