@@ -93,7 +93,10 @@ model AdminUser {
   email     String   @unique
   password  String
   nama      String
+  role      String   @default("admin")
+  avatar    String?
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Setting {
