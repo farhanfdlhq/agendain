@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays, Palette } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays, Palette, UserCog, ChevronDown, ChevronRight } from "lucide-react"
 import styles from "./layout.module.css"
 import { useState, useEffect } from "react"
 import { Toaster } from "react-hot-toast"
@@ -14,6 +14,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [siteLogo, setSiteLogo] = useState("/agendain.jpeg")
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    'PENGATURAN': false,
+    'CMS & DESIGN': false
+  })
 
   // Handle unauthenticated state manually just in case middleware is bypassed
   useEffect(() => {
@@ -75,21 +79,57 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return null
   }
 
-  const menuItems = [
-    { name: "MAIN MENU", isHeading: true, href: "heading-1" },
-    { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={20} /> },
-    { name: "Manajemen Paket", href: "/admin/paket", icon: <Package size={20} /> },
-    { name: "Manajemen Destinasi", href: "/admin/destinasi", icon: <Map size={20} /> },
-    { name: "Manajemen Pesanan", href: "/admin/booking", icon: <CalendarDays size={20} /> },
-    { name: "Inquiries", href: "/admin/inquiries", icon: <MessageSquare size={20} /> },
-    { name: "PENGATURAN", isHeading: true, href: "heading-2" },
-    { name: "Pengaturan Utama", href: "/admin/settings", icon: <Settings size={20} /> },
-    { name: "CMS & DESIGN", isHeading: true, href: "heading-3" },
-    { name: "Halaman Beranda", href: "/admin/cms/home", icon: <LayoutDashboard size={20} /> },
-    { name: "Design System", href: "/admin/settings/design", icon: <Palette size={20} /> },
+  const userRole = (session.user as any)?.role || 'editor'
+
+  const ROLE_HIERARCHY: Record<string, number> = {
+    super_admin: 3,
+    admin: 2,
+    editor: 1,
+  }
+
+  const menuGroups = [
+    {
+      heading: 'MAIN MENU',
+      items: [
+        { name: 'Dashboard', href: '/admin', icon: <LayoutDashboard size={20} />, minRole: 'editor' },
+        { name: 'Manajemen Paket', href: '/admin/paket', icon: <Package size={20} />, minRole: 'editor' },
+        { name: 'Manajemen Destinasi', href: '/admin/destinasi', icon: <Map size={20} />, minRole: 'editor' },
+        { name: 'Manajemen Pesanan', href: '/admin/booking', icon: <CalendarDays size={20} />, minRole: 'admin' },
+        { name: 'Inquiries', href: '/admin/inquiries', icon: <MessageSquare size={20} />, minRole: 'admin' },
+      ]
+    },
+    {
+      heading: 'PENGATURAN',
+      collapsible: true,
+      items: [
+        { name: 'Pengaturan Utama', href: '/admin/settings', icon: <Settings size={20} />, minRole: 'super_admin' },
+        { name: 'Edit Profil', href: '/admin/settings/profile', icon: <UserCog size={20} />, minRole: 'editor' },
+      ]
+    },
+    {
+      heading: 'CMS & DESIGN',
+      collapsible: true,
+      items: [
+        { name: 'Halaman Beranda', href: '/admin/cms/home', icon: <LayoutDashboard size={20} />, minRole: 'admin' },
+        { name: 'Design System', href: '/admin/settings/design', icon: <Palette size={20} />, minRole: 'super_admin' },
+      ]
+    }
   ]
 
+  const toggleGroup = (heading: string) => {
+    setExpandedGroups(prev => ({
+      ...prev,
+      [heading]: !prev[heading]
+    }))
+  }
+
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen)
+
+  const formatRole = (role: string) => {
+    if (role === 'super_admin') return 'Super Admin'
+    if (role === 'admin') return 'Administrator'
+    return 'Editor'
+  }
 
   return (
     <div className={styles.adminContainer}>
@@ -104,24 +144,43 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         
         <nav className={styles.nav}>
-          {menuItems.map((item) => {
-            if (item.isHeading) {
-              return (
-                <div key={item.href} className={styles.navHeading}>
-                  {item.name}
-                </div>
-              )
-            }
-            const isActive = pathname === item.href
+          {menuGroups.map((group) => {
+            const filteredItems = group.items.filter(
+              item => ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[item.minRole]
+            )
+            
+            if (filteredItems.length === 0) return null
+
+            const isExpanded = group.collapsible ? expandedGroups[group.heading] : true
+
             return (
-              <Link 
-                key={item.href} 
-                href={item.href as string} 
-                className={`${styles.navItem} ${isActive ? styles.active : ""}`}
-              >
-                {item.icon}
-                <span>{item.name}</span>
-              </Link>
+              <div key={group.heading} className={styles.menuGroup}>
+                <div 
+                  className={`${styles.navHeading} ${group.collapsible ? styles.collapsibleHeading : ''}`}
+                  onClick={() => group.collapsible && toggleGroup(group.heading)}
+                >
+                  <span>{group.heading}</span>
+                  {group.collapsible && (
+                    isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />
+                  )}
+                </div>
+                
+                <div className={`${styles.groupItems} ${isExpanded ? '' : styles.groupItemsCollapsed}`}>
+                  {filteredItems.map((item) => {
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                    return (
+                      <Link 
+                        key={item.href} 
+                        href={item.href as string} 
+                        className={`${styles.navItem} ${isActive ? styles.active : ""}`}
+                      >
+                        {item.icon}
+                        <span>{item.name}</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
             )
           })}
         </nav>
@@ -133,7 +192,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <div className={styles.userDetails}>
               <p className={styles.userName}>{session.user?.name}</p>
-              <p className={styles.userRole}>Administrator</p>
+              <p className={styles.userRole}>{formatRole(userRole)}</p>
             </div>
           </div>
           <button onClick={() => signOut()} className={styles.logoutBtn}>

@@ -102,6 +102,30 @@
   padding: 1rem 1rem 0.5rem;
   margin-top: 0.5rem;
   opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapsibleHeading {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.collapsibleHeading:hover {
+  opacity: 1;
+}
+
+.groupItems {
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+  opacity: 1;
+}
+
+.groupItemsCollapsed {
+  max-height: 0;
+  opacity: 0;
 }
 
 .sidebarClosed .navHeading {
