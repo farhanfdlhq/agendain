@@ -109,11 +109,12 @@
 
 .collapsibleHeading {
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
 }
 
 .collapsibleHeading:hover {
   opacity: 1;
+  color: var(--color-ink);
 }
 
 .groupItems {
@@ -121,6 +122,10 @@
   max-height: 500px;
   transition: max-height 0.3s ease, opacity 0.3s ease;
   opacity: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
 }
 
 .groupItemsCollapsed {
