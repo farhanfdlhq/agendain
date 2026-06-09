@@ -144,7 +144,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         
         <nav className={styles.nav}>
-          {menuGroups.map((group) => {
+          {(() => {
+            const allItems = menuGroups.flatMap(g => g.items)
+            const activeItem = allItems.reduce((bestMatch, item) => {
+              if (pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'))) {
+                if (!bestMatch || item.href.length > bestMatch.href.length) {
+                  return item
+                }
+              }
+              return bestMatch
+            }, null as any)
+
+            return menuGroups.map((group) => {
             const filteredItems = group.items.filter(
               item => ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[item.minRole]
             )
@@ -167,9 +178,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 
                 <div className={`${styles.groupItems} ${isExpanded ? '' : styles.groupItemsCollapsed}`}>
                   {filteredItems.map((item) => {
-                    const isActive = item.href === '/admin' 
-                      ? pathname === '/admin' 
-                      : (pathname === item.href || pathname.startsWith(item.href + '/'))
+                    const isActive = activeItem?.href === item.href
                     return (
                       <Link 
                         key={item.href} 
@@ -184,13 +193,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </div>
               </div>
             )
-          })}
+          })})()}
         </nav>
 
         <div className={styles.sidebarFooter}>
           <div className={styles.userInfo}>
             <div className={styles.avatar}>
-              {session.user?.name?.charAt(0) || "A"}
+              {(session.user as any)?.avatar ? (
+                <img src={(session.user as any).avatar} alt={session.user?.name || "Avatar"} style={{width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%"}} />
+              ) : (
+                session.user?.name?.charAt(0) || "A"
+              )}
             </div>
             <div className={styles.userDetails}>
               <p className={styles.userName}>{session.user?.name}</p>
