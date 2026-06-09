@@ -35,9 +35,9 @@ export default function PackageCard({ slug, nama, harga, durasi, destinasi, foto
   }
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} suppressHydrationWarning>
       <Link href={`/paket/${slug}`} className={styles.cardLink} aria-label={`Lihat detail paket ${nama}`} />
-      <div className={styles.imageWrapper}>
+      <div className={styles.imageWrapper} suppressHydrationWarning>
         <Image 
           src={fotoThumbnail || 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=800&auto=format&fit=crop'} 
           alt={nama} 
@@ -48,7 +48,7 @@ export default function PackageCard({ slug, nama, harga, durasi, destinasi, foto
         />
       </div>
       
-      {label && <div className={styles.badge}>{translateData(label)}</div>}
+      {label && <div className={styles.badge} suppressHydrationWarning>{translateData(label)}</div>}
       
       <button 
         className={`${styles.saveBtn} ${isSaved ? styles.saved : ''}`} 
@@ -59,13 +59,13 @@ export default function PackageCard({ slug, nama, harga, durasi, destinasi, foto
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
         </svg>
       </button>
-      <div className={styles.content}>
-        <div className={styles.metaRow}>
+      <div className={styles.content} suppressHydrationWarning>
+        <div className={styles.metaRow} suppressHydrationWarning>
           <span className={styles.destination}>{translateData(destinasi?.nama) || (locale === 'en' ? 'Europe' : 'Eropa')}</span>
           <span className={styles.duration}>{durasi} {locale === 'en' ? 'Days' : 'Hari'}</span>
         </div>
         <h3 className={styles.title}>{nama}</h3>
-        <div className={styles.footer}>
+        <div className={styles.footer} suppressHydrationWarning>
           <span className={styles.price}>{formattedHarga}</span>
           <span className={styles.unit}>/ pax</span>
         </div>

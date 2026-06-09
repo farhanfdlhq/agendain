@@ -9,10 +9,10 @@ export default function Footer({ settings }: { settings?: any }) {
   const siteLogo = settings?.site_logo && settings.site_logo !== "/logo.png" ? settings.site_logo : "/agendain.jpeg"
 
   return (
-    <footer className={styles.footer}>
-      <div className={styles.container}>
-        <div className={styles.top}>
-          <div className={styles.col}>
+    <footer className={styles.footer} suppressHydrationWarning>
+      <div className={styles.container} suppressHydrationWarning>
+        <div className={styles.top} suppressHydrationWarning>
+          <div className={styles.col} suppressHydrationWarning>
             <Link href="/" className={styles.logo}>
               {siteLogo ? (
                 <img src={siteLogo} alt={siteName} style={{ height: "40px", objectFit: "contain", marginBottom: "8px" }} />
@@ -22,7 +22,7 @@ export default function Footer({ settings }: { settings?: any }) {
             </Link>
             <p className={styles.desc}>{t('footer.desc')}</p>
           </div>
-          <div className={styles.col}>
+          <div className={styles.col} suppressHydrationWarning>
             <h3 className={styles.title}>{t('footer.mainMenu')}</h3>
             <ul className={styles.links}>
               <li><Link href="/paket">{t('nav.packages')}</Link></li>
@@ -30,7 +30,7 @@ export default function Footer({ settings }: { settings?: any }) {
               <li><Link href="/private-trip">{t('nav.privateTrip')}</Link></li>
             </ul>
           </div>
-          <div className={styles.col}>
+          <div className={styles.col} suppressHydrationWarning>
             <h3 className={styles.title}>{t('footer.help')}</h3>
             <ul className={styles.links}>
               <li><Link href="/tentang">{t('nav.about')}</Link></li>
@@ -48,8 +48,8 @@ export default function Footer({ settings }: { settings?: any }) {
           </div>
         </div>
       </div>
-      <div className={styles.bottom}>
-        <div className={styles.container}>
+      <div className={styles.bottom} suppressHydrationWarning>
+        <div className={styles.container} suppressHydrationWarning>
           <p>&copy; {new Date().getFullYear()} {siteName}. {t('footer.copyright')}</p>
         </div>
       </div>
