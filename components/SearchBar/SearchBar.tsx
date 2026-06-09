@@ -2,9 +2,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { MapPin, Calendar, Users, Search } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 import styles from './SearchBar.module.css'
 
 export default function SearchBar() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [destinasi, setDestinasi] = useState('')
   const [waktu, setWaktu] = useState('')
@@ -21,7 +23,7 @@ export default function SearchBar() {
 
   // Generate next 12 months for travel
   const generateMonths = () => {
-    const months = ['Kapan saja']
+    const months = [t('search.anytime')]
     const date = new Date()
     for (let i = 0; i < 12; i++) {
       const month = date.toLocaleString('id-ID', { month: 'long' })
@@ -83,12 +85,12 @@ export default function SearchBar() {
         <label className={styles.field} htmlFor="destinasi">
           <div className={styles.fieldHeader}>
             <MapPin size={16} className={styles.icon} />
-            <span>Mau ke mana?</span>
+            <span>{t('search.where')}</span>
           </div>
           <input 
             type="text" 
             id="destinasi" 
-            placeholder="Cari negara atau kota"
+            placeholder={t('search.wherePh')}
             value={destinasi}
             onChange={(e) => {
               setDestinasi(e.target.value)
@@ -117,7 +119,7 @@ export default function SearchBar() {
                 </div>
               ))
             ) : (
-              <div className={styles.suggestionEmpty}>Destinasi tidak ditemukan</div>
+              <div className={styles.suggestionEmpty}>{t('search.notFound')}</div>
             )}
           </div>
         )}
@@ -129,12 +131,12 @@ export default function SearchBar() {
         <label className={styles.field} htmlFor="waktu">
           <div className={styles.fieldHeader}>
             <Calendar size={16} className={styles.icon} />
-            <span>Kapan?</span>
+            <span>{t('search.when')}</span>
           </div>
           <input 
             type="text" 
             id="waktu"
-            placeholder="Pilih bulan"
+            placeholder={t('search.whenPh')}
             value={waktu}
             readOnly
             onClick={() => setShowWaktuSuggestions(true)}
@@ -150,7 +152,7 @@ export default function SearchBar() {
                 className={styles.suggestionItem}
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => {
-                  setWaktu(opt === 'Kapan saja' ? '' : opt)
+                  setWaktu(opt === t('search.anytime') ? '' : opt)
                   setShowWaktuSuggestions(false)
                 }}
               >
@@ -168,13 +170,13 @@ export default function SearchBar() {
         <label className={styles.field} htmlFor="pax">
           <div className={styles.fieldHeader}>
             <Users size={16} className={styles.icon} />
-            <span>Berapa orang?</span>
+            <span>{t('search.pax')}</span>
           </div>
           <input 
             type="number" 
             id="pax" 
             min="1"
-            placeholder="Jumlah peserta"
+            placeholder={t('search.paxPh')}
             value={pax}
             onChange={(e) => {
               setPax(e.target.value)
@@ -199,7 +201,7 @@ export default function SearchBar() {
                 }}
               >
                 <Users size={16} className={styles.suggestionIcon} />
-                {num === 10 ? '10+ Orang (Grup)' : `${num} Orang`}
+                {num === 10 ? t('search.group') : `${num} ${t('search.people')}`}
               </div>
             ))}
           </div>

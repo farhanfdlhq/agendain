@@ -3,19 +3,22 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useTranslation } from '@/lib/i18n/useTranslation'
+import LanguageToggle from '@/components/LanguageToggle/LanguageToggle'
 import styles from './Navbar.module.css'
 
-const links = [
-  { href: '/', label: 'Beranda' },
-  { href: '/tentang', label: 'Tentang Kami' },
-  { href: '/paket', label: 'Paket Wisata' },
-  { href: '/private-trip', label: 'Private Trip' },
-  { href: '/destinasi', label: 'Destinasi' },
-]
-
 export default function Navbar({ settings }: { settings?: any }) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+
+  const links = [
+    { href: '/', label: t('nav.home') },
+    { href: '/tentang', label: t('nav.about') },
+    { href: '/paket', label: t('nav.packages') },
+    { href: '/private-trip', label: t('nav.privateTrip') },
+    { href: '/destinasi', label: t('nav.destinations') },
+  ]
   
   // Prevent scrolling when mobile menu is open
   useEffect(() => {
@@ -54,13 +57,17 @@ export default function Navbar({ settings }: { settings?: any }) {
           ))}
         </ul>
         
+        <div className={styles.langToggleDesktop}>
+          <LanguageToggle />
+        </div>
+        
         <a 
           href={`https://wa.me/${settings?.whatsapp_number?.replace(/\D/g, '') || "6281234567890"}?text=${encodeURIComponent(settings?.whatsapp_message || "Halo, saya ingin bertanya mengenai paket wisata.")}`} 
           target="_blank" 
           rel="noopener noreferrer" 
           className={styles.cta}
         >
-          Hubungi Kami
+          {t('nav.contact')}
         </a>
         
         <button className={`${styles.burger} ${open ? styles.burgerOpen : ''}`} onClick={() => setOpen(!open)} aria-label="Menu">
@@ -107,13 +114,16 @@ export default function Navbar({ settings }: { settings?: any }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
               >
+                <div className={styles.mobileLangToggle}>
+                  <LanguageToggle />
+                </div>
                 <a 
                   href={`https://wa.me/${settings?.whatsapp_number?.replace(/\D/g, '') || "6281234567890"}?text=${encodeURIComponent(settings?.whatsapp_message || "Halo, saya ingin bertanya mengenai paket wisata.")}`} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className={styles.mobileCta}
                 >
-                  Hubungi Kami
+                  {t('nav.contact')}
                 </a>
               </motion.div>
             </motion.div>

@@ -1,6 +1,9 @@
+"use client"
+
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './DestinationCard.module.css'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface DestinationProps {
   slug: string
@@ -10,6 +13,7 @@ interface DestinationProps {
 }
 
 export default function DestinationCard({ slug, nama, foto, paketCount = 0 }: DestinationProps) {
+  const { locale, translateData } = useTranslation()
   return (
     <Link href={`/destinasi/${slug}`} className={styles.card}>
       <div className={styles.imageWrapper}>
@@ -25,9 +29,9 @@ export default function DestinationCard({ slug, nama, foto, paketCount = 0 }: De
       </div>
       
       <div className={styles.content}>
-        <h3 className={styles.title}>{nama}</h3>
+        <h3 className={styles.title}>{translateData(nama)}</h3>
         {paketCount > 0 && (
-          <span className={styles.subtitle}>{paketCount} Paket Tersedia</span>
+          <span className={styles.subtitle}>{paketCount} {locale === 'en' ? 'Packages Available' : 'Paket Tersedia'}</span>
         )}
       </div>
     </Link>

@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 import styles from './PackageCard.module.css'
 
 interface PackageProps {
@@ -18,6 +19,7 @@ interface PackageProps {
 
 export default function PackageCard({ slug, nama, harga, durasi, destinasi, fotoThumbnail, label }: PackageProps) {
   const [isSaved, setIsSaved] = useState(false)
+  const { t, locale, translateData } = useTranslation()
 
   // Format harga to IDR
   const formattedHarga = new Intl.NumberFormat('id-ID', {
@@ -46,7 +48,7 @@ export default function PackageCard({ slug, nama, harga, durasi, destinasi, foto
         />
       </div>
       
-      {label && <div className={styles.badge}>{label}</div>}
+      {label && <div className={styles.badge}>{translateData(label)}</div>}
       
       <button 
         className={`${styles.saveBtn} ${isSaved ? styles.saved : ''}`} 
@@ -59,8 +61,8 @@ export default function PackageCard({ slug, nama, harga, durasi, destinasi, foto
       </button>
       <div className={styles.content}>
         <div className={styles.metaRow}>
-          <span className={styles.destination}>{destinasi?.nama || 'Eropa'}</span>
-          <span className={styles.duration}>{durasi} Hari</span>
+          <span className={styles.destination}>{translateData(destinasi?.nama) || (locale === 'en' ? 'Europe' : 'Eropa')}</span>
+          <span className={styles.duration}>{durasi} {locale === 'en' ? 'Days' : 'Hari'}</span>
         </div>
         <h3 className={styles.title}>{nama}</h3>
         <div className={styles.footer}>

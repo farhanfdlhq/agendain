@@ -74,8 +74,12 @@
 .link:hover { color: var(--color-navbar-hover); }
 .link:hover::after, .link.active::after { transform: scaleX(1); }
 
-.cta {
+.langToggleDesktop {
   margin-left: auto;
+  margin-right: 0.75rem;
+}
+
+.cta {
   background: var(--color-dominant);
   color: var(--color-on-dominant);
   padding: 0.625rem 1.25rem;
@@ -121,6 +125,7 @@
 
 @media (max-width: 744px) {
   .desktopLinks { display: none; }
+  .langToggleDesktop { display: none; }
   .cta { display: none; }
   .burger { display: flex; }
 
@@ -163,6 +168,10 @@
   
   .mobileCtaWrapper {
     margin-top: auto;
+  }
+  
+  .mobileLangToggle {
+    margin-bottom: 1rem;
   }
 
   .mobileCta {

@@ -2,6 +2,7 @@ import PackageCard from '@/components/PackageCard/PackageCard'
 import PaketFilter from '@/components/PaketFilter/PaketFilter'
 import styles from './page.module.css'
 import { prisma } from '@/lib/prisma'
+import PaketHeader from './PaketHeader'
 
 export default async function PaketPage({
   searchParams,
@@ -78,12 +79,7 @@ export default async function PaketPage({
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <div className={styles.container}>
-          <h1 className={styles.title}>Temukan Paket Impian Anda</h1>
-          <p className={styles.subtitle}>Pilih dari berbagai destinasi menakjubkan di Eropa.</p>
-        </div>
-      </div>
+      <PaketHeader />
       
       <div className={styles.content}>
         <div className={styles.container}>

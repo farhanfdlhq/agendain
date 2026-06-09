@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import Navbar from "@/components/Navbar/Navbar"
 import Footer from "@/components/Footer/Footer"
+import { LanguageProvider } from "@/lib/i18n/LanguageContext"
 
 export default function FrontLayout({ children, settings }: { children: React.ReactNode, settings?: any }) {
   const pathname = usePathname()
@@ -13,10 +14,10 @@ export default function FrontLayout({ children, settings }: { children: React.Re
   }
 
   return (
-    <>
+    <LanguageProvider>
       <Navbar settings={settings} />
       <main>{children}</main>
       <Footer settings={settings} />
-    </>
+    </LanguageProvider>
   )
 }

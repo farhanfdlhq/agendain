@@ -1,6 +1,7 @@
 import DestinationCard from '@/components/DestinationCard/DestinationCard'
 import { prisma } from '@/lib/prisma'
 import styles from './page.module.css'
+import DestinasiHeader from './DestinasiHeader'
 
 export default async function DestinasiPage() {
   let destinations: any[] = []
@@ -32,12 +33,7 @@ export default async function DestinasiPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.header}>
-        <div className={styles.container}>
-          <h1 className={styles.title}>Destinasi Eropa Kami</h1>
-          <p className={styles.subtitle}>Eksplorasi negara-negara terbaik di benua biru bersama partner terpercaya.</p>
-        </div>
-      </div>
+      <DestinasiHeader />
       
       <div className={styles.content}>
         <div className={styles.container}>

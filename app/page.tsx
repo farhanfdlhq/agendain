@@ -1,12 +1,7 @@
-import Hero from '@/components/Hero/Hero'
-import PackageCard from '@/components/PackageCard/PackageCard'
-import DestinationCard from '@/components/DestinationCard/DestinationCard'
-import Link from 'next/link'
-import styles from './page.module.css'
+import HomeContent from '@/components/HomeContent/HomeContent'
 import { prisma } from '@/lib/prisma'
-import { Landmark, ShieldCheck, Compass, Route } from 'lucide-react'
-import FadeIn from '@/components/Motion/FadeIn'
-import Stagger from '@/components/Motion/Stagger'
+
+export const revalidate = 0;
 
 // Dummy data fallback for development if DB is empty
 const DUMMY_PACKAGES = [
@@ -65,15 +60,33 @@ export default async function Home() {
 
   let homeSettings: any = {
     heroTitle: 'Jelajahi Eropa Tanpa Beban',
+    heroTitle_en: 'Explore Europe Burden-Free',
     heroTitleColor: '',
     heroSubtitle: 'Rencanakan perjalanan impian Anda bersama ahlinya. Transparan, terpercaya, dan berkesan.',
+    heroSubtitle_en: 'Plan your dream journey with the experts. Transparent, trusted, and memorable.',
     heroSubtitleColor: '',
     featuresTitle: 'Kenapa Memilih Agendain?',
+    featuresTitle_en: 'Why Choose Agendain?',
     featuresTitleColor: '',
     ctaTitle: 'Siap Memulai Perjalanan Anda?',
+    ctaTitle_en: 'Ready to Start Your Journey?',
     ctaTitleColor: '',
     ctaText: 'Diskusikan rencana liburan impian Anda bersama tim kami secara gratis.',
+    ctaText_en: 'Discuss your dream vacation plans with our team for free.',
     ctaTextColor: '',
+    ctaBtn1Text: 'Rencanakan Private Trip',
+    ctaBtn1Text_en: 'Plan Private Trip',
+    ctaBtn1Link: '/private-trip',
+    ctaBtn1Color: '',
+    ctaBtn1HoverColor: '',
+    ctaBtn1TextColor: '',
+    ctaBtn2Text: 'Chat WhatsApp',
+    ctaBtn2Text_en: 'Chat WhatsApp',
+    ctaBtn2Link: 'https://wa.me/6281234567890',
+    ctaBtn2Color: '',
+    ctaBtn2HoverColor: '',
+    ctaBtn2TextColor: '',
+    sectionOrder: 'packages,destinations,features,cta',
   }
 
   try {
@@ -86,116 +99,10 @@ export default async function Home() {
   }
 
   return (
-    <>
-      <Hero 
-        title={homeSettings.heroTitle} 
-        subtitle={homeSettings.heroSubtitle} 
-        titleColor={homeSettings.heroTitleColor}
-        subtitleColor={homeSettings.heroSubtitleColor}
-      />
-      
-      <section className={styles.section}>
-        <div className={styles.container}>
-          <FadeIn direction="up">
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Paket Unggulan</h2>
-              <Link href="/paket" className={styles.viewAll}>Lihat Semua Paket →</Link>
-            </div>
-          </FadeIn>
-          
-          <Stagger className={styles.packageGrid}>
-            {packages.map((pkg) => (
-              <PackageCard key={pkg.slug} {...pkg} />
-            ))}
-          </Stagger>
-        </div>
-      </section>
-
-      <section className={styles.sectionAlt}>
-        <div className={styles.container}>
-          <FadeIn direction="up">
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>Destinasi Favorit</h2>
-              <Link href="/destinasi" className={styles.viewAll}>Jelajahi Eropa →</Link>
-            </div>
-          </FadeIn>
-          
-          <Stagger className={styles.destinationGrid}>
-            {destinations.map((dest) => (
-              <DestinationCard key={dest.slug} {...dest} />
-            ))}
-          </Stagger>
-        </div>
-      </section>
-      
-      <section className={styles.features}>
-        <div className={styles.container}>
-          <div className={styles.featuresHeader}>
-            <FadeIn direction="up">
-              <h2 className={styles.featuresTitle} style={homeSettings.featuresTitleColor ? { color: homeSettings.featuresTitleColor } : {}}>
-                {homeSettings.featuresTitle}
-              </h2>
-            </FadeIn>
-          </div>
-          <div className={styles.featuresGrid}>
-            <FadeIn delay={0.1} className={styles.featureItem}>
-              <div className={styles.featureIcon}>
-                <Landmark size={32} strokeWidth={1.5} color="currentColor" />
-              </div>
-              <div className={styles.featureText}>
-                <h3>Spesialis Eropa</h3>
-                <p>Fokus penuh pada destinasi Italia & Eropa dengan partner lokal terpercaya.</p>
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.2} className={styles.featureItem}>
-              <div className={styles.featureIcon}>
-                <ShieldCheck size={32} strokeWidth={1.5} color="currentColor" />
-              </div>
-              <div className={styles.featureText}>
-                <h3>Harga Transparan</h3>
-                <p>Tanpa biaya tersembunyi. Apa yang Anda lihat adalah apa yang Anda bayar.</p>
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.3} className={styles.featureItem}>
-              <div className={styles.featureIcon}>
-                <Compass size={32} strokeWidth={1.5} color="currentColor" />
-              </div>
-              <div className={styles.featureText}>
-                <h3>Guide Profesional</h3>
-                <p>Didampingi oleh Tour Leader berlisensi yang memahami budaya lokal.</p>
-              </div>
-            </FadeIn>
-            <FadeIn delay={0.4} className={styles.featureItem}>
-              <div className={styles.featureIcon}>
-                <Route size={32} strokeWidth={1.5} color="currentColor" />
-              </div>
-              <div className={styles.featureText}>
-                <h3>Itinerary Fleksibel</h3>
-                <p>Tersedia layanan Private Trip untuk pengalaman liburan yang lebih personal.</p>
-              </div>
-            </FadeIn>
-          </div>
-        </div>
-      </section>
-      
-      <section className={styles.ctaBand}>
-        <div className={styles.container}>
-          <FadeIn direction="up" className={styles.ctaContent}>
-            <h2 className={styles.ctaTitle} style={homeSettings.ctaTitleColor ? { color: homeSettings.ctaTitleColor } : {}}>
-              {homeSettings.ctaTitle}
-            </h2>
-            <p className={styles.ctaText} style={homeSettings.ctaTextColor ? { color: homeSettings.ctaTextColor } : {}}>
-              {homeSettings.ctaText}
-            </p>
-            <div className={styles.ctaButtons}>
-              <Link href="/private-trip" className={styles.btnPrimary}>Rencanakan Private Trip</Link>
-              <a href="https://wa.me/6281234567890" target="_blank" rel="noreferrer" className={styles.btnSecondary}>
-                Chat WhatsApp
-              </a>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-    </>
+    <HomeContent 
+      packages={packages} 
+      destinations={destinations} 
+      homeSettings={homeSettings} 
+    />
   )
 }

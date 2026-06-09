@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { MapPin, Clock, Users, ShieldCheck, CheckCircle } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 import styles from './page.module.css'
 
 export default function PrivateTripPage() {
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [whatsappNumber, setWhatsappNumber] = useState('6281234567890')
@@ -50,16 +52,14 @@ export default function PrivateTripPage() {
       if (res.ok) {
         setSuccess(true)
       } else {
-        alert('Gagal mengirim permintaan. Silakan coba lagi nanti.')
+        alert(t('pt.errSubmit'))
       }
     } catch (err) {
-      alert('Terjadi kesalahan jaringan.')
+      alert(t('pt.errNetwork'))
     } finally {
       setLoading(false)
     }
   }
-
-  const formatWa = (phone: string) => phone.replace(/\D/g, '')
 
   return (
     <div className={styles.page}>
@@ -73,8 +73,8 @@ export default function PrivateTripPage() {
         />
         <div className={styles.overlay} />
         <div className={styles.heroContent}>
-          <h1 className={styles.title}>Private Trip Eropa</h1>
-          <p className={styles.subtitle}>Eksplorasi Eropa dengan itinerary yang dirancang khusus untuk Anda dan orang-orang terdekat.</p>
+          <h1 className={styles.title}>{t('pt.title')}</h1>
+          <p className={styles.subtitle}>{t('pt.subtitle')}</p>
         </div>
       </div>
       
@@ -82,15 +82,15 @@ export default function PrivateTripPage() {
         <div className={styles.layout}>
           <div className={styles.content}>
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Mengapa Memilih Private Trip?</h2>
+              <h2 className={styles.sectionTitle}>{t('pt.whyTitle')}</h2>
               <div className={styles.features}>
                 <div className={styles.feature}>
                   <div className={styles.icon}>
                     <MapPin size={28} strokeWidth={1.5} color="var(--color-primary)" />
                   </div>
                   <div>
-                    <h3>Itinerary Custom</h3>
-                    <p>Bebas menentukan negara, kota, dan durasi sesuai keinginan Anda tanpa terikat jadwal grup.</p>
+                    <h3>{t('pt.custom')}</h3>
+                    <p>{t('pt.customDesc')}</p>
                   </div>
                 </div>
                 <div className={styles.feature}>
@@ -98,8 +98,8 @@ export default function PrivateTripPage() {
                     <Clock size={28} strokeWidth={1.5} color="var(--color-primary)" />
                   </div>
                   <div>
-                    <h3>Waktu Fleksibel</h3>
-                    <p>Tidak perlu terburu-buru. Anda bebas menentukan kapan ingin berangkat dan bersantai.</p>
+                    <h3>{t('pt.flex')}</h3>
+                    <p>{t('pt.flexDesc')}</p>
                   </div>
                 </div>
                 <div className={styles.feature}>
@@ -107,8 +107,8 @@ export default function PrivateTripPage() {
                     <Users size={28} strokeWidth={1.5} color="var(--color-primary)" />
                   </div>
                   <div>
-                    <h3>Eksklusif & Privat</h3>
-                    <p>Nikmati perjalanan hanya bersama keluarga atau kerabat terdekat Anda dengan privasi penuh.</p>
+                    <h3>{t('pt.exclusive')}</h3>
+                    <p>{t('pt.exclusiveDesc')}</p>
                   </div>
                 </div>
                 <div className={styles.feature}>
@@ -116,8 +116,8 @@ export default function PrivateTripPage() {
                     <ShieldCheck size={28} strokeWidth={1.5} color="var(--color-primary)" />
                   </div>
                   <div>
-                    <h3>Fasilitas VIP</h3>
-                    <p>Dari mobil pribadi hingga rekomendasi restoran Michelin Star, kami atur semuanya.</p>
+                    <h3>{t('pt.vip')}</h3>
+                    <p>{t('pt.vipDesc')}</p>
                   </div>
                 </div>
               </div>
@@ -128,38 +128,38 @@ export default function PrivateTripPage() {
             <div className={styles.formCard}>
               {!success ? (
                 <>
-                  <h3 className={styles.formTitle}>Ajukan Private Trip</h3>
-                  <p className={styles.formDesc}>Ceritakan rencana perjalanan Anda, Travel Consultant kami akan merancang penawaran terbaik.</p>
+                  <h3 className={styles.formTitle}>{t('pt.formTitle')}</h3>
+                  <p className={styles.formDesc}>{t('pt.formDesc')}</p>
                   
                   <form className={styles.form} onSubmit={handleSubmit}>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="nama">Nama Lengkap</label>
+                      <label htmlFor="nama">{t('pt.name')}</label>
                       <input type="text" id="nama" name="nama" value={formData.nama} onChange={handleChange} className={styles.input} required />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="email">Email</label>
+                      <label htmlFor="email">{t('pt.email')}</label>
                       <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className={styles.input} required />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="nowa">No. WhatsApp</label>
+                      <label htmlFor="nowa">{t('pt.wa')}</label>
                       <input type="tel" id="nowa" name="noWa" value={formData.noWa} onChange={handleChange} className={styles.input} required />
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="destinasi">Destinasi yang Diinginkan</label>
-                      <input type="text" id="destinasi" name="destinasi" value={formData.destinasi} onChange={handleChange} placeholder="Misal: Swiss, Paris, Amsterdam" className={styles.input} required />
+                      <label htmlFor="destinasi">{t('pt.dest')}</label>
+                      <input type="text" id="destinasi" name="destinasi" value={formData.destinasi} onChange={handleChange} placeholder={t('pt.destPh')} className={styles.input} required />
                     </div>
                     <div className={styles.inputRow}>
                       <div className={styles.inputGroup}>
-                        <label htmlFor="tanggal">Rencana Tanggal</label>
+                        <label htmlFor="tanggal">{t('pt.date')}</label>
                         <input type="month" id="tanggal" name="tanggal" value={formData.tanggal} onChange={handleChange} className={styles.input} required />
                       </div>
                       <div className={styles.inputGroup}>
-                        <label htmlFor="pax">Jumlah Pax</label>
+                        <label htmlFor="pax">{t('pt.pax')}</label>
                         <input type="number" id="pax" name="pax" min="2" value={formData.pax} onChange={handleChange} className={styles.input} required />
                       </div>
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="budget">Estimasi Budget per Orang</label>
+                      <label htmlFor="budget">{t('pt.budget')}</label>
                       <select id="budget" name="budget" value={formData.budget} onChange={handleChange} className={styles.input}>
                         <option value="< 20jt">&lt; Rp 20.000.000</option>
                         <option value="20jt-30jt">Rp 20.000.000 - Rp 30.000.000</option>
@@ -168,11 +168,11 @@ export default function PrivateTripPage() {
                       </select>
                     </div>
                     <div className={styles.inputGroup}>
-                      <label htmlFor="catatan">Catatan Tambahan</label>
-                      <textarea id="catatan" name="catatan" value={formData.catatan} onChange={handleChange} className={styles.textarea} rows={4} placeholder="Hotel bintang 5, butuh fotografer, dsb."></textarea>
+                      <label htmlFor="catatan">{t('pt.notes')}</label>
+                      <textarea id="catatan" name="catatan" value={formData.catatan} onChange={handleChange} className={styles.textarea} rows={4} placeholder={t('pt.notesPh')}></textarea>
                     </div>
                     <button type="submit" className={styles.submitBtn} disabled={loading}>
-                      {loading ? 'Mengirim...' : 'Kirim Permintaan'}
+                      {loading ? t('pt.submitting') : t('pt.submit')}
                     </button>
                   </form>
                 </>
@@ -181,7 +181,7 @@ export default function PrivateTripPage() {
                   <div className={styles.successIcon}>
                     <CheckCircle size={64} color="var(--color-success)" />
                   </div>
-                  <h3 className={styles.formTitle} style={{textAlign: 'center'}}>Permintaan Terkirim!</h3>
+                  <h3 className={styles.formTitle} style={{textAlign: 'center'}}>{t('pt.success')}</h3>
                   <p className={styles.formDesc} style={{textAlign: 'center', marginBottom: '32px'}}>
                     Terima kasih <strong>{formData.nama}</strong>. Tim kami akan segera menganalisa rute <strong>{formData.destinasi}</strong> Anda dan menghubungi Anda secepatnya.
                   </p>
@@ -192,7 +192,7 @@ export default function PrivateTripPage() {
                     className={styles.submitBtn}
                     style={{display: 'flex', justifyContent: 'center', textDecoration: 'none'}}
                   >
-                    Lanjut via WhatsApp
+                    {t('pt.continueWa')}
                   </a>
                   <button 
                     onClick={() => {
@@ -201,7 +201,7 @@ export default function PrivateTripPage() {
                     }} 
                     className={styles.resetBtn}
                   >
-                    Ajukan Permintaan Lain
+                    {t('pt.another')}
                   </button>
                 </div>
               )}
@@ -212,3 +212,4 @@ export default function PrivateTripPage() {
     </div>
   )
 }
+

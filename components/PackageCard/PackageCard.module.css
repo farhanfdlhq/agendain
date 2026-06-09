@@ -71,7 +71,7 @@
 }
 
 .saveBtn.saved {
-  color: var(--color-primary);
+  color: #ff3b30;
 }
 
 .saveBtn svg {
