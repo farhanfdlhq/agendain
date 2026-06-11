@@ -1,12 +1,25 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock, WifiOff, AlertCircle, RefreshCw, Inbox, MessageSquare } from "lucide-react"
+import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock, WifiOff, AlertCircle, RefreshCw, Inbox, MessageSquare, ArrowUpRight, Loader2 } from "lucide-react"
 import { toast } from "react-hot-toast"
-import styles from "./page.module.css"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table"
+import { DataGrid, DataGridContainer } from "@/components/reui/data-grid/data-grid"
+import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
+import { DataGridPagination } from "@/components/reui/data-grid/data-grid-pagination"
+import { createTripColumns, createInquiryColumns } from "./columns"
 
 export default function AdminInquiriesPage() {
-  const [activeTab, setActiveTab] = useState<"inquiries" | "privatetrip">("privatetrip")
+  const [activeTab, setActiveTab] = useState<"privatetrip" | "inquiries">("privatetrip")
   const [data, setData] = useState({ inquiries: [], privateTrips: [] })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
@@ -73,7 +86,7 @@ export default function AdminInquiriesPage() {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
-      day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit"
+      day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
     })
   }
 
@@ -88,72 +101,66 @@ export default function AdminInquiriesPage() {
     i.email.toLowerCase().includes(search.toLowerCase())
   )
 
-  const SkeletonRow = () => (
-    <tr className={styles.skeletonRow}>
-      <td>
-        <div className={`${styles.skeleton} ${styles.skTitle}`}></div>
-        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
-        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
-      </td>
-      <td>
-        <div className={`${styles.skeleton} ${styles.skTitle}`}></div>
-        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
-      </td>
-      <td>
-        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
-        <div className={`${styles.skeleton} ${styles.skTitle}`}></div>
-      </td>
-      <td><div className={`${styles.skeleton} ${styles.skBadge}`}></div></td>
-      <td><div className={`${styles.skeleton} ${styles.skBtn}`}></div></td>
-    </tr>
-  )
+  const tripColumns = createTripColumns()
+  const inquiryColumns = createInquiryColumns(handleMarkAsReplied)
+
+  const tripsTable = useReactTable({
+    data: filteredTrips,
+    columns: tripColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: { pageSize: 10 }
+    }
+  })
+
+  const inquiriesTable = useReactTable({
+    data: filteredInquiries,
+    columns: inquiryColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: { pageSize: 10 }
+    }
+  })
 
   const renderState = () => {
     if (isOffline) {
       return (
-        <tr>
-          <td colSpan={5} className={styles.loadingCell}>
-            <div className={styles.stateContent}>
-              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
-                <WifiOff size={28} />
-              </div>
-              <h3 className={styles.stateTitle}>Anda Sedang Offline</h3>
-              <p className={styles.stateDesc}>Koneksi internet terputus. Silakan periksa jaringan Anda lalu coba lagi.</p>
-              <button className={styles.retryBtn} onClick={fetchData}>
-                <RefreshCw size={16} /> Coba Ulang
-              </button>
-            </div>
-          </td>
-        </tr>
+        <div className="flex flex-col items-center justify-center space-y-3 h-64 text-center">
+          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+            <WifiOff className="h-6 w-6 text-destructive" />
+          </div>
+          <h3 className="text-lg font-medium">Anda Sedang Offline</h3>
+          <p className="text-sm text-muted-foreground">Koneksi internet terputus. Silakan periksa jaringan Anda lalu coba lagi.</p>
+          <Button onClick={fetchData} variant="outline" className="mt-2">
+            <RefreshCw className="mr-2 h-4 w-4" /> Coba Ulang
+          </Button>
+        </div>
       )
     }
     
     if (error) {
       return (
-        <tr>
-          <td colSpan={5} className={styles.loadingCell}>
-            <div className={styles.stateContent}>
-              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
-                <AlertCircle size={28} />
-              </div>
-              <h3 className={styles.stateTitle}>Terjadi Kesalahan</h3>
-              <p className={styles.stateDesc}>{error}</p>
-              <button className={styles.retryBtn} onClick={fetchData}>
-                <RefreshCw size={16} /> Coba Lagi
-              </button>
-            </div>
-          </td>
-        </tr>
+        <div className="flex flex-col items-center justify-center space-y-3 h-64 text-center">
+          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+            <AlertCircle className="h-6 w-6 text-destructive" />
+          </div>
+          <h3 className="text-lg font-medium">Terjadi Kesalahan</h3>
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <Button onClick={fetchData} variant="outline" className="mt-2">
+            <RefreshCw className="mr-2 h-4 w-4" /> Coba Lagi
+          </Button>
+        </div>
       )
     }
 
     if (loading) {
       return (
-        <>
-          <SkeletonRow />
-          <SkeletonRow />
-          <SkeletonRow />
-        </>
+        <div className="flex h-64 w-full items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2 text-muted-foreground">Memuat data...</span>
+        </div>
       )
     }
 
@@ -161,164 +168,89 @@ export default function AdminInquiriesPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
+    <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto py-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className={styles.title}>Pusat Pesan & Inquiries</h2>
-          <p className={styles.subtitle}>Kelola permintaan Private Trip dan pertanyaan masuk dari pelanggan.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Pusat Pesan & Inquiries</h2>
+          <p className="text-muted-foreground text-sm">Kelola permintaan Private Trip dan pertanyaan masuk dari pelanggan.</p>
         </div>
       </div>
 
-      <div className={styles.tabs}>
-        <button 
-          className={`${styles.tabBtn} ${activeTab === "privatetrip" ? styles.activeTab : ""}`}
-          onClick={() => setActiveTab("privatetrip")}
-        >
-          Request Private Trip
-          {data.privateTrips.length > 0 && <span className={styles.badge}>{data.privateTrips.length}</span>}
-        </button>
-        <button 
-          className={`${styles.tabBtn} ${activeTab === "inquiries" ? styles.activeTab : ""}`}
-          onClick={() => setActiveTab("inquiries")}
-        >
-          Pesan Masuk (Q&A)
-          {data.inquiries.length > 0 && <span className={styles.badge}>{data.inquiries.length}</span>}
-        </button>
-      </div>
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as "privatetrip" | "inquiries")} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 md:w-[400px]">
+          <TabsTrigger value="privatetrip" className="flex items-center gap-2">
+            Private Trip
+            {data.privateTrips.length > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">{data.privateTrips.length}</Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="inquiries" className="flex items-center gap-2">
+            Pesan Masuk
+            {data.inquiries.length > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">{data.inquiries.length}</Badge>
+            )}
+          </TabsTrigger>
+        </TabsList>
 
-      <div className={styles.tableCard}>
-        <div className={styles.tableToolbar}>
-          <div className={styles.searchBox}>
-            <Search size={18} className={styles.searchIcon} />
-            <input 
-              type="text" 
-              placeholder="Cari nama, email, atau destinasi..." 
-              className={styles.searchInput}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-        </div>
+        <Card className="mt-6 border-border">
+          <CardHeader className="p-4 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-muted/20">
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                type="text" 
+                placeholder="Cari nama, email, atau destinasi..." 
+                className="pl-9 bg-background"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+          </CardHeader>
+          
+          <CardContent className="p-0">
+            <TabsContent value="privatetrip" className="m-0 border-0 outline-none">
+              {renderState() || (filteredTrips.length > 0 ? (
+                <DataGrid table={tripsTable} recordCount={filteredTrips.length}>
+                  <DataGridContainer border={false} className="border-0 rounded-none">
+                    <DataGridTable />
+                    <div className="p-4 border-t border-border">
+                      <DataGridPagination />
+                    </div>
+                  </DataGridContainer>
+                </DataGrid>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-64 text-center">
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                    <Inbox className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-medium">Belum Ada Private Trip</h3>
+                  <p className="text-sm text-muted-foreground">Saat ini belum ada pengajuan Private Trip baru dari pelanggan.</p>
+                </div>
+              ))}
+            </TabsContent>
 
-        {activeTab === "privatetrip" ? (
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Pelanggan</th>
-                  <th>Destinasi & Tanggal</th>
-                  <th>Detail Pax & Budget</th>
-                  <th>Status</th>
-                  <th className={styles.textRight}>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {renderState() || (filteredTrips.length > 0 ? (
-                  filteredTrips.map((trip: any) => (
-                    <tr key={trip.id}>
-                      <td>
-                        <p className={styles.boldCell}>{trip.nama}</p>
-                        <div className={styles.contactInfo}>
-                          <span className={styles.contactItem}><Mail size={12}/> {trip.email}</span>
-                          <span className={styles.contactItem}><Phone size={12}/> {trip.noWa}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <p className={styles.boldCell}>{trip.destinasi}</p>
-                        <div className={styles.contactItem}><Calendar size={12}/> {new Date(trip.tanggal).toLocaleDateString('id-ID', {month: 'long', year:'numeric'})}</div>
-                      </td>
-                      <td>
-                        <div className={styles.contactItem}><Users size={12}/> {trip.jumlahPax} Orang</div>
-                        <p className={styles.budget}>{trip.budget}</p>
-                      </td>
-                      <td>
-                        <span className={`${styles.statusBadge} ${trip.status === 'new' ? styles.statusNew : styles.statusProgress}`}>
-                          {trip.status === 'new' ? 'Baru' : 'Diproses'}
-                        </span>
-                      </td>
-                      <td className={styles.actionsCell}>
-                        <a href={`https://wa.me/${trip.noWa.replace(/\D/g,'')}`} target="_blank" rel="noreferrer" className={styles.btnPrimarySm}>
-                          Balas WA
-                        </a>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className={styles.emptyCell}>
-                      <div className={styles.stateContent}>
-                        <div className={styles.stateIconWrapper}>
-                          <Inbox size={28} />
-                        </div>
-                        <h3 className={styles.stateTitle}>Belum Ada Private Trip</h3>
-                        <p className={styles.stateDesc}>Saat ini belum ada pengajuan Private Trip baru dari pelanggan.</p>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>Pengirim</th>
-                  <th>Pesan / Pertanyaan</th>
-                  <th>Tanggal</th>
-                  <th>Status</th>
-                  <th className={styles.textRight}>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {renderState() || (filteredInquiries.length > 0 ? (
-                  filteredInquiries.map((inq: any) => (
-                    <tr key={inq.id}>
-                      <td>
-                        <p className={styles.boldCell}>{inq.nama}</p>
-                        <p className={styles.contactItem} style={{marginTop: 4}}><Mail size={12}/> {inq.email}</p>
-                        {inq.noWa && <p className={styles.contactItem}><Phone size={12}/> {inq.noWa}</p>}
-                      </td>
-                      <td style={{maxWidth: '300px'}}>
-                        {inq.paket && <span className={styles.topicBadge}>Terkait: {inq.paket.nama}</span>}
-                        <p className={styles.messageText}>{inq.pesan}</p>
-                      </td>
-                      <td>{formatDate(inq.createdAt)}</td>
-                      <td>
-                        {inq.sudahDibalas ? (
-                          <span className={`${styles.statusBadge}`} style={{background: 'var(--color-success-surface)', color: 'var(--color-success)'}}><CheckCircle size={12}/> Selesai</span>
-                        ) : (
-                          <span className={`${styles.statusBadge}`} style={{background: 'var(--color-danger-surface)', color: 'var(--color-danger)'}}><Clock size={12}/> Menunggu</span>
-                        )}
-                      </td>
-                      <td className={styles.actionsCell}>
-                        {!inq.sudahDibalas && (
-                          <button onClick={() => handleMarkAsReplied(inq.id, 'inquiry')} className={styles.btnSecondarySm}>
-                            Tandai Selesai
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className={styles.emptyCell}>
-                      <div className={styles.stateContent}>
-                        <div className={styles.stateIconWrapper}>
-                          <MessageSquare size={28} />
-                        </div>
-                        <h3 className={styles.stateTitle}>Inbox Kosong</h3>
-                        <p className={styles.stateDesc}>Belum ada pertanyaan masuk dari pelanggan.</p>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+            <TabsContent value="inquiries" className="m-0 border-0 outline-none">
+              {renderState() || (filteredInquiries.length > 0 ? (
+                <DataGrid table={inquiriesTable} recordCount={filteredInquiries.length}>
+                  <DataGridContainer border={false} className="border-0 rounded-none">
+                    <DataGridTable />
+                    <div className="p-4 border-t border-border">
+                      <DataGridPagination />
+                    </div>
+                  </DataGridContainer>
+                </DataGrid>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-64 text-center">
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                    <MessageSquare className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-medium">Inbox Kosong</h3>
+                  <p className="text-sm text-muted-foreground">Belum ada pertanyaan masuk dari pelanggan.</p>
+                </div>
+              ))}
+            </TabsContent>
+          </CardContent>
+        </Card>
+      </Tabs>
     </div>
   )
 }
