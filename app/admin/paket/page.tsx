@@ -2,16 +2,21 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Plus, Edit2, Trash2, Search, MoreVertical, Eye, WifiOff, AlertCircle, RefreshCw, PackageX } from "lucide-react"
+import { Plus, Edit2, Trash2, Search, Eye, WifiOff, AlertCircle, RefreshCw, PackageX, Loader2 } from "lucide-react"
 import { formatIDR } from "@/lib/currency"
 import { toast } from "react-hot-toast"
-import styles from "./page.module.css"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 export default function AdminPaketPage() {
   const [packages, setPackages] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
   const [error, setError] = useState<string | null>(null)
   const [isOffline, setIsOffline] = useState(false)
 
@@ -93,7 +98,7 @@ export default function AdminPaketPage() {
   const filteredPackages = packages.filter(pkg => {
     const matchesSearch = pkg.nama.toLowerCase().includes(search.toLowerCase()) || 
       pkg.destinasi.nama.toLowerCase().includes(search.toLowerCase())
-    const matchesStatus = !statusFilter || pkg.status === statusFilter
+    const matchesStatus = statusFilter === "all" || pkg.status === statusFilter
     return matchesSearch && matchesStatus
   })
 
@@ -102,55 +107,55 @@ export default function AdminPaketPage() {
   }
 
   const SkeletonRow = () => (
-    <tr className={styles.skeletonRow}>
-      <td>
-        <div className={`${styles.skeleton} ${styles.skTitle}`}></div>
-        <div className={`${styles.skeleton} ${styles.skSub}`}></div>
-      </td>
-      <td><div className={`${styles.skeleton} ${styles.skBadge}`}></div></td>
-      <td><div className={`${styles.skeleton} ${styles.skSub}`}></div></td>
-      <td><div className={`${styles.skeleton} ${styles.skTitle}`}></div></td>
-      <td><div className={`${styles.skeleton} ${styles.skBadge}`}></div></td>
-      <td><div className={`${styles.skeleton} ${styles.skBtn}`}></div></td>
-    </tr>
+    <TableRow>
+      <TableCell>
+        <div className="h-5 w-48 bg-muted animate-pulse rounded mb-2"></div>
+        <div className="h-4 w-32 bg-muted animate-pulse rounded"></div>
+      </TableCell>
+      <TableCell><div className="h-6 w-24 bg-muted animate-pulse rounded-full"></div></TableCell>
+      <TableCell><div className="h-5 w-16 bg-muted animate-pulse rounded"></div></TableCell>
+      <TableCell><div className="h-5 w-24 bg-muted animate-pulse rounded"></div></TableCell>
+      <TableCell><div className="h-8 w-28 bg-muted animate-pulse rounded-md"></div></TableCell>
+      <TableCell><div className="h-8 w-32 bg-muted animate-pulse rounded-md"></div></TableCell>
+    </TableRow>
   )
 
   const renderState = () => {
     if (isOffline) {
       return (
-        <tr>
-          <td colSpan={6} className={styles.loadingCell}>
-            <div className={styles.stateContent}>
-              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
-                <WifiOff size={28} />
+        <TableRow>
+          <TableCell colSpan={6} className="h-64 text-center">
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+                <WifiOff className="h-6 w-6 text-destructive" />
               </div>
-              <h3 className={styles.stateTitle}>Anda Sedang Offline</h3>
-              <p className={styles.stateDesc}>Koneksi internet terputus. Silakan periksa jaringan Anda lalu coba lagi.</p>
-              <button className={styles.retryBtn} onClick={fetchPackages}>
-                <RefreshCw size={16} /> Coba Ulang
-              </button>
+              <h3 className="text-lg font-medium">Anda Sedang Offline</h3>
+              <p className="text-sm text-muted-foreground">Koneksi internet terputus. Silakan periksa jaringan Anda lalu coba lagi.</p>
+              <Button onClick={fetchPackages} variant="outline" className="mt-2">
+                <RefreshCw className="mr-2 h-4 w-4" /> Coba Ulang
+              </Button>
             </div>
-          </td>
-        </tr>
+          </TableCell>
+        </TableRow>
       )
     }
     
     if (error) {
       return (
-        <tr>
-          <td colSpan={6} className={styles.loadingCell}>
-            <div className={styles.stateContent}>
-              <div className={`${styles.stateIconWrapper} ${styles.error}`}>
-                <AlertCircle size={28} />
+        <TableRow>
+          <TableCell colSpan={6} className="h-64 text-center">
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+                <AlertCircle className="h-6 w-6 text-destructive" />
               </div>
-              <h3 className={styles.stateTitle}>Terjadi Kesalahan</h3>
-              <p className={styles.stateDesc}>{error}</p>
-              <button className={styles.retryBtn} onClick={fetchPackages}>
-                <RefreshCw size={16} /> Coba Lagi
-              </button>
+              <h3 className="text-lg font-medium">Terjadi Kesalahan</h3>
+              <p className="text-sm text-muted-foreground">{error}</p>
+              <Button onClick={fetchPackages} variant="outline" className="mt-2">
+                <RefreshCw className="mr-2 h-4 w-4" /> Coba Lagi
+              </Button>
             </div>
-          </td>
-        </tr>
+          </TableCell>
+        </TableRow>
       )
     }
 
@@ -164,109 +169,137 @@ export default function AdminPaketPage() {
       )
     }
 
+    if (filteredPackages.length === 0) {
+      return (
+        <TableRow>
+          <TableCell colSpan={6} className="h-64 text-center">
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                <PackageX className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <h3 className="text-lg font-medium">Tidak Ada Paket Ditemukan</h3>
+              <p className="text-sm text-muted-foreground">Belum ada paket wisata yang ditambahkan atau paket yang dicari tidak ada.</p>
+              <Button asChild className="mt-2">
+                <Link href="/admin/paket/baru">
+                  <Plus className="mr-2 h-4 w-4" /> Tambah Paket
+                </Link>
+              </Button>
+            </div>
+          </TableCell>
+        </TableRow>
+      )
+    }
+
     return null
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
+    <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto py-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className={styles.title}>Manajemen Paket</h2>
-          <p className={styles.subtitle}>Kelola semua paket wisata perjalanan Anda.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Manajemen Paket</h2>
+          <p className="text-muted-foreground text-sm">Kelola semua paket wisata perjalanan Anda.</p>
         </div>
-        <Link href="/admin/paket/baru" className={styles.addBtn}>
-          <Plus size={18} />
-          Tambah Paket Baru
-        </Link>
+        <Button asChild>
+          <Link href="/admin/paket/baru">
+            <Plus className="mr-2 h-4 w-4" />
+            Tambah Paket Baru
+          </Link>
+        </Button>
       </div>
 
-      <div className={styles.tableCard}>
-        <div className={styles.tableToolbar}>
-          <div className={styles.searchBox}>
-            <Search size={18} className={styles.searchIcon} />
-            <input 
+      <Card>
+        <CardHeader className="p-4 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-muted/20">
+          <div className="relative w-full sm:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
               type="text" 
               placeholder="Cari nama paket atau destinasi..." 
-              className={styles.searchInput}
+              className="pl-9 bg-background"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className={styles.filters}>
-            <select className={styles.select} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="">Semua Status</option>
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-            </select>
+          <div className="w-full sm:w-48">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="bg-background">
+                <SelectValue placeholder="Semua Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Semua Status</SelectItem>
+                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="draft">Draft</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </div>
-
-        <div className={styles.tableWrapper}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Nama Paket</th>
-                <th>Destinasi</th>
-                <th>Durasi</th>
-                <th>Harga</th>
-                <th>Status</th>
-                <th className={styles.textRight}>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {renderState() || (filteredPackages.length > 0 ? (
-                filteredPackages.map((pkg) => (
-                  <tr key={pkg.id}>
-                    <td className={styles.boldCell}>{pkg.nama}</td>
-                    <td>
-                      <span className={styles.badgeNeutral}>{pkg.destinasi.nama}</span>
-                    </td>
-                    <td>{pkg.durasi} Hari</td>
-                    <td className={styles.priceCell}>{formatPrice(pkg.harga)}</td>
-                    <td>
-                      <select 
+        </CardHeader>
+        
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30">
+                  <TableHead className="font-semibold text-foreground w-[300px]">Nama Paket</TableHead>
+                  <TableHead className="font-semibold text-foreground">Destinasi</TableHead>
+                  <TableHead className="font-semibold text-foreground">Durasi</TableHead>
+                  <TableHead className="font-semibold text-foreground">Harga</TableHead>
+                  <TableHead className="font-semibold text-foreground">Status</TableHead>
+                  <TableHead className="font-semibold text-foreground text-right w-[150px]">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {renderState() || filteredPackages.map((pkg) => (
+                  <TableRow key={pkg.id} className="hover:bg-muted/30 transition-colors">
+                    <TableCell className="font-semibold text-foreground">
+                      <div className="line-clamp-2">{pkg.nama}</div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="font-normal bg-secondary hover:bg-secondary/80 text-secondary-foreground border border-border/50">
+                        {pkg.destinasi.nama}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {pkg.durasi} Hari
+                    </TableCell>
+                    <TableCell className="font-medium text-primary whitespace-nowrap">
+                      {formatPrice(pkg.harga)}
+                    </TableCell>
+                    <TableCell>
+                      <Select 
                         value={pkg.status} 
-                        onChange={(e) => handleStatusChange(pkg.slug, e.target.value)}
-                        className={`${styles.badge} ${pkg.status === 'published' ? styles.badgeSuccess : styles.badgeWarning}`}
-                        style={{ border: 'none', cursor: 'pointer', outline: 'none' }}
+                        onValueChange={(val) => handleStatusChange(pkg.slug, val)}
                       >
-                        <option value="published" className={styles.badgeSuccess}>published</option>
-                        <option value="draft" className={styles.badgeWarning}>draft</option>
-                      </select>
-                    </td>
-                    <td className={styles.actionsCell}>
-                      <Link href={`/paket/${pkg.slug}`} target="_blank" className={styles.iconBtn} title="Lihat di Web">
-                        <Eye size={18} />
-                      </Link>
-                      <Link href={`/admin/paket/edit/${pkg.slug}`} className={styles.iconBtn} title="Edit">
-                        <Edit2 size={18} />
-                      </Link>
-                      <button className={styles.iconBtnDanger} onClick={() => handleDelete(pkg.slug)} title="Hapus">
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className={styles.emptyCell}>
-                    <div className={styles.stateContent}>
-                      <div className={styles.stateIconWrapper}>
-                        <PackageX size={28} />
-                      </div>
-                      <h3 className={styles.stateTitle}>Tidak Ada Paket Ditemukan</h3>
-                      <p className={styles.stateDesc}>Belum ada paket wisata yang ditambahkan atau paket yang dicari tidak ada.</p>
-                      <Link href="/admin/paket/baru" className={styles.retryBtn} style={{ marginTop: '16px' }}>
-                        <Plus size={16} /> Tambah Paket
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                        <SelectTrigger className={`h-8 w-[110px] text-xs font-medium border ${pkg.status === 'published' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20' : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20'}`}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="published" className="text-emerald-600 dark:text-emerald-400 font-medium">Published</SelectItem>
+                          <SelectItem value="draft" className="text-amber-600 dark:text-amber-400 font-medium">Draft</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell className="text-right space-x-1">
+                      <Button variant="ghost" size="icon" asChild title="Lihat di Web" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                        <Link href={`/paket/${pkg.slug}`} target="_blank">
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" size="icon" asChild title="Edit" className="h-8 w-8 text-muted-foreground hover:text-primary">
+                        <Link href={`/admin/paket/edit/${pkg.slug}`}>
+                          <Edit2 className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleDelete(pkg.slug)} title="Hapus" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -3,9 +3,14 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Save, Loader2, Image as ImageIcon } from "lucide-react"
+import { ArrowLeft, Save, Loader2, Image as ImageIcon, X } from "lucide-react"
 import { toast } from "react-hot-toast"
-import styles from "./page.module.css"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function TambahPaketPage() {
   const router = useRouter()
@@ -148,11 +153,18 @@ export default function TambahPaketPage() {
     }))
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'durasi' || name === 'destinasiId' ? Number(value) : value
+      [name]: name === 'durasi' ? Number(value) : value
+    }))
+  }
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'destinasiId' ? Number(value) : value
     }))
   }
 
@@ -168,6 +180,11 @@ export default function TambahPaketPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!formData.nama || !formData.destinasiId || !formData.hargaString) {
+      toast.error("Mohon lengkapi data wajib (Nama, Destinasi, Harga)")
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -234,41 +251,37 @@ export default function TambahPaketPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <Link href="/admin/paket" className={styles.backBtn}>
-          <ArrowLeft size={18} />
-          Kembali
-        </Link>
-        <div className={styles.headerContent}>
+    <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto py-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" asChild>
+            <Link href="/admin/paket">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+          </Button>
           <div>
-            <h2 className={styles.title}>Tambah Paket Baru</h2>
-            <p className={styles.subtitle}>Isi detail informasi untuk paket perjalanan baru.</p>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">Tambah Paket Baru</h2>
+            <p className="text-muted-foreground text-sm">Isi detail informasi untuk paket perjalanan baru.</p>
           </div>
-          <button 
-            onClick={handleSubmit} 
-            className={styles.saveBtn}
-            disabled={loading || uploadingImage}
-          >
-            {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
-            Simpan Paket
-          </button>
         </div>
+        <Button onClick={handleSubmit} disabled={loading || uploadingImage}>
+          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          Simpan Paket
+        </Button>
       </div>
 
-      <div className={styles.formContainer}>
-        <form onSubmit={handleSubmit} className={styles.formGrid}>
-          
-          <div className={styles.mainColumn}>
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Informasi Dasar</h3>
-              
-              <div className={styles.inputGroup}>
-                <label>Nama Paket</label>
-                <input 
-                  type="text" 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informasi Dasar</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="nama">Nama Paket</Label>
+                <Input 
+                  id="nama"
                   name="nama" 
-                  className={styles.input} 
                   placeholder="Contoh: Romantic Paris 5 Days"
                   value={formData.nama}
                   onChange={handleChange}
@@ -276,165 +289,196 @@ export default function TambahPaketPage() {
                 />
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Slug (URL) <span className={styles.optional}>Opsional</span></label>
-                <input 
-                  type="text" 
+              <div className="space-y-2">
+                <Label htmlFor="slug">Slug (URL) <span className="text-muted-foreground font-normal ml-1">Opsional</span></Label>
+                <Input 
+                  id="slug"
                   name="slug" 
-                  className={styles.input} 
                   placeholder="romantic-paris-5-days"
                   value={formData.slug}
                   onChange={handleChange}
                 />
-                <span className={styles.hint}>Biarkan kosong untuk generate otomatis dari nama.</span>
+                <p className="text-xs text-muted-foreground">Biarkan kosong untuk generate otomatis dari nama.</p>
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Deskripsi Paket</label>
-                <textarea 
+              <div className="space-y-2">
+                <Label htmlFor="deskripsi">Deskripsi Paket</Label>
+                <Textarea 
+                  id="deskripsi"
                   name="deskripsi" 
-                  className={styles.textarea} 
                   placeholder="Tuliskan deskripsi menarik tentang perjalanan ini..."
                   rows={6}
                   value={formData.deskripsi}
                   onChange={handleChange}
                   required 
-                ></textarea>
+                />
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Fasilitas & Layanan</h3>
-              
-              <div className={styles.inputGroup}>
-                <label>Fasilitas Utama</label>
-                <textarea 
+          <Card>
+            <CardHeader>
+              <CardTitle>Fasilitas & Layanan</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="fasilitasText">Fasilitas Utama</Label>
+                <Textarea 
+                  id="fasilitasText"
                   name="fasilitasText" 
-                  className={styles.textarea} 
                   placeholder="Hotel Bintang 4&#10;Transportasi Bus Private&#10;Guide Berbahasa Indonesia"
                   rows={4}
                   value={formData.fasilitasText}
                   onChange={handleChange}
-                ></textarea>
-                <span className={styles.hint}>Tulis setiap fasilitas di baris baru (Enter).</span>
+                />
+                <p className="text-xs text-muted-foreground">Tulis setiap fasilitas di baris baru (Enter).</p>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-lg)' }}>
-                <div className={styles.inputGroup}>
-                  <label>Termasuk (Included)</label>
-                  <textarea 
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="termasukText">Termasuk (Included)</Label>
+                  <Textarea 
+                    id="termasukText"
                     name="termasukText" 
-                    className={styles.textarea} 
                     placeholder="Tiket Pesawat PP&#10;Visa Schengen&#10;Makan 3x Sehari"
                     rows={4}
                     value={formData.termasukText}
                     onChange={handleChange}
-                  ></textarea>
+                  />
                 </div>
                 
-                <div className={styles.inputGroup}>
-                  <label>Tidak Termasuk (Excluded)</label>
-                  <textarea 
+                <div className="space-y-2">
+                  <Label htmlFor="tidakTermasukText">Tidak Termasuk (Excluded)</Label>
+                  <Textarea 
+                    id="tidakTermasukText"
                     name="tidakTermasukText" 
-                    className={styles.textarea} 
                     placeholder="Asuransi Perjalanan&#10;Pengeluaran Pribadi&#10;Tipping"
                     rows={4}
                     value={formData.tidakTermasukText}
                     onChange={handleChange}
-                  ></textarea>
+                  />
                 </div>
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Itinerary Perjalanan</h3>
-              
-              <div className={styles.itineraryList}>
-                {formData.itinerary.map((it, idx) => (
-                  <div key={idx} style={{ padding: '16px', border: '1px solid var(--color-hairline)', borderRadius: '8px', marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <h4 style={{ margin: 0 }}>Hari {idx + 1}</h4>
-                      {formData.itinerary.length > 1 && (
-                        <button type="button" onClick={() => setFormData(prev => ({ ...prev, itinerary: prev.itinerary.filter((_, i) => i !== idx) }))} style={{ background: 'transparent', color: 'red', border: 'none', cursor: 'pointer' }}>Hapus</button>
-                      )}
+          <Card>
+            <CardHeader>
+              <CardTitle>Itinerary Perjalanan</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {formData.itinerary.map((it, idx) => (
+                <div key={idx} className="p-4 border rounded-lg bg-muted/20 relative">
+                  <div className="flex justify-between items-center mb-4">
+                    <h4 className="font-semibold text-sm">Hari {idx + 1}</h4>
+                    {formData.itinerary.length > 1 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setFormData(prev => ({ ...prev, itinerary: prev.itinerary.filter((_, i) => i !== idx) }))}
+                        className="h-8 px-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        Hapus
+                      </Button>
+                    )}
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Judul Tempat/Aktivitas</Label>
+                      <Input 
+                        type="text" 
+                        value={it.judul} 
+                        placeholder="Contoh: Sydney to Snowy Mountains" 
+                        onChange={(e) => {
+                          const newItinerary = [...formData.itinerary];
+                          newItinerary[idx].judul = e.target.value;
+                          setFormData(prev => ({ ...prev, itinerary: newItinerary }));
+                        }} 
+                      />
                     </div>
-                    <div className={styles.inputGroup} style={{ marginBottom: '12px' }}>
-                      <label>Judul Tempat/Aktivitas</label>
-                      <input type="text" className={styles.input} value={it.judul} placeholder="Contoh: Sydney to Snowy Mountains" onChange={(e) => {
-                        const newItinerary = [...formData.itinerary];
-                        newItinerary[idx].judul = e.target.value;
-                        setFormData(prev => ({ ...prev, itinerary: newItinerary }));
-                      }} />
-                    </div>
-                    <div className={styles.inputGroup}>
-                      <label>Deskripsi</label>
-                      <textarea className={styles.textarea} rows={3} value={it.deskripsi} placeholder="Deskripsi perjalanan..." onChange={(e) => {
-                        const newItinerary = [...formData.itinerary];
-                        newItinerary[idx].deskripsi = e.target.value;
-                        setFormData(prev => ({ ...prev, itinerary: newItinerary }));
-                      }}></textarea>
+                    <div className="space-y-2">
+                      <Label>Deskripsi</Label>
+                      <Textarea 
+                        rows={3} 
+                        value={it.deskripsi} 
+                        placeholder="Deskripsi perjalanan..." 
+                        onChange={(e) => {
+                          const newItinerary = [...formData.itinerary];
+                          newItinerary[idx].deskripsi = e.target.value;
+                          setFormData(prev => ({ ...prev, itinerary: newItinerary }));
+                        }}
+                      />
                     </div>
                   </div>
-                ))}
-                <button type="button" onClick={() => setFormData(prev => ({ ...prev, itinerary: [...prev.itinerary, { judul: '', deskripsi: '' }] }))} style={{ padding: '10px 16px', background: 'var(--color-surface-soft)', border: '1px solid var(--color-border)', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>+ Tambah Hari</button>
-              </div>
-            </div>
+                </div>
+              ))}
+              <Button 
+                variant="outline" 
+                className="w-full border-dashed"
+                onClick={() => setFormData(prev => ({ ...prev, itinerary: [...prev.itinerary, { judul: '', deskripsi: '' }] }))}
+              >
+                <Plus className="mr-2 h-4 w-4" /> Tambah Hari
+              </Button>
+            </CardContent>
+          </Card>
 
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Kebijakan & Informasi Custom (Opsional)</h3>
-              <p className={styles.hint} style={{ marginBottom: '16px' }}>Biarkan kosong jika ingin menggunakan pengaturan global dari menu Pengaturan.</p>
-              
-              <div className={styles.inputGroup}>
-                <label>Informasi Penting (Khusus Paket Ini)</label>
-                <textarea 
+          <Card>
+            <CardHeader>
+              <CardTitle>Kebijakan & Informasi Custom <span className="text-muted-foreground font-normal">(Opsional)</span></CardTitle>
+              <CardDescription>Biarkan kosong jika ingin menggunakan pengaturan global.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="informasiPentingText">Informasi Penting</Label>
+                <Textarea 
+                  id="informasiPentingText"
                   name="informasiPentingText" 
-                  className={styles.textarea} 
-                  placeholder="Paspor minimal masa berlaku 6 bulan...&#10;Tulis poin-poin di baris baru..."
+                  placeholder="Tulis poin-poin di baris baru..."
                   rows={4}
                   value={formData.informasiPentingText}
                   onChange={handleChange}
-                ></textarea>
+                />
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Kebijakan Pembatalan (Khusus Paket Ini)</label>
-                <textarea 
+              <div className="space-y-2">
+                <Label htmlFor="kebijakanPembatalanText">Kebijakan Pembatalan</Label>
+                <Textarea 
+                  id="kebijakanPembatalanText"
                   name="kebijakanPembatalanText" 
-                  className={styles.textarea} 
-                  placeholder="Pembatalan > 30 hari: Pengembalian 50%...&#10;Tulis poin-poin di baris baru..."
+                  placeholder="Tulis poin-poin di baris baru..."
                   rows={4}
                   value={formData.kebijakanPembatalanText}
                   onChange={handleChange}
-                ></textarea>
+                />
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>File & Dokumen (Khusus Paket Ini)</label>
-                <p className={styles.hint} style={{ marginBottom: '8px' }}>
-                  Format didukung: PDF, DOC, DOCX. Maksimal ukuran file: 10MB. Maksimal jumlah file: 3.
-                </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <input 
+              <div className="space-y-2">
+                <Label>File & Dokumen</Label>
+                <p className="text-xs text-muted-foreground mb-2">Format didukung: PDF, DOC. Maks: 10MB. Maks jumlah: 3.</p>
+                <div className="space-y-2">
+                  <Input 
                     type="file" 
                     accept=".pdf,.doc,.docx"
                     multiple
                     onChange={handleDocUpload}
-                    style={{ display: 'none' }}
+                    className="hidden"
                     id="upload-paket-doc"
                   />
-                  <label 
+                  <Label 
                     htmlFor="upload-paket-doc" 
-                    style={{ cursor: 'pointer', padding: '10px 16px', background: 'var(--color-surface-soft)', border: '1px dashed var(--color-border)', borderRadius: '6px', textAlign: 'center', fontWeight: 500 }}
+                    className="flex items-center justify-center w-full py-4 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
                   >
-                    {uploadingDoc ? 'Mengupload...' : '+ Klik untuk Upload Dokumen (PDF, DOC)'}
-                  </label>
+                    {uploadingDoc ? 'Mengupload...' : '+ Klik untuk Upload Dokumen'}
+                  </Label>
                   
                   {formData.fileDokumenList.length > 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div className="space-y-2 mt-4">
                       {formData.fileDokumenList.map((doc, idx) => (
-                        <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: 'white', border: '1px solid var(--color-hairline)', borderRadius: '6px' }}>
-                          <span style={{ fontSize: '0.9rem', color: 'var(--color-ink)' }}>{doc.name}</span>
-                          <button type="button" onClick={() => removeDoc(idx)} style={{ color: 'red', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>×</button>
+                        <div key={idx} className="flex items-center justify-between p-3 border rounded-md bg-background">
+                          <span className="text-sm font-medium truncate max-w-[80%]">{doc.name}</span>
+                          <Button variant="ghost" size="icon" onClick={() => removeDoc(idx)} className="h-8 w-8 text-destructive">
+                            <X className="h-4 w-4" />
+                          </Button>
                         </div>
                       ))}
                     </div>
@@ -442,119 +486,138 @@ export default function TambahPaketPage() {
                 </div>
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Opsi Penjemputan (Khusus Paket Ini)</label>
-                <textarea 
+              <div className="space-y-2 mt-4">
+                <Label htmlFor="opsiPenjemputanText">Opsi Penjemputan</Label>
+                <Textarea 
+                  id="opsiPenjemputanText"
                   name="opsiPenjemputanText" 
-                  className={styles.textarea} 
-                  placeholder="Bandara Soekarno Hatta...&#10;Tulis poin-poin di baris baru..."
+                  placeholder="Tulis poin-poin di baris baru..."
                   rows={4}
                   value={formData.opsiPenjemputanText}
                   onChange={handleChange}
-                ></textarea>
+                />
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Media & Gambar</h3>
-              
-              <div className={styles.inputGroup}>
-                <label>Upload Foto (Bisa pilih banyak sekaligus)</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div className={styles.inputWithIcon} style={{ border: '2px dashed var(--color-border-strong)', padding: '24px', textAlign: 'center', background: 'var(--color-surface-soft)', borderRadius: 'var(--radius-lg)' }}>
-                    <input 
-                      type="file" 
-                      accept="image/jpeg,image/png,image/webp,image/jpg"
-                      multiple
-                      onChange={handleImageUpload}
-                      style={{ display: 'none' }}
-                      id="upload-foto"
-                    />
-                    <label htmlFor="upload-foto" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                      {uploadingImage ? (
-                        <Loader2 size={32} className={styles.spinner} color="var(--color-primary)" />
-                      ) : (
-                        <ImageIcon size={32} color="var(--color-primary)" />
-                      )}
-                      <span style={{ fontWeight: 500, color: 'var(--color-ink)' }}>
-                        {uploadingImage ? 'Mengupload gambar...' : 'Klik untuk memilih banyak gambar (Maks 2MB/file)'}
-                      </span>
-                    </label>
-                  </div>
-                  
-                  {formData.fotoUrls.length > 0 && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '12px' }}>
-                      {formData.fotoUrls.map((url, idx) => (
-                        <div key={idx} style={{ position: 'relative', width: '100%', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: idx === 0 ? '2px solid var(--color-primary)' : '1px solid var(--color-border)' }}>
-                          <img src={url} alt={`Preview ${idx}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          {idx === 0 && (
-                            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '10px', textAlign: 'center', padding: '2px 0' }}>Thumbnail</div>
-                          )}
-                          <button 
-                            type="button" 
-                            onClick={() => removeImage(idx)}
-                            style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,0,0,0.8)', color: 'white', border: 'none', borderRadius: '50%', width: '20px', height: '20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px' }}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.sideColumn}>
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Detail Perjalanan</h3>
-              
-              <div className={styles.inputGroup}>
-                <label>Status Publikasi</label>
-                <select name="status" className={styles.select} value={formData.status} onChange={handleChange}>
-                  <option value="draft">Draft (Disembunyikan)</option>
-                  <option value="published">Published (Ditampilkan)</option>
-                </select>
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>Label (Opsional)</label>
-                <select name="label" className={styles.select} value={formData.label} onChange={handleChange}>
-                  <option value="">Tidak ada label</option>
-                  <option value="Terlaris">Terlaris</option>
-                  <option value="Populer">Populer</option>
-                  <option value="Promo">Promo</option>
-                  <option value="Terbaru">Terbaru</option>
-                </select>
-              </div>
-
-              <div className={styles.inputGroup}>
-                <label>Destinasi Negara</label>
-                <select 
-                  name="destinasiId" 
-                  className={styles.select} 
-                  value={formData.destinasiId}
-                  onChange={handleChange}
-                  required
+          <Card>
+            <CardHeader>
+              <CardTitle>Media & Gambar</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Input 
+                  type="file" 
+                  accept="image/jpeg,image/png,image/webp,image/jpg"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  id="upload-foto"
+                />
+                <Label 
+                  htmlFor="upload-foto" 
+                  className="flex flex-col items-center justify-center w-full py-12 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors bg-muted/20"
                 >
-                  <option value="" disabled>-- Pilih Destinasi --</option>
-                  {fetchingDest ? (
-                    <option disabled>Memuat destinasi...</option>
+                  {uploadingImage ? (
+                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
                   ) : (
-                    destinations.map(d => (
-                      <option key={d.id} value={d.id}>{d.nama}</option>
-                    ))
+                    <ImageIcon className="h-8 w-8 text-primary mb-2" />
                   )}
-                </select>
+                  <span className="text-sm font-medium">
+                    {uploadingImage ? 'Mengupload gambar...' : 'Klik untuk memilih banyak gambar'}
+                  </span>
+                  <span className="text-xs text-muted-foreground mt-1">Maks 2MB/file</span>
+                </Label>
+                
+                {formData.fotoUrls.length > 0 && (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+                    {formData.fotoUrls.map((url, idx) => (
+                      <div key={idx} className={`relative aspect-square rounded-lg overflow-hidden border ${idx === 0 ? 'border-primary ring-2 ring-primary/20' : 'border-border'}`}>
+                        <img src={url} alt={`Preview ${idx}`} className="w-full h-full object-cover" />
+                        {idx === 0 && (
+                          <div className="absolute bottom-0 inset-x-0 bg-background/80 backdrop-blur-sm text-[10px] font-medium text-center py-1">
+                            Thumbnail
+                          </div>
+                        )}
+                        <Button 
+                          variant="destructive" 
+                          size="icon" 
+                          className="absolute top-1 right-1 h-6 w-6 rounded-full"
+                          onClick={() => removeImage(idx)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card className="sticky top-24">
+            <CardHeader>
+              <CardTitle>Detail Penjualan</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Status Publikasi</Label>
+                <Select value={formData.status} onValueChange={(val) => handleSelectChange('status', val)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft (Disembunyikan)</SelectItem>
+                    <SelectItem value="published">Published (Ditampilkan)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Durasi (Hari)</label>
-                <input 
+              <div className="space-y-2">
+                <Label>Label <span className="text-muted-foreground font-normal ml-1">Opsional</span></Label>
+                <Select value={formData.label || "none"} onValueChange={(val) => handleSelectChange('label', val === "none" ? "" : val)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Tidak ada label</SelectItem>
+                    <SelectItem value="Terlaris">Terlaris</SelectItem>
+                    <SelectItem value="Populer">Populer</SelectItem>
+                    <SelectItem value="Promo">Promo</SelectItem>
+                    <SelectItem value="Terbaru">Terbaru</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Destinasi Negara</Label>
+                <Select 
+                  value={formData.destinasiId ? String(formData.destinasiId) : undefined} 
+                  onValueChange={(val) => handleSelectChange('destinasiId', val)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="-- Pilih Destinasi --" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fetchingDest ? (
+                      <SelectItem value="loading" disabled>Memuat destinasi...</SelectItem>
+                    ) : (
+                      destinations.map(d => (
+                        <SelectItem key={d.id} value={String(d.id)}>{d.nama}</SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="durasi">Durasi (Hari)</Label>
+                <Input 
                   type="number" 
+                  id="durasi"
                   name="durasi" 
-                  className={styles.input} 
                   min="1"
                   value={formData.durasi}
                   onChange={handleChange}
@@ -562,29 +625,25 @@ export default function TambahPaketPage() {
                 />
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Harga Dasar (Rp)</label>
-                <input 
-                  type="text" 
-                  name="harga" 
-                  className={styles.input} 
-                  placeholder="15.000.000"
-                  value={formData.hargaString}
-                  onChange={handleHargaChange}
-                  required 
-                />
+              <div className="space-y-2">
+                <Label htmlFor="harga">Harga Dasar (Rp)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">Rp</span>
+                  <Input 
+                    type="text" 
+                    id="harga"
+                    name="harga" 
+                    placeholder="15.000.000"
+                    className="pl-9"
+                    value={formData.hargaString}
+                    onChange={handleHargaChange}
+                    required 
+                  />
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div className={styles.formFooter}>
-            <Link href="/admin/paket" className={styles.cancelBtn}>Batal</Link>
-            <button onClick={handleSubmit} className={styles.saveBtn} disabled={loading || uploadingImage}>
-              {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
-              Simpan Paket
-            </button>
-          </div>
-        </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )
