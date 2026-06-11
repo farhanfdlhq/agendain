@@ -2,13 +2,16 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
-import { Save, Loader2, Camera, UploadCloud } from "lucide-react"
+import { Save, Loader2, UploadCloud, Eye, EyeOff } from "lucide-react"
 import { toast } from "react-hot-toast"
-import Image from "next/image"
-import styles from "./page.module.css"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 
 export default function ProfilePage() {
-  const { data: session, update } = useSession()
+  const { update } = useSession()
   const [loading, setLoading] = useState(true)
   const [savingAccount, setSavingAccount] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
@@ -25,6 +28,12 @@ export default function ProfilePage() {
     currentPassword: "",
     newPassword: "",
     confirmPassword: ""
+  })
+
+  const [showPassword, setShowPassword] = useState({
+    current: false,
+    new: false,
+    confirm: false,
   })
 
   useEffect(() => {
@@ -67,7 +76,6 @@ export default function ProfilePage() {
       
       await update({ name: data.nama })
       
-      // Trigger a hard reload of the session data in other components if needed
       const event = new Event("visibilitychange")
       document.dispatchEvent(event)
       
@@ -160,146 +168,179 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Edit Profil</h1>
-        <p className={styles.subtitle}>Atur informasi dasar akun dan pengaturan keamanan profil Anda.</p>
+    <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto py-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Edit Profil</h2>
+          <p className="text-muted-foreground text-sm">Atur informasi dasar akun dan pengaturan keamanan profil Anda.</p>
+        </div>
       </div>
 
-      <div className={styles.grid}>
-        {/* Kolom Kiri: Avatar */}
-        <div className={styles.avatarCard}>
-          <div className={styles.cardHeader}>
-            <h2 className={styles.cardTitle}>Foto Profil</h2>
-          </div>
-          <div className={styles.avatarContent}>
-            <div className={styles.avatarWrapper}>
-              {accountData.avatar ? (
-                <img src={accountData.avatar} alt="Avatar" className={styles.avatarImage} />
-              ) : (
-                <div className={styles.avatarPlaceholder}>
-                  {accountData.nama ? accountData.nama.charAt(0).toUpperCase() : "A"}
-                </div>
-              )}
-              {uploadingAvatar && (
-                <div className={styles.avatarOverlay}>
-                  <Loader2 className={styles.spinner} size={24} />
-                </div>
-              )}
-            </div>
-            
-            <input 
-              type="file" 
-              accept="image/png, image/jpeg, image/webp" 
-              className="hidden" 
-              ref={fileInputRef}
-              onChange={handleAvatarChange}
-            />
-            
-            <button 
-              type="button"
-              className={styles.uploadBtn} 
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploadingAvatar}
-            >
-              <UploadCloud size={18} />
-              Ganti Foto
-            </button>
-            <p className={styles.avatarHint}>Format JPG, PNG, atau WEBP. Maks 2MB.</p>
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1">
+          <Card>
+            <CardHeader>
+              <CardTitle>Foto Profil</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center space-y-4">
+              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-muted/50 bg-muted flex items-center justify-center shadow-sm">
+                {accountData.avatar ? (
+                  <img src={accountData.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-4xl font-semibold text-muted-foreground">
+                    {accountData.nama ? accountData.nama.charAt(0).toUpperCase() : "A"}
+                  </span>
+                )}
+                {uploadingAvatar && (
+                  <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                )}
+              </div>
+              
+              <input 
+                type="file" 
+                accept="image/png, image/jpeg, image/webp" 
+                className="hidden" 
+                ref={fileInputRef}
+                onChange={handleAvatarChange}
+              />
+              
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingAvatar}
+              >
+                <UploadCloud className="mr-2 h-4 w-4" />
+                Ganti Foto
+              </Button>
+              <p className="text-xs text-muted-foreground text-center">Format JPG, PNG, atau WEBP. Maks 2MB.</p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Kolom Kanan: Form Data */}
-        <div className={styles.formCol}>
-          <form onSubmit={handleAccountSubmit} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Profil Pengguna</h2>
-            </div>
-            <div className={styles.cardContent}>
-              <div className={styles.formGroup}>
-                <label htmlFor="nama">Nama Lengkap</label>
-                <input
-                  id="nama"
-                  type="text"
-                  className={styles.input}
-                  value={accountData.nama}
-                  onChange={(e) => setAccountData({ ...accountData, nama: e.target.value })}
-                  required
-                  placeholder="Masukkan nama lengkap"
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="email">Alamat Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  className={styles.input}
-                  value={accountData.email}
-                  onChange={(e) => setAccountData({ ...accountData, email: e.target.value })}
-                  required
-                  placeholder="admin@example.com"
-                />
-              </div>
-            </div>
-            <div className={styles.cardFooter}>
-              <button type="submit" className={styles.saveBtn} disabled={savingAccount}>
-                {savingAccount ? <Loader2 className={styles.spinner} size={18} /> : <Save size={18} />}
-                Simpan Profil
-              </button>
-            </div>
-          </form>
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <form onSubmit={handleAccountSubmit}>
+              <CardHeader>
+                <CardTitle>Profil Pengguna</CardTitle>
+                <CardDescription>Informasi ini akan ditampilkan publik dan digunakan untuk notifikasi sistem.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nama">Nama Lengkap</Label>
+                  <Input
+                    id="nama"
+                    type="text"
+                    value={accountData.nama}
+                    onChange={(e) => setAccountData({ ...accountData, nama: e.target.value })}
+                    required
+                    placeholder="Masukkan nama lengkap"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Alamat Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={accountData.email}
+                    onChange={(e) => setAccountData({ ...accountData, email: e.target.value })}
+                    required
+                    placeholder="admin@example.com"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="border-t bg-muted/20 px-6 py-4 flex justify-end">
+                <Button type="submit" disabled={savingAccount}>
+                  {savingAccount ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  Simpan Profil
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
 
-          <form onSubmit={handlePasswordSubmit} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Keamanan</h2>
-            </div>
-            <div className={styles.cardContent}>
-              <div className={styles.formGroup}>
-                <label htmlFor="currentPassword">Kata Sandi Lama</label>
-                <input
-                  id="currentPassword"
-                  type="password"
-                  className={styles.input}
-                  value={passwordData.currentPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                  required
-                  placeholder="••••••••"
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="newPassword">Kata Sandi Baru</label>
-                <input
-                  id="newPassword"
-                  type="password"
-                  className={styles.input}
-                  value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                  required
-                  minLength={8}
-                  placeholder="Minimal 8 karakter"
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label htmlFor="confirmPassword">Konfirmasi Kata Sandi Baru</label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  className={styles.input}
-                  value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                  required
-                  minLength={8}
-                  placeholder="Ulangi kata sandi baru"
-                />
-              </div>
-            </div>
-            <div className={styles.cardFooter}>
-              <button type="submit" className={styles.saveBtn} disabled={savingPassword}>
-                {savingPassword ? <Loader2 className={styles.spinner} size={18} /> : <Save size={18} />}
-                Perbarui Sandi
-              </button>
-            </div>
-          </form>
+          <Card>
+            <form onSubmit={handlePasswordSubmit}>
+              <CardHeader>
+                <CardTitle>Keamanan</CardTitle>
+                <CardDescription>Pastikan akun Anda menggunakan kata sandi yang kuat.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="currentPassword">Kata Sandi Lama</Label>
+                  <div className="relative">
+                    <Input
+                      id="currentPassword"
+                      type={showPassword.current ? "text" : "password"}
+                      value={passwordData.currentPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                      required
+                      placeholder="••••••••"
+                      className="pr-10"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowPassword({ ...showPassword, current: !showPassword.current })}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="newPassword">Kata Sandi Baru</Label>
+                  <div className="relative">
+                    <Input
+                      id="newPassword"
+                      type={showPassword.new ? "text" : "password"}
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                      required
+                      minLength={8}
+                      placeholder="Minimal 8 karakter"
+                      className="pr-10"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowPassword({ ...showPassword, new: !showPassword.new })}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword.new ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Konfirmasi Kata Sandi Baru</Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showPassword.confirm ? "text" : "password"}
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                      required
+                      minLength={8}
+                      placeholder="Ulangi kata sandi baru"
+                      className="pr-10"
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowPassword({ ...showPassword, confirm: !showPassword.confirm })}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="border-t bg-muted/20 px-6 py-4 flex justify-end">
+                <Button type="submit" disabled={savingPassword}>
+                  {savingPassword ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  Perbarui Sandi
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
         </div>
       </div>
     </div>
