@@ -389,7 +389,7 @@ export default function TambahPaketPage() {
                         type="text" 
                         value={it.judul} 
                         placeholder="Contoh: Sydney to Snowy Mountains" 
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newItinerary = [...formData.itinerary];
                           newItinerary[idx].judul = e.target.value;
                           setFormData(prev => ({ ...prev, itinerary: newItinerary }));
@@ -402,7 +402,7 @@ export default function TambahPaketPage() {
                         rows={3} 
                         value={it.deskripsi} 
                         placeholder="Deskripsi perjalanan..." 
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                           const newItinerary = [...formData.itinerary];
                           newItinerary[idx].deskripsi = e.target.value;
                           setFormData(prev => ({ ...prev, itinerary: newItinerary }));
@@ -564,7 +564,7 @@ export default function TambahPaketPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Status Publikasi</Label>
-                <Select value={formData.status} onValueChange={(val) => handleSelectChange('status', val)}>
+                <Select value={formData.status} onValueChange={(val: string) => handleSelectChange('status', val)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -577,7 +577,7 @@ export default function TambahPaketPage() {
 
               <div className="space-y-2">
                 <Label>Label <span className="text-muted-foreground font-normal ml-1">Opsional</span></Label>
-                <Select value={formData.label || "none"} onValueChange={(val) => handleSelectChange('label', val === "none" ? "" : val)}>
+                <Select value={formData.label || "none"} onValueChange={(val: string) => handleSelectChange('label', val === "none" ? "" : val)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -595,7 +595,7 @@ export default function TambahPaketPage() {
                 <Label>Destinasi Negara</Label>
                 <Select 
                   value={formData.destinasiId ? String(formData.destinasiId) : undefined} 
-                  onValueChange={(val) => handleSelectChange('destinasiId', val)}
+                  onValueChange={(val: string) => handleSelectChange('destinasiId', val)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="-- Pilih Destinasi --" />

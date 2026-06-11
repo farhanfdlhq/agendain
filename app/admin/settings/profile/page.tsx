@@ -234,7 +234,7 @@ export default function ProfilePage() {
                     id="nama"
                     type="text"
                     value={accountData.nama}
-                    onChange={(e) => setAccountData({ ...accountData, nama: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAccountData({ ...accountData, nama: e.target.value })}
                     required
                     placeholder="Masukkan nama lengkap"
                   />
@@ -245,7 +245,7 @@ export default function ProfilePage() {
                     id="email"
                     type="email"
                     value={accountData.email}
-                    onChange={(e) => setAccountData({ ...accountData, email: e.target.value })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAccountData({ ...accountData, email: e.target.value })}
                     required
                     placeholder="admin@example.com"
                   />
@@ -274,7 +274,7 @@ export default function ProfilePage() {
                       id="currentPassword"
                       type={showPassword.current ? "text" : "password"}
                       value={passwordData.currentPassword}
-                      onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                       required
                       placeholder="••••••••"
                       className="pr-10"
@@ -295,7 +295,7 @@ export default function ProfilePage() {
                       id="newPassword"
                       type={showPassword.new ? "text" : "password"}
                       value={passwordData.newPassword}
-                      onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                       required
                       minLength={8}
                       placeholder="Minimal 8 karakter"
@@ -317,7 +317,7 @@ export default function ProfilePage() {
                       id="confirmPassword"
                       type={showPassword.confirm ? "text" : "password"}
                       value={passwordData.confirmPassword}
-                      onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                       required
                       minLength={8}
                       placeholder="Ulangi kata sandi baru"
