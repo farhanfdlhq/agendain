@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays, Palette, UserCog, Menu, ExternalLink, Bell, ChevronDown, ChevronRight } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays, Palette, UserCog, Menu, ExternalLink, Bell, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
 import { Toaster } from "react-hot-toast"
@@ -20,6 +20,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
   const [siteLogo, setSiteLogo] = useState("/agendain.jpeg")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     'PENGATURAN': false,
     'KONTEN & DESAIN': false
@@ -121,19 +122,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const pageTitle = activeItem ? activeItem.name : "Dashboard"
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-sidebar/95 backdrop-blur-xl border-r border-border/60 text-sidebar-foreground shadow-sm">
-      <div className="p-6 pb-2 flex items-center gap-3">
-        <div className="bg-primary/10 p-2 rounded-xl border border-primary/20">
+  const SidebarContent = ({ collapsed = false }: { collapsed?: boolean }) => (
+    <div className="flex flex-col h-full bg-sidebar/95 backdrop-blur-xl border-r border-border/60 text-sidebar-foreground shadow-sm overflow-hidden">
+      <div className={`p-6 pb-2 flex items-center ${collapsed ? 'justify-center p-4' : 'gap-3'}`}>
+        <div className="bg-primary/10 p-2 rounded-xl border border-primary/20 shrink-0">
           <Map className="text-primary w-6 h-6" />
         </div>
-        <div>
-          <h2 className="text-xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">Agendain</h2>
-          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Workspace</p>
-        </div>
+        {!collapsed && (
+          <div className="overflow-hidden whitespace-nowrap">
+            <h2 className="text-xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">Agendain</h2>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Workspace</p>
+          </div>
+        )}
       </div>
       
-      <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-8 scrollbar-thin">
+      <nav className={`flex-1 overflow-y-auto py-6 space-y-8 scrollbar-thin ${collapsed ? 'px-2' : 'px-4'}`}>
         {menuGroups.map((group) => {
           const filteredItems = group.items.filter(item => ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[item.minRole])
           if (filteredItems.length === 0) return null
@@ -142,11 +145,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           return (
             <div key={group.heading} className="space-y-3">
               <div 
-                className={`text-[11px] font-bold text-muted-foreground/80 tracking-widest flex items-center justify-between px-3 ${group.collapsible ? 'cursor-pointer hover:text-foreground transition-colors' : ''}`}
-                onClick={() => group.collapsible && toggleGroup(group.heading)}
+                className={`text-[11px] font-bold text-muted-foreground/80 tracking-widest flex items-center ${collapsed ? 'justify-center px-0' : 'justify-between px-3'} ${group.collapsible && !collapsed ? 'cursor-pointer hover:text-foreground transition-colors' : ''}`}
+                onClick={() => !collapsed && group.collapsible && toggleGroup(group.heading)}
+                title={collapsed ? group.heading : undefined}
               >
-                <span>{group.heading}</span>
-                {group.collapsible && (
+                {collapsed ? <MoreHorizontal size={14} className="opacity-50" /> : <span>{group.heading}</span>}
+                {!collapsed && group.collapsible && (
                   isExpanded ? <ChevronDown size={14} className="opacity-50" /> : <ChevronRight size={14} className="opacity-50" />
                 )}
               </div>
@@ -159,7 +163,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       <Link 
                         key={item.href} 
                         href={item.href} 
-                        className={`group flex items-center justify-between px-3.5 py-3 rounded-xl transition-all duration-300 text-sm font-medium relative overflow-hidden ${
+                        title={collapsed ? item.name : undefined}
+                        className={`group flex items-center ${collapsed ? 'justify-center p-3' : 'justify-between px-3.5 py-3'} rounded-xl transition-all duration-300 text-sm font-medium relative overflow-hidden ${
                           isActive 
                             ? "text-white shadow-lg shadow-primary/20 ring-1 ring-primary/20" 
                             : "text-sidebar-foreground/70 hover:bg-black/5 hover:text-sidebar-foreground dark:hover:bg-white/5"
@@ -168,14 +173,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         {isActive && (
                           <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 z-0" />
                         )}
-                        <div className="flex items-center gap-3 relative z-10">
+                        <div className={`flex items-center relative z-10 ${collapsed ? 'justify-center w-full' : 'gap-3'}`}>
                           <span className={`transition-transform duration-300 ${isActive ? "scale-110 text-white" : "group-hover:scale-110 text-sidebar-foreground/50 group-hover:text-primary"}`}>
                             {item.icon}
                           </span>
-                          <span className={isActive ? "text-white drop-shadow-sm font-bold" : ""}>{item.name}</span>
+                          {!collapsed && <span className={isActive ? "text-white drop-shadow-sm font-bold truncate" : "truncate"}>{item.name}</span>}
                         </div>
-                        {item.badge && (
-                          <Badge variant={isActive ? "secondary" : "default"} className={`relative z-10 text-[10px] h-5 px-1.5 font-bold ${isActive ? "bg-white/20 text-white hover:bg-white/30 border-transparent" : "bg-primary text-primary-foreground border-transparent"}`}>
+                        {!collapsed && item.badge && (
+                          <Badge variant={isActive ? "secondary" : "default"} className={`relative z-10 text-[10px] h-5 px-1.5 font-bold shrink-0 ${isActive ? "bg-white/20 text-white hover:bg-white/30 border-transparent" : "bg-primary text-primary-foreground border-transparent"}`}>
                             {item.badge}
                           </Badge>
                         )}
@@ -192,17 +197,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="p-4 border-t border-border/40 bg-gradient-to-b from-transparent to-black/5 dark:to-white/5 mt-auto">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start h-auto p-2.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl transition-all border border-transparent hover:border-border/50 hover:shadow-sm group">
-              <Avatar className="h-10 w-10 border-2 border-background shadow-sm group-hover:scale-105 transition-transform duration-300">
+            <Button variant="ghost" className={`w-full h-auto p-2.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl transition-all border border-transparent hover:border-border/50 hover:shadow-sm group flex items-center ${collapsed ? 'justify-center' : 'justify-start'}`}>
+              <Avatar className="h-10 w-10 border-2 border-background shadow-sm group-hover:scale-105 transition-transform duration-300 shrink-0">
                 <AvatarImage src={(session.user as any)?.avatar || ""} alt={session.user?.name || "Avatar"} />
                 <AvatarFallback className="bg-primary/10 text-primary font-bold">
                   {session.user?.name?.charAt(0) || "A"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col items-start ml-3 overflow-hidden text-left flex-1">
-                <span className="text-sm font-bold truncate w-full text-foreground group-hover:text-primary transition-colors">{session.user?.name}</span>
-                <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mt-0.5">{formatRole(userRole)}</span>
-              </div>
+              {!collapsed && (
+                <div className="flex flex-col items-start ml-3 overflow-hidden text-left flex-1">
+                  <span className="text-sm font-bold truncate w-full text-foreground group-hover:text-primary transition-colors">{session.user?.name}</span>
+                  <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mt-0.5">{formatRole(userRole)}</span>
+                </div>
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="top" sideOffset={12} className="w-64 rounded-2xl shadow-2xl p-2 border-border/50 bg-background/95 backdrop-blur-xl">
@@ -240,8 +247,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }} />
       
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-[280px] shrink-0 h-screen sticky top-0 z-30">
-        <SidebarContent />
+      <aside className={`hidden lg:block shrink-0 h-screen sticky top-0 z-30 transition-all duration-300 ease-in-out relative ${isSidebarCollapsed ? 'w-[80px]' : 'w-[280px]'}`}>
+        <SidebarContent collapsed={isSidebarCollapsed} />
+        <Button 
+          variant="outline" 
+          size="icon" 
+          onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          className="absolute -right-3 top-6 h-6 w-6 rounded-full border border-border shadow-sm bg-background z-40 hover:bg-muted"
+        >
+          {isSidebarCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+        </Button>
       </aside>
 
       {/* Main Content */}
@@ -258,7 +273,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </SheetTrigger>
               <SheetContent side="left" className="p-0 w-[280px] border-r-0 shadow-2xl">
                 <SheetTitle className="sr-only">Navigasi Admin</SheetTitle>
-                <SidebarContent />
+                <SidebarContent collapsed={false} />
               </SheetContent>
             </Sheet>
             
