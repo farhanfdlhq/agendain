@@ -3,15 +3,16 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays, Palette, UserCog, ChevronDown, ChevronRight, Menu, ExternalLink } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays, Palette, UserCog, Menu, ExternalLink, Bell, ChevronDown, ChevronRight } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
 import { Toaster } from "react-hot-toast"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
+import { Badge } from "@/components/reui/badge"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -21,7 +22,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     'PENGATURAN': false,
-    'CMS & DESIGN': false
+    'KONTEN & DESAIN': false
   })
 
   useEffect(() => {
@@ -51,16 +52,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (status === "loading") {
     return (
-      <div className="flex flex-col h-screen w-full items-center justify-center bg-background text-muted-foreground gap-4">
+      <div className="flex flex-col h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-muted-foreground gap-4">
         <Loader2 className="animate-spin text-primary" size={40} />
-        <p>Memuat Dashboard...</p>
+        <p className="font-medium animate-pulse">Menyiapkan Workspace...</p>
       </div>
     )
   }
 
-  if (!session) {
-    return null
-  }
+  if (!session) return null
 
   const userRole = (session.user as any)?.role || 'editor'
 
@@ -70,40 +69,40 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     editor: 1,
   }
 
-  const menuGroups = [
+  type MenuItem = { name: string; href: string; icon: React.ReactNode; minRole: string; badge?: string }
+  type MenuGroup = { heading: string; collapsible?: boolean; items: MenuItem[] }
+
+  const menuGroups: MenuGroup[] = [
     {
       heading: 'MAIN MENU',
       items: [
-        { name: 'Dashboard', href: '/admin', icon: <LayoutDashboard size={20} />, minRole: 'editor' },
-        { name: 'Manajemen Paket', href: '/admin/paket', icon: <Package size={20} />, minRole: 'editor' },
-        { name: 'Manajemen Destinasi', href: '/admin/destinasi', icon: <Map size={20} />, minRole: 'editor' },
-        { name: 'Manajemen Pesanan', href: '/admin/booking', icon: <CalendarDays size={20} />, minRole: 'admin' },
-        { name: 'Inquiries', href: '/admin/inquiries', icon: <MessageSquare size={20} />, minRole: 'admin' },
+        { name: 'Overview', href: '/admin', icon: <LayoutDashboard size={18} />, minRole: 'editor' },
+        { name: 'Paket Wisata', href: '/admin/paket', icon: <Package size={18} />, minRole: 'editor' },
+        { name: 'Destinasi', href: '/admin/destinasi', icon: <Map size={18} />, minRole: 'editor' },
+        { name: 'Pesanan', href: '/admin/booking', icon: <CalendarDays size={18} />, minRole: 'admin' },
+        { name: 'Inquiries', href: '/admin/inquiries', icon: <MessageSquare size={18} />, minRole: 'admin', badge: 'Baru' },
       ]
     },
     {
       heading: 'PENGATURAN',
       collapsible: true,
       items: [
-        { name: 'Pengaturan Utama', href: '/admin/settings', icon: <Settings size={20} />, minRole: 'super_admin' },
-        { name: 'Edit Profil', href: '/admin/settings/profile', icon: <UserCog size={20} />, minRole: 'editor' },
+        { name: 'Pengaturan Sistem', href: '/admin/settings', icon: <Settings size={18} />, minRole: 'super_admin' },
+        { name: 'Akun & Profil', href: '/admin/settings/profile', icon: <UserCog size={18} />, minRole: 'editor' },
       ]
     },
     {
-      heading: 'CMS & DESIGN',
+      heading: 'KONTEN & DESAIN',
       collapsible: true,
       items: [
-        { name: 'Halaman Beranda', href: '/admin/cms/home', icon: <LayoutDashboard size={20} />, minRole: 'admin' },
-        { name: 'Design System', href: '/admin/settings/design', icon: <Palette size={20} />, minRole: 'super_admin' },
+        { name: 'Halaman Beranda', href: '/admin/cms/home', icon: <LayoutDashboard size={18} />, minRole: 'admin' },
+        { name: 'Tema & Tampilan', href: '/admin/settings/design', icon: <Palette size={18} />, minRole: 'super_admin' },
       ]
     }
   ]
 
   const toggleGroup = (heading: string) => {
-    setExpandedGroups(prev => ({
-      ...prev,
-      [heading]: !prev[heading]
-    }))
+    setExpandedGroups(prev => ({ ...prev, [heading]: !prev[heading] }))
   }
 
   const formatRole = (role: string) => {
@@ -115,9 +114,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const allItems = menuGroups.flatMap(g => g.items)
   const activeItem = allItems.reduce((bestMatch, item) => {
     if (pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href + '/'))) {
-      if (!bestMatch || item.href.length > bestMatch.href.length) {
-        return item
-      }
+      if (!bestMatch || item.href.length > bestMatch.href.length) return item
     }
     return bestMatch
   }, null as any)
@@ -125,30 +122,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pageTitle = activeItem ? activeItem.name : "Dashboard"
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full bg-sidebar border-r border-border">
-      <div className="p-6">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">Agendain</h2>
+    <div className="flex flex-col h-full bg-sidebar/95 backdrop-blur-xl border-r border-border/60 text-sidebar-foreground shadow-sm">
+      <div className="p-6 pb-2 flex items-center gap-3">
+        <div className="bg-primary/10 p-2 rounded-xl border border-primary/20">
+          <Map className="text-primary w-6 h-6" />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">Agendain</h2>
+          <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Workspace</p>
+        </div>
       </div>
       
-      <nav className="flex-1 overflow-y-auto px-4 space-y-6">
+      <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-8 scrollbar-thin">
         {menuGroups.map((group) => {
-          const filteredItems = group.items.filter(
-            item => ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[item.minRole]
-          )
-          
+          const filteredItems = group.items.filter(item => ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[item.minRole])
           if (filteredItems.length === 0) return null
-
           const isExpanded = group.collapsible ? expandedGroups[group.heading] : true
 
           return (
-            <div key={group.heading} className="space-y-2">
+            <div key={group.heading} className="space-y-3">
               <div 
-                className={`text-xs font-semibold text-muted-foreground tracking-wider flex items-center justify-between px-2 ${group.collapsible ? 'cursor-pointer hover:text-foreground' : ''}`}
+                className={`text-[11px] font-bold text-muted-foreground/80 tracking-widest flex items-center justify-between px-3 ${group.collapsible ? 'cursor-pointer hover:text-foreground transition-colors' : ''}`}
                 onClick={() => group.collapsible && toggleGroup(group.heading)}
               >
                 <span>{group.heading}</span>
                 {group.collapsible && (
-                  isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />
+                  isExpanded ? <ChevronDown size={14} className="opacity-50" /> : <ChevronRight size={14} className="opacity-50" />
                 )}
               </div>
               
@@ -160,14 +159,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       <Link 
                         key={item.href} 
                         href={item.href} 
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors text-sm font-medium ${
+                        className={`group flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium ${
                           isActive 
-                            ? "bg-primary/10 text-primary" 
-                            : "text-foreground hover:bg-muted"
+                            ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
+                            : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                         }`}
                       >
-                        <span className={isActive ? "text-primary" : "text-muted-foreground"}>{item.icon}</span>
-                        {item.name}
+                        <div className="flex items-center gap-3">
+                          <span className={`transition-transform duration-200 ${isActive ? "scale-110" : "group-hover:scale-110 text-muted-foreground group-hover:text-sidebar-accent-foreground"}`}>
+                            {item.icon}
+                          </span>
+                          {item.name}
+                        </div>
+                        {item.badge && (
+                          <Badge variant={isActive ? "secondary" : "default"} className={`text-[10px] h-5 px-1.5 ${isActive ? "bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30" : ""}`}>
+                            {item.badge}
+                          </Badge>
+                        )}
                       </Link>
                     )
                   })}
@@ -178,34 +186,42 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         })}
       </nav>
 
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-t border-border/50 bg-sidebar-accent/30 mt-auto">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start h-auto p-2 hover:bg-muted">
-              <Avatar className="h-9 w-9 border border-border">
+            <Button variant="ghost" className="w-full justify-start h-auto p-2.5 hover:bg-sidebar-accent/80 rounded-2xl transition-all border border-transparent hover:border-border/50 hover:shadow-sm">
+              <Avatar className="h-9 w-9 border border-border/80 shadow-sm">
                 <AvatarImage src={(session.user as any)?.avatar || ""} alt={session.user?.name || "Avatar"} />
-                <AvatarFallback className="bg-primary/10 text-primary">
+                <AvatarFallback className="bg-primary/10 text-primary font-bold">
                   {session.user?.name?.charAt(0) || "A"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex flex-col items-start ml-3 overflow-hidden">
-                <span className="text-sm font-semibold truncate max-w-[140px] text-foreground">{session.user?.name}</span>
-                <span className="text-xs text-muted-foreground">{formatRole(userRole)}</span>
+              <div className="flex flex-col items-start ml-3 overflow-hidden text-left flex-1">
+                <span className="text-sm font-semibold truncate w-full text-foreground">{session.user?.name}</span>
+                <span className="text-xs text-muted-foreground font-medium">{formatRole(userRole)}</span>
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/admin/settings/profile" className="cursor-pointer">
+          <DropdownMenuContent align="end" className="w-64 rounded-xl shadow-xl p-2 border-border/50">
+            <div className="p-2 pb-3 mb-2 border-b border-border/50 flex items-center gap-3">
+               <Avatar className="h-10 w-10 border border-border/80">
+                <AvatarImage src={(session.user as any)?.avatar || ""} alt={session.user?.name || "Avatar"} />
+                <AvatarFallback className="bg-primary/10 text-primary">{session.user?.name?.charAt(0) || "A"}</AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-semibold leading-none mb-1">{session.user?.name}</p>
+                <p className="text-xs text-muted-foreground">{session.user?.email}</p>
+              </div>
+            </div>
+            <DropdownMenuItem asChild className="rounded-lg py-2.5 cursor-pointer focus:bg-primary/10 focus:text-primary transition-colors">
+              <Link href="/admin/settings/profile">
                 <UserCog className="mr-2 h-4 w-4" />
-                <span>Edit Profil</span>
+                <span>Pengaturan Profil</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer" onClick={() => signOut()}>
+            <DropdownMenuItem className="rounded-lg py-2.5 text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer transition-colors mt-1" onClick={() => signOut()}>
               <LogOut className="mr-2 h-4 w-4" />
-              <span>Keluar</span>
+              <span>Keluar dari Sesi</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -214,45 +230,57 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   )
 
   return (
-    <div className="min-h-screen bg-background flex text-foreground">
-      <Toaster position="bottom-right" toastOptions={{ style: { background: 'var(--card)', color: 'var(--foreground)', border: '1px solid var(--border)' } }} />
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex text-foreground font-sans selection:bg-primary/20">
+      <Toaster position="bottom-right" toastOptions={{ 
+        className: 'rounded-xl shadow-lg border border-border/50',
+        style: { background: 'var(--card)', color: 'var(--foreground)' } 
+      }} />
       
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-72 shrink-0 h-screen sticky top-0">
+      <aside className="hidden lg:block w-[280px] shrink-0 h-screen sticky top-0 z-30">
         <SidebarContent />
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        <header className="h-16 shrink-0 border-b border-border bg-card/50 backdrop-blur-sm px-6 flex items-center justify-between sticky top-0 z-10">
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden relative">
+        <header className="h-[72px] shrink-0 bg-background/80 backdrop-blur-xl border-b border-border/40 px-4 md:px-8 flex items-center justify-between sticky top-0 z-20 shadow-sm transition-all">
           <div className="flex items-center gap-4">
             {/* Mobile Sidebar Toggle */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
+                <Button variant="ghost" size="icon" className="lg:hidden rounded-lg hover:bg-muted/80">
                   <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle Sidebar</span>
+                  <span className="sr-only">Buka Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-72 bg-sidebar border-r-0">
+              <SheetContent side="left" className="p-0 w-[280px] border-r-0 shadow-2xl">
                 <SheetTitle className="sr-only">Navigasi Admin</SheetTitle>
                 <SidebarContent />
               </SheetContent>
             </Sheet>
             
-            <h1 className="text-lg font-semibold tracking-tight">{pageTitle}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg md:text-xl font-bold tracking-tight text-foreground">{pageTitle}</h1>
+            </div>
           </div>
 
-          <Button variant="outline" size="sm" asChild className="hidden sm:flex">
-            <Link href="/" target="_blank">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Lihat Website
-            </Link>
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-border/50 bg-background/50 hover:bg-muted hidden sm:flex relative">
+              <Bell className="h-4 w-4 text-muted-foreground" />
+              <span className="absolute top-2 right-2.5 h-1.5 w-1.5 rounded-full bg-primary ring-2 ring-background" />
+            </Button>
+            <Separator orientation="vertical" className="h-6 hidden sm:block opacity-50" />
+            <Button variant="default" size="sm" asChild className="rounded-full shadow-sm shadow-primary/20 hover:shadow-md transition-all px-4 hidden sm:flex bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Link href="/" target="_blank">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                <span className="font-medium">Lihat Website</span>
+              </Link>
+            </Button>
+          </div>
         </header>
         
-        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-background">
-          <div className="mx-auto max-w-6xl">
+        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-zinc-50/50 dark:bg-zinc-950/50">
+          <div className="mx-auto max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
             {children}
           </div>
         </main>

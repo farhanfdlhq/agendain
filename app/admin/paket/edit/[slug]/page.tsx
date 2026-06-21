@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Save, Loader2, Image as ImageIcon, X } from "lucide-react"
+import { ArrowLeft, Save, Loader2, Image as ImageIcon, X, Plus } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -460,7 +460,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                         type="text" 
                         value={it.judul} 
                         placeholder="Contoh: Sydney to Snowy Mountains" 
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newItinerary = [...formData.itinerary];
                           newItinerary[idx].judul = e.target.value;
                           setFormData(prev => ({ ...prev, itinerary: newItinerary }));
@@ -473,7 +473,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                         rows={3} 
                         value={it.deskripsi} 
                         placeholder="Deskripsi perjalanan..." 
-                        onChange={(e) => {
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                           const newItinerary = [...formData.itinerary];
                           newItinerary[idx].deskripsi = e.target.value;
                           setFormData(prev => ({ ...prev, itinerary: newItinerary }));
@@ -635,7 +635,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>Status Publikasi</Label>
-                <Select value={formData.status} onValueChange={(val) => handleSelectChange('status', val)}>
+                <Select value={formData.status} onValueChange={(val: string) => handleSelectChange('status', val)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
