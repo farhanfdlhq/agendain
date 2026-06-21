@@ -144,7 +144,7 @@ export default function AdminDestinasiPage() {
           <h2 className={styles.title}>Manajemen Destinasi</h2>
           <p className={styles.subtitle}>Kelola negara dan kota tujuan wisata.</p>
         </div>
-        <Button asChild className="bg-primary text-white hover:bg-primary/90 shadow-sm rounded-md h-10 px-4 font-semibold">
+        <Button asChild className="bg-[var(--color-primary)] text-white hover:opacity-90 shadow-sm rounded-md h-10 px-4 font-semibold">
           <Link href="/admin/destinasi/baru">
             <Plus size={18} className="mr-2" />
             Tambah Destinasi

@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { Loader2, ArrowUp, ArrowDown, GripVertical } from 'lucide-react'
+import { Loader2, ArrowUp, ArrowDown, GripVertical, Save } from 'lucide-react'
 import { Reorder } from 'framer-motion'
+import { Button } from "@/components/ui/button"
 import styles from './page.module.css'
 
 export default function HomeCMSPage() {
@@ -318,9 +319,10 @@ export default function HomeCMSPage() {
         {renderSectionOrder()}
 
         <div className={styles.footer}>
-          <button type="submit" disabled={loading} className={styles.button}>
+          <Button type="submit" disabled={loading} className="bg-[var(--color-primary)] text-white hover:opacity-90 shadow-sm rounded-md h-10 px-6 font-semibold w-full sm:w-auto">
+            {loading ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Save size={18} className="mr-2" />}
             {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

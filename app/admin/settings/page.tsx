@@ -111,7 +111,7 @@ export default function SettingsPage() {
         <Button 
           onClick={handleSubmit}
           disabled={loading}
-          className="bg-primary text-white hover:bg-primary/90 shadow-sm rounded-md h-10 px-4 font-semibold"
+          className="bg-[var(--color-primary)] text-white hover:opacity-90 shadow-sm rounded-md h-10 px-4 font-semibold"
         >
           {loading ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Save size={18} className="mr-2" />}
           Simpan Perubahan

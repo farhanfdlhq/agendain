@@ -1,7 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { CheckCircle2, AlertCircle, Loader2, Palette, Type, AlertTriangle, Box } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Loader2, Palette, Type, AlertTriangle, Box, Save } from 'lucide-react'
+import { Button } from "@/components/ui/button"
 import styles from './page.module.css'
 
 export default function DesignSystemPage() {
@@ -210,13 +211,10 @@ export default function DesignSystemPage() {
         )}
 
         <div className={styles.footer}>
-          <button type="submit" disabled={loading} className={styles.button}>
-            {loading ? (
-              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                <Loader2 className="animate-spin" size={18} /> Building Design System...
-              </span>
-            ) : 'Update Global Design System'}
-          </button>
+          <Button type="submit" disabled={loading} className="bg-[var(--color-primary)] text-white hover:opacity-90 shadow-sm rounded-md h-10 px-6 font-semibold w-full sm:w-auto">
+            {loading ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Save size={18} className="mr-2" />}
+            {loading ? 'Building Design System...' : 'Update Global Design System'}
+          </Button>
         </div>
       </form>
     </div>
