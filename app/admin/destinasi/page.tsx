@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Plus, Edit2, Trash2, Search, MapPin, WifiOff, AlertCircle, RefreshCw, Map } from "lucide-react"
 import { toast } from "react-hot-toast"
+import { Button } from "@/components/ui/button"
 import styles from "../paket/page.module.css" // We can reuse the Paket list CSS!
 
 export default function AdminDestinasiPage() {
@@ -143,10 +144,12 @@ export default function AdminDestinasiPage() {
           <h2 className={styles.title}>Manajemen Destinasi</h2>
           <p className={styles.subtitle}>Kelola negara dan kota tujuan wisata.</p>
         </div>
-        <Link href="/admin/destinasi/baru" className={styles.addBtn}>
-          <Plus size={18} />
-          Tambah Destinasi
-        </Link>
+        <Button asChild className="bg-primary text-white hover:bg-primary/90 shadow-sm rounded-md h-10 px-4 font-semibold">
+          <Link href="/admin/destinasi/baru">
+            <Plus size={18} className="mr-2" />
+            Tambah Destinasi
+          </Link>
+        </Button>
       </div>
 
       <div className={styles.tableCard}>

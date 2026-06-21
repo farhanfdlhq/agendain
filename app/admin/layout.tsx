@@ -273,7 +273,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className="absolute top-2 right-2.5 h-1.5 w-1.5 rounded-full bg-primary ring-2 ring-background" />
             </Button>
             <Separator orientation="vertical" className="h-6 hidden sm:block opacity-50" />
-            <Button variant="default" size="sm" asChild className="rounded-full shadow-sm shadow-primary/20 hover:shadow-md transition-all px-4 hidden sm:flex bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button variant="outline" size="sm" asChild className="rounded-full shadow-none transition-all px-4 hidden sm:flex border-border/50 bg-transparent hover:bg-muted text-foreground">
               <Link href="/" target="_blank">
                 <ExternalLink className="mr-2 h-4 w-4" />
                 <span className="font-medium">Lihat Website</span>

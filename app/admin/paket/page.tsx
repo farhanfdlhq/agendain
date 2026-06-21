@@ -239,12 +239,12 @@ export default function AdminPaketPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30">
-                  <TableHead className="font-semibold text-foreground w-[300px]">Nama Paket</TableHead>
+                  <TableHead className="font-semibold text-foreground min-w-[200px]">Nama Paket</TableHead>
                   <TableHead className="font-semibold text-foreground">Destinasi</TableHead>
                   <TableHead className="font-semibold text-foreground">Durasi</TableHead>
                   <TableHead className="font-semibold text-foreground">Harga</TableHead>
                   <TableHead className="font-semibold text-foreground">Status</TableHead>
-                  <TableHead className="font-semibold text-foreground text-right w-[150px]">Aksi</TableHead>
+                  <TableHead className="font-semibold text-foreground text-right min-w-[120px]">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

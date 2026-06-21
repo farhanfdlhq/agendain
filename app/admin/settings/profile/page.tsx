@@ -252,7 +252,7 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
               <CardFooter className="border-t bg-muted/20 px-6 py-4 flex justify-end">
-                <Button type="submit" disabled={savingAccount}>
+                <Button type="submit" disabled={savingAccount} className="bg-primary text-white hover:bg-primary/90 shadow-sm">
                   {savingAccount ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                   Simpan Profil
                 </Button>
@@ -334,7 +334,7 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
               <CardFooter className="border-t bg-muted/20 px-6 py-4 flex justify-end">
-                <Button type="submit" disabled={savingPassword}>
+                <Button type="submit" disabled={savingPassword} className="bg-primary text-white hover:bg-primary/90 shadow-sm">
                   {savingPassword ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                   Perbarui Sandi
                 </Button>

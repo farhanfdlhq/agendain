@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Settings, Save, Loader2, Link as LinkIcon, MessageSquare, CreditCard, LayoutTemplate, Info } from "lucide-react"
 import { toast } from "react-hot-toast"
+import { Button } from "@/components/ui/button"
 
 import styles from "./page.module.css"
 
@@ -107,14 +108,14 @@ export default function SettingsPage() {
           <h2 className={styles.title}>Pengaturan Sistem</h2>
           <p className={styles.subtitle}>Konfigurasi parameter dan identitas utama website Agendain.</p>
         </div>
-        <button 
+        <Button 
           onClick={handleSubmit}
           disabled={loading}
-          className={styles.saveBtn}
+          className="bg-primary text-white hover:bg-primary/90 shadow-sm rounded-md h-10 px-4 font-semibold"
         >
-          {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
+          {loading ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Save size={18} className="mr-2" />}
           Simpan Perubahan
-        </button>
+        </Button>
       </div>
 
       <div className={styles.card}>
