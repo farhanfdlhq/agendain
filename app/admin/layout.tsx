@@ -159,20 +159,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       <Link 
                         key={item.href} 
                         href={item.href} 
-                        className={`group flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium ${
+                        className={`group flex items-center justify-between px-3.5 py-3 rounded-xl transition-all duration-300 text-sm font-medium relative overflow-hidden ${
                           isActive 
-                            ? "bg-primary text-primary-foreground shadow-md shadow-primary/20" 
-                            : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                            ? "text-white shadow-lg shadow-primary/20 ring-1 ring-primary/20" 
+                            : "text-sidebar-foreground/70 hover:bg-black/5 hover:text-sidebar-foreground dark:hover:bg-white/5"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <span className={`transition-transform duration-200 ${isActive ? "scale-110" : "group-hover:scale-110 text-muted-foreground group-hover:text-sidebar-accent-foreground"}`}>
+                        {isActive && (
+                          <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 z-0" />
+                        )}
+                        <div className="flex items-center gap-3 relative z-10">
+                          <span className={`transition-transform duration-300 ${isActive ? "scale-110 text-white" : "group-hover:scale-110 text-sidebar-foreground/50 group-hover:text-primary"}`}>
                             {item.icon}
                           </span>
-                          {item.name}
+                          <span className={isActive ? "text-white drop-shadow-sm font-bold" : ""}>{item.name}</span>
                         </div>
                         {item.badge && (
-                          <Badge variant={isActive ? "secondary" : "default"} className={`text-[10px] h-5 px-1.5 ${isActive ? "bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30" : ""}`}>
+                          <Badge variant={isActive ? "secondary" : "default"} className={`relative z-10 text-[10px] h-5 px-1.5 font-bold ${isActive ? "bg-white/20 text-white hover:bg-white/30 border-transparent" : "bg-primary text-primary-foreground border-transparent"}`}>
                             {item.badge}
                           </Badge>
                         )}
@@ -186,23 +189,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         })}
       </nav>
 
-      <div className="p-4 border-t border-border/50 bg-sidebar-accent/30 mt-auto">
+      <div className="p-4 border-t border-border/40 bg-gradient-to-b from-transparent to-black/5 dark:to-white/5 mt-auto">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start h-auto p-2.5 hover:bg-sidebar-accent/80 rounded-2xl transition-all border border-transparent hover:border-border/50 hover:shadow-sm">
-              <Avatar className="h-9 w-9 border border-border/80 shadow-sm">
+            <Button variant="ghost" className="w-full justify-start h-auto p-2.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-2xl transition-all border border-transparent hover:border-border/50 hover:shadow-sm group">
+              <Avatar className="h-10 w-10 border-2 border-background shadow-sm group-hover:scale-105 transition-transform duration-300">
                 <AvatarImage src={(session.user as any)?.avatar || ""} alt={session.user?.name || "Avatar"} />
                 <AvatarFallback className="bg-primary/10 text-primary font-bold">
                   {session.user?.name?.charAt(0) || "A"}
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col items-start ml-3 overflow-hidden text-left flex-1">
-                <span className="text-sm font-semibold truncate w-full text-foreground">{session.user?.name}</span>
-                <span className="text-xs text-muted-foreground font-medium">{formatRole(userRole)}</span>
+                <span className="text-sm font-bold truncate w-full text-foreground group-hover:text-primary transition-colors">{session.user?.name}</span>
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mt-0.5">{formatRole(userRole)}</span>
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-64 rounded-xl shadow-xl p-2 border-border/50">
+          <DropdownMenuContent align="end" side="top" sideOffset={12} className="w-64 rounded-2xl shadow-2xl p-2 border-border/50 bg-background/95 backdrop-blur-xl">
             <div className="p-2 pb-3 mb-2 border-b border-border/50 flex items-center gap-3">
                <Avatar className="h-10 w-10 border border-border/80">
                 <AvatarImage src={(session.user as any)?.avatar || ""} alt={session.user?.name || "Avatar"} />
