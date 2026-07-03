@@ -1,10 +1,15 @@
-'use client'
+"use client"
+
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { Loader2, ArrowUp, ArrowDown, GripVertical, Save } from 'lucide-react'
+import { ArrowUp, ArrowDown, GripVertical, Save, Globe, Type } from 'lucide-react'
 import { Reorder } from 'framer-motion'
 import { Button } from "@/components/ui/button"
-import styles from './page.module.css'
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function HomeCMSPage() {
   const [data, setData] = useState<any>({
@@ -48,6 +53,19 @@ export default function HomeCMSPage() {
     'cta': 'Ajakan Bertindak (CTA)'
   }
 
+  useEffect(() => {
+    fetch('/api/settings/home')
+      .then(res => res.json())
+      .then(res => {
+        if (!res.error) setData((prev: any) => ({ ...prev, ...res }))
+        setFetching(false)
+      })
+      .catch(() => {
+        setFetching(false)
+        toast.error('Gagal memuat data')
+      })
+  }, [])
+
   const handleMoveSection = (index: number, direction: 'up' | 'down') => {
     const order = (data.sectionOrder || 'packages,destinations,features,cta').split(',')
     if (direction === 'up' && index > 0) {
@@ -61,65 +79,6 @@ export default function HomeCMSPage() {
     }
     setData((prev: any) => ({ ...prev, sectionOrder: order.join(',') }))
   }
-
-  const renderSectionOrder = () => {
-    const orderArray = (data.sectionOrder || 'packages,destinations,features,cta').split(',')
-    
-    const handleReorder = (newOrder: string[]) => {
-      setData((prev: any) => ({ ...prev, sectionOrder: newOrder.join(',') }))
-    }
-
-    return (
-      <div style={{ background: 'var(--color-surface-soft)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)', marginTop: '2.5rem' }}>
-        <h3 style={{ marginBottom: '0.5rem', color: 'var(--color-ink)', fontWeight: '600' }}>Pengaturan Urutan Bagian (Section Order)</h3>
-        <p style={{ color: 'var(--color-muted)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>Geser ke atas atau bawah untuk mengatur urutan tampilan bagian di halaman beranda. Anda juga bisa menarik kotak (drag and drop) untuk menyusunnya dengan cepat!</p>
-        <Reorder.Group axis="y" values={orderArray} onReorder={handleReorder} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', listStyle: 'none', padding: 0, margin: 0 }}>
-          {orderArray.map((key: string, idx: number) => (
-            <Reorder.Item key={key} value={key} style={{ cursor: 'grab', position: 'relative' }} whileDrag={{ scale: 1.02, boxShadow: '0 8px 20px rgba(0,0,0,0.1)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', background: 'white', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                  <GripVertical size={18} style={{ color: '#cbd5e1' }} />
-                  <span style={{ color: 'var(--color-muted)', fontWeight: 'bold', width: '20px' }}>{idx + 1}.</span>
-                  <span style={{ fontWeight: '500', color: 'var(--color-ink)' }}>{SECTION_NAMES[key] || key}</span>
-                </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button 
-                    type="button" 
-                    onClick={() => handleMoveSection(idx, 'up')}
-                    disabled={idx === 0}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', padding: '0', borderRadius: '6px', border: '1px solid #e2e8f0', background: idx === 0 ? '#f8fafc' : 'white', cursor: idx === 0 ? 'not-allowed' : 'pointer', color: idx === 0 ? '#cbd5e1' : 'var(--color-ink)', transition: 'all 0.2s' }}
-                  >
-                    <ArrowUp size={16} />
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => handleMoveSection(idx, 'down')}
-                    disabled={idx === orderArray.length - 1}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', padding: '0', borderRadius: '6px', border: '1px solid #e2e8f0', background: idx === orderArray.length - 1 ? '#f8fafc' : 'white', cursor: idx === orderArray.length - 1 ? 'not-allowed' : 'pointer', color: idx === orderArray.length - 1 ? '#cbd5e1' : 'var(--color-ink)', transition: 'all 0.2s' }}
-                  >
-                    <ArrowDown size={16} />
-                  </button>
-                </div>
-              </div>
-            </Reorder.Item>
-          ))}
-        </Reorder.Group>
-      </div>
-    )
-  }
-
-  useEffect(() => {
-    fetch('/api/settings/home')
-      .then(res => res.json())
-      .then(res => {
-        if (!res.error) setData((prev: any) => ({ ...prev, ...res }))
-        setFetching(false)
-      })
-      .catch(() => {
-        setFetching(false)
-        toast.error('Gagal memuat data')
-      })
-  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -146,67 +105,123 @@ export default function HomeCMSPage() {
     setData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const renderSectionOrder = () => {
+    const orderArray = (data.sectionOrder || 'packages,destinations,features,cta').split(',')
+    
+    const handleReorder = (newOrder: string[]) => {
+      setData((prev: any) => ({ ...prev, sectionOrder: newOrder.join(',') }))
+    }
+
+    return (
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle>Pengaturan Urutan Bagian (Section Order)</CardTitle>
+          <CardDescription>Geser ke atas atau bawah untuk mengatur urutan tampilan bagian di halaman beranda. Anda juga bisa menarik kotak (drag and drop) untuk menyusunnya dengan cepat!</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Reorder.Group axis="y" values={orderArray} onReorder={handleReorder} className="flex flex-col gap-2 list-none p-0 m-0">
+            {orderArray.map((key: string, idx: number) => (
+              <Reorder.Item key={key} value={key} className="relative cursor-grab" whileDrag={{ scale: 1.02, zIndex: 10 }}>
+                <div className="flex items-center justify-between p-3 bg-background border rounded-lg shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <GripVertical size={18} className="text-muted-foreground" />
+                    <span className="text-muted-foreground font-bold w-5">{idx + 1}.</span>
+                    <span className="font-medium text-foreground">{SECTION_NAMES[key] || key}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleMoveSection(idx, 'up')}
+                      disabled={idx === 0}
+                      className="h-8 w-8"
+                    >
+                      <ArrowUp size={16} />
+                    </Button>
+                    <Button 
+                      type="button" 
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleMoveSection(idx, 'down')}
+                      disabled={idx === orderArray.length - 1}
+                      className="h-8 w-8"
+                    >
+                      <ArrowDown size={16} />
+                    </Button>
+                  </div>
+                </div>
+              </Reorder.Item>
+            ))}
+          </Reorder.Group>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const renderColorSelect = (label: string, fieldName: string) => {
     const value = data[fieldName] as string || '';
     
-    // Determine active type
     let activeType = 'custom';
     if (value === '' || value === 'var(--color-primary)') activeType = 'primary';
     else if (value === 'var(--color-dominant)') activeType = 'secondary';
     
-    // Fallback for custom color picker value (must be hex)
     const customValue = activeType === 'custom' ? value : '#000000';
     
     return (
-      <div className={styles.field} style={{ marginTop: '-0.5rem', marginBottom: '2rem' }}>
-        <label>{label}</label>
-        <div className={styles.colorPickerGroup}>
-          <button 
+      <div className="space-y-3 pt-2">
+        <Label>{label}</Label>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button 
             type="button"
-            className={`${styles.colorPill} ${activeType === 'primary' ? styles.colorPillActive : ''}`}
+            variant={activeType === 'primary' ? 'default' : 'outline'}
+            className={`h-9 px-3 rounded-full ${activeType === 'primary' ? 'ring-2 ring-primary ring-offset-2' : ''}`}
             onClick={() => handleChange({ target: { name: fieldName, value: 'var(--color-primary)' } } as any)}
           >
-            <span className={styles.colorCircle} style={{ background: 'var(--color-primary)' }}></span>
+            <span className="w-4 h-4 rounded-full bg-[var(--color-primary)] mr-2 border border-black/10 dark:border-white/10"></span>
             Primer
-          </button>
+          </Button>
           
-          <button 
+          <Button 
             type="button"
-            className={`${styles.colorPill} ${activeType === 'secondary' ? styles.colorPillActive : ''}`}
+            variant={activeType === 'secondary' ? 'default' : 'outline'}
+            className={`h-9 px-3 rounded-full ${activeType === 'secondary' ? 'ring-2 ring-primary ring-offset-2' : ''}`}
             onClick={() => handleChange({ target: { name: fieldName, value: 'var(--color-dominant)' } } as any)}
           >
-            <span className={styles.colorCircle} style={{ background: 'var(--color-dominant)' }}></span>
+            <span className="w-4 h-4 rounded-full bg-[var(--color-dominant)] mr-2 border border-black/10 dark:border-white/10"></span>
             Sekunder
-          </button>
+          </Button>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <button 
+          <div className="flex items-center gap-2">
+            <Button 
               type="button"
-              className={`${styles.colorPill} ${activeType === 'custom' ? styles.colorPillActive : ''}`}
+              variant={activeType === 'custom' ? 'default' : 'outline'}
+              className={`h-9 px-3 rounded-full ${activeType === 'custom' ? 'ring-2 ring-primary ring-offset-2' : ''}`}
               onClick={() => {
                 if (activeType !== 'custom') {
                   handleChange({ target: { name: fieldName, value: '#000000' } } as any)
                 }
               }}
             >
-              <span className={styles.colorCircle} style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}></span>
+              <span className="w-4 h-4 rounded-full mr-2" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}></span>
               Kustom
-            </button>
+            </Button>
+            
             {activeType === 'custom' && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <div className="flex items-center gap-2 bg-muted p-1 rounded-md">
                 <input 
                   type="color" 
                   name={fieldName}
                   value={customValue}
                   onChange={handleChange}
-                  className={styles.customColorInput}
+                  className="w-7 h-7 rounded cursor-pointer border-0 p-0"
                 />
-                <input 
+                <Input 
                   type="text" 
                   name={fieldName}
                   value={customValue}
                   onChange={handleChange}
-                  className={styles.customColorText}
+                  className="h-7 w-24 text-xs font-mono"
                   placeholder="#000000"
                 />
               </div>
@@ -220,23 +235,27 @@ export default function HomeCMSPage() {
   const renderTextInput = (label: string, fieldName: string, isTextarea = false) => {
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
     return (
-      <div className={styles.field}>
-        <label>{label} ({activeTab.toUpperCase()})</label>
+      <div className="space-y-2">
+        <Label className="flex items-center gap-2">
+          {label}
+          <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-medium uppercase tracking-wider">
+            {activeTab}
+          </span>
+        </Label>
         {isTextarea ? (
-          <textarea 
+          <Textarea 
             name={activeFieldName} 
             value={data[activeFieldName] || ''} 
             onChange={handleChange} 
-            className={styles.textarea} 
             required={activeTab === 'id'}
+            rows={3}
           />
         ) : (
-          <input 
+          <Input 
             type="text" 
             name={activeFieldName} 
             value={data[activeFieldName] || ''} 
             onChange={handleChange} 
-            className={styles.input} 
             required={activeTab === 'id'} 
           />
         )}
@@ -245,85 +264,114 @@ export default function HomeCMSPage() {
   }
 
   if (fetching) return (
-    <div className={styles.container}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-muted)' }}>
-        <Loader2 className="animate-spin" size={20} />
-        <span>Memuat data CMS...</span>
-      </div>
+    <div className="flex items-center justify-center h-64">
+      <AirplaneLoader size={32} className="text-primary" />
     </div>
   )
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>CMS Halaman Beranda</h1>
+    <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto py-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">CMS Halaman Beranda</h2>
+          <p className="text-muted-foreground text-sm">Kelola teks dan warna untuk elemen-elemen di halaman depan.</p>
+        </div>
+        <Button 
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full sm:w-auto"
+        >
+          {loading ? <AirplaneLoader size={18} className="mr-2" /> : <Save size={18} className="mr-2" />}
+          Simpan Perubahan
+        </Button>
       </div>
       
-      <div className={styles.tabs} style={{ display: 'flex', gap: '1rem', marginBottom: '2rem' }}>
-        <button 
-          className={activeTab === 'id' ? styles.tabActive : styles.tab}
+      <div className="flex gap-2 border-b pb-4">
+        <Button 
+          variant={activeTab === 'id' ? 'default' : 'outline'}
           onClick={() => setActiveTab('id')}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: activeTab === 'id' ? 'var(--color-primary)' : 'transparent', color: activeTab === 'id' ? 'white' : 'inherit', cursor: 'pointer' }}
+          className="gap-2 rounded-full"
         >
-          <img src="https://flagcdn.com/w20/id.png" alt="ID" width={20} height={15} style={{ borderRadius: '2px', objectFit: 'cover' }} /> Indonesia
-        </button>
-        <button 
-          className={activeTab === 'en' ? styles.tabActive : styles.tab}
+          <img src="https://flagcdn.com/w20/id.png" alt="ID" width={20} height={15} className="rounded-sm object-cover" /> 
+          Indonesia
+        </Button>
+        <Button 
+          variant={activeTab === 'en' ? 'default' : 'outline'}
           onClick={() => setActiveTab('en')}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid var(--border-color)', background: activeTab === 'en' ? 'var(--color-primary)' : 'transparent', color: activeTab === 'en' ? 'white' : 'inherit', cursor: 'pointer' }}
+          className="gap-2 rounded-full"
         >
-          <img src="https://flagcdn.com/w20/gb.png" alt="EN" width={20} height={15} style={{ borderRadius: '2px', objectFit: 'cover' }} /> English
-        </button>
+          <img src="https://flagcdn.com/w20/gb.png" alt="EN" width={20} height={15} className="rounded-sm object-cover" /> 
+          English
+        </Button>
       </div>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <h3 className={styles.sectionTitle}>Bagian Hero (Beranda Utama)</h3>
-        {renderTextInput('Judul Utama (Hero)', 'heroTitle')}
-        {renderColorSelect('Warna Teks Judul Utama', 'heroTitleColor')}
+      <form onSubmit={handleSubmit} className="space-y-6">
         
-        {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true)}
-        {renderColorSelect('Warna Teks Sub-judul', 'heroSubtitleColor')}
-
-        <h3 className={styles.sectionTitle}>Bagian Fitur Keunggulan</h3>
-        {renderTextInput('Judul Keunggulan (Features)', 'featuresTitle')}
-        {renderColorSelect('Warna Teks Judul Fitur', 'featuresTitleColor')}
-
-        <h3 className={styles.sectionTitle}>Bagian Ajakan Bertindak (CTA)</h3>
-        {renderTextInput('Judul Ajakan Bertindak (CTA)', 'ctaTitle')}
-        {renderColorSelect('Warna Teks Judul CTA', 'ctaTitleColor')}
-
-        {renderTextInput('Deskripsi Singkat CTA', 'ctaText', true)}
-        {renderColorSelect('Warna Teks Deskripsi CTA', 'ctaTextColor')}
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
-          <div style={{ background: 'var(--color-surface-soft)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-            <h4 style={{ marginBottom: '1rem', color: 'var(--color-ink)', fontWeight: '600' }}>Pengaturan Tombol 1 (Primary)</h4>
-            {renderTextInput('Label Tombol', 'ctaBtn1Text')}
-            <div style={{ marginTop: '1rem' }}>
-              {renderColorSelect('Warna Background', 'ctaBtn1Color')}
-              {renderColorSelect('Warna Hover', 'ctaBtn1HoverColor')}
-              {renderColorSelect('Warna Label (Teks)', 'ctaBtn1TextColor')}
+        <Card>
+          <CardHeader>
+            <CardTitle>Bagian Hero (Beranda Utama)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderTextInput('Judul Utama (Hero)', 'heroTitle')}
+              {renderColorSelect('Warna Teks Judul Utama', 'heroTitleColor')}
             </div>
-          </div>
-          <div style={{ background: 'var(--color-surface-soft)', padding: '1.5rem', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-            <h4 style={{ marginBottom: '1rem', color: 'var(--color-ink)', fontWeight: '600' }}>Pengaturan Tombol 2 (Secondary)</h4>
-            {renderTextInput('Label Tombol', 'ctaBtn2Text')}
-            <div style={{ marginTop: '1rem' }}>
-              {renderColorSelect('Warna Background', 'ctaBtn2Color')}
-              {renderColorSelect('Warna Hover', 'ctaBtn2HoverColor')}
-              {renderColorSelect('Warna Label (Teks)', 'ctaBtn2TextColor')}
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true)}
+              {renderColorSelect('Warna Teks Sub-judul', 'heroSubtitleColor')}
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Bagian Fitur Keunggulan</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6 sm:grid-cols-2">
+            {renderTextInput('Judul Keunggulan (Features)', 'featuresTitle')}
+            {renderColorSelect('Warna Teks Judul Fitur', 'featuresTitleColor')}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Bagian Ajakan Bertindak (CTA)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderTextInput('Judul Ajakan Bertindak (CTA)', 'ctaTitle')}
+              {renderColorSelect('Warna Teks Judul CTA', 'ctaTitleColor')}
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderTextInput('Deskripsi Singkat CTA', 'ctaText', true)}
+              {renderColorSelect('Warna Teks Deskripsi CTA', 'ctaTextColor')}
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 mt-4 pt-4 border-t">
+              <div className="space-y-4 bg-muted/20 p-4 rounded-xl border">
+                <h4 className="font-semibold text-foreground">Pengaturan Tombol 1 (Primary)</h4>
+                {renderTextInput('Label Tombol', 'ctaBtn1Text')}
+                <div className="space-y-4 pt-2">
+                  {renderColorSelect('Warna Background', 'ctaBtn1Color')}
+                  {renderColorSelect('Warna Hover', 'ctaBtn1HoverColor')}
+                  {renderColorSelect('Warna Label (Teks)', 'ctaBtn1TextColor')}
+                </div>
+              </div>
+              <div className="space-y-4 bg-muted/20 p-4 rounded-xl border">
+                <h4 className="font-semibold text-foreground">Pengaturan Tombol 2 (Secondary)</h4>
+                {renderTextInput('Label Tombol', 'ctaBtn2Text')}
+                <div className="space-y-4 pt-2">
+                  {renderColorSelect('Warna Background', 'ctaBtn2Color')}
+                  {renderColorSelect('Warna Hover', 'ctaBtn2HoverColor')}
+                  {renderColorSelect('Warna Label (Teks)', 'ctaBtn2TextColor')}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {renderSectionOrder()}
 
-        <div className={styles.footer}>
-          <Button type="submit" disabled={loading} className="bg-[var(--color-primary)] text-white hover:opacity-90 shadow-sm rounded-md h-10 px-6 font-semibold w-full sm:w-auto">
-            {loading ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Save size={18} className="mr-2" />}
-            {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
-          </Button>
-        </div>
       </form>
     </div>
   )

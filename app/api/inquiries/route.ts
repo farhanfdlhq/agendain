@@ -11,11 +11,13 @@ export async function GET() {
     }
 
     const inquiries = await prisma.inquiry.findMany({
+      take: 100,
       orderBy: { createdAt: 'desc' },
       include: { paket: { select: { nama: true } } }
     })
     
     const privateTrips = await prisma.privateTrip.findMany({
+      take: 100,
       orderBy: { createdAt: 'desc' }
     })
 

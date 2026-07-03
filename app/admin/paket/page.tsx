@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Plus, Edit2, Trash2, Search, Eye, WifiOff, AlertCircle, RefreshCw, PackageX, Loader2 } from "lucide-react"
+import { Plus, Edit2, Trash2, Search, Eye, WifiOff, AlertCircle, RefreshCw, PackageX } from "lucide-react"
 import { formatIDR } from "@/lib/currency"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function AdminPaketPage() {
   const [packages, setPackages] = useState<any[]>([])
@@ -97,7 +98,7 @@ export default function AdminPaketPage() {
 
   const filteredPackages = packages.filter(pkg => {
     const matchesSearch = pkg.nama.toLowerCase().includes(search.toLowerCase()) || 
-      pkg.destinasi.nama.toLowerCase().includes(search.toLowerCase())
+      (pkg.destinasi?.nama?.toLowerCase() || "").includes(search.toLowerCase())
     const matchesStatus = statusFilter === "all" || pkg.status === statusFilter
     return matchesSearch && matchesStatus
   })
@@ -106,20 +107,7 @@ export default function AdminPaketPage() {
     return formatIDR(Number(price))
   }
 
-  const SkeletonRow = () => (
-    <TableRow>
-      <TableCell>
-        <div className="h-5 w-48 bg-muted animate-pulse rounded mb-2"></div>
-        <div className="h-4 w-32 bg-muted animate-pulse rounded"></div>
-      </TableCell>
-      <TableCell><div className="h-6 w-24 bg-muted animate-pulse rounded-full"></div></TableCell>
-      <TableCell><div className="h-5 w-16 bg-muted animate-pulse rounded"></div></TableCell>
-      <TableCell><div className="h-5 w-24 bg-muted animate-pulse rounded"></div></TableCell>
-      <TableCell><div className="h-8 w-28 bg-muted animate-pulse rounded-md"></div></TableCell>
-      <TableCell><div className="h-8 w-32 bg-muted animate-pulse rounded-md"></div></TableCell>
-    </TableRow>
-  )
-
+  
   const renderState = () => {
     if (isOffline) {
       return (
@@ -161,11 +149,14 @@ export default function AdminPaketPage() {
 
     if (loading) {
       return (
-        <>
-          <SkeletonRow />
-          <SkeletonRow />
-          <SkeletonRow />
-        </>
+        <TableRow>
+          <TableCell colSpan={6} className="h-64 text-center">
+            <div className="flex w-full items-center justify-center">
+              <AirplaneLoader size={32} className="text-primary" />
+              <span className="ml-2 text-muted-foreground">Memuat data...</span>
+            </div>
+          </TableCell>
+        </TableRow>
       )
     }
 
@@ -200,8 +191,8 @@ export default function AdminPaketPage() {
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Manajemen Paket</h2>
           <p className="text-muted-foreground text-sm">Kelola semua paket wisata perjalanan Anda.</p>
         </div>
-        <Button asChild>
-          <Link href="/admin/paket/baru">
+        <Button asChild className="bg-primary hover:bg-primary/90 font-semibold rounded-full px-6 whitespace-nowrap" style={{ color: '#ffffff' }}>
+          <Link href="/admin/paket/baru" style={{ color: '#ffffff' }}>
             <Plus className="mr-2 h-4 w-4" />
             Tambah Paket Baru
           </Link>
@@ -215,7 +206,7 @@ export default function AdminPaketPage() {
             <Input 
               type="text" 
               placeholder="Cari nama paket atau destinasi..." 
-              className="pl-9 bg-background"
+              className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

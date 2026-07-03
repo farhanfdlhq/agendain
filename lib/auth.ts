@@ -50,6 +50,7 @@ export const authOptions: NextAuthOptions = {
         if (session?.avatar !== undefined) token.avatar = session.avatar
       }
       if (user) {
+        token.id = user.id
         token.name = user.name
         token.role = (user as any).role
         token.avatar = (user as any).avatar
@@ -58,6 +59,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
+        ;(session.user as any).id = token.id as string
         session.user.name = token.name as string
         ;(session.user as any).role = token.role as string
         ;(session.user as any).avatar = token.avatar as string

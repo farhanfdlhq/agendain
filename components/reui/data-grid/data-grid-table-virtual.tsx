@@ -32,7 +32,7 @@ import {
 } from "@tanstack/react-virtual"
 
 import { cn } from "@/lib/utils"
-import { Spinner } from "@/components/ui/spinner"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 type DataGridTableVirtualScrollElements = {
   containerElement: HTMLDivElement | null
@@ -222,7 +222,7 @@ function DataGridTableVirtualBody<TData>({
         columnCount={columnCount}
       >
         <div className="flex items-center justify-center gap-2">
-          <Spinner className="size-4 opacity-60" />
+          <AirplaneLoader size={16} className="opacity-60" />
           {loadingMoreMessage}
         </div>
       </DataGridTableVirtualStatusRow>

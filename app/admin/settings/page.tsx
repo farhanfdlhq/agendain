@@ -1,11 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Settings, Save, Loader2, Link as LinkIcon, MessageSquare, CreditCard, LayoutTemplate, Info } from "lucide-react"
+import { Settings, Save, Link as LinkIcon, MessageSquare, CreditCard, LayoutTemplate, Info } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
-
-import styles from "./page.module.css"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
@@ -70,9 +73,7 @@ export default function SettingsPage() {
     e.preventDefault()
     setLoading(true)
 
-    const payload = {
-      ...formData
-    }
+    const payload = { ...formData }
 
     try {
       const res = await fetch("/api/settings", {
@@ -95,184 +96,194 @@ export default function SettingsPage() {
 
   if (fetching) {
     return (
-      <div className={styles.loadingWrapper}>
-        <Loader2 size={32} className={styles.spinner} />
+      <div className="flex items-center justify-center h-64">
+        <AirplaneLoader size={32} className="text-primary" />
       </div>
     )
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
+    <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto py-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className={styles.title}>Pengaturan Sistem</h2>
-          <p className={styles.subtitle}>Konfigurasi parameter dan identitas utama website Agendain.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Pengaturan Sistem</h2>
+          <p className="text-muted-foreground text-sm">Konfigurasi parameter dan identitas utama website Agendain.</p>
         </div>
         <Button 
           onClick={handleSubmit}
           disabled={loading}
-          className="bg-[var(--color-primary)] text-white hover:opacity-90 shadow-sm rounded-md h-10 px-4 font-semibold"
+          className="w-full sm:w-auto"
         >
-          {loading ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Save size={18} className="mr-2" />}
+          {loading ? <AirplaneLoader size={18} className="mr-2" /> : <Save size={18} className="mr-2" />}
           Simpan Perubahan
         </Button>
       </div>
 
-      <div className={styles.card}>
-        <form onSubmit={handleSubmit}>
-          
-          {/* Section: Identitas Website */}
-          <div className={`${styles.section} ${styles.sectionBorder}`}>
-            <div className={styles.sectionHeader}>
-              <LayoutTemplate size={20} />
-              <h3 className={styles.sectionTitle}>Identitas Website</h3>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        
+        {/* Section: Identitas Website */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <LayoutTemplate size={20} className="text-primary" />
+              Identitas Website
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="site_name">Nama Website</Label>
+              <Input
+                id="site_name"
+                name="site_name"
+                value={formData.site_name}
+                onChange={handleChange}
+              />
             </div>
             
-            <div className={styles.grid}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Nama Website</label>
-                <input
-                  type="text"
-                  name="site_name"
-                  value={formData.site_name}
-                  onChange={handleChange}
-                  className={styles.input}
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Logo Website</label>
-                <div className={styles.logoUploadRow}>
-                  {formData.site_logo && formData.site_logo !== "/logo.png" ? (
-                    <img src={formData.site_logo} alt="Logo" className={styles.logoPreview} />
-                  ) : (
-                    <div className={styles.logoPlaceholder}>
-                      <LayoutTemplate size={24} color="var(--color-muted)" />
-                    </div>
-                  )}
-                  <div className={styles.logoContent}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      style={{ display: "none" }}
-                      id="logo-upload"
-                    />
-                    <label htmlFor="logo-upload" className={styles.uploadLabel}>
-                      {uploadingLogo ? <Loader2 size={16} className={styles.spinner} /> : "Pilih Gambar Logo"}
-                    </label>
-                    <p className={styles.hint}>
-                      Disarankan menggunakan gambar PNG dengan latar belakang transparan (rasio 1:1 atau 3:1).
-                    </p>
+            <div className="space-y-2">
+              <Label>Logo Website</Label>
+              <div className="flex items-center gap-4">
+                {formData.site_logo && formData.site_logo !== "/logo.png" ? (
+                  <div className="w-16 h-16 rounded-md overflow-hidden bg-muted/20 border flex items-center justify-center shrink-0">
+                    <img src={formData.site_logo} alt="Logo" className="w-full h-full object-contain p-1" />
                   </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-md bg-muted/20 border flex items-center justify-center shrink-0">
+                    <LayoutTemplate size={24} className="text-muted-foreground" />
+                  </div>
+                )}
+                <div className="flex flex-col gap-1 w-full">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                    id="logo-upload"
+                  />
+                  <Button variant="outline" type="button" asChild className="w-full justify-center">
+                    <label htmlFor="logo-upload" className="cursor-pointer">
+                      {uploadingLogo ? <AirplaneLoader size={16} className="mr-2" /> : null}
+                      {uploadingLogo ? "Mengunggah..." : "Pilih Gambar Logo"}
+                    </label>
+                  </Button>
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    Disarankan gambar PNG berlatar transparan (rasio 1:1 atau 3:1).
+                  </p>
                 </div>
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Section: Kontak & Komunikasi */}
-          <div className={`${styles.section} ${styles.sectionBorder}`}>
-            <div className={styles.sectionHeader}>
-              <MessageSquare size={20} />
-              <h3 className={styles.sectionTitle}>Kontak & Pesan</h3>
+        {/* Section: Kontak & Komunikasi */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare size={20} className="text-primary" />
+              Kontak & Pesan
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="whatsapp_number">Nomor WhatsApp Utama</Label>
+              <Input
+                id="whatsapp_number"
+                name="whatsapp_number"
+                value={formData.whatsapp_number}
+                onChange={handleChange}
+                placeholder="6281234567890"
+              />
+              <p className="text-[11px] text-muted-foreground">Gunakan format 62xxx tanpa spasi atau plus.</p>
             </div>
             
-            <div className={styles.grid}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Nomor WhatsApp Utama (Gunakan format 62xxx)</label>
-                <input
-                  type="text"
-                  name="whatsapp_number"
-                  value={formData.whatsapp_number}
-                  onChange={handleChange}
-                  placeholder="6281234567890"
-                  className={styles.input}
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Teks Pesan WhatsApp Default</label>
-                <textarea
-                  name="whatsapp_message"
-                  value={formData.whatsapp_message}
-                  onChange={handleChange}
-                  rows={3}
-                  className={`${styles.input} ${styles.textarea}`}
-                />
-                <p className={styles.hint}>Pesan ini akan otomatis terisi saat kustomer menekan tombol chat WhatsApp di frontend.</p>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="whatsapp_message">Teks Pesan WhatsApp Default</Label>
+              <Textarea
+                id="whatsapp_message"
+                name="whatsapp_message"
+                value={formData.whatsapp_message}
+                onChange={handleChange}
+                rows={3}
+              />
+              <p className="text-[11px] text-muted-foreground">Pesan ini otomatis terisi saat kustomer klik tombol chat WA.</p>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Section: Pembayaran */}
-          <div className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <CreditCard size={20} />
-              <h3 className={styles.sectionTitle}>Instruksi Pembayaran</h3>
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Informasi Rekening / Metode Pembayaran</label>
-              <textarea
+        {/* Section: Pembayaran */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard size={20} className="text-primary" />
+              Instruksi Pembayaran
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="payment_instructions">Informasi Rekening / Metode Pembayaran</Label>
+              <Textarea
+                id="payment_instructions"
                 name="payment_instructions"
                 value={formData.payment_instructions}
                 onChange={handleChange}
                 rows={4}
-                className={`${styles.input} ${styles.textarea}`}
               />
-              <p className={styles.hint}>Instruksi ini akan ditampilkan kepada kustomer setelah mereka melakukan booking.</p>
+              <p className="text-[11px] text-muted-foreground">Instruksi ini akan ditampilkan kepada kustomer setelah booking.</p>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Section: Informasi & Kebijakan Default */}
-          <div className={`${styles.section} ${styles.sectionBorder}`}>
-            <div className={styles.sectionHeader}>
-              <Info size={20} />
-              <h3 className={styles.sectionTitle}>Informasi & Kebijakan Default (Global)</h3>
-            </div>
-            
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Informasi Penting (Default)</label>
-              <textarea
+        {/* Section: Informasi & Kebijakan Default */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Info size={20} className="text-primary" />
+              Informasi & Kebijakan Default (Global)
+            </CardTitle>
+            <CardDescription>
+              Pengaturan ini akan digunakan pada paket yang tidak memiliki kebijakan custom secara spesifik.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="global_informasi_penting">Informasi Penting (Default)</Label>
+              <Textarea
+                id="global_informasi_penting"
                 name="global_informasi_penting"
                 value={formData.global_informasi_penting}
                 onChange={handleChange}
                 rows={4}
-                className={`${styles.input} ${styles.textarea}`}
                 placeholder="Tulis setiap poin di baris baru..."
               />
-              <p className={styles.hint}>Ini akan digunakan pada semua paket yang tidak memiliki Informasi Penting custom.</p>
             </div>
             
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Kebijakan Pembatalan & Pengembalian Dana (Default)</label>
-              <textarea
+            <div className="space-y-2">
+              <Label htmlFor="global_kebijakan_pembatalan">Kebijakan Pembatalan & Pengembalian Dana (Default)</Label>
+              <Textarea
+                id="global_kebijakan_pembatalan"
                 name="global_kebijakan_pembatalan"
                 value={formData.global_kebijakan_pembatalan}
                 onChange={handleChange}
                 rows={4}
-                className={`${styles.input} ${styles.textarea}`}
                 placeholder="Tulis setiap poin di baris baru..."
               />
-              <p className={styles.hint}>Ini akan digunakan pada semua paket yang tidak memiliki Kebijakan Pembatalan custom.</p>
             </div>
 
-            <div className={styles.formGroup}>
-              <label className={styles.label}>Opsi Penjemputan (Default)</label>
-              <textarea
+            <div className="space-y-2">
+              <Label htmlFor="global_opsi_penjemputan">Opsi Penjemputan (Default)</Label>
+              <Textarea
+                id="global_opsi_penjemputan"
                 name="global_opsi_penjemputan"
                 value={formData.global_opsi_penjemputan}
                 onChange={handleChange}
                 rows={4}
-                className={`${styles.input} ${styles.textarea}`}
                 placeholder="Tulis setiap poin di baris baru..."
               />
-              <p className={styles.hint}>Ini akan digunakan pada semua paket yang tidak memiliki Opsi Penjemputan custom.</p>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-        </form>
-      </div>
+      </form>
     </div>
   )
 }

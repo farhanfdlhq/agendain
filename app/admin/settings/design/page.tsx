@@ -1,9 +1,14 @@
-'use client'
+"use client"
+
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { CheckCircle2, AlertCircle, Loader2, Palette, Type, AlertTriangle, Box, Save } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Palette, Type, AlertTriangle, Box, Save, LayoutTemplate } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import styles from './page.module.css'
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function DesignSystemPage() {
   const [theme, setTheme] = useState({
@@ -86,22 +91,24 @@ export default function DesignSystemPage() {
   }
 
   const renderColorField = (label: string, key: keyof typeof theme) => (
-    <div className={styles.field}>
-      <label>{label}</label>
-      <div className={styles.inputGroup}>
-        <input 
-          type="color" 
-          className={styles.colorInput} 
-          value={theme[key]} 
-          onChange={e => handleChange(key, e.target.value)} 
-        />
-        <input 
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex items-center gap-2">
+        <div className="relative w-12 h-10 rounded-md overflow-hidden border shrink-0">
+          <input 
+            type="color" 
+            className="absolute -top-2 -left-2 w-16 h-16 cursor-pointer" 
+            value={theme[key]} 
+            onChange={e => handleChange(key, e.target.value)} 
+          />
+        </div>
+        <Input 
           type="text" 
-          className={styles.textInput} 
           value={theme[key]} 
           onChange={e => handleChange(key, e.target.value)} 
           pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$" 
           required 
+          className="font-mono uppercase"
         />
       </div>
     </div>
@@ -109,113 +116,182 @@ export default function DesignSystemPage() {
 
   if (fetching) {
     return (
-      <div className={styles.container}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--color-muted)' }}>
-          <Loader2 className="animate-spin" size={20} />
-          <span>Memuat pengaturan design system...</span>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <AirplaneLoader size={32} className="text-primary" />
       </div>
     )
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Global Design System</h1>
-        <p className={styles.subtitle}>Atur palet warna, tipografi, dan gaya antarmuka (UI) secara terpusat untuk seluruh platform. Sistem akan otomatis mem-build skala gradasi warna (50-900).</p>
+    <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto py-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Global Design System</h2>
+          <p className="text-muted-foreground text-sm">Atur palet warna, tipografi, dan gaya antarmuka secara terpusat.</p>
+        </div>
+        <Button 
+          onClick={handleSubmit}
+          disabled={loading}
+          className="w-full sm:w-auto"
+        >
+          {loading ? <AirplaneLoader size={18} className="mr-2" /> : <Save size={18} className="mr-2" />}
+          {loading ? 'Building...' : 'Update Design System'}
+        </Button>
       </div>
 
-      <div className={styles.tabs}>
-        <button className={`${styles.tabBtn} ${activeTab === 'brand' ? styles.activeTab : ''}`} onClick={() => setActiveTab('brand')}>
-          <Palette size={18} /> Brand Colors
-        </button>
-        <button className={`${styles.tabBtn} ${activeTab === 'semantic' ? styles.activeTab : ''}`} onClick={() => setActiveTab('semantic')}>
-          <AlertTriangle size={18} /> Semantic
-        </button>
-        <button className={`${styles.tabBtn} ${activeTab === 'typography' ? styles.activeTab : ''}`} onClick={() => setActiveTab('typography')}>
-          <Type size={18} /> Typography
-        </button>
-        <button className={`${styles.tabBtn} ${activeTab === 'surface' ? styles.activeTab : ''}`} onClick={() => setActiveTab('surface')}>
-          <Box size={18} /> Surfaces & Shapes
-        </button>
-        <button className={`${styles.tabBtn} ${activeTab === 'layout' ? styles.activeTab : ''}`} onClick={() => setActiveTab('layout')}>
-          <Box size={18} /> Header & Footer
-        </button>
+      <div className="flex overflow-x-auto pb-2 border-b gap-2 scrollbar-hide">
+        <Button 
+          variant={activeTab === 'brand' ? 'secondary' : 'ghost'} 
+          onClick={() => setActiveTab('brand')}
+          className="rounded-full"
+        >
+          <Palette className="mr-2 h-4 w-4" /> Brand Colors
+        </Button>
+        <Button 
+          variant={activeTab === 'semantic' ? 'secondary' : 'ghost'} 
+          onClick={() => setActiveTab('semantic')}
+          className="rounded-full"
+        >
+          <AlertTriangle className="mr-2 h-4 w-4" /> Semantic
+        </Button>
+        <Button 
+          variant={activeTab === 'typography' ? 'secondary' : 'ghost'} 
+          onClick={() => setActiveTab('typography')}
+          className="rounded-full"
+        >
+          <Type className="mr-2 h-4 w-4" /> Typography
+        </Button>
+        <Button 
+          variant={activeTab === 'surface' ? 'secondary' : 'ghost'} 
+          onClick={() => setActiveTab('surface')}
+          className="rounded-full"
+        >
+          <Box className="mr-2 h-4 w-4" /> Surfaces & Shapes
+        </Button>
+        <Button 
+          variant={activeTab === 'layout' ? 'secondary' : 'ghost'} 
+          onClick={() => setActiveTab('layout')}
+          className="rounded-full"
+        >
+          <LayoutTemplate className="mr-2 h-4 w-4" /> Header & Footer
+        </Button>
       </div>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
+      <form onSubmit={handleSubmit} className="space-y-6">
         
         {activeTab === 'brand' && (
-          <div className={styles.tabContent}>
-            <h3 className={styles.sectionTitle}>Brand Colors</h3>
-            {renderColorField('Primary (Brand Main)', 'colorPrimary')}
-            {renderColorField('Secondary (Dominant)', 'colorSecondary')}
-            {renderColorField('Accent (Interactive)', 'colorAccent')}
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Brand Colors</CardTitle>
+              <CardDescription>Warna utama yang mewakili identitas brand Agendain.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {renderColorField('Primary (Brand Main)', 'colorPrimary')}
+              {renderColorField('Secondary (Dominant)', 'colorSecondary')}
+              {renderColorField('Accent (Interactive)', 'colorAccent')}
+            </CardContent>
+          </Card>
         )}
 
         {activeTab === 'semantic' && (
-          <div className={styles.tabContent}>
-            <h3 className={styles.sectionTitle}>Semantic / Status Colors</h3>
-            {renderColorField('Success (Valid/Positive)', 'colorSuccess')}
-            {renderColorField('Warning (Alert/Notice)', 'colorWarning')}
-            {renderColorField('Error (Danger/Negative)', 'colorError')}
-            {renderColorField('Info (Neutral/Help)', 'colorInfo')}
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Semantic / Status Colors</CardTitle>
+              <CardDescription>Warna untuk mengkomunikasikan status dan pesan sistem.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 sm:grid-cols-2">
+              {renderColorField('Success (Valid/Positive)', 'colorSuccess')}
+              {renderColorField('Warning (Alert/Notice)', 'colorWarning')}
+              {renderColorField('Error (Danger/Negative)', 'colorError')}
+              {renderColorField('Info (Neutral/Help)', 'colorInfo')}
+            </CardContent>
+          </Card>
         )}
 
         {activeTab === 'typography' && (
-          <div className={styles.tabContent}>
-            <h3 className={styles.sectionTitle}>Global Typography</h3>
-            <div className={styles.field}>
-              <label>Heading Font (H1 - H6)</label>
-              <select className={styles.select} value={theme.headingFont} onChange={e => handleChange('headingFont', e.target.value)}>
-                {fonts.map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
-            </div>
-            <div className={styles.field}>
-              <label>Body Font (Paragraphs, Links, Text)</label>
-              <select className={styles.select} value={theme.bodyFont} onChange={e => handleChange('bodyFont', e.target.value)}>
-                {fonts.map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
-            </div>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Global Typography</CardTitle>
+              <CardDescription>Pilih jenis huruf yang digunakan di seluruh platform.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Heading Font (H1 - H6)</Label>
+                <Select value={theme.headingFont} onValueChange={v => handleChange('headingFont', v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fonts.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Body Font (Paragraphs, Text)</Label>
+                <Select value={theme.bodyFont} onValueChange={v => handleChange('bodyFont', v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fonts.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {activeTab === 'surface' && (
-          <div className={styles.tabContent}>
-            <h3 className={styles.sectionTitle}>Surfaces & Shapes</h3>
-            {renderColorField('Background / Canvas', 'colorBackground')}
-            {renderColorField('Main Text / Ink', 'colorText')}
-            
-            <div className={styles.field} style={{ marginTop: '1rem' }}>
-              <label>Global Border Radius</label>
-              <select className={styles.select} value={theme.borderRadius} onChange={e => handleChange('borderRadius', e.target.value)}>
-                {radii.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
-              </select>
-            </div>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Surfaces & Shapes</CardTitle>
+              <CardDescription>Warna latar belakang, teks utama, dan radius sudut elemen.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 sm:grid-cols-2">
+              {renderColorField('Background / Canvas', 'colorBackground')}
+              {renderColorField('Main Text / Ink', 'colorText')}
+              
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Global Border Radius</Label>
+                <Select value={theme.borderRadius} onValueChange={v => handleChange('borderRadius', v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {radii.map(r => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {activeTab === 'layout' && (
-          <div className={styles.tabContent}>
-            <h3 className={styles.sectionTitle}>Navbar (Header)</h3>
-            {renderColorField('Navbar Background', 'navbarBackground')}
-            {renderColorField('Navbar Text & Icons', 'navbarText')}
-            {renderColorField('Navbar Link Hover', 'navbarHover')}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Navbar (Header)</CardTitle>
+                <CardDescription>Warna untuk bilah navigasi utama website publik.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {renderColorField('Navbar Background', 'navbarBackground')}
+                {renderColorField('Navbar Text & Icons', 'navbarText')}
+                {renderColorField('Navbar Link Hover', 'navbarHover')}
+              </CardContent>
+            </Card>
             
-            <h3 className={styles.sectionTitle} style={{ marginTop: '2rem' }}>Footer</h3>
-            {renderColorField('Footer Background', 'footerBackground')}
-            {renderColorField('Footer Text', 'footerText')}
+            <Card>
+              <CardHeader>
+                <CardTitle>Footer</CardTitle>
+                <CardDescription>Warna untuk bagian bawah website publik.</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-6 sm:grid-cols-2">
+                {renderColorField('Footer Background', 'footerBackground')}
+                {renderColorField('Footer Text', 'footerText')}
+              </CardContent>
+            </Card>
           </div>
         )}
-
-        <div className={styles.footer}>
-          <Button type="submit" disabled={loading} className="bg-[var(--color-primary)] text-white hover:opacity-90 shadow-sm rounded-md h-10 px-6 font-semibold w-full sm:w-auto">
-            {loading ? <Loader2 size={18} className="mr-2 animate-spin" /> : <Save size={18} className="mr-2" />}
-            {loading ? 'Building Design System...' : 'Update Global Design System'}
-          </Button>
-        </div>
       </form>
     </div>
   )

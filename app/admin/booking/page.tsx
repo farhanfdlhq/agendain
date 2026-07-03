@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Trash2, Eye, PackageX, Loader2, RefreshCw, AlertCircle, CalendarDays, ExternalLink } from "lucide-react"
+import { Search, Trash2, Eye, PackageX, RefreshCw, AlertCircle, CalendarDays, ExternalLink } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,6 +19,7 @@ import { DataGrid, DataGridContainer } from "@/components/reui/data-grid/data-gr
 import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 import { DataGridPagination } from "@/components/reui/data-grid/data-grid-pagination"
 import { createColumns, Booking } from "./columns"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function AdminBookingPage() {
   const [bookings, setBookings] = useState<any[]>([])
@@ -177,7 +178,7 @@ export default function AdminBookingPage() {
     if (loading) {
       return (
         <div className="flex h-64 w-full items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <AirplaneLoader className="h-8 w-8  text-primary" />
           <span className="ml-2 text-muted-foreground">Memuat data...</span>
         </div>
       )
@@ -231,14 +232,14 @@ export default function AdminBookingPage() {
             <Input 
               type="text" 
               placeholder="Cari nama, email, atau paket..." 
-              className="pl-9 bg-background"
+              className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="w-full sm:w-48">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="bg-background">
+              <SelectTrigger className="rounded-full bg-white dark:bg-zinc-900 border-zinc-200">
                 <SelectValue placeholder="Semua Status" />
               </SelectTrigger>
               <SelectContent>

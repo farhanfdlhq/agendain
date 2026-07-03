@@ -6,20 +6,23 @@ import { notFound } from 'next/navigation'
 import BookingForm from '@/components/BookingForm/BookingForm'
 import GalleryLightbox from '@/components/GalleryLightbox/GalleryLightbox'
 import { Clock, MapPin, Tag, CalendarClock, Info, AlertCircle, CheckCircle2, FileText, Car } from 'lucide-react'
+import { formatIDR, formatUSD, formatEUR, fetchExchangeRates } from '@/lib/currency'
+
+export const revalidate = 3600 // Cache for 1 hour
 
 export default async function PaketDetail(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
   
-  let pkg = await prisma.paket.findUnique({
-    where: { slug },
-    include: { destinasi: true }
-  })
+  const [pkg, settingsArr, rates] = await Promise.all([
+    prisma.paket.findUnique({
+      where: { slug },
+      include: { destinasi: true }
+    }),
+    prisma.$queryRaw`SELECT * FROM Setting`.catch(() => [] as any[]),
+    fetchExchangeRates().catch(() => ({ USD: 0.000063, EUR: 0.000058 }))
+  ])
   
-  let settingsObj: any = {}
-  try {
-    const settingsArr: any[] = await prisma.$queryRaw`SELECT * FROM Setting`
-    settingsObj = settingsArr.reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {})
-  } catch (e) {}
+  let settingsObj = (settingsArr as any[]).reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {})
   
   if (!pkg) {
     notFound()
@@ -81,8 +84,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
     gallery = fotos.gallery || [mainImage, mainImage, mainImage, mainImage, mainImage]
   }
 
-  const { formatIDR, formatUSD, formatEUR, fetchExchangeRates } = await import('@/lib/currency')
-  const rates = await fetchExchangeRates()
+
   const hargaIDRNum = Number(pkg?.harga || 0)
   const formattedHarga = formatIDR(hargaIDRNum)
   const formattedUSD = formatUSD(hargaIDRNum * (rates.USD || 0.000063))

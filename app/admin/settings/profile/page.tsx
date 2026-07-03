@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useSession } from "next-auth/react"
-import { Save, Loader2, UploadCloud, Eye, EyeOff } from "lucide-react"
+import { Save, UploadCloud, Eye, EyeOff } from "lucide-react"
 import { toast } from "react-hot-toast"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function ProfilePage() {
   const { update } = useSession()
@@ -162,7 +163,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="animate-spin text-primary" size={32} />
+        <AirplaneLoader className=" text-primary" size={32} />
       </div>
     )
   }
@@ -193,7 +194,7 @@ export default function ProfilePage() {
                 )}
                 {uploadingAvatar && (
                   <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <AirplaneLoader className="h-8 w-8  text-primary" />
                   </div>
                 )}
               </div>
@@ -252,8 +253,8 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
               <CardFooter className="border-t bg-muted/20 px-6 py-4 flex justify-end">
-                <Button type="submit" disabled={savingAccount} className="bg-[var(--color-primary)] text-white hover:opacity-90 shadow-sm">
-                  {savingAccount ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                <Button type="submit" disabled={savingAccount} className="w-full sm:w-auto">
+                  {savingAccount ? <AirplaneLoader className="mr-2 h-4 w-4 " /> : <Save className="mr-2 h-4 w-4" />}
                   Simpan Profil
                 </Button>
               </CardFooter>
@@ -334,8 +335,8 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
               <CardFooter className="border-t bg-muted/20 px-6 py-4 flex justify-end">
-                <Button type="submit" disabled={savingPassword} className="bg-[var(--color-primary)] text-white hover:opacity-90 shadow-sm">
-                  {savingPassword ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                <Button type="submit" disabled={savingPassword} className="w-full sm:w-auto">
+                  {savingPassword ? <AirplaneLoader className="mr-2 h-4 w-4 " /> : <Save className="mr-2 h-4 w-4" />}
                   Perbarui Sandi
                 </Button>
               </CardFooter>

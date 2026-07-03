@@ -72,9 +72,9 @@ export async function PUT(
         nama: data.nama,
         slug: data.slug,
         deskripsi: data.deskripsi,
-        harga: data.harga,
-        durasi: data.durasi,
-        destinasiId: data.destinasiId,
+        harga: Number(data.harga),
+        durasi: Number(data.durasi),
+        destinasiId: Number(data.destinasiId),
         foto: data.foto,
         itinerary: data.itinerary,
         fasilitas: data.fasilitas,
@@ -100,6 +100,8 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const role = (session.user as any)?.role
+    if (role !== 'admin' && role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
     const { slug } = await params
     await prisma.paket.delete({

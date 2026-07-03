@@ -7,9 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/reui/badge"
 
-export default async function AdminDashboard() {
-  const session = await getServerSession(authOptions)
+import { Suspense } from 'react'
+import AirplaneLoader from '@/components/ui/airplane-loader'
 
+async function AdminDashboardDataFetcher({ session }: { session: any }) {
   const [paketCount, destinasiCount, inquiryCount, recentInquiries, recentPrivateTrips, bookingPendingCount, paidBookings, recentBookings] = await Promise.all([
     prisma.paket.count(),
     prisma.destinasi.count(),
@@ -24,7 +25,7 @@ export default async function AdminDashboard() {
       orderBy: { createdAt: 'desc' }
     }),
     prisma.booking.count({ where: { status: 'pending' } }),
-    prisma.booking.findMany({ where: { status: 'paid' }, select: { total: true } }),
+    prisma.booking.aggregate({ where: { status: 'paid' }, _sum: { total: true } }),
     prisma.booking.findMany({
       take: 4,
       orderBy: { createdAt: 'desc' },
@@ -32,7 +33,7 @@ export default async function AdminDashboard() {
     })
   ])
 
-  const totalOmset = paidBookings.reduce((sum: number, b: any) => sum + Number(b.total), 0)
+  const totalOmset = Number(paidBookings._sum?.total || 0)
   const formatCurrency = (val: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val)
 
   // Combine and sort recent activities
@@ -189,5 +190,19 @@ export default async function AdminDashboard() {
         </Card>
       </div>
     </div>
+  )
+}
+
+export default async function AdminDashboard() {
+  const session = await getServerSession(authOptions)
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col h-[50vh] w-full items-center justify-center gap-4">
+        <AirplaneLoader size={48} />
+        <p className="text-sm text-muted-foreground animate-pulse">Memuat ringkasan performa...</p>
+      </div>
+    }>
+      <AdminDashboardDataFetcher session={session} />
+    </Suspense>
   )
 }

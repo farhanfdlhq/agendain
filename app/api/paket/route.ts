@@ -2,6 +2,23 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { z } from "zod"
+
+const PaketSchema = z.object({
+  nama: z.string().min(1, "Nama paket harus diisi"),
+  slug: z.string().optional(),
+  deskripsi: z.string().min(1, "Deskripsi harus diisi"),
+  harga: z.coerce.number().positive("Harga harus lebih dari 0"),
+  durasi: z.coerce.number().positive("Durasi harus lebih dari 0"),
+  destinasiId: z.coerce.number().positive(),
+  foto: z.any().optional(),
+  itinerary: z.any().optional(),
+  fasilitas: z.any().optional(),
+  termasuk: z.any().optional(),
+  tidakTermasuk: z.any().optional(),
+  status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
+  label: z.string().nullable().optional(),
+})
 
 export async function GET(request: Request) {
   try {
@@ -22,7 +39,7 @@ export async function GET(request: Request) {
     
     const packages = await prisma.paket.findMany({
       where,
-      take: limit,
+      take: limit || 100,
       include: { destinasi: true },
       orderBy: { createdAt: 'desc' }
     })
@@ -40,8 +57,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const data = await request.json()
+    const body = await request.json()
     
+    // Validate with Zod
+    const result = PaketSchema.safeParse(body)
+    if (!result.success) {
+      return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+    }
+    
+    const data = result.data
+
     // Auto-generate slug from name if not provided
     if (!data.slug && data.nama) {
       data.slug = data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
@@ -52,16 +77,15 @@ export async function POST(request: Request) {
         nama: data.nama,
         slug: data.slug,
         deskripsi: data.deskripsi,
-        harga: data.harga,
-        durasi: data.durasi,
-        destinasiId: data.destinasiId,
+        harga: Number(data.harga),
+        durasi: Number(data.durasi),
+        destinasiId: Number(data.destinasiId),
         foto: data.foto || {},
         itinerary: data.itinerary || [],
         fasilitas: data.fasilitas || [],
         termasuk: data.termasuk || [],
         tidakTermasuk: data.tidakTermasuk || [],
-        status: data.status || 'draft',
-        // @ts-ignore - Prisma types might not be generated yet
+        status: data.status,
         label: data.label || null,
       }
     })

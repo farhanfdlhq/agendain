@@ -3,13 +3,14 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
-import { Lock, Mail, Loader2, AlertCircle, Eye, EyeOff } from "lucide-react"
+import { Lock, Mail, AlertCircle, Eye, EyeOff } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/reui/alert"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -114,13 +115,13 @@ export default function LoginPage() {
 
               <Button 
                 type="submit" 
-                className="w-full" 
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
                 size="lg"
                 disabled={loading}
               >
                 {loading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <AirplaneLoader className="mr-2 h-4 w-4 " />
                     Memproses...
                   </>
                 ) : (

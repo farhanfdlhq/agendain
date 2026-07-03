@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import path from 'path';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
+import { v2 as cloudinary } from 'cloudinary';
+import { writeFile } from 'fs/promises';
+import path from 'path';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(request: Request) {
   try {
@@ -38,20 +45,30 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create a unique filename
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const filename = file.name.replace(/[^a-zA-Z0-9.-]/g, '');
-    const finalName = `${uniqueSuffix}-${filename}`;
-    
-    // Path to save the file in public/uploads
-    const uploadDir = path.join(process.cwd(), 'public/uploads');
-    const filepath = path.join(uploadDir, finalName);
-    
-    await writeFile(filepath, buffer);
+    // Fallback to local if Cloudinary is not configured
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const filename = file.name.replace(/[^a-zA-Z0-9.-]/g, '');
+      const finalName = `${uniqueSuffix}-${filename}`;
+      const uploadDir = path.join(process.cwd(), 'public/uploads');
+      const filepath = path.join(uploadDir, finalName);
+      await writeFile(filepath, buffer);
+      return NextResponse.json({ url: `/uploads/${finalName}` });
+    }
 
-    const fileUrl = `/uploads/${finalName}`;
+    // Upload to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { resource_type: "auto", folder: "agendain_uploads" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      uploadStream.end(buffer);
+    });
 
-    return NextResponse.json({ url: fileUrl });
+    return NextResponse.json({ url: (result as any).secure_url });
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

@@ -3,9 +3,13 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Save, Loader2, Image as ImageIcon } from "lucide-react"
+import { ArrowLeft, Save, Image as ImageIcon } from "lucide-react"
 import { toast } from "react-hot-toast"
-import styles from "../../paket/baru/page.module.css" // Reusing form CSS
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function TambahDestinasiPage() {
   const router = useRouter()
@@ -82,148 +86,158 @@ export default function TambahDestinasiPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.header}>
-        <Link href="/admin/destinasi" className={styles.backBtn}>
-          <ArrowLeft size={18} />
-          Kembali
-        </Link>
-        <div className={styles.headerContent}>
+    <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto py-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
+        <div className="flex items-center gap-4">
+          <Button asChild variant="ghost" size="icon" className="h-10 w-10 shrink-0">
+            <Link href="/admin/destinasi">
+              <ArrowLeft size={18} />
+            </Link>
+          </Button>
           <div>
-            <h2 className={styles.title}>Tambah Destinasi</h2>
-            <p className={styles.subtitle}>Tambahkan kota atau negara tujuan baru.</p>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">Tambah Destinasi</h2>
+            <p className="text-muted-foreground text-sm mt-1">Tambahkan kota atau negara tujuan baru.</p>
           </div>
-          <button onClick={handleSubmit} className={styles.saveBtn} disabled={loading}>
-            {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
-            Simpan Destinasi
-          </button>
         </div>
+        <Button onClick={handleSubmit} disabled={loading} className="w-full sm:w-auto">
+          {loading ? <AirplaneLoader size={18} className="mr-2" /> : <Save size={18} className="mr-2" />}
+          Simpan Destinasi
+        </Button>
       </div>
 
-      <div className={styles.formContainer}>
-        <form onSubmit={handleSubmit} className={styles.formGrid}>
-          
-          <div className={styles.mainColumn}>
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Informasi Utama</h3>
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informasi Utama</CardTitle>
+              <CardDescription>Detail inti tentang destinasi ini.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
               
-              <div className={styles.inputGroup}>
-                <label>Nama Destinasi (Kota/Wilayah)</label>
-                <input 
-                  type="text" name="nama" className={styles.input} 
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Nama Destinasi (Kota/Wilayah)</label>
+                <Input 
+                  name="nama"
                   placeholder="Contoh: Paris, Swiss Alps, Cappadocia"
                   value={formData.nama} onChange={handleChange} required 
                 />
               </div>
               
-              <div className={styles.inputGroup}>
-                <label>Negara</label>
-                <input 
-                  type="text" name="negara" className={styles.input} 
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Negara</label>
+                <Input 
+                  name="negara" 
                   placeholder="Contoh: Prancis, Swiss, Turki"
                   value={formData.negara} onChange={handleChange} required 
                 />
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Deskripsi Singkat</label>
-                <textarea 
-                  name="deskripsi" className={styles.textarea} rows={4}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Deskripsi Singkat</label>
+                <Textarea 
+                  name="deskripsi" rows={4}
                   placeholder="Deskripsikan pesona destinasi ini..."
                   value={formData.deskripsi} onChange={handleChange} required 
-                ></textarea>
+                />
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Upload Foto Utama</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div className={styles.inputWithIcon} style={{ border: '2px dashed var(--color-border-strong)', padding: '24px', textAlign: 'center', background: 'var(--color-surface-soft)', borderRadius: 'var(--radius-lg)' }}>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Upload Foto Utama</label>
+                <div className="flex flex-col gap-4">
+                  <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors">
                     <input 
                       type="file" 
                       accept="image/*"
                       onChange={handleImageUpload}
-                      style={{ display: 'none' }}
+                      className="hidden"
                       id="upload-foto"
                     />
-                    <label htmlFor="upload-foto" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                    <label htmlFor="upload-foto" className="cursor-pointer flex flex-col items-center gap-2">
                       {uploadingImage ? (
-                        <Loader2 size={32} className={styles.spinner} color="var(--color-primary)" />
+                        <AirplaneLoader size={32} />
                       ) : (
-                        <ImageIcon size={32} color="var(--color-primary)" />
+                        <ImageIcon size={32} className="text-muted-foreground" />
                       )}
-                      <span style={{ fontWeight: 500, color: 'var(--color-ink)' }}>
+                      <span className="font-medium text-sm text-foreground">
                         {uploadingImage ? 'Mengupload gambar...' : 'Klik untuk memilih gambar'}
                       </span>
+                      <span className="text-xs text-muted-foreground">PNG, JPG atau WEBP (Maks. 5MB)</span>
                     </label>
                   </div>
                   
                   {formData.foto && (
-                    <div style={{ padding: '12px', background: 'var(--color-surface-soft)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
-                        <img src={formData.foto} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <div className="flex items-center gap-4 p-3 bg-muted/20 border rounded-lg">
+                      <div className="w-16 h-16 rounded-md overflow-hidden relative shrink-0">
+                        <img src={formData.foto} alt="Preview" className="w-full h-full object-cover" />
                       </div>
-                      <div style={{ flex: 1, overflow: 'hidden' }}>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--color-muted)', margin: 0, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{formData.foto}</p>
-                        <p style={{ fontSize: '0.85rem', color: 'var(--color-primary)', margin: 0, fontWeight: 500 }}>Berhasil diupload</p>
+                      <div className="flex flex-col overflow-hidden">
+                        <p className="text-xs text-muted-foreground truncate">{formData.foto}</p>
+                        <p className="text-sm font-medium text-emerald-600 dark:text-emerald-500">Berhasil diupload</p>
                       </div>
                     </div>
                   )}
                 </div>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
+        </div>
 
-          <div className={styles.sideColumn}>
-            <div className={styles.card}>
-              <h3 className={styles.cardTitle}>Informasi Tambahan</h3>
+        <div className="lg:col-span-1 flex flex-col gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Informasi Tambahan</CardTitle>
+              <CardDescription>Informasi turis untuk destinasi ini.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
               
-              <div className={styles.inputGroup}>
-                <label>Bahasa Utama <span className={styles.optional}>Opsional</span></label>
-                <input 
-                  type="text" name="bahasa" className={styles.input} 
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex justify-between">
+                  Bahasa Utama <span className="text-muted-foreground font-normal text-xs">Opsional</span>
+                </label>
+                <Input 
+                  name="bahasa"
                   placeholder="Contoh: Prancis, Inggris"
                   value={formData.bahasa} onChange={handleChange}
                 />
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Mata Uang <span className={styles.optional}>Opsional</span></label>
-                <input 
-                  type="text" name="matauang" className={styles.input} 
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex justify-between">
+                  Mata Uang <span className="text-muted-foreground font-normal text-xs">Opsional</span>
+                </label>
+                <Input 
+                  name="matauang"
                   placeholder="Contoh: Euro (EUR)"
                   value={formData.matauang} onChange={handleChange}
                 />
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Waktu Terbaik Berkunjung <span className={styles.optional}>Opsional</span></label>
-                <input 
-                  type="text" name="waktuTerbaik" className={styles.input} 
-                  placeholder="Contoh: Musim Semi (April - Juni)"
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex justify-between">
+                  Waktu Terbaik <span className="text-muted-foreground font-normal text-xs">Opsional</span>
+                </label>
+                <Input 
+                  name="waktuTerbaik"
+                  placeholder="Contoh: Musim Semi"
                   value={formData.waktuTerbaik} onChange={handleChange}
                 />
               </div>
 
-              <div className={styles.inputGroup}>
-                <label>Info Visa <span className={styles.optional}>Opsional</span></label>
-                <textarea 
-                  name="infoVisa" className={styles.textarea} rows={3}
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex justify-between">
+                  Info Visa <span className="text-muted-foreground font-normal text-xs">Opsional</span>
+                </label>
+                <Textarea 
+                  name="infoVisa" rows={3}
                   placeholder="Butuh Visa Schengen, dll..."
                   value={formData.infoVisa} onChange={handleChange}
-                ></textarea>
+                />
               </div>
-            </div>
-          </div>
-
-          <div className={styles.formFooter}>
-            <Link href="/admin/destinasi" className={styles.cancelBtn}>Batal</Link>
-            <button onClick={handleSubmit} className={styles.saveBtn} disabled={loading}>
-              {loading ? <Loader2 size={18} className={styles.spinner} /> : <Save size={18} />}
-              Simpan Destinasi
-            </button>
-          </div>
-        </form>
-      </div>
+            </CardContent>
+          </Card>
+        </div>
+      </form>
     </div>
   )
 }

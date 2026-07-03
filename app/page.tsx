@@ -1,7 +1,7 @@
 import HomeContent from '@/components/HomeContent/HomeContent'
 import { prisma } from '@/lib/prisma'
 
-export const revalidate = 0;
+export const revalidate = 60;
 
 // Dummy data fallback for development if DB is empty
 const DUMMY_PACKAGES = [
@@ -17,7 +17,10 @@ const DUMMY_DESTINATIONS = [
   { slug: 'italia', nama: 'Italia', foto: 'https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?q=80&w=800&auto=format&fit=crop', paketCount: 15 },
 ]
 
-export default async function Home() {
+import { Suspense } from 'react'
+import AirplaneLoader from '@/components/ui/airplane-loader'
+
+async function HomeDataFetcher() {
   // Try fetching from DB, fallback to dummy
   let packages: any[] = []
   let destinations: any[] = []
@@ -104,5 +107,17 @@ export default async function Home() {
       destinations={destinations} 
       homeSettings={homeSettings} 
     />
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <AirplaneLoader size={48} />
+      </div>
+    }>
+      <HomeDataFetcher />
+    </Suspense>
   )
 }

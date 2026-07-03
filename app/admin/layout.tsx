@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, Loader2, CalendarDays, Palette, UserCog, Menu, ExternalLink, Bell, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
 import { Toaster } from "react-hot-toast"
@@ -13,6 +13,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/reui/badge"
+import PlugConnectedIcon from "@/components/ui/plug-connected-icon"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -54,8 +56,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (status === "loading") {
     return (
       <div className="flex flex-col h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-muted-foreground gap-4">
-        <Loader2 className="animate-spin text-primary" size={40} />
-        <p className="font-medium animate-pulse">Menyiapkan Workspace...</p>
+        <AirplaneLoader size={48} />
+        <p className="font-medium animate-pulse mt-2">Menyiapkan Workspace...</p>
       </div>
     )
   }
@@ -89,6 +91,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       collapsible: true,
       items: [
         { name: 'Pengaturan Sistem', href: '/admin/settings', icon: <Settings size={18} />, minRole: 'super_admin' },
+        { name: 'Kelola User', href: '/admin/settings/users', icon: <Users size={18} />, minRole: 'super_admin' },
+        { name: 'Roles & Permissions', href: '/admin/settings/roles', icon: <PlugConnectedIcon size={18} />, minRole: 'super_admin' },
         { name: 'Akun & Profil', href: '/admin/settings/profile', icon: <UserCog size={18} />, minRole: 'editor' },
       ]
     },
@@ -283,11 +287,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="icon" className="h-9 w-9 rounded-full border-border/50 bg-background/50 hover:bg-muted hidden sm:flex relative">
-              <Bell className="h-4 w-4 text-muted-foreground" />
-              <span className="absolute top-2 right-2.5 h-1.5 w-1.5 rounded-full bg-primary ring-2 ring-background" />
-            </Button>
-            <Separator orientation="vertical" className="h-6 hidden sm:block opacity-50" />
             <Button variant="outline" size="sm" asChild className="rounded-full shadow-none transition-all px-4 hidden sm:flex border-border/50 bg-transparent hover:bg-muted text-foreground">
               <Link href="/" target="_blank">
                 <ExternalLink className="mr-2 h-4 w-4" />

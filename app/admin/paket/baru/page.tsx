@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Save, Loader2, Image as ImageIcon, X, Plus } from "lucide-react"
+import { ArrowLeft, Save, Image as ImageIcon, X, Plus } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function TambahPaketPage() {
   const router = useRouter()
@@ -265,7 +266,7 @@ export default function TambahPaketPage() {
           </div>
         </div>
         <Button onClick={handleSubmit} disabled={loading || uploadingImage}>
-          {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+          {loading ? <AirplaneLoader className="mr-2 h-4 w-4 " /> : <Save className="mr-2 h-4 w-4" />}
           Simpan Paket
         </Button>
       </div>
@@ -519,7 +520,7 @@ export default function TambahPaketPage() {
                   className="flex flex-col items-center justify-center w-full py-12 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors bg-muted/20"
                 >
                   {uploadingImage ? (
-                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-2" />
+                    <AirplaneLoader className="h-8 w-8  text-primary mb-2" />
                   ) : (
                     <ImageIcon className="h-8 w-8 text-primary mb-2" />
                   )}

@@ -4,14 +4,21 @@ import "./globals.css";
 
 import { prisma } from "@/lib/prisma"
 
-export async function generateMetadata(): Promise<Metadata> {
-  let siteName = "Agendain"
+import { cache } from "react"
+
+const getSettings = cache(async () => {
   try {
-    const settings: any[] = await prisma.$queryRaw`SELECT * FROM Setting WHERE \`key\` = 'site_name'`
-    if (settings && settings.length > 0) siteName = settings[0].value
+    const settingsArr: any[] = await prisma.$queryRaw`SELECT * FROM Setting`
+    return settingsArr.reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {})
   } catch (e) {
-    console.error(e)
+    console.error("Failed to fetch settings for layout", e)
+    return {}
   }
+})
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settingsObj = await getSettings()
+  const siteName = settingsObj.site_name || "Agendain"
   
   return {
     title: `${siteName} | Travel Agency Indonesia ke Eropa`,
@@ -26,13 +33,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let settingsObj: any = {}
-  try {
-    const settingsArr: any[] = await prisma.$queryRaw`SELECT * FROM Setting`
-    settingsObj = settingsArr.reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {})
-  } catch (e) {
-    console.error("Failed to fetch settings for layout", e)
-  }
+  const settingsObj = await getSettings()
 
   let theme = {
     colorPrimary: '#054569',
@@ -81,6 +82,8 @@ export default async function RootLayout({
   return (
     <html lang="id" data-scroll-behavior="smooth">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href={fontUrl} rel="stylesheet" />
         <style>{`
           :root {

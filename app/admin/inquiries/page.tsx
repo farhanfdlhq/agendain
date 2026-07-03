@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock, WifiOff, AlertCircle, RefreshCw, Inbox, MessageSquare, ArrowUpRight, Loader2 } from "lucide-react"
+import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock, WifiOff, AlertCircle, RefreshCw, Inbox, MessageSquare, ArrowUpRight } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +17,7 @@ import { DataGrid, DataGridContainer } from "@/components/reui/data-grid/data-gr
 import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 import { DataGridPagination } from "@/components/reui/data-grid/data-grid-pagination"
 import { createTripColumns, createInquiryColumns } from "./columns"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function AdminInquiriesPage() {
   const [activeTab, setActiveTab] = useState<"privatetrip" | "inquiries">("privatetrip")
@@ -158,7 +159,7 @@ export default function AdminInquiriesPage() {
     if (loading) {
       return (
         <div className="flex h-64 w-full items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <AirplaneLoader className="h-8 w-8  text-primary" />
           <span className="ml-2 text-muted-foreground">Memuat data...</span>
         </div>
       )
@@ -199,7 +200,7 @@ export default function AdminInquiriesPage() {
               <Input 
                 type="text" 
                 placeholder="Cari nama, email, atau destinasi..." 
-                className="pl-9 bg-background"
+                className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />

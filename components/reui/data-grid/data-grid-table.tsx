@@ -27,7 +27,7 @@ import { cva } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Spinner } from "@/components/ui/spinner"
+import AirplaneLoader from "@/components/ui/airplane-loader"
 
 const headerCellSpacingVariants = cva("", {
   variants: {
@@ -1112,7 +1112,7 @@ function DataGridTableLoader() {
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <div className="text-muted-foreground bg-card rounded-lg text-sm flex items-center gap-2 border px-4 py-2 leading-none font-medium">
-        <Spinner className="size-5 opacity-60" />
+        <AirplaneLoader size={20} className="opacity-60" />
         {props.loadingMessage || "Loading..."}
       </div>
     </div>
