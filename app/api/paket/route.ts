@@ -68,14 +68,12 @@ export async function POST(request: Request) {
     const data = result.data
 
     // Auto-generate slug from name if not provided
-    if (!data.slug && data.nama) {
-      data.slug = data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
-    }
+    const generatedSlug = data.slug || data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
 
     const newPackage = await prisma.paket.create({
       data: {
         nama: data.nama,
-        slug: data.slug,
+        slug: generatedSlug,
         deskripsi: data.deskripsi,
         harga: Number(data.harga),
         durasi: Number(data.durasi),

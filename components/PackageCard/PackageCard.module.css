@@ -126,3 +126,21 @@
   color: var(--color-muted);
   margin-left: 4px;
 }
+
+@media (max-width: 768px) {
+  .imageWrapper {
+    aspect-ratio: 4 / 3;
+  }
+  .content {
+    padding: var(--space-xs) 2px;
+  }
+  .title {
+    font-size: 0.95rem;
+  }
+  .price {
+    font-size: 0.95rem;
+  }
+  .metaRow {
+    font-size: 0.8rem;
+  }
+}

@@ -41,7 +41,7 @@ export const createTripColumns = (): ColumnDef<PrivateTrip>[] => [
     cell: ({ row }) => {
       const trip = row.original
       return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-[200px]">
           <span className="font-semibold text-foreground">{trip.nama}</span>
           <div className="text-xs text-muted-foreground flex flex-col gap-0.5">
             <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {trip.email}</span>
@@ -57,7 +57,7 @@ export const createTripColumns = (): ColumnDef<PrivateTrip>[] => [
     cell: ({ row }) => {
       const trip = row.original
       return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-[200px]">
           <span className="font-semibold text-foreground">{trip.destinasi}</span>
           <span className="text-xs text-muted-foreground flex items-center gap-1">
             <Calendar className="h-3 w-3" /> {new Date(trip.tanggal).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
@@ -72,7 +72,7 @@ export const createTripColumns = (): ColumnDef<PrivateTrip>[] => [
     cell: ({ row }) => {
       const trip = row.original
       return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-[150px]">
           <span className="text-sm font-medium flex items-center gap-1">
             <Users className="h-3.5 w-3.5 text-muted-foreground" /> {trip.jumlahPax} Orang
           </span>
@@ -120,7 +120,7 @@ export const createInquiryColumns = (
     cell: ({ row }) => {
       const inq = row.original
       return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-[200px]">
           <span className="font-semibold text-foreground">{inq.nama}</span>
           <div className="text-xs text-muted-foreground flex flex-col gap-0.5">
             <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {inq.email}</span>

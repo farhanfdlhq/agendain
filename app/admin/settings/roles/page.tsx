@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useDeferredValue } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
@@ -287,7 +287,7 @@ export default function RolesPermissionsPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[700px] rounded-2xl h-[85vh] flex flex-col overflow-hidden p-0">
           <form onSubmit={handleSubmit} className="flex flex-col h-full">
-            <DialogHeader className="px-6 py-4 border-b shrink-0">
+            <DialogHeader className="px-6 py-4 border-b-2 border-border shrink-0">
               <DialogTitle className="text-xl">{editingId ? `Edit Role: ${formData.name}` : 'Tambah Role Baru'}</DialogTitle>
               <DialogDescription className="sr-only">Formulir untuk menambah atau mengedit role</DialogDescription>
             </DialogHeader>

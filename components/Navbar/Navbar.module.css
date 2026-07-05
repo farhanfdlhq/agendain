@@ -23,6 +23,7 @@
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
 .logoImageContainer {
   height: 40px;
@@ -123,7 +124,7 @@
   display: none;
 }
 
-@media (max-width: 744px) {
+@media (max-width: 1024px) {
   .desktopLinks { display: none; }
   .langToggleDesktop { display: none; }
   .cta { display: none; }
@@ -164,6 +165,11 @@
     font-size: 1.25rem;
     font-weight: 500;
     text-decoration: none;
+    transition: color 0.2s;
+  }
+  .mobileActive {
+    color: var(--color-navbar-hover);
+    font-weight: 700;
   }
   
   .mobileCtaWrapper {
@@ -172,6 +178,8 @@
   
   .mobileLangToggle {
     margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
   }
 
   .mobileCta {

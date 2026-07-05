@@ -13,7 +13,7 @@ async function main() {
       slug: 'eropa-barat',
       negara: 'Prancis, Swiss, Italia',
       deskripsi: 'Kumpulan negara eksotis di Eropa Barat.',
-      foto: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=800',
+      foto: '/placeholder.png',
     }
   })
 
@@ -25,7 +25,7 @@ async function main() {
       slug: 'skandinavia',
       negara: 'Norwegia, Swedia',
       deskripsi: 'Pesona salju dan fenomena alam di Eropa Utara.',
-      foto: 'https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?w=800',
+      foto: '/placeholder.png',
     }
   })
 
@@ -37,7 +37,7 @@ async function main() {
       slug: 'turki',
       negara: 'Turki',
       deskripsi: 'Negara lintas benua dengan kekayaan sejarah peradaban Islam.',
-      foto: 'https://images.unsplash.com/photo-1527838832700-5059252407fa?w=800',
+      foto: '/placeholder.png',
     }
   })
 
@@ -49,7 +49,7 @@ async function main() {
       harga: 28500000,
       durasi: 10,
       destinasiId: destinasiEropaBarat.id,
-      foto: ['https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800', 'https://images.unsplash.com/photo-1522818150892-6f56b6616428?w=800'],
+      foto: ['/placeholder.png', '/placeholder.png'],
       itinerary: [
         { hari: 1, judul: 'Keberangkatan Jakarta - Paris', deskripsi: 'Penerbangan dari Bandara Soekarno Hatta menuju CDG Paris.' },
         { hari: 2, judul: 'Paris City Tour', deskripsi: 'Mengunjungi Menara Eiffel, Louvre Museum, dan Arc de Triomphe.' },
@@ -68,7 +68,7 @@ async function main() {
       harga: 35000000,
       durasi: 8,
       destinasiId: destinasiSkandinavia.id,
-      foto: ['https://images.unsplash.com/photo-1531366936337-7c912a458b97?w=800'],
+      foto: ['/placeholder.png'],
       itinerary: [
         { hari: 1, judul: 'Jakarta - Oslo', deskripsi: 'Penerbangan menuju Oslo, Norwegia.' },
         { hari: 2, judul: 'Berburu Aurora', deskripsi: 'Perjalanan malam hari menuju spot Aurora terbaik di Tromsø.' }
@@ -86,7 +86,7 @@ async function main() {
       harga: 18900000,
       durasi: 7,
       destinasiId: destinasiTurki.id,
-      foto: ['https://images.unsplash.com/photo-1527838832700-5059252407fa?w=800'],
+      foto: ['/placeholder.png'],
       itinerary: [
         { hari: 1, judul: 'Jakarta - Istanbul', deskripsi: 'Penerbangan menuju Istanbul.' },
         { hari: 2, judul: 'Istanbul Historical Tour', deskripsi: 'Kunjungan ke Blue Mosque, Hagia Sophia, Topkapi Palace.' },

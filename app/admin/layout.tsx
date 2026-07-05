@@ -21,6 +21,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname()
   const router = useRouter()
   const [siteLogo, setSiteLogo] = useState("/agendain.jpeg")
+  const [siteName, setSiteName] = useState("Agendain")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
@@ -40,6 +41,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       .then(data => {
         if (data.site_logo && data.site_logo !== "/logo.png") {
           setSiteLogo(data.site_logo)
+        }
+        if (data.site_name) {
+          setSiteName(data.site_name)
         }
       })
       .catch(console.error)
@@ -134,7 +138,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
         {!collapsed && (
           <div className="overflow-hidden whitespace-nowrap">
-            <h2 className="text-xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">Agendain</h2>
+            <h2 className="text-xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent truncate w-32">{siteName}</h2>
             <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Workspace</p>
           </div>
         )}

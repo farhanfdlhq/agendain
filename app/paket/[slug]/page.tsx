@@ -75,13 +75,15 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
   }
 
   const fotos = pkg?.foto as any || {}
-  // Assuming the new seed might have an array directly in pkg.foto
+  const mainImage = (fotos.large || fotos.medium) ? (fotos.large || fotos.medium) : '/placeholder.png'
+  
   let gallery = []
-  if (Array.isArray(pkg.foto)) {
+  if (Array.isArray(pkg?.foto) && pkg.foto.length > 0) {
     gallery = pkg.foto
+  } else if (fotos.gallery && fotos.gallery.length > 0) {
+    gallery = fotos.gallery
   } else {
-    const mainImage = fotos.large || fotos.medium || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=1280&auto=format&fit=crop'
-    gallery = fotos.gallery || [mainImage, mainImage, mainImage, mainImage, mainImage]
+    gallery = [mainImage, mainImage, mainImage, mainImage, mainImage]
   }
 
 

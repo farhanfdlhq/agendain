@@ -37,13 +37,12 @@ export default function Navbar({ settings }: { settings?: any }) {
     <header className={styles.header}>
       <nav className={styles.nav}>
         <Link href="/" className={styles.logo}>
-          {siteLogo ? (
+          {siteLogo && (
             <div className={styles.logoImageContainer}>
               <img src={siteLogo} alt={siteName} className={styles.logoImage} />
             </div>
-          ) : (
-            siteName
           )}
+          <span className={styles.logoText}>{siteName}</span>
         </Link>
         
         {/* Desktop Links */}
@@ -101,7 +100,7 @@ export default function Navbar({ settings }: { settings?: any }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 + i * 0.05 }}
                   >
-                    <Link href={l.href} className={styles.mobileLink} onClick={() => setOpen(false)}>
+                    <Link href={l.href} className={`${styles.mobileLink} ${pathname === l.href ? styles.mobileActive : ''}`} onClick={() => setOpen(false)}>
                       {l.label}
                     </Link>
                   </motion.li>

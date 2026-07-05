@@ -56,7 +56,7 @@ export const createColumns = (
     cell: ({ row }) => {
       const b = row.original
       return (
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-[200px]">
           <span className="font-semibold text-foreground">{b.nama}</span>
           <div className="text-xs text-muted-foreground flex items-center gap-2">
             <span>{b.email}</span>
@@ -124,7 +124,7 @@ export const createColumns = (
           value={b.status} 
           onValueChange={(val) => handleStatusChange(b.id, val)}
         >
-          <SelectTrigger className={`h-8 border-none font-medium ${getStatusColor(b.status)}`}>
+          <SelectTrigger className={`h-8 min-w-[130px] border-none font-medium ${getStatusColor(b.status)}`}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

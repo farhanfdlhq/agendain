@@ -17,24 +17,24 @@ export default async function DestinasiDetail(props: { params: Promise<{ slug: s
     const dummyDest: Record<string, any> = {
       'prancis': {
         id: 1, slug: 'prancis', nama: 'Prancis', negara: 'Prancis',
-        foto: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=1280&auto=format&fit=crop',
+        foto: '/placeholder.png',
         deskripsi: 'Prancis adalah pusat seni, arsitektur, dan kuliner dunia.',
         bahasa: 'Prancis', matauang: 'Euro (EUR)', waktuTerbaik: 'Mei - September', infoVisa: 'Schengen Visa required.',
-        pakets: [{ id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', harga: 15000000, durasi: 5, fotoThumbnail: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800' }]
+        pakets: [{ id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', harga: 15000000, durasi: 5, fotoThumbnail: '/placeholder.png' }]
       },
       'swiss': {
         id: 2, slug: 'swiss', nama: 'Swiss', negara: 'Swiss',
-        foto: 'https://images.unsplash.com/photo-1527668752968-14ce70a6a7ea?q=80&w=1280&auto=format&fit=crop',
+        foto: '/placeholder.png',
         deskripsi: 'Swiss menawarkan keindahan pegunungan Alpen, danau sebening kristal, dan cokelat terbaik.',
         bahasa: 'Jerman, Prancis, Italia', matauang: 'Swiss Franc (CHF)', waktuTerbaik: 'Desember - Maret (Winter)', infoVisa: 'Schengen Visa required.',
-        pakets: [{ id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', harga: 22000000, durasi: 7, fotoThumbnail: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=800' }]
+        pakets: [{ id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', harga: 22000000, durasi: 7, fotoThumbnail: '/placeholder.png' }]
       },
       'italia': {
         id: 3, slug: 'italia', nama: 'Italia', negara: 'Italia',
-        foto: 'https://images.unsplash.com/photo-1471306224500-6d0d218be372?q=80&w=1280&auto=format&fit=crop',
+        foto: '/placeholder.png',
         deskripsi: 'Italia memanjakan Anda dengan sejarah Kekaisaran Romawi, karya seni Renaissance, dan pizza.',
         bahasa: 'Italia', matauang: 'Euro (EUR)', waktuTerbaik: 'April - Juni', infoVisa: 'Schengen Visa required.',
-        pakets: [{ id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', harga: 18500000, durasi: 8, fotoThumbnail: 'https://images.unsplash.com/photo-1516483638261-f40889c28a5d?q=80&w=800' }]
+        pakets: [{ id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', harga: 18500000, durasi: 8, fotoThumbnail: '/placeholder.png' }]
       }
     }
 
@@ -45,12 +45,12 @@ export default async function DestinasiDetail(props: { params: Promise<{ slug: s
     }
   }
 
-  const fotoUtama = destinasi?.foto || 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=1280&auto=format&fit=crop'
+  const fotoUtama = destinasi?.foto || '/placeholder.png'
   const packages = destinasi?.pakets?.map((p: any) => ({
     ...p,
     harga: Number(p.harga),
     destinasi: { nama: destinasi!.nama },
-    fotoThumbnail: (p.foto as any)?.thumb || (p.foto as any)?.medium || 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800'
+    fotoThumbnail: (p.foto as any)?.thumb || (p.foto as any)?.medium || '/placeholder.png'
   })) || []
 
   return (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useDeferredValue } from "react"
 import Link from "next/link"
 import { Plus, Edit2, Trash2, Search, Eye, WifiOff, AlertCircle, RefreshCw, PackageX } from "lucide-react"
 import { formatIDR } from "@/lib/currency"
@@ -17,6 +17,7 @@ export default function AdminPaketPage() {
   const [packages, setPackages] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const deferredSearch = useDeferredValue(search)
   const [statusFilter, setStatusFilter] = useState("all")
   const [error, setError] = useState<string | null>(null)
   const [isOffline, setIsOffline] = useState(false)
@@ -96,12 +97,15 @@ export default function AdminPaketPage() {
     }
   }
 
-  const filteredPackages = packages.filter(pkg => {
-    const matchesSearch = pkg.nama.toLowerCase().includes(search.toLowerCase()) || 
-      (pkg.destinasi?.nama?.toLowerCase() || "").includes(search.toLowerCase())
-    const matchesStatus = statusFilter === "all" || pkg.status === statusFilter
-    return matchesSearch && matchesStatus
-  })
+  const filteredPackages = useMemo(() => {
+    const searchLower = deferredSearch.toLowerCase()
+    return packages.filter(pkg => {
+      const matchesSearch = pkg.nama.toLowerCase().includes(searchLower) || 
+        (pkg.destinasi?.nama?.toLowerCase() || "").includes(searchLower)
+      const matchesStatus = statusFilter === "all" || pkg.status === statusFilter
+      return matchesSearch && matchesStatus
+    })
+  }, [packages, deferredSearch, statusFilter])
 
   const formatPrice = (price: any) => {
     return formatIDR(Number(price))
@@ -213,7 +217,7 @@ export default function AdminPaketPage() {
           </div>
           <div className="w-full sm:w-48">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="bg-background">
+              <SelectTrigger className="rounded-full bg-white dark:bg-zinc-900 border-zinc-200">
                 <SelectValue placeholder="Semua Status" />
               </SelectTrigger>
               <SelectContent>

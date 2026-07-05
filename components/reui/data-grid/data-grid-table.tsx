@@ -525,7 +525,7 @@ function DataGridTableViewport({
     <div
       data-slot="data-grid-table-viewport"
       ref={handleViewportRef}
-      className={cn("relative min-w-full align-top", className)}
+      className={cn("relative min-w-full align-top overflow-x-auto", className)}
       style={{
         ...(props.tableLayout?.columnsResizable
           ? {

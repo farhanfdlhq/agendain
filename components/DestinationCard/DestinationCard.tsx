@@ -18,7 +18,7 @@ export default function DestinationCard({ slug, nama, foto, paketCount = 0 }: De
     <Link href={`/destinasi/${slug}`} className={styles.card}>
       <div className={styles.imageWrapper}>
         <Image 
-          src={foto || 'https://images.unsplash.com/photo-1522709772396-9812dd683db9?q=80&w=800&auto=format&fit=crop'} 
+          src={foto || '/placeholder.png'} 
           alt={`Destinasi ${nama}`}
           fill
           sizes="(max-width: 744px) 100vw, (max-width: 1128px) 50vw, 33vw"

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useDeferredValue } from "react"
 import { useSession } from "next-auth/react"
 import { toast } from "react-hot-toast"
 import { Plus, Users, Shield, MoreVertical, Search } from "lucide-react"
@@ -37,6 +37,7 @@ export default function UserManagementPage() {
   const [roles, setRoles] = useState<RoleConfig[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const deferredSearch = useDeferredValue(search)
   
   // Modal State
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -143,10 +144,13 @@ export default function UserManagementPage() {
     return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
   }
 
-  const filteredUsers = users.filter(u => 
-    u.nama.toLowerCase().includes(search.toLowerCase()) || 
-    u.email.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredUsers = useMemo(() => {
+    const searchLower = deferredSearch.toLowerCase()
+    return users.filter(u => 
+      u.nama.toLowerCase().includes(searchLower) || 
+      u.email.toLowerCase().includes(searchLower)
+    )
+  }, [users, deferredSearch])
 
   if (loading) return <div className="flex h-64 items-center justify-center"><AirplaneLoader size={48} /></div>
 
@@ -249,7 +253,7 @@ export default function UserManagementPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px] rounded-2xl">
           <form onSubmit={handleSubmit}>
-            <DialogHeader>
+            <DialogHeader className="border-b-2 border-border pb-5 mb-5">
               <DialogTitle className="text-xl">{editingId ? 'Edit User' : 'Tambah User'}</DialogTitle>
               <DialogDescription className="sr-only">Formulir untuk menambah atau mengedit user</DialogDescription>
             </DialogHeader>

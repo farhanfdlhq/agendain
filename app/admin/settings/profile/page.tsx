@@ -1,6 +1,9 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
+import Cropper from "react-easy-crop"
+import { getCroppedImg } from "@/lib/cropImage"
+
 import { useSession } from "next-auth/react"
 import { Save, UploadCloud, Eye, EyeOff } from "lucide-react"
 import { toast } from "react-hot-toast"
@@ -9,6 +12,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 
 export default function ProfilePage() {
@@ -17,6 +21,11 @@ export default function ProfilePage() {
   const [savingAccount, setSavingAccount] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [cropDialogOpen, setCropDialogOpen] = useState(false)
+  const [imageSrc, setImageSrc] = useState<string | null>(null)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
   const [accountData, setAccountData] = useState({
@@ -129,14 +138,33 @@ export default function ProfilePage() {
 
     if (file.size > 2 * 1024 * 1024) {
       toast.error("Ukuran file maksimal 2MB")
+      if (fileInputRef.current) fileInputRef.current.value = ""
       return
     }
 
-    setUploadingAvatar(true)
-    const formData = new FormData()
-    formData.append("avatar", file)
+    const reader = new FileReader()
+    reader.addEventListener("load", () => {
+      setImageSrc(reader.result?.toString() || null)
+      setCropDialogOpen(true)
+    })
+    reader.readAsDataURL(file)
+  }
 
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }, [])
+
+  const handleUploadCroppedImage = async () => {
+    if (!imageSrc || !croppedAreaPixels) return
+    
+    setUploadingAvatar(true)
     try {
+      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels)
+      if (!croppedImage) throw new Error("Gagal memotong gambar")
+
+      const formData = new FormData()
+      formData.append("avatar", croppedImage)
+
       const res = await fetch("/api/admin/profile/avatar", {
         method: "POST",
         body: formData
@@ -152,8 +180,10 @@ export default function ProfilePage() {
       document.dispatchEvent(event)
 
       toast.success("Foto profil berhasil diperbarui")
+      setCropDialogOpen(false)
+      setImageSrc(null)
     } catch (error: any) {
-      toast.error(error.message)
+      toast.error(error.message || "Terjadi kesalahan")
     } finally {
       setUploadingAvatar(false)
       if (fileInputRef.current) fileInputRef.current.value = ""
@@ -180,7 +210,7 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1">
           <Card>
-            <CardHeader>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Foto Profil</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center space-y-4">
@@ -224,7 +254,7 @@ export default function ProfilePage() {
         <div className="lg:col-span-2 space-y-6">
           <Card>
             <form onSubmit={handleAccountSubmit}>
-              <CardHeader>
+              <CardHeader className="border-b-2 border-border pb-5 mb-5">
                 <CardTitle>Profil Pengguna</CardTitle>
                 <CardDescription>Informasi ini akan ditampilkan publik dan digunakan untuk notifikasi sistem.</CardDescription>
               </CardHeader>
@@ -263,7 +293,7 @@ export default function ProfilePage() {
 
           <Card>
             <form onSubmit={handlePasswordSubmit}>
-              <CardHeader>
+              <CardHeader className="border-b-2 border-border pb-5 mb-5">
                 <CardTitle>Keamanan</CardTitle>
                 <CardDescription>Pastikan akun Anda menggunakan kata sandi yang kuat.</CardDescription>
               </CardHeader>
@@ -344,6 +374,59 @@ export default function ProfilePage() {
           </Card>
         </div>
       </div>
+
+      <Dialog open={cropDialogOpen} onOpenChange={setCropDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Sesuaikan Foto Profil</DialogTitle>
+            <DialogDescription>
+              Geser dan perbesar gambar untuk menyesuaikan posisi foto profil Anda.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {imageSrc && (
+            <div className="relative w-full h-[300px] mt-2 rounded-xl overflow-hidden bg-muted">
+              <Cropper
+                image={imageSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="round"
+                showGrid={false}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+          )}
+          
+          <div className="flex items-center gap-4 py-4">
+            <span className="text-sm font-medium">Zoom</span>
+            <input
+              type="range"
+              value={zoom}
+              min={1}
+              max={3}
+              step={0.1}
+              onChange={(e) => setZoom(Number(e.target.value))}
+              className="flex-1 h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+            />
+          </div>
+
+          <DialogFooter className="sm:justify-end gap-2">
+            <Button type="button" variant="outline" onClick={() => {
+              setCropDialogOpen(false)
+              if (fileInputRef.current) fileInputRef.current.value = ""
+            }}>
+              Batal
+            </Button>
+            <Button type="button" onClick={handleUploadCroppedImage} disabled={uploadingAvatar}>
+              {uploadingAvatar ? <AirplaneLoader className="mr-2 h-4 w-4" /> : <UploadCloud className="mr-2 h-4 w-4" />}
+              {uploadingAvatar ? "Mengunggah..." : "Simpan & Unggah"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

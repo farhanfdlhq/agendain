@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useDeferredValue } from "react"
 import Link from "next/link"
 import { Plus, Edit2, Trash2, Search, MapPin, WifiOff, AlertCircle, RefreshCw, Map } from "lucide-react"
 import { toast } from "react-hot-toast"
@@ -15,6 +15,7 @@ export default function AdminDestinasiPage() {
   const [destinasi, setDestinasi] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const deferredSearch = useDeferredValue(search)
   const [error, setError] = useState<string | null>(null)
   const [isOffline, setIsOffline] = useState(false)
 
@@ -74,9 +75,12 @@ export default function AdminDestinasiPage() {
     }
   }
 
-  const filteredData = destinasi.filter(d => 
-    d.nama.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredData = useMemo(() => {
+    const searchLower = deferredSearch.toLowerCase()
+    return destinasi.filter(d => 
+      d.nama.toLowerCase().includes(searchLower)
+    )
+  }, [destinasi, deferredSearch])
 
   const renderState = () => {
     if (isOffline) {

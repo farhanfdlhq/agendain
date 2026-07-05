@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback, useDeferredValue } from "react"
 import { Search, Mail, Phone, Calendar, Users, CheckCircle, Clock, WifiOff, AlertCircle, RefreshCw, Inbox, MessageSquare, ArrowUpRight } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
@@ -24,6 +24,7 @@ export default function AdminInquiriesPage() {
   const [data, setData] = useState({ inquiries: [], privateTrips: [] })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const deferredSearch = useDeferredValue(search)
   const [error, setError] = useState<string | null>(null)
   const [isOffline, setIsOffline] = useState(false)
 
@@ -47,7 +48,7 @@ export default function AdminInquiriesPage() {
     }
   }, [])
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -64,9 +65,9 @@ export default function AdminInquiriesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const handleMarkAsReplied = async (id: number, type: string) => {
+  const handleMarkAsReplied = useCallback(async (id: number, type: string) => {
     try {
       const res = await fetch(`/api/inquiries`, {
         method: "PUT",
@@ -83,7 +84,7 @@ export default function AdminInquiriesPage() {
       console.error("Failed to update status", err)
       toast.error("Terjadi kesalahan sistem")
     }
-  }
+  }, [fetchData])
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("id-ID", {
@@ -91,19 +92,25 @@ export default function AdminInquiriesPage() {
     })
   }
 
-  const filteredTrips = data.privateTrips.filter((t: any) => 
-    t.nama.toLowerCase().includes(search.toLowerCase()) || 
-    t.email.toLowerCase().includes(search.toLowerCase()) ||
-    t.destinasi.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredTrips = useMemo(() => {
+    const searchLower = deferredSearch.toLowerCase()
+    return data.privateTrips.filter((t: any) => 
+      t.nama.toLowerCase().includes(searchLower) || 
+      t.email.toLowerCase().includes(searchLower) ||
+      t.destinasi.toLowerCase().includes(searchLower)
+    )
+  }, [data.privateTrips, deferredSearch])
 
-  const filteredInquiries = data.inquiries.filter((i: any) => 
-    i.nama.toLowerCase().includes(search.toLowerCase()) || 
-    i.email.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredInquiries = useMemo(() => {
+    const searchLower = deferredSearch.toLowerCase()
+    return data.inquiries.filter((i: any) => 
+      i.nama.toLowerCase().includes(searchLower) || 
+      i.email.toLowerCase().includes(searchLower)
+    )
+  }, [data.inquiries, deferredSearch])
 
-  const tripColumns = createTripColumns()
-  const inquiryColumns = createInquiryColumns(handleMarkAsReplied)
+  const tripColumns = useMemo(() => createTripColumns(), [])
+  const inquiryColumns = useMemo(() => createInquiryColumns(handleMarkAsReplied), [handleMarkAsReplied])
 
   const tripsTable = useReactTable({
     data: filteredTrips,
@@ -210,7 +217,7 @@ export default function AdminInquiriesPage() {
           <CardContent className="p-0">
             <TabsContent value="privatetrip" className="m-0 border-0 outline-none">
               {renderState() || (filteredTrips.length > 0 ? (
-                <DataGrid table={tripsTable} recordCount={filteredTrips.length}>
+                <DataGrid table={tripsTable} recordCount={filteredTrips.length} tableLayout={{ width: "auto" }}>
                   <DataGridContainer border={false} className="border-0 rounded-none">
                     <DataGridTable />
                     <div className="p-4 border-t border-border">
@@ -231,7 +238,7 @@ export default function AdminInquiriesPage() {
 
             <TabsContent value="inquiries" className="m-0 border-0 outline-none">
               {renderState() || (filteredInquiries.length > 0 ? (
-                <DataGrid table={inquiriesTable} recordCount={filteredInquiries.length}>
+                <DataGrid table={inquiriesTable} recordCount={filteredInquiries.length} tableLayout={{ width: "auto" }}>
                   <DataGridContainer border={false} className="border-0 rounded-none">
                     <DataGridTable />
                     <div className="p-4 border-t border-border">

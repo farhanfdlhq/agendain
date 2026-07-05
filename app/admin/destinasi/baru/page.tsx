@@ -109,7 +109,7 @@ export default function TambahDestinasiPage() {
         
         <div className="lg:col-span-2 flex flex-col gap-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Informasi Utama</CardTitle>
               <CardDescription>Detail inti tentang destinasi ini.</CardDescription>
             </CardHeader>
@@ -185,7 +185,7 @@ export default function TambahDestinasiPage() {
 
         <div className="lg:col-span-1 flex flex-col gap-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Informasi Tambahan</CardTitle>
               <CardDescription>Informasi turis untuk destinasi ini.</CardDescription>
             </CardHeader>

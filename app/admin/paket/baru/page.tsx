@@ -274,7 +274,7 @@ export default function TambahPaketPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Informasi Dasar</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -318,7 +318,7 @@ export default function TambahPaketPage() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Fasilitas & Layanan</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -364,7 +364,7 @@ export default function TambahPaketPage() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Itinerary Perjalanan</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -424,7 +424,7 @@ export default function TambahPaketPage() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Kebijakan & Informasi Custom <span className="text-muted-foreground font-normal">(Opsional)</span></CardTitle>
               <CardDescription>Biarkan kosong jika ingin menggunakan pengaturan global.</CardDescription>
             </CardHeader>
@@ -502,7 +502,7 @@ export default function TambahPaketPage() {
           </Card>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Media & Gambar</CardTitle>
             </CardHeader>
             <CardContent>
@@ -559,7 +559,7 @@ export default function TambahPaketPage() {
 
         <div className="space-y-6">
           <Card className="sticky top-24">
-            <CardHeader>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Detail Penjualan</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">

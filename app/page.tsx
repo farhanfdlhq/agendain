@@ -5,16 +5,16 @@ export const revalidate = 60;
 
 // Dummy data fallback for development if DB is empty
 const DUMMY_PACKAGES = [
-  { id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', harga: 15000000, durasi: 5, destinasi: { nama: 'Prancis' }, fotoThumbnail: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=800&auto=format&fit=crop', label: 'Terlaris' },
-  { id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', harga: 22000000, durasi: 7, destinasi: { nama: 'Swiss' }, fotoThumbnail: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=800&auto=format&fit=crop', label: null },
-  { id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', harga: 18500000, durasi: 8, destinasi: { nama: 'Italia' }, fotoThumbnail: 'https://images.unsplash.com/photo-1516483638261-f40889c28a5d?q=80&w=800&auto=format&fit=crop', label: 'Populer' },
-  { id: 4, slug: 'london-scotland-10d', nama: 'London & Scotland 10D', harga: 28000000, durasi: 10, destinasi: { nama: 'UK' }, fotoThumbnail: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?q=80&w=800&auto=format&fit=crop', label: null },
+  { id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', harga: 15000000, durasi: 5, destinasi: { nama: 'Prancis' }, fotoThumbnail: '/placeholder.png', label: 'Terlaris' },
+  { id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', harga: 22000000, durasi: 7, destinasi: { nama: 'Swiss' }, fotoThumbnail: '/placeholder.png', label: null },
+  { id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', harga: 18500000, durasi: 8, destinasi: { nama: 'Italia' }, fotoThumbnail: '/placeholder.png', label: 'Populer' },
+  { id: 4, slug: 'london-scotland-10d', nama: 'London & Scotland 10D', harga: 28000000, durasi: 10, destinasi: { nama: 'UK' }, fotoThumbnail: '/placeholder.png', label: null },
 ]
 
 const DUMMY_DESTINATIONS = [
-  { slug: 'prancis', nama: 'Prancis', foto: 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?q=80&w=800&auto=format&fit=crop', paketCount: 12 },
-  { slug: 'swiss', nama: 'Swiss', foto: 'https://images.unsplash.com/photo-1527668752968-14ce70a6a7ea?q=80&w=800&auto=format&fit=crop', paketCount: 8 },
-  { slug: 'italia', nama: 'Italia', foto: 'https://images.unsplash.com/photo-1498503182468-3b51cbb6cb24?q=80&w=800&auto=format&fit=crop', paketCount: 15 },
+  { slug: 'prancis', nama: 'Prancis', foto: '/placeholder.png', paketCount: 12 },
+  { slug: 'swiss', nama: 'Swiss', foto: '/placeholder.png', paketCount: 8 },
+  { slug: 'italia', nama: 'Italia', foto: '/placeholder.png', paketCount: 15 },
 ]
 
 import { Suspense } from 'react'

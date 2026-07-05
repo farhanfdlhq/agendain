@@ -11,7 +11,7 @@ export default function TentangContent() {
     <div className={styles.page}>
       <div className={styles.hero}>
         <Image 
-          src="https://images.unsplash.com/photo-1522083165195-3444ced7e363?q=80&w=2070&auto=format&fit=crop" 
+          src="/placeholder.png" 
           alt="Tentang Agendain" 
           fill 
           priority 
@@ -37,7 +37,7 @@ export default function TentangContent() {
           </div>
           <div className={styles.storyImageWrapper}>
             <Image 
-              src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2074&auto=format&fit=crop"
+              src="/placeholder.png"
               alt="Perjalanan Eropa"
               fill
               className={styles.storyImage}

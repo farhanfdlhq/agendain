@@ -65,7 +65,7 @@ export default function PrivateTripPage() {
     <div className={styles.page}>
       <div className={styles.hero}>
         <Image 
-          src="https://images.unsplash.com/photo-1516483638261-f40889c28a5d?q=80&w=2070&auto=format&fit=crop" 
+          src="/placeholder.png" 
           alt="Private Trip Eropa" 
           fill 
           priority 

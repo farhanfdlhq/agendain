@@ -10,7 +10,7 @@ export default function GalleryLightbox({ images, title }: { images: string[], t
   const [currentIndex, setCurrentIndex] = useState(0)
 
   // Ensure we have at least 5 images for the grid to look good, by repeating if necessary
-  const displayImages = images.length > 0 ? images : ['/placeholder.jpg']
+  const displayImages = images.length > 0 ? [...images] : ['/placeholder.png']
   while (displayImages.length < 5 && images.length > 0) {
     displayImages.push(images[displayImages.length % images.length])
   }

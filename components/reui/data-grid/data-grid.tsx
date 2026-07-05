@@ -256,7 +256,7 @@ function DataGridContainer({
     <div
       data-slot="data-grid"
       className={cn(
-        "w-full overflow-hidden",
+        "w-full overflow-hidden flex flex-col",
         border &&
           "border-border rounded-lg border",
         className

@@ -127,8 +127,8 @@
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-ink);
-  margin-top: var(--space-lg);
-  margin-bottom: var(--space-sm);
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xs);
 }
 
 .featureItem p {
@@ -138,7 +138,7 @@
   max-width: 90%;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   .featuresGrid {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
@@ -207,13 +207,61 @@
   transform: translateY(-2px);
 }
 
-@media (max-width: 744px) {
+@media (max-width: 768px) {
   .sectionHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-sm);
   }
   
+  /* Make Grids Horizontal Scroll (Slider) on Mobile */
+  .packageGrid, .destinationGrid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-md);
+    margin: 0 calc(var(--space-lg) * -1); /* Break out of container to edge */
+    padding: 0 var(--space-lg) var(--space-md) var(--space-lg); /* Restore inner padding */
+  }
+  
+  /* Hide scrollbar for a cleaner look */
+  .packageGrid::-webkit-scrollbar, .destinationGrid::-webkit-scrollbar {
+    display: none;
+  }
+  .packageGrid, .destinationGrid {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .packageGrid > *, .destinationGrid > * {
+    flex: 0 0 85%; /* Cards take up 85% width so next card peeks in */
+    scroll-snap-align: center;
+  }
+  
+  /* Optimize Feature Cards (Bento) for Mobile */
+  .featureItem {
+    padding: 24px;
+    border-radius: 20px;
+  }
+  .featureIcon {
+    width: 48px;
+    height: 48px;
+  }
+  .featureItem h3 {
+    font-size: 1.25rem;
+    margin-top: var(--space-sm);
+    margin-bottom: var(--space-xs);
+  }
+  .featureItem p {
+    font-size: 0.9375rem;
+    max-width: 100%;
+  }
+  
+}
+
+@media (max-width: 480px) {
   .ctaButtons {
     flex-direction: column;
     width: 100%;
@@ -221,5 +269,6 @@
   
   .btnPrimary, .btnSecondary {
     width: 100%;
+    text-align: center;
   }
 }

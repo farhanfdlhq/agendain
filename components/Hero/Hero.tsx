@@ -19,7 +19,7 @@ export default function Hero({
     <section className={styles.hero}>
       <div className={styles.imageWrapper}>
         <Image 
-          src="https://images.unsplash.com/photo-1515542622106-78b28af7815d?q=80&w=2070&auto=format&fit=crop"
+          src="/placeholder.png"
           alt="Eropa"
           fill
           priority

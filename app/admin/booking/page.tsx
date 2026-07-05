@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo, useDeferredValue } from "react"
 import { Search, Trash2, Eye, PackageX, RefreshCw, AlertCircle, CalendarDays, ExternalLink } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
@@ -25,6 +25,7 @@ export default function AdminBookingPage() {
   const [bookings, setBookings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
+  const deferredSearch = useDeferredValue(search)
   const [statusFilter, setStatusFilter] = useState("all")
   const [error, setError] = useState<string | null>(null)
   const [selectedBooking, setSelectedBooking] = useState<any>(null)
@@ -49,7 +50,7 @@ export default function AdminBookingPage() {
     }
   }, [])
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -66,9 +67,9 @@ export default function AdminBookingPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  const handleStatusChange = async (id: number, newStatus: string) => {
+  const handleStatusChange = useCallback(async (id: number, newStatus: string) => {
     try {
       const res = await fetch(`/api/booking/${id}`, {
         method: "PATCH",
@@ -85,9 +86,9 @@ export default function AdminBookingPage() {
       console.error(err)
       toast.error("Terjadi kesalahan sistem")
     }
-  }
+  }, [fetchBookings])
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = useCallback(async (id: number) => {
     if (!confirm("Apakah Anda yakin ingin menghapus pemesanan ini?")) return;
     
     try {
@@ -105,7 +106,7 @@ export default function AdminBookingPage() {
       console.error(error)
       toast.error("Terjadi kesalahan pada server")
     }
-  }
+  }, [fetchBookings])
 
   const formatPrice = (price: any) => {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(price))
@@ -117,16 +118,17 @@ export default function AdminBookingPage() {
     })
   }
 
-  const filteredBookings = bookings.filter((b: any) => {
-    const matchesSearch = b.nama.toLowerCase().includes(search.toLowerCase()) || 
-                          b.email.toLowerCase().includes(search.toLowerCase()) ||
-                          (b.paket?.nama || "").toLowerCase().includes(search.toLowerCase())
+  const filteredBookings = useMemo(() => bookings.filter((b: any) => {
+    const searchLower = deferredSearch.toLowerCase()
+    const matchesSearch = b.nama.toLowerCase().includes(searchLower) || 
+                          b.email.toLowerCase().includes(searchLower) ||
+                          (b.paket?.nama || "").toLowerCase().includes(searchLower)
     const matchesStatus = statusFilter === "all" || b.status === statusFilter
     
     return matchesSearch && matchesStatus
-  })
+  }), [bookings, deferredSearch, statusFilter])
 
-  const columns = createColumns(handleStatusChange, handleDelete, setSelectedBooking)
+  const columns = useMemo(() => createColumns(handleStatusChange, handleDelete, setSelectedBooking), [handleStatusChange, handleDelete, setSelectedBooking])
 
   const table = useReactTable({
     data: filteredBookings,
@@ -197,7 +199,7 @@ export default function AdminBookingPage() {
     }
 
     return (
-      <DataGrid table={table} recordCount={filteredBookings.length}>
+      <DataGrid table={table} recordCount={filteredBookings.length} tableLayout={{ width: "auto" }}>
         <DataGridContainer border={false}>
           <DataGridTable />
           <div className="p-4 border-t">
@@ -254,7 +256,7 @@ export default function AdminBookingPage() {
         
         <CardContent className="p-0">
           {renderState() || (
-            <DataGrid table={table} recordCount={filteredBookings.length}>
+            <DataGrid table={table} recordCount={filteredBookings.length} tableLayout={{ width: "auto" }}>
               <DataGridContainer border={false} className="border-0 rounded-none">
                 <DataGridTable />
                 <div className="p-4 border-t border-border">
