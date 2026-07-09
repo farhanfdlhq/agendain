@@ -20,6 +20,7 @@ export default function SettingsPage() {
     whatsapp_message: "Halo Agendain, saya ingin bertanya tentang paket wisata.",
     payment_instructions: "Silakan transfer ke rekening BCA 1234567890 a.n PT Agendain.",
     site_logo: "/logo.png",
+    logo_height: "42",
     global_informasi_penting: "Paspor minimal masa berlaku 6 bulan dari tanggal kepulangan.\nVisa Schengen diwajibkan bagi pemegang paspor Indonesia.\nJadwal perjalanan dan akomodasi dapat berubah sewaktu-waktu menyesuaikan kondisi cuaca.",
     global_kebijakan_pembatalan: "Pembatalan > 30 hari sebelum keberangkatan: Pengembalian 50% dari total.\nPembatalan 15-30 hari sebelum keberangkatan: Pengembalian 25% dari total.\nPembatalan < 14 hari sebelum keberangkatan: Tidak ada pengembalian dana (Non-refundable).\nJika visa ditolak, biaya visa tidak dapat dikembalikan.",
     global_opsi_penjemputan: "Bandara Internasional Soekarno Hatta (Terminal 3).\nPenjemputan area Jakarta (sesuai konfirmasi).\nSilakan kumpul 4 jam sebelum keberangkatan."
@@ -171,6 +172,26 @@ export default function SettingsPage() {
                   </p>
                 </div>
               </div>
+            </div>
+            
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="logo_height">Ukuran Tinggi Logo (px)</Label>
+              <div className="flex items-center gap-4">
+                <Input
+                  type="range"
+                  id="logo_height"
+                  name="logo_height"
+                  min="24"
+                  max="100"
+                  value={formData.logo_height || "42"}
+                  onChange={handleChange}
+                  className="flex-1 cursor-pointer"
+                />
+                <span className="w-12 text-sm font-medium">{formData.logo_height || "42"}px</span>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Sesuaikan ukuran tampilan logo pada Navbar dan Footer (Default: 42px).
+              </p>
             </div>
           </CardContent>
         </Card>

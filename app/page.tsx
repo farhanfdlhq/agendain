@@ -62,34 +62,9 @@ async function HomeDataFetcher() {
   if (destinations.length === 0) destinations = DUMMY_DESTINATIONS
 
   let homeSettings: any = {
-    heroTitle: 'Jelajahi Eropa Tanpa Beban',
-    heroTitle_en: 'Explore Europe Burden-Free',
-    heroTitleColor: '',
-    heroSubtitle: 'Rencanakan perjalanan impian Anda bersama ahlinya. Transparan, terpercaya, dan berkesan.',
-    heroSubtitle_en: 'Plan your dream journey with the experts. Transparent, trusted, and memorable.',
-    heroSubtitleColor: '',
-    featuresTitle: 'Kenapa Memilih Agendain?',
-    featuresTitle_en: 'Why Choose Agendain?',
-    featuresTitleColor: '',
-    ctaTitle: 'Siap Memulai Perjalanan Anda?',
-    ctaTitle_en: 'Ready to Start Your Journey?',
-    ctaTitleColor: '',
-    ctaText: 'Diskusikan rencana liburan impian Anda bersama tim kami secara gratis.',
-    ctaText_en: 'Discuss your dream vacation plans with our team for free.',
-    ctaTextColor: '',
-    ctaBtn1Text: 'Rencanakan Private Trip',
-    ctaBtn1Text_en: 'Plan Private Trip',
-    ctaBtn1Link: '/private-trip',
-    ctaBtn1Color: '',
-    ctaBtn1HoverColor: '',
-    ctaBtn1TextColor: '',
-    ctaBtn2Text: 'Chat WhatsApp',
-    ctaBtn2Text_en: 'Chat WhatsApp',
-    ctaBtn2Link: 'https://wa.me/6281234567890',
-    ctaBtn2Color: '',
-    ctaBtn2HoverColor: '',
-    ctaBtn2TextColor: '',
-    sectionOrder: 'packages,destinations,features,cta',
+    heroTitle: 'Jangan Cuma Jadi Wacana, Agendain Aja!',
+    heroSubtitle: 'Dari tiket, hotel, sampai itinerary, semua udah kami siapkan. Kamu tinggal ajak teman dan siap berangkat.',
+    sectionOrder: 'why,destinations,testimonial,accordion,socialproof,faq',
   }
 
   try {

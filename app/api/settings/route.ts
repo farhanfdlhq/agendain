@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
 
 export async function GET() {
   try {
@@ -37,6 +38,8 @@ export async function POST(req: Request) {
     })
 
     await Promise.all(promises)
+
+    revalidatePath("/", "layout")
 
     return NextResponse.json({ message: "Pengaturan berhasil disimpan" })
   } catch (error) {

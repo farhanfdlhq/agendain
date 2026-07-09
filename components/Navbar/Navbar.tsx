@@ -10,16 +10,26 @@ import styles from './Navbar.module.css'
 export default function Navbar({ settings }: { settings?: any }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
 
   const links = [
-    { href: '/', label: t('nav.home') },
-    { href: '/tentang', label: t('nav.about') },
-    { href: '/paket', label: t('nav.packages') },
-    { href: '/private-trip', label: t('nav.privateTrip') },
-    { href: '/destinasi', label: t('nav.destinations') },
+    { href: '/', label: 'Beranda' },
+    { href: '/paket', label: 'Open Trip' },
+    { href: '/private-trip', label: 'Private Trip' },
+    { href: '/tentang', label: 'Blog' },
+    { href: '/destinasi', label: 'Privacy Policy' },
   ]
   
+  // Track scroll for navbar transparency
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50)
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   // Prevent scrolling when mobile menu is open
   useEffect(() => {
     if (open) {
@@ -30,19 +40,27 @@ export default function Navbar({ settings }: { settings?: any }) {
     return () => { document.body.style.overflow = 'auto' }
   }, [open])
 
-  const siteName = settings?.site_name || "Agendain"
+  const siteName = settings?.site_name || "agendain"
   const siteLogo = settings?.site_logo && settings.site_logo !== "/logo.png" ? settings.site_logo : "/agendain.jpeg"
 
+  const isHome = pathname === '/'
+
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${scrolled ? styles.headerScrolled : ''} ${isHome && !scrolled ? styles.headerTransparent : ''}`}>
       <nav className={styles.nav}>
         <Link href="/" className={styles.logo}>
-          {siteLogo && (
+          {siteLogo ? (
             <div className={styles.logoImageContainer}>
-              <img src={siteLogo} alt={siteName} className={styles.logoImage} />
+              <img 
+                src={siteLogo} 
+                alt={siteName} 
+                className={styles.logoImage} 
+                style={{ '--logo-height': settings?.logo_height ? `${settings.logo_height}px` : undefined } as React.CSSProperties}
+              />
             </div>
+          ) : (
+            <span className={styles.logoText}>{siteName}</span>
           )}
-          <span className={styles.logoText}>{siteName}</span>
         </Link>
         
         {/* Desktop Links */}
@@ -56,18 +74,20 @@ export default function Navbar({ settings }: { settings?: any }) {
           ))}
         </ul>
         
-        <div className={styles.langToggleDesktop}>
-          <LanguageToggle />
+        <div className={styles.rightGroup}>
+          <div className={styles.langToggleDesktop}>
+            <LanguageToggle />
+          </div>
+          
+          <a 
+            href={`https://wa.me/${settings?.whatsapp_number?.replace(/\D/g, '') || "6281234567890"}?text=${encodeURIComponent(settings?.whatsapp_message || "Halo, saya ingin bertanya mengenai paket wisata.")}`} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className={styles.cta}
+          >
+            Agendain aja!
+          </a>
         </div>
-        
-        <a 
-          href={`https://wa.me/${settings?.whatsapp_number?.replace(/\D/g, '') || "6281234567890"}?text=${encodeURIComponent(settings?.whatsapp_message || "Halo, saya ingin bertanya mengenai paket wisata.")}`} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className={styles.cta}
-        >
-          {t('nav.contact')}
-        </a>
         
         <button className={`${styles.burger} ${open ? styles.burgerOpen : ''}`} onClick={() => setOpen(!open)} aria-label="Menu">
           <span /><span /><span />
@@ -122,7 +142,7 @@ export default function Navbar({ settings }: { settings?: any }) {
                   rel="noopener noreferrer" 
                   className={styles.mobileCta}
                 >
-                  {t('nav.contact')}
+                  Agendain aja!
                 </a>
               </motion.div>
             </motion.div>
