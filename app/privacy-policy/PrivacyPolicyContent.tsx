@@ -22,22 +22,22 @@ export default function PrivacyPolicyContent() {
             
             <h2>1. Pendahuluan</h2>
             <p>
-              Selamat datang di Agendain (&quot;kami&quot;, &quot;milik kami&quot;). Agendain adalah agen perjalanan yang berfokus pada wisata ke Eropa, melayani open trip dan private trip untuk pelanggan dari seluruh Indonesia. Kebijakan Privasi ini berlaku untuk seluruh layanan kami, termasuk website agendain.com, komunikasi via WhatsApp, email, dan platform lainnya.
+              Selamat datang di Agendain. Kami menyadari bahwa data pribadi Anda adalah aset yang sangat berharga. Sebagai biro perjalanan spesialis destinasi Eropa terkemuka di Indonesia, kami berkomitmen penuh untuk melindungi privasi dan keamanan setiap informasi yang Anda percayakan kepada kami, baik saat Anda menjelajahi agendain.com maupun saat Anda bepergian bersama kami.
             </p>
             <p>
-              Dengan menggunakan layanan kami atau menghubungi Agendain, kamu menyetujui praktik pengumpulan dan penggunaan data sebagaimana dijelaskan dalam kebijakan ini. Kami mendorong kamu untuk membaca halaman ini secara menyeluruh.
+              Kebijakan Privasi ini disusun secara transparan untuk menjelaskan bagaimana kami mengumpulkan, merawat, dan menggunakan data Anda. Dengan menggunakan layanan eksklusif kami (Open Trip, Private Trip, maupun Konsultasi Perjalanan), Anda setuju dengan standar tata kelola data yang dijelaskan di bawah ini.
             </p>
 
             <h2>2. Data yang Kami Kumpulkan</h2>
             <p>Kami mengumpulkan informasi dari kamu dalam beberapa cara berikut:</p>
             
-            <h3>Data yang kamu berikan secara langsung:</h3>
+            <h3>Data yang Anda berikan secara langsung:</h3>
             <ul>
-              <li><strong>Identitas:</strong> nama lengkap, tanggal lahir, jenis kelamin</li>
-              <li><strong>Dokumen perjalanan:</strong> nomor paspor, tanggal berlaku paspor, foto paspor (diperlukan untuk proses visa Schengen / Eropa)</li>
-              <li><strong>Kontak:</strong> nomor WhatsApp, alamat email, kota asal</li>
-              <li><strong>Pembayaran:</strong> bukti transfer (kami tidak menyimpan data kartu kredit/debit)</li>
-              <li><strong>Preferensi perjalanan:</strong> pilihan makanan (halal/non-halal), kebutuhan khusus, preferensi hotel</li>
+              <li><strong>Informasi Identitas:</strong> Nama lengkap, tanggal lahir, dan detail demografis lainnya untuk administrasi perjalanan.</li>
+              <li><strong>Dokumen Perjalanan Internasional:</strong> Nomor paspor, masa berlaku, dan pindaian fisik paspor (dokumen ini esensial untuk keperluan pengajuan Visa Schengen / Visa Eropa lainnya).</li>
+              <li><strong>Jalur Komunikasi:</strong> Nomor WhatsApp aktif, alamat email utama, dan alamat domisili untuk pengiriman dokumen fisik (jika diperlukan).</li>
+              <li><strong>Informasi Finansial:</strong> Bukti transfer atau kuitansi pembayaran (Kami <strong>tidak pernah</strong> menyimpan data nomor kartu kredit/debit atau PIN bank Anda).</li>
+              <li><strong>Preferensi Pribadi:</strong> Permintaan khusus terkait diet (Halal/Vegan), riwayat medis ringan, atau preferensi kenyamanan akomodasi hotel selama di Eropa.</li>
             </ul>
 
             <h3>Data yang dikumpulkan secara otomatis:</h3>
@@ -47,15 +47,15 @@ export default function PrivacyPolicyContent() {
               <li>Data perangkat (desktop, mobile, sistem operasi)</li>
             </ul>
 
-            <h2>3. Bagaimana Kami Menggunakan Datamu (Penggunaan Data)</h2>
-            <p>Data yang kami kumpulkan digunakan semata-mata untuk keperluan berikut:</p>
+            <h2>3. Bagaimana Kami Menggunakan Data Anda</h2>
+            <p>Seluruh informasi yang kami himpun didedikasikan sepenuhnya untuk mewujudkan pengalaman liburan Eropa yang tak terlupakan bagi Anda:</p>
             <ul>
-              <li><strong>Proses pemesanan trip:</strong> konfirmasi booking, penjadwalan, dan koordinasi keberangkatan</li>
-              <li><strong>Pengurusan visa:</strong> data paspor diperlukan untuk pengajuan visa ke kedutaan atau lembaga resmi terkait</li>
-              <li><strong>Komunikasi:</strong> mengirimkan informasi trip, itinerary, reminder pembayaran, dan update penting via WhatsApp atau email</li>
-              <li><strong>Pemesanan layanan perjalanan:</strong> tiket pesawat, hotel, transportasi, dan tiket destinasi wisata atas nama peserta</li>
-              <li><strong>Peningkatan layanan:</strong> menganalisis feedback dan data kunjungan website untuk memperbaiki pengalaman pengguna</li>
-              <li><strong>Kepatuhan hukum:</strong> memenuhi kewajiban regulasi di Indonesia terkait data perjalanan internasional</li>
+              <li><strong>Eksekusi Perjalanan:</strong> Mulai dari konfirmasi *booking*, penjadwalan *itinerary*, hingga koordinasi titik temu keberangkatan (Meeting Point).</li>
+              <li><strong>Fasilitasi Visa:</strong> Pengajuan dokumen secara legal dan aman ke pihak Kedutaan Besar atau lembaga resmi (seperti VFS Global / TLScontact).</li>
+              <li><strong>Reservasi Lintas Negara:</strong> Pendaftaran tiket pesawat, reservasi hotel bintang lima, transportasi lokal, hingga tiket masuk objek wisata ikonis atas nama Anda.</li>
+              <li><strong>Komunikasi Proaktif:</strong> Mengirimkan *update* penting, pengingat persiapan keberangkatan, dan panduan cuaca ke email atau WhatsApp Anda.</li>
+              <li><strong>Inovasi Layanan:</strong> Menggunakan analisa data *traffic* anonim untuk terus memoles antarmuka website dan merancang rute liburan baru yang lebih efisien.</li>
+              <li><strong>Kepatuhan Hukum Internasional:</strong> Mematuhi regulasi imigrasi dan hukum perlindungan data yang berlaku di Indonesia serta yurisdiksi negara tujuan.</li>
             </ul>
 
           </div>
