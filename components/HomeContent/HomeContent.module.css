@@ -141,43 +141,38 @@
   margin-bottom: 4rem;
 }
 
-.whyBadge {
-  display: inline-block;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  margin-bottom: 0.75rem;
-}
-
-.whyTitle {
+.whyTitleMain {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.whyTitleDark {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 900;
   color: var(--color-primary);
+  margin-bottom: 0.25rem;
 }
 
-.whyTitleGold {
-  color: #c9a000;
+.whyTitleSub {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--color-dominant);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
 /* Alternating cards */
 .whyCard {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 4fr 6fr;
   gap: 0;
-  margin-bottom: 2rem;
-  border-radius: var(--radius-lg);
+  margin-bottom: 3rem;
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  background: #edf1f5;
-  min-height: 340px;
+  background: #f9f9fa;
+  min-height: 280px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
 }
 
 .whyCardReverse {
   composes: whyCard;
+  grid-template-columns: 6fr 4fr;
 }
 
 .whyCardReverse .whyCardImage {
@@ -190,7 +185,7 @@
 
 .whyCardImage {
   position: relative;
-  min-height: 300px;
+  min-height: 280px;
   overflow: hidden;
 }
 
@@ -207,9 +202,9 @@
 
 .whyCardNumber {
   position: absolute;
-  bottom: 1rem;
+  bottom: 1.5rem;
   font-family: var(--font-display);
-  font-size: 5rem;
+  font-size: 4rem;
   font-weight: 900;
   color: var(--color-dominant);
   line-height: 1;
@@ -219,32 +214,32 @@
 
 .whyCardNumberLeft {
   composes: whyCardNumber;
-  left: 1.25rem;
+  left: 1.5rem;
 }
 
 .whyCardNumberRight {
   composes: whyCardNumber;
-  right: 1.25rem;
+  right: 1.5rem;
 }
 
 .whyCardText {
-  padding: 2.5rem 2.5rem;
+  padding: 3rem 4rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 1.25rem;
 }
 
 .whyCardTitle {
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.875rem;
+  font-weight: 800;
   color: var(--color-primary);
 }
 
 .whyCardDesc {
-  font-size: 0.975rem;
-  line-height: 1.65;
+  font-size: 1.125rem;
+  line-height: 1.7;
   color: var(--color-body);
 }
 
@@ -264,7 +259,6 @@
   gap: 1rem;
 }
 
-.destHeaderLeft {}
 
 .destEyebrow {
   font-size: 0.8125rem;
@@ -342,53 +336,73 @@
 }
 
 .destCardBody {
-  padding: 1.25rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 1.25rem;
   flex: 1;
+  background: #ffffff;
+}
+
+.destCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .destCardName {
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--color-ink);
-}
-
-.destCardPrice {
-  font-size: 0.875rem;
-  color: var(--color-muted);
-}
-
-.destCardPriceValue {
-  font-weight: 700;
-  color: var(--color-primary);
-}
-
-.destCardFooter {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  padding-top: 0.75rem;
 }
 
 .destCardRating {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-ink);
 }
 
 .destCardRatingStar {
-  color: #f59e0b;
+  color: #facc15;
+}
+
+.destCardRatingText {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.destCardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.destCardPriceWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.destCardPriceLabel {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  line-height: 1.1;
+}
+
+.destCardPriceValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-ink);
 }
 
 .destCardBooking {
-  padding: 0.5rem 1.25rem;
+  padding: 0.6rem 1.25rem;
   background: var(--color-primary);
   color: #ffffff;
   border-radius: var(--radius-full);
@@ -401,7 +415,7 @@
 }
 
 .destCardBooking:hover {
-  background: var(--color-primary-active);
+  background: var(--color-primary-active, #043a5c);
 }
 
 
@@ -1035,11 +1049,11 @@
   }
 
   .whyCardReverse .whyCardImage {
-    order: 0;
+    order: -1;
   }
 
   .whyCardReverse .whyCardText {
-    order: 0;
+    order: 1;
   }
 
   .destGrid {
@@ -1060,6 +1074,14 @@
 
   .socialProofImageWrapper {
     aspect-ratio: 16 / 9;
+  }
+
+  .whyCardNumberLeft {
+    left: 1.5rem;
+  }
+
+  .whyCardNumberRight {
+    right: 1.5rem;
   }
 }
 
@@ -1130,6 +1152,39 @@
   .testimonialHighlights {
     align-items: flex-start;
     padding-left: 0.5rem;
+  }
+
+  .hideMobile {
+    display: none;
+  }
+
+  /* Fix Testimonial Slider on Mobile */
+  .testimonialSlides {
+    height: 300px; /* Give more height for text on mobile */
+  }
+
+  .testimonialSlideActive {
+    width: 100%;
+    left: 0;
+    padding: 1.5rem;
+  }
+
+  .testimonialSlideInactivePrev,
+  .testimonialSlideInactiveNext {
+    opacity: 0 !important; /* Hide side cards completely on mobile to prevent squishing */
+    pointer-events: none;
+  }
+
+  .sliderBtnLeft {
+    left: -10px;
+    background: var(--color-dominant);
+    border: none;
+  }
+
+  .sliderBtnRight {
+    right: -10px;
+    background: var(--color-dominant);
+    border: none;
   }
 }
 

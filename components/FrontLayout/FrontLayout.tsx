@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import Navbar from "@/components/Navbar/Navbar"
 import Footer from "@/components/Footer/Footer"
+import FloatingWhatsApp from "@/components/FloatingWhatsApp/FloatingWhatsApp"
 import { LanguageProvider } from "@/lib/i18n/LanguageContext"
 
 export default function FrontLayout({ children, settings }: { children: React.ReactNode, settings?: any }) {
@@ -18,6 +19,7 @@ export default function FrontLayout({ children, settings }: { children: React.Re
       <Navbar settings={settings} />
       <main>{children}</main>
       <Footer settings={settings} />
+      <FloatingWhatsApp />
     </LanguageProvider>
   )
 }

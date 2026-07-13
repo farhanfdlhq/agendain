@@ -1,5 +1,11 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
+import { Mail } from 'lucide-react'
+import InstagramIcon from '@/components/icons/mdi_instagram.svg'
+import YoutubeIcon from '@/components/icons/mdi_youtube.svg'
+import TwitterIcon from '@/components/icons/mdi_twitter.svg'
+import MailIcon from '@/components/icons/ic_baseline-email.svg'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import styles from './Footer.module.css'
 
@@ -43,8 +49,11 @@ export default function Footer({ settings }: { settings?: any }) {
               <h3 className={styles.colTitle}>Navigasi</h3>
               <ul className={styles.links}>
                 <li><Link href="/">Beranda</Link></li>
+                <li><Link href="/tentang">Tentang Kami</Link></li>
                 <li><Link href="/paket">Open Trip</Link></li>
                 <li><Link href="/private-trip">Private Trip</Link></li>
+                <li><Link href="/blog">Blog</Link></li>
+                <li><Link href="/privacy-policy">Privacy Policy</Link></li>
               </ul>
             </div>
 
@@ -54,22 +63,22 @@ export default function Footer({ settings }: { settings?: any }) {
               <ul className={styles.links}>
                 <li>
                   <a href="https://instagram.com/agendain.id" target="_blank" rel="noopener noreferrer">
-                    <span className={styles.socialIcon}>📷</span> @agendain.id
+                    <Image src={InstagramIcon} width={18} height={18} alt="Instagram" className={styles.socialIcon} /> @agendain.id
                   </a>
                 </li>
                 <li>
                   <a href="https://youtube.com/@agendain" target="_blank" rel="noopener noreferrer">
-                    <span className={styles.socialIcon}>▶️</span> Youtube
+                    <Image src={YoutubeIcon} width={18} height={18} alt="Youtube" className={styles.socialIcon} /> Youtube
                   </a>
                 </li>
                 <li>
                   <a href="https://twitter.com/agendain" target="_blank" rel="noopener noreferrer">
-                    <span className={styles.socialIcon}>🐦</span> Twitter
+                    <Image src={TwitterIcon} width={18} height={18} alt="Twitter" className={styles.socialIcon} /> Twitter
                   </a>
                 </li>
                 <li>
                   <a href="mailto:info@agendain.com">
-                    <span className={styles.socialIcon}>✉️</span> info@agendain.com
+                    <Image src={MailIcon} width={18} height={18} alt="Mail" className={styles.socialIcon} /> info@agendain.com
                   </a>
                 </li>
               </ul>
@@ -78,9 +87,9 @@ export default function Footer({ settings }: { settings?: any }) {
             {/* Payment Partners */}
             <div className={styles.col} suppressHydrationWarning>
               <h3 className={styles.colTitle}>Payment Partners</h3>
-              <div className={styles.paymentGrid}>
+              <div className={styles.paymentGrid} suppressHydrationWarning>
                 {['Visa', 'Mastercard', 'Maestro', 'Amex', 'G Pay', 'BCA', 'BNI', 'Mandiri'].map((name) => (
-                  <div key={name} className={styles.paymentBadge}>
+                  <div key={name} className={styles.paymentBadge} suppressHydrationWarning>
                     {name}
                   </div>
                 ))}

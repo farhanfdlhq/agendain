@@ -15,10 +15,11 @@ export default function Navbar({ settings }: { settings?: any }) {
 
   const links = [
     { href: '/', label: 'Beranda' },
+    { href: '/tentang', label: 'Tentang Kami' },
     { href: '/paket', label: 'Open Trip' },
     { href: '/private-trip', label: 'Private Trip' },
-    { href: '/tentang', label: 'Blog' },
-    { href: '/destinasi', label: 'Privacy Policy' },
+    { href: '/blog', label: 'Blog' },
+    { href: '/privacy-policy', label: 'Privacy Policy' },
   ]
   
   // Track scroll for navbar transparency

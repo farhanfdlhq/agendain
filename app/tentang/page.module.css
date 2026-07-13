@@ -1,28 +1,25 @@
 .page {
   padding-bottom: var(--space-section);
+  background: var(--color-canvas);
 }
 
+/* ---------- HERO SECTION ---------- */
 .hero {
   position: relative;
-  height: 60vh;
-  min-height: 400px;
+  min-height: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--space-xl) var(--space-lg);
-  margin-top: -72px;
+  padding: 120px var(--space-lg) 200px; 
+  margin-top: -72px; 
+  background: url('/dest-swiss.png') center/cover no-repeat; 
 }
 
-.heroImage {
-  object-fit: cover;
-  z-index: 0;
-}
-
-.overlay {
+.heroOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.8));
+  background: linear-gradient(180deg, rgba(5,69,105,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.8) 100%);
   z-index: 1;
 }
 
@@ -30,129 +27,365 @@
   position: relative;
   z-index: 2;
   color: white;
-  max-width: 800px;
+  max-width: 1000px;
   margin-top: 72px;
 }
 
-.title {
+.heroTitle {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 4vw, 4rem);
-  font-weight: 700;
-  margin-bottom: var(--space-md);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  margin-bottom: var(--space-lg);
+  letter-spacing: -0.02em;
 }
 
-.subtitle {
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.6;
+.textGold {
+  color: var(--color-dominant);
 }
 
+.heroSubtitle {
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.8;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ---------- CONTAINER & MISSION CARD ---------- */
 .container {
-  max-width: 1128px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 var(--space-lg);
   position: relative;
   z-index: 10;
-  margin-top: -60px;
+  margin-top: -120px; 
 }
 
-.storySection {
-  background: white;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+.missionCard {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 4fr 6fr;
+  background: white;
+  border-radius: var(--radius-xl);
   overflow: hidden;
-  margin-bottom: var(--space-xxl);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  min-height: 400px;
 }
 
-.storyText {
-  padding: var(--space-xxl);
+.missionImageWrapper {
+  padding: 2rem;
+  padding-right: 1rem;
+}
+
+.missionImageInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.missionText {
+  padding: 3.5rem 4rem 3.5rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.sectionTitle {
+.missionLabel {
+  color: var(--color-primary);
   font-family: var(--font-display);
-  font-size: 2rem;
-  color: var(--color-ink);
-  margin-bottom: var(--space-lg);
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
 }
 
-.paragraph {
-  color: var(--color-body);
+.missionTitle {
+  color: var(--color-dominant);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+}
+
+.missionDesc {
+  color: var(--color-ink);
   font-size: 1.0625rem;
   line-height: 1.7;
-  margin-bottom: var(--space-md);
+  font-weight: 500;
 }
 
-.storyImageWrapper {
-  position: relative;
-  min-height: 400px;
+/* ---------- ARTICLES GRID ---------- */
+.articlesSection {
+  margin-top: 5rem;
+  margin-bottom: 5rem;
 }
 
-.storyImage {
-  object-fit: cover;
-}
-
-.valuesSection {
-  padding: var(--space-xl) 0;
-}
-
-.valuesGrid {
+.articleGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--space-xl);
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.5rem;
 }
 
-.valueCard {
+.articleCard {
   background: white;
-  padding: var(--space-xl);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-hairline);
-  transition: transform 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  transition: transform 0.3s ease;
 }
 
-.valueCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+.articleCard:hover {
+  transform: translateY(-5px);
 }
 
-.iconWrapper {
-  width: 64px;
-  height: 64px;
+.articleImageWrapper {
+  position: relative;
+  height: 280px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.articleImage {
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.articleCard:hover .articleImage {
+  transform: scale(1.05);
+}
+
+.articleContent {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.articleMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.metaDate {
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bullet {
+  color: var(--color-dominant);
+  font-size: 1.5rem;
+  line-height: 0;
+}
+
+.metaCategory {
+  color: var(--color-muted);
+}
+
+.articleTitle {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: 1rem;
+  line-height: 1.4;
+}
+
+.articleExcerpt {
+  color: var(--color-body);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  flex: 1;
+}
+
+.readMoreBtn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  color: var(--color-ink);
+  font-weight: 600;
+  text-decoration: none;
+  align-self: flex-start;
+  transition: all 0.2s ease;
+}
+
+.readMoreBtn:hover {
   background: var(--color-surface-soft);
-  border-radius: var(--radius-full);
+  border-color: var(--color-ink);
+}
+
+/* ---------- PAGINATION ---------- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 4rem;
+}
+
+.pageBtn, .pageBtnActive {
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-lg);
-}
-
-.valueTitle {
-  font-size: 1.25rem;
+  border-radius: 50%;
   font-weight: 600;
-  color: var(--color-ink);
-  margin-bottom: var(--space-sm);
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
 }
 
-.valueDesc {
+.pageBtn {
+  background: transparent;
   color: var(--color-muted);
-  line-height: 1.6;
 }
 
+.pageBtn:hover {
+  background: var(--color-surface-soft);
+  color: var(--color-ink);
+}
+
+.pageBtnActive {
+  background: var(--color-primary);
+  color: white;
+}
+
+.pageDots {
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+/* ---------- GUIDE SECTION ---------- */
+.guideSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: 4rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+  margin-bottom: 5rem;
+  align-items: center;
+}
+
+.guidePill {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--color-surface-soft);
+  color: var(--color-ink);
+  border-radius: 99px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.guideTitle {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--color-ink);
+  margin-bottom: 1.5rem;
+}
+
+.guideDesc {
+  color: var(--color-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.guideBtn {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-primary);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 99px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.guideBtn:hover {
+  background: var(--color-primary-active);
+}
+
+.guideImageWrapper {
+  position: relative;
+  height: 500px;
+  width: 100%;
+}
+
+.guideImageInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 900px) {
-  .storySection {
+  .missionCard, .guideSection {
     grid-template-columns: 1fr;
   }
   
-  .storyImageWrapper {
-    order: -1;
-    min-height: 300px;
+  .missionImageWrapper {
+    padding: 2rem 2rem 0;
+    min-height: 250px;
+  }
+
+  .missionText {
+    padding: 2rem;
   }
   
-  .storyText {
-    padding: var(--space-xl);
+  .hero {
+    padding: 100px var(--space-lg) 150px;
+  }
+  
+  .container {
+    margin-top: -80px;
+  }
+  
+  .articleGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .guideSection {
+    padding: 2rem;
+    gap: 2rem;
+  }
+  
+  .guideImageWrapper {
+    height: 350px;
+  }
+  
+  .guideTitle {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .missionLabel {
+    font-size: 1.25rem;
+  }
+  .missionTitle {
+    font-size: 1.125rem;
+  }
+  .missionDesc {
+    font-size: 0.9375rem;
   }
 }

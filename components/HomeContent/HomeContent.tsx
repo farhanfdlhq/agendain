@@ -1,11 +1,12 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import FadeIn from '@/components/Motion/FadeIn'
 import Stagger from '@/components/Motion/Stagger'
 import { ChevronLeft, ChevronRight, Star, ArrowRight } from 'lucide-react'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 import styles from './HomeContent.module.css'
 
 /* ──── WhatsApp SVG Icon ──── */
@@ -18,29 +19,29 @@ function WhatsAppIcon({ size = 20 }: { size?: number }) {
 }
 
 /* ──── Data ──── */
-const WHY_CARDS = [
+const getWhyCards = (t: any) => [
   {
     number: '#1',
-    title: 'All-in-One!',
-    desc: 'Ga usah ribet ngurus sana-sini. Di Agendain, dari tiket pesawat, hotel, sampai itinerary harian semua udah kami siapin. Kamu tinggal bawa koper dan ajak teman — semuanya sudah beres!',
+    title: t('home.why1.title'),
+    desc: t('home.why1.desc'),
     image: '/why-hotel.png',
   },
   {
     number: '#2',
-    title: 'Harga Terbaik',
-    desc: 'Kami bekerja langsung dengan partner lokal di Eropa, jadi harga yang kamu dapat itu harga terbaik, transparan, tanpa biaya tersembunyi. Worth it banget buat pengalaman yang kamu dapat!',
+    title: t('home.why2.title'),
+    desc: t('home.why2.desc'),
     image: '/placeholder.png',
   },
   {
     number: '#3',
-    title: 'Dukungan 24/7',
-    desc: 'Tim Agendain selalu stand by 24 jam selama perjalanan kamu. Mulai dari pertanyaan soal hotel, transportasi, atau darurat — kamu ga bakal sendirian. Kami ada di setiap langkah!',
+    title: t('home.why3.title'),
+    desc: t('home.why3.desc'),
     image: '/why-support.png',
   },
   {
     number: '#4',
-    title: 'Dokumentasi Pro',
-    desc: 'Setiap momen berharga akan diabadikan secara sinematik oleh tim dokumentasi profesional kami. Pulang liburan bawa foto & video keren tanpa repot mikirin angle!',
+    title: t('home.why4.title'),
+    desc: t('home.why4.desc'),
     image: '/why-camera.png',
   },
 ]
@@ -59,60 +60,60 @@ const GALLERY_IMAGES = {
   rightBottom: '/dest-italy.png',
 }
 
-const ACCORDION_ITEMS = [
+const getAccordionItems = (t: any) => [
   {
-    title: 'Tidur Nyenyak Berlatar Sudut Kota yang Estetik',
-    body: 'Kami pilihkan hotel-hotel terbaik di lokasi strategis, dekat dengan spot wisata utama. Bangun pagi dengan pemandangan kota Eropa yang estetik langsung dari jendela kamar kamu.',
+    title: t('home.acc1.title'),
+    body: t('home.acc1.desc'),
   },
   {
-    title: 'Eksplorasi Bebas Kaku Tanpa Rasa Pusing',
-    body: 'Itinerary kami dirancang fleksibel — ada waktu guided tour, ada waktu free time. Jadi kamu bisa eksplor sendiri tanpa khawatir nyasar atau ketinggalan.',
+    title: t('home.acc2.title'),
+    body: t('home.acc2.desc'),
   },
   {
-    title: 'Berburu Kuliner Ikonik Langsung dari Tempat Asalnya',
-    body: 'Dari pizza Napoli asli, gelato di Roma, sampai croissant hangat di Paris — kami pastikan kamu ngerasain kuliner legendaris langsung di tempat aslinya.',
+    title: t('home.acc3.title'),
+    body: t('home.acc3.desc'),
   },
   {
-    title: 'Bawa Pulang Foto Estetik Tanpa Repot Mikirin Angle',
-    body: 'Tim dokumentasi profesional kami ikut di setiap perjalanan. Hasil foto dan video-nya cinematic-grade, bukan sekadar snapshots biasa.',
-  },
-]
-
-const TESTIMONIALS = [
-  {
-    name: 'Netizen 1',
-    text: '"Pengalaman pertama ke Eropa dan semuanya beyond expectations. Dari hotel, makanan, sampai guide-nya — semuanya top. Ga nyesel pilih Agendain!"',
-  },
-  {
-    name: 'Netizen 2',
-    text: '"Trip ke Italia bareng Agendain itu magical banget. Itinerary-nya detail, hotelnya strategis, dan yang paling berkesan dokumentasi-nya keren abis!"',
-  },
-  {
-    name: 'Netizen 3',
-    text: '"Awalnya ragu karena pertama kali pakai travel agent, tapi Agendain beneran all-in. Harga transparan, support 24 jam, dan hasilnya beyond!"',
+    title: t('home.acc4.title'),
+    body: t('home.acc4.desc'),
   },
 ]
 
-const FAQ_ITEMS = [
+const getTestimonials = (t: any) => [
   {
-    q: 'Bagaimana cara mendaftar dan booking trip di Agendain?',
-    a: 'Kamu bisa langsung hubungi kami via WhatsApp atau isi form booking di website. Tim kami akan bantu proses selanjutnya dari konsultasi sampai pembayaran.',
+    name: t('home.testi.name1'),
+    text: t('home.testi.text1'),
   },
   {
-    q: 'Apa bedanya layanan Open Trip dan Private Trip?',
-    a: 'Open Trip adalah trip gabungan dengan peserta lain di tanggal yang sudah ditentukan. Private Trip adalah trip khusus untuk grup kamu sendiri dengan tanggal dan itinerary yang bisa disesuaikan.',
+    name: t('home.testi.name2'),
+    text: t('home.testi.text2'),
   },
   {
-    q: 'Apakah harga paket yang tertera sudah termasuk tiket pesawat?',
-    a: 'Tergantung paket yang dipilih. Beberapa paket sudah termasuk tiket pesawat PP, dan beberapa lainnya belum. Detail lengkap tertera di setiap halaman paket.',
+    name: t('home.testi.name3'),
+    text: t('home.testi.text3'),
+  },
+]
+
+const getFaqItems = (t: any) => [
+  {
+    q: t('home.faq.q1'),
+    a: t('home.faq.a1'),
   },
   {
-    q: 'Bagaimana sistem pembayarannya? Apakah bisa dicicil?',
-    a: 'Ya, kami menyediakan sistem pembayaran bertahap (cicilan tanpa bunga). DP minimal 30% dan sisanya bisa dilunasi sebelum keberangkatan sesuai jadwal yang disepakati.',
+    q: t('home.faq.q2'),
+    a: t('home.faq.a2'),
   },
   {
-    q: 'Apakah aman untuk solo traveler yang ingin berangkat sendirian?',
-    a: 'Tentu! Banyak peserta kami yang berangkat solo dan justru menemukan teman baru. Tim guide kami selalu memastikan semua peserta nyaman dan aman selama perjalanan.',
+    q: t('home.faq.q3'),
+    a: t('home.faq.a3'),
+  },
+  {
+    q: t('home.faq.q4'),
+    a: t('home.faq.a4'),
+  },
+  {
+    q: t('home.faq.q5'),
+    a: t('home.faq.a5'),
   },
 ]
 
@@ -129,6 +130,19 @@ export default function HomeContent({
   const [activeAccordion, setActiveAccordion] = useState(0)
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   const [activeTestimonial, setActiveTestimonial] = useState(0)
+  const [isSliderHovered, setIsSliderHovered] = useState(false)
+
+  const { t } = useTranslation()
+  const testimonials = getTestimonials(t)
+
+  // Auto-play for the testimonial slider
+  useEffect(() => {
+    if (isSliderHovered) return
+    const interval = setInterval(() => {
+      setActiveTestimonial((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [isSliderHovered, testimonials.length])
 
   const waNumber = '6281234567890'
   const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent('Halo, saya ingin bertanya mengenai paket wisata.')}`
@@ -151,15 +165,17 @@ export default function HomeContent({
         <div className={styles.heroContent}>
           <FadeIn delay={0.2} direction="up">
             <h1 className={styles.heroTitle}>
-              <span className={styles.heroTitleWhite}>Jangan Cuma Jadi Wacana, </span>
-              <span className={styles.heroTitleGold}>Agendain Aja!</span>
+              {t('home.hero.title').split(',').map((part: string, idx: number, arr: any[]) => (
+                <span key={idx} className={idx === arr.length - 1 ? styles.heroTitleGold : styles.heroTitleWhite}>
+                  {part}{idx !== arr.length - 1 ? ',' : ''}
+                </span>
+              ))}
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.4} direction="up">
             <p className={styles.heroSubtitle}>
-              Dari tiket, hotel, sampai itinerary, semua udah kami siapkan.
-              Kamu tinggal ajak teman dan siap berangkat.
+              {t('home.hero.desc')}
             </p>
           </FadeIn>
 
@@ -172,10 +188,10 @@ export default function HomeContent({
                 className={styles.btnWhatsapp}
               >
                 <WhatsAppIcon size={20} />
-                Hubungi Kami Gratis!
+                {t('home.hero.btnWa')}
               </a>
               <Link href="/paket" className={styles.btnGold}>
-                Agendain Sekarang
+                {t('home.hero.btnPack')}
               </Link>
             </div>
           </FadeIn>
@@ -187,16 +203,14 @@ export default function HomeContent({
         <div className={styles.container}>
           <FadeIn direction="up">
             <div className={styles.whySectionHeader}>
-              <span className={styles.whyBadge}>Masih Ragu?</span>
-              <h2 className={styles.whyTitle}>
-                <span className={styles.whyTitleDark}>Kenapa </span>
-                <span className={styles.whyTitleGold}>Agendain Travel</span>
-                <span className={styles.whyTitleDark}> Jadi Solusi Wacana Kamu</span>
-              </h2>
+              <h2 className={styles.whyTitleMain}>{t('home.faq.title')}</h2>
+              <h3 className={styles.whyTitleSub}>
+                {t('home.whyTitle')}
+              </h3>
             </div>
           </FadeIn>
 
-          {WHY_CARDS.map((card, i) => {
+          {getWhyCards(t).map((card, i) => {
             const isReversed = i % 2 !== 0
             return (
               <FadeIn key={i} direction="up" delay={i * 0.1}>
@@ -224,11 +238,11 @@ export default function HomeContent({
           <FadeIn direction="up">
             <div className={styles.destHeader}>
               <div className={styles.destHeaderLeft}>
-                <p className={styles.destEyebrow}>Eksplor Bersama Agendain</p>
-                <h2 className={styles.destTitle}>Favorite Destination</h2>
+                <p className={styles.destEyebrow}>{t('home.exploreDest')}</p>
+                <h2 className={styles.destTitle}>{t('home.popularDest')}</h2>
               </div>
               <Link href="/destinasi" className={styles.destViewAll}>
-                Lihat Semua Destinasi <ArrowRight size={18} />
+                {t('home.viewAll')}
               </Link>
             </div>
           </FadeIn>
@@ -240,15 +254,22 @@ export default function HomeContent({
                   <img src={dest.image} alt={`Destinasi ${dest.name}`} loading="lazy" />
                 </div>
                 <div className={styles.destCardBody}>
-                  <h3 className={styles.destCardName}>{dest.name}</h3>
-                  <p className={styles.destCardPrice}>
-                    Start From <span className={styles.destCardPriceValue}>{dest.price}</span>
-                  </p>
-                  <div className={styles.destCardFooter}>
+                  <div className={styles.destCardTop}>
+                    <h3 className={styles.destCardName}>{dest.name}</h3>
                     <span className={styles.destCardRating}>
-                      <Star size={16} fill="#f59e0b" className={styles.destCardRatingStar} />
-                      {dest.rating}
+                      <Star size={12} fill="#f59e0b" className={styles.destCardRatingStar} />
+                      <span className={styles.destCardRatingText}>{dest.rating}</span>
                     </span>
+                  </div>
+                  <div className={styles.destCardBottom}>
+                    <div className={styles.destCardPriceWrapper}>
+                      <div className={styles.destCardPriceLabel}>
+                        {t('home.dest.startFrom').split(' ').map((word: string, i: number) => (
+                          <span key={i}>{word}</span>
+                        ))}
+                      </div>
+                      <span className={styles.destCardPriceValue}>{dest.price}</span>
+                    </div>
                     <span className={styles.destCardBooking}>Booking</span>
                   </div>
                 </div>
@@ -263,16 +284,16 @@ export default function HomeContent({
         <div className={styles.container}>
           <FadeIn direction="up">
             <div className={styles.testimonialHeader}>
-              <span className={styles.testimonialBadge}>Sudut Pandang</span>
+              <span className={styles.testimonialBadge}>{t('home.testi.badge')}</span>
               <h2 className={styles.testimonialTitle}>
-                &ldquo;Satu Hari di{' '}
+                &ldquo;{t('home.testi.quoteTitle1')}
                 <span className={styles.testimonialTitleHighlight}>Italia</span>
-                , dan Gue Langsung Jatuh Cinta!&rdquo;
+                {t('home.testi.quoteTitle2')}&rdquo;
               </h2>
               <ul className={styles.testimonialHighlights}>
-                <li>Jalan-jalan di kota tua yang penuh sejarah</li>
-                <li>Kulineran makanan otentik Italia yang bikin nagih</li>
-                <li>Foto-foto di spot ikonik yang instagramable banget</li>
+                <li>{t('home.testi.highlight1')}</li>
+                <li>{t('home.testi.highlight2')}</li>
+                <li>{t('home.testi.highlight3')}</li>
               </ul>
             </div>
           </FadeIn>
@@ -314,7 +335,7 @@ export default function HomeContent({
           <div className={styles.testimonialCta}>
             <a href={waLink} target="_blank" rel="noopener noreferrer" className={styles.btnWhatsapp}>
               <WhatsAppIcon size={18} />
-              Ada Pertanyaan?
+              {t('home.testi.btnWa')}
             </a>
           </div>
         </div>
@@ -327,12 +348,12 @@ export default function HomeContent({
             <div className={styles.accordionLeft}>
               <FadeIn direction="up">
                 <h2 className={styles.accordionSectionTitle}>
-                  Lihat, Hirup, &amp; Simpan Memori
+                  {t('home.acc.title')}
                 </h2>
-                <p className={styles.accordionSubtitle}>Sudut Terbaik Eropa</p>
+                <p className={styles.accordionSubtitle}>{t('home.acc.subtitle')}</p>
               </FadeIn>
 
-              {ACCORDION_ITEMS.map((item, i) => (
+              {getAccordionItems(t).map((item, i) => (
                 <FadeIn key={i} direction="up" delay={i * 0.05}>
                   <div className={activeAccordion === i ? styles.accordionItemActive : styles.accordionItem}>
                     <button
@@ -343,18 +364,28 @@ export default function HomeContent({
                       <span>{item.title}</span>
                       <span className={activeAccordion === i ? styles.accordionIconOpen : styles.accordionIcon}>+</span>
                     </button>
-                    {activeAccordion === i && (
-                      <div className={styles.accordionBody}>
-                        {item.body}
-                      </div>
-                    )}
+                    <AnimatePresence initial={false}>
+                      {activeAccordion === i && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
+                          style={{ overflow: 'hidden' }}
+                        >
+                          <div className={styles.accordionBody}>
+                            {item.body}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </FadeIn>
               ))}
 
               <FadeIn direction="up" delay={0.3}>
                 <Link href="/paket" className={styles.accordionBottomBtn}>
-                  Pertanyaan Lain <ArrowRight size={16} />
+                  {t('home.acc.btnMore')} <ArrowRight size={16} />
                 </Link>
               </FadeIn>
             </div>
@@ -392,20 +423,24 @@ export default function HomeContent({
           <FadeIn direction="right" delay={0.2} className={styles.socialProofRightWrapper}>
             <div className={styles.socialProofRight}>
               <h2 className={styles.socialProofRightTitle}>
-                Dari <span className={styles.textYellow}>Artis Sampai Netizen</span>, <br className={styles.hideMobile} />
-                <span className={styles.textYellow}>Semua Udah Gak Wacana Lagi!</span>
+                {t('home.social.title1')}<span className={styles.textYellow}>{t('home.social.title2')}</span>{t('home.social.title3')}<br className={styles.hideMobile} />
+                <span className={styles.textYellow}>{t('home.social.title4')}</span>
               </h2>
               <p className={styles.socialProofRightSubtitle}>
-                Intip cerita seru El Rumi, Syifa, dan ratusan traveler lainnya yang udah berhasil nge-realisasiin liburan impian mereka bareng Agendain.
+                {t('home.social.subtitle')}
               </p>
 
-              <div className={styles.testimonialSliderContainer}>
+              <div 
+                className={styles.testimonialSliderContainer}
+                onMouseEnter={() => setIsSliderHovered(true)}
+                onMouseLeave={() => setIsSliderHovered(false)}
+              >
                 <div className={styles.testimonialSlider}>
                   <div className={styles.testimonialSlides}>
                     <AnimatePresence initial={false}>
-                      {TESTIMONIALS.map((t, idx) => {
-                        const prevIdx = activeTestimonial === 0 ? TESTIMONIALS.length - 1 : activeTestimonial - 1
-                        const nextIdx = activeTestimonial === TESTIMONIALS.length - 1 ? 0 : activeTestimonial + 1
+                      {testimonials.map((tItem, idx) => {
+                        const prevIdx = activeTestimonial === 0 ? testimonials.length - 1 : activeTestimonial - 1
+                        const nextIdx = activeTestimonial === testimonials.length - 1 ? 0 : activeTestimonial + 1
                         
                         let positionClass = styles.testimonialSlideHidden
                         if (idx === activeTestimonial) positionClass = styles.testimonialSlideActive
@@ -423,8 +458,8 @@ export default function HomeContent({
                             transition={{ duration: 0.3 }}
                             className={`${styles.testimonialSlideBase} ${positionClass}`}
                           >
-                            <p className={styles.testimonialSlideName}>{t.name}</p>
-                            <p className={styles.testimonialSlideText}>{t.text}</p>
+                            <p className={styles.testimonialSlideName}>{tItem.name}</p>
+                            <p className={styles.testimonialSlideText}>{tItem.text}</p>
                           </motion.div>
                         )
                       })}
@@ -434,14 +469,14 @@ export default function HomeContent({
 
                 <button
                   className={styles.sliderBtnLeft}
-                  onClick={() => setActiveTestimonial(prev => prev === 0 ? TESTIMONIALS.length - 1 : prev - 1)}
+                  onClick={() => setActiveTestimonial(prev => prev === 0 ? testimonials.length - 1 : prev - 1)}
                   aria-label="Previous testimonial"
                 >
                   <ChevronLeft size={24} color="#ffffff" />
                 </button>
                 <button
                   className={styles.sliderBtnRight}
-                  onClick={() => setActiveTestimonial(prev => prev === TESTIMONIALS.length - 1 ? 0 : prev + 1)}
+                  onClick={() => setActiveTestimonial(prev => prev === testimonials.length - 1 ? 0 : prev + 1)}
                   aria-label="Next testimonial"
                 >
                   <ChevronRight size={24} color="#ffffff" />
@@ -458,17 +493,17 @@ export default function HomeContent({
           <FadeIn direction="up">
             <div className={styles.faqHeader}>
               <span className={styles.faqBadge}>
-                <span className={styles.faqBadgeQ}>?</span> Faq
+                <span className={styles.faqBadgeQ}>?</span> {t('home.faq.subtitle')}
               </span>
-              <h2 className={styles.faqTitle}>Pertanyaan yang Sering Diajukan</h2>
+              <h2 className={styles.faqTitle}>{t('home.faq.title')}</h2>
               <p className={styles.faqSubtitle}>
-                Temukan jawaban untuk pertanyaan umum tentang layanan Agendain Travel
+                {t('home.faq.moreSub')}
               </p>
             </div>
           </FadeIn>
 
           <div className={styles.faqList}>
-            {FAQ_ITEMS.map((item, i) => (
+            {getFaqItems(t).map((item, i) => (
               <FadeIn key={i} direction="up" delay={i * 0.05}>
                 <div className={styles.faqItem}>
                   <button
@@ -479,9 +514,19 @@ export default function HomeContent({
                     <span>{item.q}</span>
                     <span className={activeFaq === i ? styles.faqIconOpen : styles.faqIcon}>+</span>
                   </button>
-                  {activeFaq === i && (
-                    <div className={styles.faqBody}>{item.a}</div>
-                  )}
+                  <AnimatePresence initial={false}>
+                    {activeFaq === i && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                        style={{ overflow: 'hidden' }}
+                      >
+                        <div className={styles.faqBody}>{item.a}</div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </FadeIn>
             ))}
@@ -490,11 +535,11 @@ export default function HomeContent({
           <FadeIn direction="up" delay={0.3}>
             <div className={styles.faqCta}>
               <p className={styles.faqCtaText}>
-                Masih ada pertanyaan lain? Kawan Agendain siap menjawab!
+                {t('home.faq.more')} {t('home.faq.moreSub')}
               </p>
               <a href={waLink} target="_blank" rel="noopener noreferrer" className={styles.btnWhatsapp}>
                 <WhatsAppIcon size={18} />
-                Hubungi Kami
+                {t('home.faq.btnWa')}
               </a>
             </div>
           </FadeIn>
