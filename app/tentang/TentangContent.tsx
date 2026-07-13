@@ -60,6 +60,7 @@ export default function TentangContent() {
                       src="/why-hotel.webp" 
                       alt="Gelato Roma"
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className={styles.articleImage}
                     />
                   </div>
@@ -85,6 +86,7 @@ export default function TentangContent() {
                       src="/dest-swiss.webp" 
                       alt="Keliling Milan"
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className={styles.articleImage}
                     />
                   </div>
@@ -135,6 +137,7 @@ export default function TentangContent() {
                   src="/why-camera.webp" 
                   alt="Lead Guide"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   style={{ objectFit: 'cover' }}
                 />
               </div>
