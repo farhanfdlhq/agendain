@@ -8,36 +8,50 @@
   padding: 0 var(--space-lg);
 }
 
+.textGold {
+  color: var(--color-dominant);
+}
+
+.statsWrapper {
+  max-width: 1280px;
+  margin: -60px auto 0;
+  padding: 0 var(--space-lg);
+  position: relative;
+  z-index: 10;
+}
+
 .statsContainer {
   display: flex;
-  gap: 2rem;
-  margin-top: 3rem;
-  flex-wrap: wrap;
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  justify-content: space-between;
 }
 
 .statBox {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  padding: 1.5rem 2rem;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.2);
   text-align: center;
-  min-width: 140px;
+  flex: 1;
+  border-right: 1px solid var(--color-hairline);
+}
+
+.statBox:last-child {
+  border-right: none;
 }
 
 .statBox h4 {
   font-family: var(--font-display);
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: var(--color-dominant);
+  color: var(--color-primary);
   margin-bottom: 0.25rem;
 }
 
 .statBox p {
   font-size: 0.875rem;
-  color: #fff;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  color: var(--color-ink);
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -84,7 +98,7 @@
 
 .sectionHeader {
   margin-bottom: 3rem;
-  text-align: center;
+  text-align: left;
 }
 
 .sectionLabel {
@@ -101,8 +115,6 @@
   font-size: clamp(2rem, 3vw, 2.5rem);
   font-weight: 700;
   color: var(--color-primary);
-  max-width: 600px;
-  margin: 0 auto;
   line-height: 1.2;
 }
 
@@ -120,26 +132,36 @@
 }
 
 .ctaBanner {
-  background: var(--color-surface);
+  background: var(--color-primary);
   border-radius: var(--radius-xl);
   padding: 4rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 3rem;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.ctaLabel {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-dominant);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
 }
 
 .ctaContent h2 {
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
   font-weight: 700;
-  color: var(--color-primary);
+  color: var(--color-on-primary);
   margin-bottom: 1rem;
+  line-height: 1.2;
 }
 
 .ctaContent p {
-  color: var(--color-text-light);
+  color: rgba(255,255,255,0.85);
   font-size: 1.125rem;
   line-height: 1.6;
   max-width: 500px;
@@ -173,15 +195,15 @@
 
 .btnSecondary {
   text-align: center;
-  color: var(--color-primary);
-  font-weight: 600;
-  text-decoration: none;
-  padding: 1rem;
+  color: rgba(255,255,255,0.8);
+  font-weight: 500;
+  text-decoration: underline;
+  padding: 0.5rem;
   transition: all 0.2s ease;
 }
 
 .btnSecondary:hover {
-  color: var(--color-dominant);
+  color: white;
 }
 
 @media (max-width: 744px) {
@@ -205,13 +227,17 @@
   }
 
   .statsContainer {
-    justify-content: center;
-    gap: 1rem;
+    flex-direction: column;
+    padding: 1rem;
   }
 
   .statBox {
-    flex: 1 1 calc(50% - 1rem);
-    min-width: 120px;
+    border-right: none;
+    border-bottom: 1px solid var(--color-hairline);
     padding: 1rem;
+  }
+
+  .statBox:last-child {
+    border-bottom: none;
   }
 }

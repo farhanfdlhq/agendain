@@ -8,6 +8,7 @@ interface HeroHeaderProps {
   minHeight?: string
   paddingBottom?: string
   children?: React.ReactNode
+  textAlign?: 'left' | 'center' | 'right'
 }
 
 export default function HeroHeader({ 
@@ -16,7 +17,8 @@ export default function HeroHeader({
   backgroundImage,
   minHeight = '50vh',
   paddingBottom = '60px',
-  children
+  children,
+  textAlign = 'center'
 }: HeroHeaderProps) {
   return (
     <div 
@@ -28,7 +30,7 @@ export default function HeroHeader({
       }}
     >
       <div className={styles.heroOverlay} />
-      <div className={styles.heroContent}>
+      <div className={styles.heroContent} style={{ textAlign, alignItems: textAlign === 'left' ? 'flex-start' : textAlign === 'right' ? 'flex-end' : 'center' }}>
         <h1 className={styles.heroTitle}>{title}</h1>
         {subtitle && <p className={styles.heroSubtitle}>{subtitle}</p>}
         {children}

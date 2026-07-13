@@ -81,10 +81,13 @@ export default async function PaketPage({
     <div className={styles.page}>
       <HeroHeader 
         backgroundImage="/dest-italy.webp"
-        title="Kunjungi Tempat Terindah Di Eropa Bersama Agendain."
-        minHeight="600px"
-        paddingBottom="200px"
-      >
+        title={<>Kunjungi Tempat<br />Terindah Di Eropa<br />Bersama <span className={styles.textGold}>Agendain.</span></>}
+        minHeight="70vh"
+        paddingBottom="120px"
+        textAlign="left"
+      />
+      
+      <div className={styles.statsWrapper}>
         <div className={styles.statsContainer}>
           <div className={styles.statBox}>
             <h4>2+</h4>
@@ -103,14 +106,14 @@ export default async function PaketPage({
             <p>Tingkat Kepuasan</p>
           </div>
         </div>
-      </HeroHeader>
+      </div>
       
       <div className={styles.content}>
         <div className={styles.container}>
           
           <div className={styles.sectionHeader}>
             <p className={styles.sectionLabel}>Semua Jadwal Keberangkatan</p>
-            <h2 className={styles.sectionTitle}>Eksplor Eropa Dengan Paket Tur Eksklusif Agendain!</h2>
+            <h2 className={styles.sectionTitle}>Eksplor Eropa Dengan Paket<br/>Tur Eksklusif Agendain!</h2>
           </div>
 
           <PaketFilter destList={destList} />
@@ -126,7 +129,8 @@ export default async function PaketPage({
       <div className={styles.ctaBannerWrapper}>
         <div className={styles.ctaBanner}>
           <div className={styles.ctaContent}>
-            <h2>Mau Berangkat? Booking Sekarang Mulai Dari 500rb Aja!</h2>
+            <p className={styles.ctaLabel}>Mau Berangkat?</p>
+            <h2>Booking Sekarang Mulai Dari <span className={styles.textGold}>500rb</span> Aja!</h2>
             <p>Gak perlu bingung, gak perlu ribet. Tim Agendain siap bantuin dari pemilihan paket, pengurusan visa, sampai kamu mendarat dengan selamat di Eropa.</p>
           </div>
           <div className={styles.ctaActions}>
