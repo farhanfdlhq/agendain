@@ -4,9 +4,9 @@ import "./globals.css";
 
 import { prisma } from "@/lib/prisma"
 
-import { cache } from "react"
+import { unstable_cache } from "next/cache"
 
-const getSettings = cache(async () => {
+const getSettings = unstable_cache(async () => {
   try {
     const settingsArr: any[] = await prisma.$queryRaw`SELECT * FROM Setting`
     return settingsArr.reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {})
@@ -14,7 +14,7 @@ const getSettings = cache(async () => {
     console.error("Failed to fetch settings for layout", e)
     return {}
   }
-})
+}, ['global-settings'], { tags: ['settings'], revalidate: 3600 })
 
 export async function generateMetadata(): Promise<Metadata> {
   const settingsObj = await getSettings()
