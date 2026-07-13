@@ -1,8 +1,8 @@
 import PackageCard from '@/components/PackageCard/PackageCard'
 import PaketFilter from '@/components/PaketFilter/PaketFilter'
+import HeroHeader from '@/components/HeroHeader/HeroHeader'
 import styles from './page.module.css'
 import { prisma } from '@/lib/prisma'
-import PaketHeader from './PaketHeader'
 
 export default async function PaketPage({
   searchParams,
@@ -79,10 +79,40 @@ export default async function PaketPage({
 
   return (
     <div className={styles.page}>
-      <PaketHeader />
+      <HeroHeader 
+        backgroundImage="/dest-italy.webp"
+        title="Kunjungi Tempat Terindah Di Eropa Bersama Agendain."
+        minHeight="600px"
+        paddingBottom="200px"
+      >
+        <div className={styles.statsContainer}>
+          <div className={styles.statBox}>
+            <h4>2+</h4>
+            <p>Pengalaman</p>
+          </div>
+          <div className={styles.statBox}>
+            <h4>63+</h4>
+            <p>Destinasi Unik</p>
+          </div>
+          <div className={styles.statBox}>
+            <h4>32K+</h4>
+            <p>Traveler Senang</p>
+          </div>
+          <div className={styles.statBox}>
+            <h4>94%</h4>
+            <p>Tingkat Kepuasan</p>
+          </div>
+        </div>
+      </HeroHeader>
       
       <div className={styles.content}>
         <div className={styles.container}>
+          
+          <div className={styles.sectionHeader}>
+            <p className={styles.sectionLabel}>Semua Jadwal Keberangkatan</p>
+            <h2 className={styles.sectionTitle}>Eksplor Eropa Dengan Paket Tur Eksklusif Agendain!</h2>
+          </div>
+
           <PaketFilter destList={destList} />
           
           <div className={styles.grid}>
@@ -92,6 +122,25 @@ export default async function PaketPage({
           </div>
         </div>
       </div>
+
+      <div className={styles.ctaBannerWrapper}>
+        <div className={styles.ctaBanner}>
+          <div className={styles.ctaContent}>
+            <h2>Mau Berangkat? Booking Sekarang Mulai Dari 500rb Aja!</h2>
+            <p>Gak perlu bingung, gak perlu ribet. Tim Agendain siap bantuin dari pemilihan paket, pengurusan visa, sampai kamu mendarat dengan selamat di Eropa.</p>
+          </div>
+          <div className={styles.ctaActions}>
+            <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className={styles.btnPrimary}>
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+              </svg>
+              Chat WhatsApp Sekarang
+            </a>
+            <a href="#jadwal" className={styles.btnSecondary}>Lihat Jadwal Trip →</a>
+          </div>
+        </div>
+      </div>
+
     </div>
   )
 }

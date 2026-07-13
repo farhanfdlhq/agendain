@@ -3,10 +3,11 @@ import styles from './HeroHeader.module.css'
 
 interface HeroHeaderProps {
   title: React.ReactNode
-  subtitle: React.ReactNode
+  subtitle?: React.ReactNode
   backgroundImage: string
   minHeight?: string
   paddingBottom?: string
+  children?: React.ReactNode
 }
 
 export default function HeroHeader({ 
@@ -14,7 +15,8 @@ export default function HeroHeader({
   subtitle, 
   backgroundImage,
   minHeight = '50vh',
-  paddingBottom = '60px'
+  paddingBottom = '60px',
+  children
 }: HeroHeaderProps) {
   return (
     <div 
@@ -28,7 +30,8 @@ export default function HeroHeader({
       <div className={styles.heroOverlay} />
       <div className={styles.heroContent}>
         <h1 className={styles.heroTitle}>{title}</h1>
-        <p className={styles.heroSubtitle}>{subtitle}</p>
+        {subtitle && <p className={styles.heroSubtitle}>{subtitle}</p>}
+        {children}
       </div>
     </div>
   )
