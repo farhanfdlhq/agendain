@@ -24,40 +24,40 @@ const getWhyCards = (t: any) => [
     number: '#1',
     title: t('home.why1.title'),
     desc: t('home.why1.desc'),
-    image: '/why-hotel.png',
+    image: '/why-hotel.webp',
   },
   {
     number: '#2',
     title: t('home.why2.title'),
     desc: t('home.why2.desc'),
-    image: '/placeholder.png',
+    image: '/placeholder.webp',
   },
   {
     number: '#3',
     title: t('home.why3.title'),
     desc: t('home.why3.desc'),
-    image: '/why-support.png',
+    image: '/why-support.webp',
   },
   {
     number: '#4',
     title: t('home.why4.title'),
     desc: t('home.why4.desc'),
-    image: '/why-camera.png',
+    image: '/why-camera.webp',
   },
 ]
 
 const DESTINATIONS = [
-  { name: 'France', price: '18 Juta', rating: '5/5', image: '/dest-france.png', slug: 'prancis' },
-  { name: 'Swiss', price: '24 Juta', rating: '5/5', image: '/dest-swiss.png', slug: 'swiss' },
-  { name: 'Italy', price: '20 Juta', rating: '5/5', image: '/dest-italy.png', slug: 'italia' },
+  { name: 'France', price: '18 Juta', rating: '5/5', image: '/dest-france.webp', slug: 'prancis' },
+  { name: 'Swiss', price: '24 Juta', rating: '5/5', image: '/dest-swiss.webp', slug: 'swiss' },
+  { name: 'Italy', price: '20 Juta', rating: '5/5', image: '/dest-italy.webp', slug: 'italia' },
 ]
 
 const GALLERY_IMAGES = {
-  leftTop: '/gallery-amalfi.png',
-  leftBottom: '/dest-swiss.png',
-  center: '/gallery-colosseum.png',
-  rightTop: '/dest-france.png',
-  rightBottom: '/dest-italy.png',
+  leftTop: '/gallery-amalfi.webp',
+  leftBottom: '/dest-swiss.webp',
+  center: '/gallery-colosseum.webp',
+  rightTop: '/dest-france.webp',
+  rightBottom: '/dest-italy.webp',
 }
 
 const getAccordionItems = (t: any) => [
@@ -153,7 +153,7 @@ export default function HomeContent({
       <section className={styles.hero}>
         <div className={styles.heroImageWrapper}>
           <Image
-            src="/hero-coastal.png"
+            src="/hero-coastal.webp"
             alt="Pemandangan pantai Eropa yang indah"
             fill
             priority
@@ -392,7 +392,7 @@ export default function HomeContent({
 
             <FadeIn direction="right" delay={0.2}>
               <div className={styles.accordionRight}>
-                <img src="/accordion-street.png" alt="Jalanan Eropa yang menawan" loading="lazy" />
+                <img src="/accordion-street.webp" alt="Jalanan Eropa yang menawan" loading="lazy" />
               </div>
             </FadeIn>
           </div>
@@ -402,13 +402,13 @@ export default function HomeContent({
       {/* ═══════ 6. SOCIAL PROOF / CELEBRITY ═══════ */}
       <section className={styles.socialProofSection}>
         <div className={styles.socialProofBg}>
-          <img src="/dest-italy.png" alt="" aria-hidden="true" />
+          <img src="/dest-italy.webp" alt="" aria-hidden="true" />
         </div>
         <div className={`${styles.container} ${styles.socialProofContent}`}>
           <FadeIn direction="left">
             <div className={styles.socialProofLeft}>
               <div className={styles.socialProofImageWrapper}>
-                <img src="/el-rumi-syifa.png" alt="El Rumi & Syifa" loading="lazy" />
+                <img src="/el-rumi-syifa.webp" alt="El Rumi & Syifa" loading="lazy" />
                 <div className={styles.socialProofQuestionMark}>?</div>
               </div>
               <div className={styles.socialProofQuoteCard}>

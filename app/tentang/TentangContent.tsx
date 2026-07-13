@@ -4,6 +4,7 @@ import Link from 'next/link'
 import styles from './page.module.css'
 import FadeIn from '@/components/Motion/FadeIn'
 import Stagger from '@/components/Motion/Stagger'
+import HeroHeader from '@/components/HeroHeader/HeroHeader'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 
 export default function TentangContent() {
@@ -12,19 +13,13 @@ export default function TentangContent() {
   return (
     <div className={styles.page}>
       {/* Hero Section */}
-      <div className={styles.hero}>
-        <div className={styles.heroOverlay} />
-        <div className={styles.heroContent}>
-          <FadeIn direction="up">
-            <h1 className={styles.heroTitle}>
-              {t('about.new.heroTitleStart')} <span className={styles.textGold}>Agendain</span>{t('about.new.heroTitleEnd')}
-            </h1>
-            <p className={styles.heroSubtitle}>
-              {t('about.new.heroSubtitle')}
-            </p>
-          </FadeIn>
-        </div>
-      </div>
+      <HeroHeader 
+        backgroundImage="/dest-swiss.webp"
+        title={<>{t('about.new.heroTitleStart')} <span className={styles.textGold}>Agendain</span>{t('about.new.heroTitleEnd')}</>}
+        subtitle={t('about.new.heroSubtitle')}
+        minHeight="600px"
+        paddingBottom="200px"
+      />
 
       <div className={styles.container}>
         {/* Overlapping Mission Card */}
@@ -33,7 +28,7 @@ export default function TentangContent() {
             <div className={styles.missionImageWrapper}>
               <div className={styles.missionImageInner}>
                 <Image 
-                  src="/dest-italy.png" 
+                  src="/dest-italy.webp" 
                   alt="Misi Agendain"
                   fill
                   style={{ objectFit: 'cover', borderRadius: 'var(--radius-lg)' }}
@@ -62,7 +57,7 @@ export default function TentangContent() {
                 <div className={styles.articleCard}>
                   <div className={styles.articleImageWrapper}>
                     <Image 
-                      src="/why-hotel.png" 
+                      src="/why-hotel.webp" 
                       alt="Gelato Roma"
                       fill
                       className={styles.articleImage}
@@ -87,7 +82,7 @@ export default function TentangContent() {
                 <div className={styles.articleCard}>
                   <div className={styles.articleImageWrapper}>
                     <Image 
-                      src="/dest-swiss.png" 
+                      src="/dest-swiss.webp" 
                       alt="Keliling Milan"
                       fill
                       className={styles.articleImage}
@@ -137,7 +132,7 @@ export default function TentangContent() {
             <div className={styles.guideImageWrapper}>
               <div className={styles.guideImageInner}>
                 <Image 
-                  src="/why-camera.png" 
+                  src="/why-camera.webp" 
                   alt="Lead Guide"
                   fill
                   style={{ objectFit: 'cover' }}

@@ -39,7 +39,7 @@ export default function PackageCard({ slug, nama, harga, durasi, destinasi, foto
       <Link href={`/paket/${slug}`} className={styles.cardLink} aria-label={`Lihat detail paket ${nama}`} />
       <div className={styles.imageWrapper} suppressHydrationWarning>
         <Image 
-          src={fotoThumbnail || '/placeholder.png'} 
+          src={fotoThumbnail || '/placeholder.webp'} 
           alt={nama} 
           fill 
           sizes="(max-width: 744px) 100vw, (max-width: 1128px) 50vw, 25vw"

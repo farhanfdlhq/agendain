@@ -7,6 +7,7 @@ import styles from './page.module.css'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import FadeIn from '@/components/Motion/FadeIn'
 import Stagger from '@/components/Motion/Stagger'
+import HeroHeader from '@/components/HeroHeader/HeroHeader'
 
 const BLOG_POSTS = [
   {
@@ -16,7 +17,7 @@ const BLOG_POSTS = [
     category: 'Destinasi',
     date: '12 Okt 2026',
     readTime: '4 min read',
-    image: '/dest-italy.png', // Using existing image
+    image: '/dest-italy.webp', // Using existing image
     featured: true
   },
   {
@@ -26,7 +27,7 @@ const BLOG_POSTS = [
     category: 'Tips',
     date: '08 Okt 2026',
     readTime: '5 min read',
-    image: '/why-hotel.png',
+    image: '/why-hotel.webp',
     featured: false
   },
   {
@@ -36,7 +37,7 @@ const BLOG_POSTS = [
     category: 'Kuliner',
     date: '03 Okt 2026',
     readTime: '3 min read',
-    image: '/dest-swiss.png',
+    image: '/dest-swiss.webp',
     featured: false
   },
   {
@@ -46,7 +47,7 @@ const BLOG_POSTS = [
     category: 'Itinerary',
     date: '28 Sep 2026',
     readTime: '6 min read',
-    image: '/why-camera.png',
+    image: '/why-camera.webp',
     featured: false
   },
   {
@@ -56,7 +57,7 @@ const BLOG_POSTS = [
     category: 'Tips',
     date: '21 Sep 2026',
     readTime: '7 min read',
-    image: '/placeholder.png',
+    image: '/placeholder.webp',
     featured: false
   },
 ]
@@ -80,19 +81,11 @@ export default function BlogContent() {
   return (
     <div className={styles.page}>
       {/* Hero Section */}
-      <div className={styles.blogHero}>
-        <div className={styles.blogHeroOverlay} />
-        <div className={styles.blogHeroContent}>
-          <FadeIn direction="up">
-            <h1 className={styles.heroTitle}>
-              Jurnal <span className={styles.textGold}>Agendain</span>
-            </h1>
-            <p className={styles.heroSubtitle}>
-              Temukan inspirasi liburan impianmu, tips perjalanan praktis, dan cerita seru dari berbagai sudut Eropa.
-            </p>
-          </FadeIn>
-        </div>
-      </div>
+      <HeroHeader 
+        backgroundImage="/dest-italy.webp"
+        title={<>Jurnal <span className={styles.textGold}>Agendain</span></>}
+        subtitle="Temukan inspirasi liburan impianmu, tips perjalanan praktis, dan cerita seru dari berbagai sudut Eropa."
+      />
 
       <div className={styles.container}>
         {/* Search & Filter Bar */}

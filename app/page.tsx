@@ -5,16 +5,16 @@ export const revalidate = 60;
 
 // Dummy data fallback for development if DB is empty
 const DUMMY_PACKAGES = [
-  { id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', harga: 15000000, durasi: 5, destinasi: { nama: 'Prancis' }, fotoThumbnail: '/placeholder.png', label: 'Terlaris' },
-  { id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', harga: 22000000, durasi: 7, destinasi: { nama: 'Swiss' }, fotoThumbnail: '/placeholder.png', label: null },
-  { id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', harga: 18500000, durasi: 8, destinasi: { nama: 'Italia' }, fotoThumbnail: '/placeholder.png', label: 'Populer' },
-  { id: 4, slug: 'london-scotland-10d', nama: 'London & Scotland 10D', harga: 28000000, durasi: 10, destinasi: { nama: 'UK' }, fotoThumbnail: '/placeholder.png', label: null },
+  { id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', harga: 15000000, durasi: 5, destinasi: { nama: 'Prancis' }, fotoThumbnail: '/placeholder.webp', label: 'Terlaris' },
+  { id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', harga: 22000000, durasi: 7, destinasi: { nama: 'Swiss' }, fotoThumbnail: '/placeholder.webp', label: null },
+  { id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', harga: 18500000, durasi: 8, destinasi: { nama: 'Italia' }, fotoThumbnail: '/placeholder.webp', label: 'Populer' },
+  { id: 4, slug: 'london-scotland-10d', nama: 'London & Scotland 10D', harga: 28000000, durasi: 10, destinasi: { nama: 'UK' }, fotoThumbnail: '/placeholder.webp', label: null },
 ]
 
 const DUMMY_DESTINATIONS = [
-  { slug: 'prancis', nama: 'Prancis', foto: '/placeholder.png', paketCount: 12 },
-  { slug: 'swiss', nama: 'Swiss', foto: '/placeholder.png', paketCount: 8 },
-  { slug: 'italia', nama: 'Italia', foto: '/placeholder.png', paketCount: 15 },
+  { slug: 'prancis', nama: 'Prancis', foto: '/placeholder.webp', paketCount: 12 },
+  { slug: 'swiss', nama: 'Swiss', foto: '/placeholder.webp', paketCount: 8 },
+  { slug: 'italia', nama: 'Italia', foto: '/placeholder.webp', paketCount: 15 },
 ]
 
 import { Suspense } from 'react'

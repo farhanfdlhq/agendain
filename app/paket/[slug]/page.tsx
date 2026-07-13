@@ -75,7 +75,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
   }
 
   const fotos = pkg?.foto as any || {}
-  const mainImage = (fotos.large || fotos.medium) ? (fotos.large || fotos.medium) : '/placeholder.png'
+  const mainImage = (fotos.large || fotos.medium) ? (fotos.large || fotos.medium) : '/placeholder.webp'
   
   let gallery = []
   if (Array.isArray(pkg?.foto) && pkg.foto.length > 0) {

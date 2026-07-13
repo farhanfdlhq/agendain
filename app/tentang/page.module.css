@@ -3,53 +3,7 @@
   background: var(--color-canvas);
 }
 
-/* ---------- HERO SECTION ---------- */
-.hero {
-  position: relative;
-  min-height: 600px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 120px var(--space-lg) 200px; 
-  margin-top: -72px; 
-  background: url('/dest-swiss.png') center/cover no-repeat; 
-}
 
-.heroOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(5,69,105,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.8) 100%);
-  z-index: 1;
-}
-
-.heroContent {
-  position: relative;
-  z-index: 2;
-  color: white;
-  max-width: 1000px;
-  margin-top: 72px;
-}
-
-.heroTitle {
-  font-family: var(--font-display);
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 800;
-  margin-bottom: var(--space-lg);
-  letter-spacing: -0.02em;
-}
-
-.textGold {
-  color: var(--color-dominant);
-}
-
-.heroSubtitle {
-  font-size: clamp(1rem, 2vw, 1.125rem);
-  color: rgba(255, 255, 255, 0.95);
-  line-height: 1.8;
-  max-width: 900px;
-  margin: 0 auto;
-}
 
 /* ---------- CONTAINER & MISSION CARD ---------- */
 .container {
@@ -350,10 +304,6 @@
 
   .missionText {
     padding: 2rem;
-  }
-  
-  .hero {
-    padding: 100px var(--space-lg) 150px;
   }
   
   .container {
