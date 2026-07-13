@@ -132,21 +132,19 @@
 }
 
 .ctaBanner {
-  background: var(--color-primary);
-  border-radius: var(--radius-xl);
+  background: #005d8f;
+  border-radius: 1.5rem;
   padding: 4rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 3rem;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
 }
 
 .ctaLabel {
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-dominant);
-  text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 0.5rem;
 }
@@ -186,6 +184,7 @@
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btnPrimary:hover {

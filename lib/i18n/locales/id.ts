@@ -188,5 +188,24 @@ const id: Record<string, string> = {
   'privacy.section3.li4': 'Komunikasi Proaktif: Mengirimkan update penting, pengingat persiapan keberangkatan, dan panduan cuaca ke email atau WhatsApp Anda.',
   'privacy.section3.li5': 'Inovasi Layanan: Menggunakan analisa data traffic anonim untuk terus memoles antarmuka website dan merancang rute liburan baru yang lebih efisien.',
   'privacy.section3.li6': 'Kepatuhan Hukum Internasional: Mematuhi regulasi imigrasi dan hukum perlindungan data yang berlaku di Indonesia serta yurisdiksi negara tujuan.',
+  
+  // Open Trip Page
+  'openTrip.hero.title1': 'Kunjungi Tempat',
+  'openTrip.hero.title2': 'Terindah Di Eropa',
+  'openTrip.hero.title3': 'Bersama',
+  'openTrip.stats.exp': 'Pengalaman',
+  'openTrip.stats.dest': 'Destinasi Unik',
+  'openTrip.stats.travelers': 'Traveler Senang',
+  'openTrip.stats.satisfaction': 'Tingkat Kepuasan',
+  'openTrip.section.label': 'Semua Jadwal Keberangkatan',
+  'openTrip.section.title1': 'Eksplor Eropa Dengan Paket',
+  'openTrip.section.title2': 'Tur Eksklusif Agendain!',
+  'openTrip.cta.label': 'Mau Berangkat?',
+  'openTrip.cta.title1': 'Booking Sekarang',
+  'openTrip.cta.title2': 'Mulai Dari',
+  'openTrip.cta.title3': 'Aja!',
+  'openTrip.cta.desc': 'Gak perlu bingung, gak perlu ribet. Tim Agendain siap bantuin dari pemilihan paket, pengurusan visa, sampai kamu mendarat dengan selamat di Eropa.',
+  'openTrip.cta.btnPrimary': 'Chat WhatsApp Sekarang',
+  'openTrip.cta.btnSecondary': 'Lihat Jadwal Trip',
 }
 export default id

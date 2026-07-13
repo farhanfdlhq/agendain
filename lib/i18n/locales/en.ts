@@ -188,5 +188,24 @@ const en: Record<string, string> = {
   'privacy.section3.li4': 'Proactive Communication: Sending important updates, departure preparation reminders, and weather guides to your email or WhatsApp.',
   'privacy.section3.li5': 'Service Innovation: Using anonymous traffic data analysis to continually refine the website interface and design more efficient new vacation routes.',
   'privacy.section3.li6': 'International Legal Compliance: Complying with immigration regulations and data protection laws applicable in Indonesia and the destination jurisdiction.',
+  
+  // Open Trip Page
+  'openTrip.hero.title1': 'Visit The Most',
+  'openTrip.hero.title2': 'Beautiful Places in Europe',
+  'openTrip.hero.title3': 'With',
+  'openTrip.stats.exp': 'Experiences',
+  'openTrip.stats.dest': 'Unique Destinations',
+  'openTrip.stats.travelers': 'Happy Travelers',
+  'openTrip.stats.satisfaction': 'Satisfaction Rate',
+  'openTrip.section.label': 'All Departure Schedules',
+  'openTrip.section.title1': 'Explore Europe With Exclusive',
+  'openTrip.section.title2': 'Tour Packages by Agendain!',
+  'openTrip.cta.label': 'Ready To Go?',
+  'openTrip.cta.title1': 'Book Now',
+  'openTrip.cta.title2': 'Starting From Only',
+  'openTrip.cta.title3': '!',
+  'openTrip.cta.desc': 'No confusion, no hassle. The Agendain team is ready to help you from choosing a package, processing visas, until you land safely in Europe.',
+  'openTrip.cta.btnPrimary': 'Chat WhatsApp Now',
+  'openTrip.cta.btnSecondary': 'View Trip Schedules',
 }
 export default en
