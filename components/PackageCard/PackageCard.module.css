@@ -49,35 +49,6 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.saveBtn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  transition: transform 0.1s;
-  z-index: 2;
-  cursor: pointer;
-  background: transparent;
-  border: none;
-}
-
-.saveBtn:hover {
-  transform: scale(1.1);
-}
-
-.saveBtn.saved {
-  color: #ff3b30;
-}
-
-.saveBtn svg {
-  transition: fill 0.2s, color 0.2s;
-}
-
 .content {
   padding: var(--space-sm) 4px;
   display: flex;
@@ -113,6 +84,14 @@
 
 .footer {
   margin-top: var(--space-xs);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priceContainer {
+  display: flex;
+  align-items: baseline;
 }
 
 .price {
@@ -125,6 +104,27 @@
   font-size: 0.875rem;
   color: var(--color-muted);
   margin-left: 4px;
+}
+
+.contactBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-surface-soft);
+  color: var(--color-primary);
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+  z-index: 2; /* So it's clickable above the Link overlay */
+}
+
+.contactBtn:hover {
+  background: var(--color-primary);
+  color: white;
 }
 
 @media (max-width: 768px) {

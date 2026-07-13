@@ -80,7 +80,7 @@ export default async function PaketPage({
   return (
     <div className={styles.page}>
       <HeroHeader 
-        backgroundImage="/dest-italy.webp"
+        backgroundImage="/open_trip_hero.webp"
         title={<>Kunjungi Tempat<br />Terindah Di Eropa<br />Bersama <span className={styles.textGold}>Agendain.</span></>}
         minHeight="70vh"
         paddingBottom="120px"
