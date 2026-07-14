@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { Star } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import styles from './PackageCard.module.css'
 
@@ -20,49 +20,51 @@ interface PackageProps {
 export default function PackageCard({ slug, nama, harga, durasi, destinasi, fotoThumbnail, label }: PackageProps) {
   const { t, locale, translateData } = useTranslation()
 
-  // Format harga to IDR
-  const formattedHarga = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(harga)
+  // Format harga to IDR in a shorter way, e.g. 18 Juta if possible, else full format
+  let formattedHarga = ''
+  if (harga >= 1000000 && harga % 1000000 === 0) {
+    formattedHarga = `${harga / 1000000} Juta`
+  } else {
+    formattedHarga = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(harga)
+  }
 
   return (
-    <div className={styles.card} suppressHydrationWarning>
-      <Link href={`/paket/${slug}`} className={styles.cardLink} aria-label={`Lihat detail paket ${nama}`} />
-      <div className={styles.imageWrapper} suppressHydrationWarning>
+    <Link href={`/paket/${slug}`} className={styles.destCard} suppressHydrationWarning aria-label={`Lihat detail paket ${nama}`}>
+      <div className={styles.destCardImageWrapper} suppressHydrationWarning>
         <Image 
           src={fotoThumbnail || '/placeholder.webp'} 
           alt={nama} 
           fill 
-          sizes="(max-width: 744px) 100vw, (max-width: 1128px) 50vw, 25vw"
+          sizes="(max-width: 744px) 100vw, (max-width: 1128px) 50vw, 33vw"
           className={styles.image} 
           loading="lazy"
         />
       </div>
-      
-      {label && <div className={styles.badge} suppressHydrationWarning>{translateData(label)}</div>}
-      
-      <div className={styles.content} suppressHydrationWarning>
-        <div className={styles.metaRow} suppressHydrationWarning>
-          <span className={styles.destination}>{translateData(destinasi?.nama) || (locale === 'en' ? 'Europe' : 'Eropa')}</span>
-          <span className={styles.duration}>{durasi} {locale === 'en' ? 'Days' : 'Hari'}</span>
+      <div className={styles.destCardBody} suppressHydrationWarning>
+        <div className={styles.destCardTop} suppressHydrationWarning>
+          <h3 className={styles.destCardName}>{translateData(destinasi?.nama) || nama}</h3>
+          <span className={styles.destCardRating}>
+            <Star size={12} fill="#f59e0b" className={styles.destCardRatingStar} />
+            <span className={styles.destCardRatingText}>5/5</span>
+          </span>
         </div>
-        <h3 className={styles.title}>{nama}</h3>
-        <div className={styles.footer} suppressHydrationWarning>
-          <div className={styles.priceContainer}>
-            <span className={styles.price}>{formattedHarga}</span>
-            <span className={styles.unit}>/ pax</span>
+        <div className={styles.destCardBottom} suppressHydrationWarning>
+          <div className={styles.destCardPriceWrapper}>
+            <div className={styles.destCardPriceLabel}>
+              {t('home.dest.startFrom').split(' ').map((word: string, i: number) => (
+                <span key={i}>{word}</span>
+              ))}
+            </div>
+            <span className={styles.destCardPriceValue}>{formattedHarga}</span>
           </div>
-          <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" className={styles.contactBtn} aria-label="Hubungi Kami">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-            </svg>
-            Hubungi
-          </a>
+          <span className={styles.destCardBooking}>Booking</span>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }

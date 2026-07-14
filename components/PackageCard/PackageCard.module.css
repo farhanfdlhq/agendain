@@ -1,30 +1,25 @@
-.card {
-  position: relative;
+.destCard {
   display: flex;
   flex-direction: column;
-  border-radius: var(--radius-md);
-  background: transparent;
-  transition: transform 0.2s, box-shadow 0.2s;
+  background: var(--color-surface);
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
 }
 
-.cardLink {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
+.destCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-card);
-}
-
-.imageWrapper {
+.destCardImageWrapper {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 3;
   width: 100%;
   overflow: hidden;
-  border-radius: var(--radius-md);
-  z-index: 0;
 }
 
 .image {
@@ -32,115 +27,88 @@
   transition: transform 0.5s ease;
 }
 
-.card:hover .image {
+.destCard:hover .image {
   transform: scale(1.05);
 }
 
-.badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: var(--color-surface-soft);
-  color: var(--color-ink);
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.content {
-  padding: var(--space-sm) 4px;
+.destCardBody {
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
-  position: relative;
-  z-index: 0;
+  flex: 1;
 }
 
-.metaRow {
+.destCardTop {
   display: flex;
-  justify-content: space-between;
-  font-size: 0.875rem;
-}
-
-.destination {
-  font-weight: 500;
-  color: var(--color-muted);
-}
-
-.duration {
-  color: var(--color-muted);
-}
-
-.title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.footer {
-  margin-top: var(--space-xs);
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
 }
 
-.priceContainer {
-  display: flex;
-  align-items: baseline;
-}
-
-.price {
-  font-weight: 600;
+.destCardName {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--color-ink);
-  font-size: 1rem;
 }
 
-.unit {
-  font-size: 0.875rem;
-  color: var(--color-muted);
-  margin-left: 4px;
-}
-
-.contactBtn {
+.destCardRating {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--color-surface-soft);
-  color: var(--color-primary);
-  border-radius: var(--radius-sm);
+}
+
+.destCardRatingStar {
+  color: #facc15;
+}
+
+.destCardRatingText {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.destCardBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.destCardPriceWrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.destCardPriceLabel {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  line-height: 1.1;
+}
+
+.destCardPriceValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
+.destCardBooking {
+  padding: 0.6rem 1.25rem;
+  background: var(--color-primary);
+  color: #ffffff;
+  border-radius: var(--radius-full);
   font-size: 0.8125rem;
   font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
   text-decoration: none;
-  transition: all 0.2s ease;
-  position: relative;
-  z-index: 2; /* So it's clickable above the Link overlay */
 }
 
-.contactBtn:hover {
-  background: var(--color-primary);
-  color: white;
-}
-
-@media (max-width: 768px) {
-  .imageWrapper {
-    aspect-ratio: 4 / 3;
-  }
-  .content {
-    padding: var(--space-xs) 2px;
-  }
-  .title {
-    font-size: 0.95rem;
-  }
-  .price {
-    font-size: 0.95rem;
-  }
-  .metaRow {
-    font-size: 0.8rem;
-  }
+.destCardBooking:hover {
+  background: var(--color-primary-active, #043a5c);
 }
