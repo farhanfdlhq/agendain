@@ -216,7 +216,9 @@ async function main() {
         itinerary: p.itinerary,
         fasilitas: p.fasilitas,
         termasuk: p.termasuk,
-        tidakTermasuk: p.tidakTermasuk
+        tidakTermasuk: p.tidakTermasuk,
+        status: p.status,
+        label: p.label
       },
       create: p
     })
