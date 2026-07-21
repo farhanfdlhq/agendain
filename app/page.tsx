@@ -64,7 +64,7 @@ async function HomeDataFetcher() {
   let homeSettings: any = {
     heroTitle: 'Jangan Cuma Jadi Wacana, Agendain Aja!',
     heroSubtitle: 'Dari tiket, hotel, sampai itinerary, semua udah kami siapkan. Kamu tinggal ajak teman dan siap berangkat.',
-    sectionOrder: 'why,destinations,testimonial,accordion,socialproof,faq',
+    sectionOrder: 'hero,why,destinations,testimonial,accordion,socialproof,faq',
   }
 
   try {
