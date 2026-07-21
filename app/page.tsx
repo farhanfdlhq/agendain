@@ -12,9 +12,9 @@ const DUMMY_PACKAGES = [
 ]
 
 const DUMMY_DESTINATIONS = [
-  { slug: 'prancis', nama: 'Prancis', foto: '/placeholder.webp', paketCount: 12 },
-  { slug: 'swiss', nama: 'Swiss', foto: '/placeholder.webp', paketCount: 8 },
-  { slug: 'italia', nama: 'Italia', foto: '/placeholder.webp', paketCount: 15 },
+  { slug: 'prancis', nama: 'Prancis', foto: '/placeholder.webp', openTripCount: 12 },
+  { slug: 'swiss', nama: 'Swiss', foto: '/placeholder.webp', openTripCount: 8 },
+  { slug: 'italia', nama: 'Italia', foto: '/placeholder.webp', openTripCount: 15 },
 ]
 
 import { Suspense } from 'react'
@@ -26,7 +26,7 @@ async function HomeDataFetcher() {
   let destinations: any[] = []
   
   try {
-    const dbPackages = await prisma.paket.findMany({
+    const dbPackages = await prisma.openTrip.findMany({
       where: { status: 'published' },
       take: 4,
       include: { destinasi: true }
@@ -45,12 +45,12 @@ async function HomeDataFetcher() {
     
     const dbDest = await prisma.destinasi.findMany({
       take: 3,
-      include: { _count: { select: { pakets: true } } }
+      include: { _count: { select: { openTrips: true } } }
     })
     
     destinations = dbDest.map((d: any) => ({
       ...d,
-      paketCount: d._count.pakets,
+      openTripCount: d._count.openTrips,
       foto: d.foto || DUMMY_DESTINATIONS[0].foto
     }))
     
@@ -70,7 +70,12 @@ async function HomeDataFetcher() {
   try {
     const setting = await prisma.setting.findUnique({ where: { key: 'home_settings' } })
     if (setting) {
-      homeSettings = { ...homeSettings, ...JSON.parse(setting.value) }
+      const parsedSettings = JSON.parse(setting.value)
+      // Fix for legacy database data
+      if (parsedSettings.sectionOrder && parsedSettings.sectionOrder.includes('packages')) {
+        parsedSettings.sectionOrder = 'hero,why,destinations,testimonial,accordion,socialproof,faq'
+      }
+      homeSettings = { ...homeSettings, ...parsedSettings }
     }
   } catch (error) {
     console.error('Failed to fetch home settings', error)

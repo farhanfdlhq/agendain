@@ -1,9 +1,13 @@
 const en: Record<string, string> = {
+  'nav.cta': 'Book Now!',
   'nav.home': 'Home',
   'nav.about': 'About Us',
   'nav.packages': 'Tour Packages',
+  'nav.openTrip': 'Open Trip',
   'nav.privateTrip': 'Private Trip',
   'nav.destinations': 'Destinations',
+  'nav.blog': 'Blog',
+  'nav.privacy': 'Privacy Policy',
   'nav.contact': 'Contact Us',
   'footer.mainMenu': 'Main Menu',
   'footer.help': 'Help',

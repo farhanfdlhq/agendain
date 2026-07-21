@@ -9,10 +9,10 @@ interface DestinationProps {
   slug: string
   nama: string
   foto: string
-  paketCount?: number
+  openTripCount?: number
 }
 
-export default function DestinationCard({ slug, nama, foto, paketCount = 0 }: DestinationProps) {
+export default function DestinationCard({ slug, nama, foto, openTripCount = 0 }: DestinationProps) {
   const { locale, translateData } = useTranslation()
   return (
     <Link href={`/destinasi/${slug}`} className={styles.card}>
@@ -30,8 +30,8 @@ export default function DestinationCard({ slug, nama, foto, paketCount = 0 }: De
       
       <div className={styles.content}>
         <h3 className={styles.title}>{translateData(nama)}</h3>
-        {paketCount > 0 && (
-          <span className={styles.subtitle}>{paketCount} {locale === 'en' ? 'Packages Available' : 'Paket Tersedia'}</span>
+        {openTripCount > 0 && (
+          <span className={styles.subtitle}>{openTripCount} {locale === 'en' ? 'Packages Available' : 'Open Trip Tersedia'}</span>
         )}
       </div>
     </Link>

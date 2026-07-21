@@ -1,25 +1,28 @@
 .destCard {
   display: flex;
   flex-direction: column;
-  background: var(--color-surface);
+  background: #ffffff;
   border-radius: 1.25rem;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  border: 1px solid #e5e7eb;
   text-decoration: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
+  padding: 0.75rem; /* The padding around the inner card */
 }
 
 .destCard:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
 }
 
 .destCardImageWrapper {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1.4;
   width: 100%;
   overflow: hidden;
+  border-radius: 0.75rem; /* Inner image rounding */
 }
 
 .image {
@@ -31,77 +34,98 @@
   transform: scale(1.05);
 }
 
+.locationBadge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
 .destCardBody {
-  padding: 1.5rem;
+  padding: 1rem 0.5rem 0.5rem 0.5rem;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
-.destCardTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-}
-
 .destCardName {
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-ink);
-}
-
-.destCardRating {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.destCardRatingStar {
-  color: #facc15;
-}
-
-.destCardRatingText {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--color-muted);
-}
-
-.destCardBottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
 }
 
 .destCardPriceWrapper {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .destCardPriceLabel {
   display: flex;
   flex-direction: column;
-  font-size: 0.625rem;
+  font-size: 0.6rem;
   font-weight: 600;
-  color: var(--color-muted);
+  color: #6b7280;
   line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .destCardPriceValue {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 800;
-  color: var(--color-ink);
+  color: #111827;
+}
+
+.scheduleList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.scheduleList li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.scheduleIcon {
+  color: #3b82f6; /* Blue circle */
+  flex-shrink: 0;
+}
+
+.destCardBottom {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
 }
 
 .destCardBooking {
-  padding: 0.6rem 1.25rem;
-  background: var(--color-primary);
+  padding: 0.5rem 1.25rem;
+  background: #0f3050; /* Dark blue matching the reference */
   color: #ffffff;
   border-radius: var(--radius-full);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
   border: none;
   cursor: pointer;
@@ -110,5 +134,5 @@
 }
 
 .destCardBooking:hover {
-  background: var(--color-primary-active, #043a5c);
+  background: #082038;
 }

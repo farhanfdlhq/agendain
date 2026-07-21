@@ -217,6 +217,7 @@ export default function RolesPermissionsPage() {
   if (loading) return <div className="flex h-64 items-center justify-center"><AirplaneLoader size={48} /></div>
 
   const isAllSelected = formData.permissions.includes('all')
+  const isSuperAdmin = editingId === 'super_admin'
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto py-4">
@@ -296,11 +297,11 @@ export default function RolesPermissionsPage() {
               <div className="grid sm:grid-cols-2 gap-4 mb-8">
                 <div className="grid gap-2">
                   <Label htmlFor="name" className="text-xs font-bold text-muted-foreground uppercase">Nama Role</Label>
-                  <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required placeholder="Contoh: Admin 2" className="rounded-lg" />
+                  <Input id="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required placeholder="Contoh: Admin 2" className="rounded-lg" disabled={isSuperAdmin} />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="desc" className="text-xs font-bold text-muted-foreground uppercase">Deskripsi</Label>
-                  <Input id="desc" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Penjelasan role" className="rounded-lg" />
+                  <Input id="desc" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Penjelasan role" className="rounded-lg" disabled={isSuperAdmin} />
                 </div>
               </div>
 
@@ -310,6 +311,7 @@ export default function RolesPermissionsPage() {
                   <Checkbox 
                     id="all-access" 
                     checked={isAllSelected}
+                    disabled={isSuperAdmin}
                     onCheckedChange={(c) => handleGlobalSelectAll(c as boolean)}
                     className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                   />
@@ -331,7 +333,7 @@ export default function RolesPermissionsPage() {
                           <Checkbox 
                             id={`group-${group.category}`} 
                             checked={isGroupSelected}
-                            disabled={isAllSelected}
+                            disabled={isAllSelected || isSuperAdmin}
                             onCheckedChange={(c) => handleGroupSelectAll(group.category, c as boolean)}
                           />
                           <label htmlFor={`group-${group.category}`} className="text-[10px] font-bold text-muted-foreground cursor-pointer uppercase">
@@ -345,7 +347,7 @@ export default function RolesPermissionsPage() {
                             <Checkbox 
                               id={`perm-${item.id}`} 
                               checked={isAllSelected || formData.permissions.includes(item.id)}
-                              disabled={isAllSelected}
+                              disabled={isAllSelected || isSuperAdmin}
                               onCheckedChange={(c) => handlePermissionChange(item.id, c as boolean)}
                               className="rounded-[4px] data-[state=checked]:bg-blue-600 border-zinc-300"
                             />
@@ -362,9 +364,9 @@ export default function RolesPermissionsPage() {
             </div>
 
             <DialogFooter className="px-6 py-4 border-t bg-muted/20 shrink-0">
-              <Button type="submit" disabled={isSaving} className="w-full rounded-xl bg-primary hover:bg-primary/90 font-bold h-12 text-base" style={{ color: '#ffffff' }}>
+              <Button type="submit" disabled={isSaving || isSuperAdmin} className="w-full rounded-xl bg-primary hover:bg-primary/90 font-bold h-12 text-base" style={{ color: '#ffffff' }}>
                 {isSaving ? <AirplaneLoader size={20} className="mr-2" /> : null}
-                Update Role
+                {isSuperAdmin ? 'Role System (Locked)' : 'Update Role'}
               </Button>
             </DialogFooter>
           </form>

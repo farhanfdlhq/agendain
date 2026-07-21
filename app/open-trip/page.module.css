@@ -1,0 +1,279 @@
+.page {
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.heroContainer {
+  max-width: 1320px;
+  margin: 1.5rem auto 0;
+  padding: 0 var(--space-lg);
+}
+
+.heroWrapper {
+  position: relative;
+  border-radius: 2rem;
+  overflow: hidden;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  background-image: url('/open_trip_hero.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(5,69,105,0.8) 0%, rgba(0,0,0,0.1) 100%);
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  color: white;
+  padding: 4rem;
+  max-width: 800px;
+}
+
+.heroTitle {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.textGold {
+  color: var(--color-dominant);
+}
+
+.statsWrapper {
+  max-width: 1000px;
+  margin: 2rem auto 0;
+  padding: 0 var(--space-lg);
+  position: relative;
+  z-index: 10;
+}
+
+.statsContainer {
+  display: flex;
+  background: #ffffff;
+  border: 1px solid #0f3050; /* Thin blue outline */
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  justify-content: space-between;
+}
+
+.statBox {
+  text-align: center;
+  flex: 1;
+  /* Removed the vertical border-right to match Image 1 */
+}
+
+.statBox h4 {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827; /* Dark almost black text for numbers */
+  margin-bottom: 0.25rem;
+}
+
+.statBox p {
+  font-size: 0.75rem;
+  color: #4b5563; /* Grey text */
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.content {
+  padding: 3rem 0 var(--space-section);
+}
+
+.filterBar {
+  display: flex;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.filterItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.filterLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-sm);
+  background: white;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  color: var(--color-ink);
+  outline: none;
+  min-width: 200px;
+  cursor: pointer;
+}
+
+.select:focus {
+  border-color: var(--color-primary);
+}
+
+.sectionHeader {
+  margin-bottom: 3rem;
+  text-align: left;
+}
+
+.sectionLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4b5563; /* Grey text */
+  margin-bottom: 0.75rem;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-weight: 500;
+  color: #111827; /* Dark black */
+  line-height: 1.2;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+/* CTA Banner */
+.ctaBannerWrapper {
+  padding: var(--space-xl) var(--space-lg);
+  max-width: 1280px;
+  margin: 0 auto var(--space-section);
+}
+
+.ctaBanner {
+  background: linear-gradient(90deg, #0284c7 0%, #0f3050 100%);
+  border-radius: 1.5rem;
+  padding: 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3rem;
+}
+
+.ctaLabel {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-dominant);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.ctaContent h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--color-on-primary);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.ctaContent p {
+  color: rgba(255,255,255,0.85);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.ctaActions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 280px;
+}
+
+.btnPrimary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #25D366; /* WhatsApp Green */
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btnPrimary:hover {
+  background: #128C7E;
+  transform: translateY(-2px);
+}
+
+.btnSecondary {
+  text-align: center;
+  color: rgba(255,255,255,0.8);
+  font-weight: 500;
+  text-decoration: underline;
+  padding: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btnSecondary:hover {
+  color: white;
+}
+
+@media (max-width: 744px) {
+  .filterBar {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+  
+  .select {
+    width: 100%;
+  }
+
+  .ctaBanner {
+    flex-direction: column;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .ctaActions {
+    width: 100%;
+  }
+
+  .statsContainer {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .statBox {
+    border-right: none;
+    border-bottom: 1px solid var(--color-hairline);
+    padding: 1rem;
+  }
+
+  .statBox:last-child {
+    border-bottom: none;
+  }
+}

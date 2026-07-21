@@ -3,16 +3,17 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, CheckCircle, Loader2 } from 'lucide-react'
+import { formatWhatsAppNumber } from '@/lib/utils'
 import styles from './BookingForm.module.css'
 
 type BookingFormProps = {
-  paketId: number
+  openTripId: number
   paketNama: string
   hargaString: string
   whatsappNumber: string
 }
 
-export default function BookingForm({ paketId, paketNama, hargaString, whatsappNumber }: BookingFormProps) {
+export default function BookingForm({ openTripId, paketNama, hargaString, whatsappNumber }: BookingFormProps) {
   const router = useRouter()
   
   // Step 0: Inline form, Step 1: Modal details, Step 2: Success
@@ -55,8 +56,8 @@ export default function BookingForm({ paketId, paketNama, hargaString, whatsappN
         body: JSON.stringify({
           nama: formData.nama,
           email: formData.email,
-          noWa: formData.noWa,
-          paketId: paketId,
+          noWa: formatWhatsAppNumber(formData.noWa),
+          openTripId: openTripId,
           tanggal: formData.tanggal,
           jumlahPax: Number(formData.jumlahPax),
           catatan: formData.catatan
@@ -73,11 +74,15 @@ export default function BookingForm({ paketId, paketNama, hargaString, whatsappN
     }
   }
 
+  const handleWaBlur = () => {
+    if (formData.noWa) {
+      setFormData(prev => ({ ...prev, noWa: formatWhatsAppNumber(prev.noWa) }))
+    }
+  }
+
   const closeDialog = () => {
     setStep(0)
   }
-
-  const formatWa = (phone: string) => phone.replace(/\D/g, '')
 
   return (
     <>
@@ -135,7 +140,7 @@ export default function BookingForm({ paketId, paketNama, hargaString, whatsappN
               {step === 1 && (
                 <div className={styles.modalBody}>
                   <h2>Lengkapi Data Pemesanan</h2>
-                  <p className={styles.subtitle}>Paket: <strong>{paketNama}</strong> <br/> Keberangkatan: <strong>{formData.tanggal}</strong> untuk <strong>{formData.jumlahPax} Pax</strong></p>
+                  <p className={styles.subtitle}>Open Trip: <strong>{paketNama}</strong> <br/> Keberangkatan: <strong>{formData.tanggal}</strong> untuk <strong>{formData.jumlahPax} Pax</strong></p>
                   
                   {error && <div className={styles.errorAlert}>{error}</div>}
 
@@ -154,7 +159,7 @@ export default function BookingForm({ paketId, paketNama, hargaString, whatsappN
                       </div>
                       <div className={styles.field}>
                         <label>No. WhatsApp</label>
-                        <input type="tel" name="noWa" required value={formData.noWa} onChange={handleChange} placeholder="08123456789" />
+                        <input type="tel" name="noWa" required value={formData.noWa} onChange={handleChange} onBlur={handleWaBlur} placeholder="08123456789" />
                       </div>
                     </div>
 
@@ -181,12 +186,12 @@ export default function BookingForm({ paketId, paketNama, hargaString, whatsappN
                     <CheckCircle size={64} color="var(--color-success)" />
                   </div>
                   <h2>Pesanan Berhasil Dicatat!</h2>
-                  <p>Terima kasih <strong>{formData.nama}</strong>. Kami telah menerima permintaan booking Anda untuk paket <strong>{paketNama}</strong>.</p>
+                  <p>Terima kasih <strong>{formData.nama}</strong>. Kami telah menerima permintaan booking Anda untuk open trip <strong>{paketNama}</strong>.</p>
                   <p>Tim kami akan segera menghubungi Anda melalui WhatsApp untuk proses pembayaran dan konfirmasi ketersediaan.</p>
                   
                   <div className={styles.successActions}>
                     <a 
-                      href={`https://wa.me/${formatWa(whatsappNumber)}?text=${encodeURIComponent(`Halo Agendain, saya ${formData.nama} telah melakukan booking untuk paket ${paketNama} pada ${formData.tanggal} sebanyak ${formData.jumlahPax} Pax. Saya ingin melanjutkan proses pembayaran.`)}`}
+                      href={`https://wa.me/${formatWhatsAppNumber(whatsappNumber)}?text=${encodeURIComponent(`Halo Agendain, saya ${formData.nama} telah melakukan booking untuk open trip ${paketNama} pada ${formData.tanggal} sebanyak ${formData.jumlahPax} Pax. Saya ingin melanjutkan proses pembayaran.`)}`}
                       target="_blank" 
                       rel="noreferrer" 
                       className={styles.btnSubmit}

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import FrontLayout from "@/components/FrontLayout/FrontLayout";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
+
+const montserrat = Montserrat({ subsets: ["latin"], variable: '--font-montserrat', display: 'swap' });
 
 import { prisma } from "@/lib/prisma"
 
@@ -8,8 +11,8 @@ import { unstable_cache } from "next/cache"
 
 const getSettings = unstable_cache(async () => {
   try {
-    const settingsArr: any[] = await prisma.$queryRaw`SELECT * FROM Setting`
-    return settingsArr.reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {})
+    const settingsArr = await prisma.setting.findMany()
+    return settingsArr.reduce((acc: any, curr: { key: string, value: string }) => ({ ...acc, [curr.key]: curr.value }), {})
   } catch (e) {
     console.error("Failed to fetch settings for layout", e)
     return {}
@@ -27,6 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import { Providers } from "@/components/Providers/Providers";
+import OfflineDetector from "@/components/ui/offline-detector";
 
 export default async function RootLayout({
   children,
@@ -63,8 +67,6 @@ export default async function RootLayout({
     }
   }
 
-  const fontUrl = `https://fonts.googleapis.com/css2?family=${theme.headingFont.replace(/ /g, '+')}:wght@300;400;500;600;700;800&family=${theme.bodyFont.replace(/ /g, '+')}:wght@300;400;500;600;700;800&display=swap`
-
   const generateScale = (colorName: string, hexCode: string) => `
     --color-${colorName}: ${hexCode} !important;
     --color-${colorName}-50: color-mix(in srgb, ${hexCode} 5%, white) !important;
@@ -80,11 +82,8 @@ export default async function RootLayout({
   `
 
   return (
-    <html lang="id" data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="id" data-scroll-behavior="smooth" className={montserrat.variable} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href={fontUrl} rel="stylesheet" />
         <style>{`
           :root {
             ${generateScale('primary', theme.colorPrimary)}
@@ -110,14 +109,15 @@ export default async function RootLayout({
             --color-footer-bg: ${theme.footerBackground} !important;
             --color-footer-text: ${theme.footerText} !important;
 
-            --font-display: '${theme.headingFont}', system-ui, sans-serif !important;
-            --font-body: '${theme.bodyFont}', system-ui, sans-serif !important;
+            --font-display: var(--font-montserrat), system-ui, sans-serif !important;
+            --font-body: var(--font-montserrat), system-ui, sans-serif !important;
             
             --radius-md: ${theme.borderRadius} !important;
           }
         `}</style>
       </head>
       <body suppressHydrationWarning>
+        <OfflineDetector />
         <Providers>
           <FrontLayout settings={settingsObj}>{children}</FrontLayout>
         </Providers>

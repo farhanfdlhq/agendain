@@ -250,63 +250,80 @@
   background: #ffffff;
 }
 
-.destHeader {
+.destWrapper {
+  background: #f5f6f8;
+  border-radius: 2.5rem;
+  padding: 4rem 3rem;
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 2.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
+  align-items: center;
+  gap: 3rem;
 }
 
+.destHeaderLeftWrapper {
+  display: flex;
+  flex-direction: column;
+  width: 28%;
+  flex-shrink: 0;
+  align-items: flex-start;
+}
 
 .destEyebrow {
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 0.875rem;
+  font-weight: 700;
   color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .destTitle {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
   font-weight: 800;
-  color: var(--color-primary);
-  line-height: 1.15;
+  color: #111827; /* Near black for maximum contrast */
+  line-height: 1.05;
+  margin-bottom: 2rem;
+  letter-spacing: -0.03em;
+  max-width: 10ch; /* Forces the Favorite Destination line break perfectly */
+}
+
+.destSubtitleSmall {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 2.5rem;
 }
 
 .destViewAll {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  border: 2px solid var(--color-primary);
-  border-radius: var(--radius-full);
-  color: var(--color-primary);
+  justify-content: center;
+  padding: 0.875rem 1.5rem;
+  border: 1px solid #1c1c1c;
+  background: transparent;
+  color: #1c1c1c;
   font-weight: 600;
   font-size: 0.9375rem;
   transition: all 0.25s;
   text-decoration: none;
+  width: fit-content;
 }
 
 .destViewAll:hover {
-  background: var(--color-primary);
+  background: #1c1c1c;
   color: #ffffff;
 }
 
 .destGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: 1.25rem;
+  flex: 1;
 }
 
 .destCard {
-  border-radius: var(--radius-lg);
+  border-radius: 1.5rem;
   overflow: hidden;
   background: #ffffff;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
   transition: transform 0.3s, box-shadow 0.3s;
   text-decoration: none;
   display: flex;
@@ -315,12 +332,12 @@
 
 .destCard:hover {
   transform: translateY(-6px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.1);
 }
 
 .destCardImageWrapper {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 4 / 3.5;
   overflow: hidden;
 }
 
@@ -332,14 +349,14 @@
 }
 
 .destCard:hover .destCardImageWrapper img {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
 .destCardBody {
-  padding: 1.25rem 1.5rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
   flex: 1;
   background: #ffffff;
 }
@@ -352,9 +369,9 @@
 
 .destCardName {
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-ink);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
 }
 
 .destCardRating {
@@ -368,9 +385,9 @@
 }
 
 .destCardRatingText {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: var(--color-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-ink);
 }
 
 .destCardBottom {
@@ -390,32 +407,61 @@
   display: flex;
   flex-direction: column;
   font-size: 0.625rem;
-  font-weight: 600;
-  color: var(--color-muted);
-  line-height: 1.1;
+  font-weight: 500;
+  color: #4b5563; /* Accessible gray */
+  line-height: 1.2;
 }
 
 .destCardPriceValue {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 800;
-  color: var(--color-ink);
+  color: #111827;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
 .destCardBooking {
-  padding: 0.6rem 1.25rem;
-  background: var(--color-primary);
+  padding: 0.5rem 1.25rem;
+  background: #0f3050; /* Deep blue from image */
   color: #ffffff;
   border-radius: var(--radius-full);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
   text-decoration: none;
 }
 
 .destCardBooking:hover {
-  background: var(--color-primary-active, #043a5c);
+  background: #081e35;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1024px) {
+  .destWrapper {
+    flex-direction: column;
+    padding: 3rem 2rem;
+  }
+  .destHeaderLeftWrapper {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+  .destTitle {
+    word-spacing: normal;
+    margin-bottom: 2rem;
+  }
+  .destGrid {
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .destGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 
@@ -577,32 +623,61 @@
   gap: 0.5rem;
 }
 
-.accordionSectionTitle {
-  font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
-  font-weight: 800;
-  color: var(--color-primary);
-  margin-bottom: 0.25rem;
-  line-height: 1.2;
+.accordionHeaderCenter {
+  text-align: center;
+  margin-bottom: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.accordionSubtitle {
-  font-size: 1.125rem;
-  color: #8b7355;
-  font-style: italic;
+.accordionEyebrowPill {
+  display: inline-flex;
+  padding: 0.375rem 1.25rem;
+  border: 1px solid var(--color-primary); /* Blue border */
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary); /* Blue text */
   margin-bottom: 1.5rem;
 }
 
+.accordionTitleCenter {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #111827; /* Solid black/dark gray */
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.accordionSubtitleCenter {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  background: linear-gradient(90deg, #facc15 0%, var(--color-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  font-style: italic;
+  margin-top: 0;
+  display: inline-block;
+}
+
 .accordionItem {
-  background: #f3f4f6;
-  border-radius: var(--radius-md);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.5rem;
   overflow: hidden;
   transition: all 0.3s;
+  margin-bottom: 1.25rem;
 }
 
 .accordionItemActive {
   composes: accordionItem;
-  background: #edf1f5;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
 }
 
 .accordionTrigger {
@@ -615,31 +690,33 @@
   border: none;
   cursor: pointer;
   font-family: var(--font-body);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-ink);
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: var(--color-primary); /* Dark teal/blue */
   text-align: left;
   gap: 1rem;
 }
 
 .accordionIcon {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--color-primary);
-  color: #ffffff;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: var(--color-primary); /* Blue cross */
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 400;
   transition: transform 0.3s;
 }
 
 .accordionIconOpen {
   composes: accordionIcon;
   transform: rotate(45deg);
+  border-color: var(--color-primary);
 }
 
 .accordionBody {
@@ -650,10 +727,12 @@
 }
 
 .accordionRight {
-  border-radius: var(--radius-lg);
+  border-radius: 1.5rem;
   overflow: hidden;
   position: relative;
-  min-height: 500px;
+  min-height: 550px;
+  border: 8px solid #ffffff;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
 }
 
 .accordionRight img {
@@ -664,18 +743,23 @@
   inset: 0;
 }
 
+.accordionBtnWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
 .accordionBottomBtn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
-  background: linear-gradient(135deg, var(--color-dominant) 0%, #0a7ab5 100%);
+  padding: 0.875rem 2rem;
+  background: linear-gradient(90deg, #facc15 0%, var(--color-primary) 100%);
   color: #ffffff;
-  font-weight: 700;
-  border-radius: var(--radius-full);
+  font-weight: 600;
+  border-radius: 9999px;
   border: none;
   cursor: pointer;
-  margin-top: 1.5rem;
   font-size: 0.9375rem;
   transition: transform 0.2s, box-shadow 0.2s;
   text-decoration: none;
@@ -683,7 +767,7 @@
 
 .accordionBottomBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 24px rgba(15,48,80,0.25);
 }
 
 

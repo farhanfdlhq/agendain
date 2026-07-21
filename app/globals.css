@@ -13,6 +13,17 @@
     background: var(--color-canvas);
     -webkit-font-smoothing: antialiased;
   }
+
+  .non-home-main {
+    padding-top: 80px;
+    background-color: var(--color-canvas); /* Default */
+    min-height: 100vh;
+  }
+  
+  /* Force white background on specific pages if needed */
+  .non-home-main:has(.page) {
+    background-color: #ffffff;
+  }
 }
 
 @layer base {

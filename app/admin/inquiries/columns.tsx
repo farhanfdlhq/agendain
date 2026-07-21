@@ -25,7 +25,7 @@ export type Inquiry = {
   pesan: string
   sudahDibalas: boolean
   createdAt: string
-  paket?: { nama: string }
+  openTrip?: { nama: string }
 }
 
 const formatDate = (dateString: string) => {
@@ -137,9 +137,9 @@ export const createInquiryColumns = (
       const inq = row.original
       return (
         <div className="flex flex-col gap-2 max-w-[300px]">
-          {inq.paket && (
+          {inq.openTrip && (
             <Badge variant="outline" className="w-fit text-xs bg-muted/50">
-              Terkait: {inq.paket.nama}
+              Terkait: {inq.openTrip.nama}
             </Badge>
           )}
           <p className="text-sm line-clamp-3 text-muted-foreground" title={inq.pesan}>{inq.pesan}</p>

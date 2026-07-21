@@ -199,7 +199,7 @@
   }
   
   .submitBtn::after {
-    content: 'Cari Paket';
+    content: 'Cari Open Trip';
     font-weight: 600;
   }
 }

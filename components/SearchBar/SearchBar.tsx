@@ -76,7 +76,7 @@ export default function SearchBar() {
     if (destinasi) params.append('destinasi', destinasi)
     if (waktu) params.append('waktu', waktu)
     if (pax) params.append('pax', pax)
-    router.push(`/paket?${params.toString()}`)
+    router.push(`/open-trip?${params.toString()}`)
   }
 
   return (
@@ -208,7 +208,7 @@ export default function SearchBar() {
         )}
       </div>
       
-      <button type="submit" className={styles.submitBtn} aria-label="Cari Paket">
+      <button type="submit" className={styles.submitBtn} aria-label="Cari Open Trip">
         <Search size={20} strokeWidth={2.5} />
       </button>
     </form>

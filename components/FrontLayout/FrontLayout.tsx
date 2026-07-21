@@ -14,10 +14,12 @@ export default function FrontLayout({ children, settings }: { children: React.Re
     return <main>{children}</main>
   }
 
+  const isHome = pathname === '/'
+
   return (
     <LanguageProvider>
       <Navbar settings={settings} />
-      <main>{children}</main>
+      <main className={!isHome ? "non-home-main" : ""}>{children}</main>
       <Footer settings={settings} />
       <FloatingWhatsApp />
     </LanguageProvider>

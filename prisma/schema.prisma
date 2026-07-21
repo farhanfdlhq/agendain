@@ -18,10 +18,10 @@ model Destinasi {
   matauang     String?
   waktuTerbaik String?
   infoVisa     String? @db.Text
-  pakets       Paket[]
+  openTrips OpenTrip[]
 }
 
-model Paket {
+model OpenTrip {
   id            Int       @id @default(autoincrement())
   nama          String
   slug          String    @unique
@@ -45,6 +45,9 @@ model Paket {
   inquiries           Inquiry[]
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+
+  @@index([status, createdAt])
+  @@index([destinasiId])
 }
 
 model Booking {
@@ -52,14 +55,17 @@ model Booking {
   nama      String
   email     String
   noWa      String
-  paketId   Int
-  paket     Paket    @relation(fields: [paketId], references: [id])
+  openTripId Int
+  openTrip OpenTrip @relation(fields: [openTripId], references: [id])
   tanggal   DateTime
   jumlahPax Int
   total     Decimal  @db.Decimal(15, 2)
   status    String   @default("pending")
   catatan   String?  @db.Text
   createdAt DateTime @default(now())
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 model Inquiry {
@@ -68,10 +74,12 @@ model Inquiry {
   email        String
   noWa         String?
   pesan        String   @db.Text
-  paketId      Int?
-  paket        Paket?   @relation(fields: [paketId], references: [id])
+  openTripId Int?
+  openTrip OpenTrip? @relation(fields: [openTripId], references: [id])
   sudahDibalas Boolean  @default(false)
   createdAt    DateTime @default(now())
+
+  @@index([sudahDibalas, createdAt])
 }
 
 model PrivateTrip {

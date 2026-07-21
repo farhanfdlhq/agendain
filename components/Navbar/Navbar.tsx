@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import LanguageToggle from '@/components/LanguageToggle/LanguageToggle'
+import { generateWhatsAppLink } from '@/lib/utils'
 import styles from './Navbar.module.css'
 
 export default function Navbar({ settings }: { settings?: any }) {
@@ -14,12 +15,12 @@ export default function Navbar({ settings }: { settings?: any }) {
   const pathname = usePathname()
 
   const links = [
-    { href: '/', label: 'Beranda' },
-    { href: '/tentang', label: 'Tentang Kami' },
-    { href: '/paket', label: 'Open Trip' },
-    { href: '/private-trip', label: 'Private Trip' },
-    { href: '/blog', label: 'Blog' },
-    { href: '/privacy-policy', label: 'Privacy Policy' },
+    { href: '/', label: t('nav.home') },
+    { href: '/tentang', label: t('nav.about') },
+    { href: '/open-trip', label: t('nav.openTrip') },
+    { href: '/private-trip', label: t('nav.privateTrip') },
+    { href: '/blog', label: t('nav.blog') },
+    { href: '/privacy-policy', label: t('nav.privacy') },
   ]
   
   // Track scroll for navbar transparency
@@ -81,12 +82,12 @@ export default function Navbar({ settings }: { settings?: any }) {
           </div>
           
           <a 
-            href={`https://wa.me/${settings?.whatsapp_number?.replace(/\D/g, '') || "6281234567890"}?text=${encodeURIComponent(settings?.whatsapp_message || "Halo, saya ingin bertanya mengenai paket wisata.")}`} 
+            href={generateWhatsAppLink(settings?.whatsapp_number, settings?.whatsapp_message)} 
             target="_blank" 
             rel="noopener noreferrer" 
             className={styles.cta}
           >
-            Agendain aja!
+            {t('nav.cta')}
           </a>
         </div>
         
@@ -138,12 +139,12 @@ export default function Navbar({ settings }: { settings?: any }) {
                   <LanguageToggle />
                 </div>
                 <a 
-                  href={`https://wa.me/${settings?.whatsapp_number?.replace(/\D/g, '') || "6281234567890"}?text=${encodeURIComponent(settings?.whatsapp_message || "Halo, saya ingin bertanya mengenai paket wisata.")}`} 
+                  href={generateWhatsAppLink(settings?.whatsapp_number, settings?.whatsapp_message)} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className={styles.mobileCta}
                 >
-                  Agendain aja!
+                  {t('nav.cta')}
                 </a>
               </motion.div>
             </motion.div>

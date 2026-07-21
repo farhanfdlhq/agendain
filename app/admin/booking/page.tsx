@@ -122,7 +122,7 @@ export default function AdminBookingPage() {
     const searchLower = deferredSearch.toLowerCase()
     const matchesSearch = b.nama.toLowerCase().includes(searchLower) || 
                           b.email.toLowerCase().includes(searchLower) ||
-                          (b.paket?.nama || "").toLowerCase().includes(searchLower)
+                          (b.openTrip?.nama || "").toLowerCase().includes(searchLower)
     const matchesStatus = statusFilter === "all" || b.status === statusFilter
     
     return matchesSearch && matchesStatus
@@ -233,7 +233,7 @@ export default function AdminBookingPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
               type="text" 
-              placeholder="Cari nama, email, atau paket..." 
+              placeholder="Cari nama, email, atau openTrip..." 
               className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -299,7 +299,7 @@ export default function AdminBookingPage() {
               
               <div className="flex flex-col gap-1">
                 <span className="text-sm text-muted-foreground">Paket Wisata</span>
-                <strong className="font-medium">{selectedBooking.paket?.nama || "Paket Dihapus"}</strong>
+                <strong className="font-medium">{selectedBooking.openTrip?.nama || "Paket Dihapus"}</strong>
               </div>
               
               <div className="grid grid-cols-2 gap-4">

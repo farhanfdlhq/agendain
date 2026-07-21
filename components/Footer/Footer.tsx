@@ -46,14 +46,14 @@ export default function Footer({ settings }: { settings?: any }) {
           <div className={styles.columns} suppressHydrationWarning>
             {/* Navigasi */}
             <div className={styles.col} suppressHydrationWarning>
-              <h3 className={styles.colTitle}>Navigasi</h3>
+              <h3 className={styles.colTitle}>{t('footer.mainMenu') || 'Navigasi'}</h3>
               <ul className={styles.links}>
-                <li><Link href="/">Beranda</Link></li>
-                <li><Link href="/tentang">Tentang Kami</Link></li>
-                <li><Link href="/paket">Open Trip</Link></li>
-                <li><Link href="/private-trip">Private Trip</Link></li>
-                <li><Link href="/blog">Blog</Link></li>
-                <li><Link href="/privacy-policy">Privacy Policy</Link></li>
+                <li><Link href="/">{t('nav.home')}</Link></li>
+                <li><Link href="/tentang">{t('nav.about')}</Link></li>
+                <li><Link href="/open-trip">{t('nav.openTrip')}</Link></li>
+                <li><Link href="/private-trip">{t('nav.privateTrip')}</Link></li>
+                <li><Link href="/blog">{t('nav.blog')}</Link></li>
+                <li><Link href="/privacy-policy">{t('nav.privacy')}</Link></li>
               </ul>
             </div>
 

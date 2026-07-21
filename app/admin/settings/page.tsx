@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { MediaPicker } from "@/components/ui/media-picker"
+import { formatWhatsAppNumber } from "@/lib/utils"
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
@@ -26,32 +28,7 @@ export default function SettingsPage() {
     global_opsi_penjemputan: "Bandara Internasional Soekarno Hatta (Terminal 3).\nPenjemputan area Jakarta (sesuai konfirmasi).\nSilakan kumpul 4 jam sebelum keberangkatan."
   })
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setUploadingLogo(true)
-    const uploadData = new FormData()
-    uploadData.append('file', file)
-
-    try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: uploadData,
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setFormData(prev => ({ ...prev, site_logo: data.url }))
-        toast.success("Logo berhasil diunggah!")
-      } else {
-        toast.error("Upload gagal: " + data.error)
-      }
-    } catch (err) {
-      toast.error("Terjadi kesalahan saat upload gambar.")
-    } finally {
-      setUploadingLogo(false)
-    }
-  }
+  // Logo upload is handled internally by MediaPicker
 
   useEffect(() => {
     fetch("/api/settings")
@@ -68,6 +45,12 @@ export default function SettingsPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleWhatsAppBlur = () => {
+    if (formData.whatsapp_number) {
+      setFormData(prev => ({ ...prev, whatsapp_number: formatWhatsAppNumber(prev.whatsapp_number) }))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -143,34 +126,13 @@ export default function SettingsPage() {
             
             <div className="space-y-2">
               <Label>Logo Website</Label>
-              <div className="flex items-center gap-4">
-                {formData.site_logo && formData.site_logo !== "/logo.png" ? (
-                  <div className="w-16 h-16 rounded-md overflow-hidden bg-muted/20 border flex items-center justify-center shrink-0">
-                    <img src={formData.site_logo} alt="Logo" className="w-full h-full object-contain p-1" />
-                  </div>
-                ) : (
-                  <div className="w-16 h-16 rounded-md bg-muted/20 border flex items-center justify-center shrink-0">
-                    <LayoutTemplate size={24} className="text-muted-foreground" />
-                  </div>
-                )}
-                <div className="flex flex-col gap-1 w-full">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="hidden"
-                    id="logo-upload"
-                  />
-                  <Button variant="outline" type="button" asChild className="w-full justify-center">
-                    <label htmlFor="logo-upload" className="cursor-pointer">
-                      {uploadingLogo ? <AirplaneLoader size={16} className="mr-2" /> : null}
-                      {uploadingLogo ? "Mengunggah..." : "Pilih Gambar Logo"}
-                    </label>
-                  </Button>
-                  <p className="text-[11px] text-muted-foreground mt-1">
-                    Disarankan gambar PNG berlatar transparan (rasio 1:1 atau 3:1).
-                  </p>
-                </div>
+              <div className="flex flex-col gap-2">
+                <MediaPicker 
+                  value={formData.site_logo}
+                  onChange={(url) => setFormData(prev => ({ ...prev, site_logo: url }))}
+                  label="Pilih Logo"
+                  description="Disarankan gambar PNG berlatar transparan."
+                />
               </div>
             </div>
             
@@ -212,9 +174,10 @@ export default function SettingsPage() {
                 name="whatsapp_number"
                 value={formData.whatsapp_number}
                 onChange={handleChange}
-                placeholder="6281234567890"
+                onBlur={handleWhatsAppBlur}
+                placeholder="0819-9526-4565"
               />
-              <p className="text-[11px] text-muted-foreground">Gunakan format 62xxx tanpa spasi atau plus.</p>
+              <p className="text-[11px] text-muted-foreground">Otomatis diformat ke awalan 62 saat Anda klik di luar kolom.</p>
             </div>
             
             <div className="space-y-2">

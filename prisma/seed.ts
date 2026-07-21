@@ -1,9 +1,41 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
   console.log('Seeding Destinasi & Paket Wisata...')
+
+  // Seed Super Admin
+  const hashedPassword = await bcrypt.hash('password', 10)
+  await prisma.adminUser.upsert({
+    where: { email: 'admin@agendain.com' },
+    update: {
+      password: hashedPassword,
+      role: 'super_admin'
+    },
+    create: {
+      email: 'admin@agendain.com',
+      password: hashedPassword,
+      nama: 'Super Admin',
+      role: 'super_admin'
+    }
+  })
+  console.log('Super Admin user created: admin@agendain.com')
+
+  // Default Settings
+  await prisma.setting.upsert({
+    where: { key: 'contact_whatsapp' },
+    update: {},
+    create: { key: 'contact_whatsapp', value: '+62 819-9526-4565' }
+  })
+  
+  await prisma.setting.upsert({
+    where: { key: 'site_logo' },
+    update: {},
+    create: { key: 'site_logo', value: '/uploads/Logo ( White Version ).png' }
+  })
+  console.log('Default settings created.')
 
   const destinasiEropaBarat = await prisma.destinasi.upsert({
     where: { slug: 'eropa-barat' },
@@ -101,7 +133,7 @@ async function main() {
   ]
 
   for (const p of paketData) {
-    await prisma.paket.upsert({
+    await prisma.openTrip.upsert({
       where: { slug: p.slug },
       update: {},
       create: p

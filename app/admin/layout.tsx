@@ -6,7 +6,6 @@ import Link from "next/link"
 import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
-import { Toaster } from "react-hot-toast"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -84,7 +83,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       heading: 'MAIN MENU',
       items: [
         { name: 'Overview', href: '/admin', icon: <LayoutDashboard size={18} />, minRole: 'editor' },
-        { name: 'Paket Wisata', href: '/admin/paket', icon: <Package size={18} />, minRole: 'editor' },
+        { name: 'Paket Wisata', href: '/admin/open-trip', icon: <Package size={18} />, minRole: 'editor' },
         { name: 'Destinasi', href: '/admin/destinasi', icon: <Map size={18} />, minRole: 'editor' },
         { name: 'Pesanan', href: '/admin/booking', icon: <CalendarDays size={18} />, minRole: 'admin' },
         { name: 'Inquiries', href: '/admin/inquiries', icon: <MessageSquare size={18} />, minRole: 'admin', badge: 'Baru' },
@@ -249,10 +248,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex text-foreground font-sans selection:bg-primary/20">
-      <Toaster position="bottom-right" toastOptions={{ 
-        className: 'rounded-xl shadow-lg border border-border/50',
-        style: { background: 'var(--card)', color: 'var(--foreground)' } 
-      }} />
       
       {/* Desktop Sidebar */}
       <aside className={`hidden lg:block shrink-0 h-screen sticky top-0 z-30 transition-all duration-300 ease-in-out relative ${isSidebarCollapsed ? 'w-[80px]' : 'w-[280px]'}`}>

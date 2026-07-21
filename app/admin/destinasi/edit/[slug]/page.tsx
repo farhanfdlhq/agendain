@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { MediaPicker } from "@/components/ui/media-picker"
 
 export default function EditDestinasiPage(props: { params: Promise<{ slug: string }> }) {
   const params = use(props.params)
@@ -61,33 +62,7 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
     }
   }
 
-  const [uploadingImage, setUploadingImage] = useState(false)
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setUploadingImage(true)
-    const uploadData = new FormData()
-    uploadData.append('file', file)
-
-    try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: uploadData,
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setFormData(prev => ({ ...prev, fotoUrl: data.url }))
-      } else {
-        toast.error("Upload gagal: " + data.error)
-      }
-    } catch (err) {
-      toast.error("Terjadi kesalahan saat upload gambar.")
-    } finally {
-      setUploadingImage(false)
-    }
-  }
+  // handleImageUpload is now handled internally by MediaPicker.
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -154,7 +129,7 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
             <p className="text-muted-foreground text-sm mt-1">Perbarui detail informasi kota atau negara tujuan.</p>
           </div>
         </div>
-        <Button onClick={handleSubmit} disabled={loading || uploadingImage} className="w-full sm:w-auto">
+        <Button onClick={handleSubmit} disabled={loading} className="w-full sm:w-auto">
           {loading ? <AirplaneLoader size={18} className="mr-2" /> : <Save size={18} className="mr-2" />}
           Simpan Perubahan
         </Button>
@@ -210,40 +185,10 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Upload Foto Utama</label>
-                <div className="flex flex-col gap-4">
-                  <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      id="upload-foto"
-                    />
-                    <label htmlFor="upload-foto" className="cursor-pointer flex flex-col items-center gap-2">
-                      {uploadingImage ? (
-                        <AirplaneLoader size={32} />
-                      ) : (
-                        <ImageIcon size={32} className="text-muted-foreground" />
-                      )}
-                      <span className="font-medium text-sm text-foreground">
-                        {uploadingImage ? 'Mengupload gambar...' : 'Klik untuk memilih gambar baru'}
-                      </span>
-                      <span className="text-xs text-muted-foreground">PNG, JPG atau WEBP (Maks. 5MB)</span>
-                    </label>
-                  </div>
-                  
-                  {formData.fotoUrl && (
-                    <div className="flex items-center gap-4 p-3 bg-muted/20 border rounded-lg">
-                      <div className="w-16 h-16 rounded-md overflow-hidden relative shrink-0">
-                        <img src={formData.fotoUrl} alt="Preview" className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex flex-col overflow-hidden">
-                        <p className="text-xs text-muted-foreground truncate">{formData.fotoUrl}</p>
-                        <p className="text-sm font-medium text-emerald-600 dark:text-emerald-500">Berhasil diupload</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <MediaPicker 
+                  value={formData.fotoUrl} 
+                  onChange={(url) => setFormData(prev => ({ ...prev, fotoUrl: url }))} 
+                />
               </div>
             </CardContent>
           </Card>

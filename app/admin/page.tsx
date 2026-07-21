@@ -11,14 +11,14 @@ import { Suspense } from 'react'
 import AirplaneLoader from '@/components/ui/airplane-loader'
 
 async function AdminDashboardDataFetcher({ session }: { session: any }) {
-  const [paketCount, destinasiCount, inquiryCount, recentInquiries, recentPrivateTrips, bookingPendingCount, paidBookings, recentBookings] = await Promise.all([
-    prisma.paket.count(),
+  const [openTripCount, destinasiCount, inquiryCount, recentInquiries, recentPrivateTrips, bookingPendingCount, paidBookings, recentBookings] = await Promise.all([
+    prisma.openTrip.count(),
     prisma.destinasi.count(),
     prisma.inquiry.count({ where: { sudahDibalas: false } }),
     prisma.inquiry.findMany({
       take: 3,
       orderBy: { createdAt: 'desc' },
-      include: { paket: true }
+      include: { openTrip: true }
     }),
     prisma.privateTrip.findMany({
       take: 2,
@@ -29,7 +29,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
     prisma.booking.findMany({
       take: 4,
       orderBy: { createdAt: 'desc' },
-      include: { paket: true }
+      include: { openTrip: true }
     })
   ])
 
@@ -87,7 +87,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
         </Card>
 
         <Card className="relative overflow-hidden group hover:border-primary/50 hover:bg-muted/30 transition-all duration-300 border-border bg-background rounded-xl shadow-none">
-          <Link href="/admin/paket" className="absolute inset-0 z-10" />
+          <Link href="/admin/open-trip" className="absolute inset-0 z-10" />
           <CardHeader className="relative z-20 pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
               Total Paket
@@ -95,7 +95,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
             <Package className="w-4 h-4 text-primary" />
           </CardHeader>
           <CardContent className="relative z-20">
-            <div className="text-4xl font-black tracking-tight text-foreground">{paketCount}</div>
+            <div className="text-4xl font-black tracking-tight text-foreground">{openTripCount}</div>
           </CardContent>
         </Card>
 
@@ -127,7 +127,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
               </Link>
             </Button>
             <Button variant="outline" className="justify-start h-12 text-sm font-medium rounded-lg border-border hover:bg-muted/50 hover:text-foreground transition-colors group shadow-none" asChild>
-              <Link href="/admin/paket/baru">
+              <Link href="/admin/open-trip/baru">
                 <Plus className="mr-3 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                 Tambah Paket Wisata
               </Link>
@@ -166,9 +166,9 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
                     <div className="flex-1 min-w-0 pt-0.5">
                       <p className="text-sm font-medium leading-relaxed text-foreground">
                         <span className="font-semibold">{b.nama}</span>
-                        {b.type === 'inquiry' && (b.paket ? <span className="text-muted-foreground"> bertanya tentang <span className="font-medium text-foreground">{b.paket.nama}</span></span> : <span className="text-muted-foreground"> mengirim pesan baru</span>)}
+                        {b.type === 'inquiry' && (b.paket ? <span className="text-muted-foreground"> bertanya tentang <span className="font-medium text-foreground">{b.openTrip.nama}</span></span> : <span className="text-muted-foreground"> mengirim pesan baru</span>)}
                         {b.type === 'privatetrip' && <span className="text-muted-foreground"> mengajukan Private Trip ke <span className="font-medium text-foreground">{b.destinasi}</span></span>}
-                        {b.type === 'booking' && <span className="text-muted-foreground"> membooking <span className="font-medium text-foreground">{b.paket?.nama || "Terhapus"}</span> <Badge variant="outline" className="ml-1 font-medium bg-muted/30 shadow-none border-border">{b.jumlahPax} pax</Badge></span>}
+                        {b.type === 'booking' && <span className="text-muted-foreground"> membooking <span className="font-medium text-foreground">{b.openTrip?.nama || "Terhapus"}</span> <Badge variant="outline" className="ml-1 font-medium bg-muted/30 shadow-none border-border">{b.jumlahPax} pax</Badge></span>}
                       </p>
                       <div className="text-[11px] font-medium text-muted-foreground mt-1 uppercase tracking-wider">
                         {new Date(b.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}

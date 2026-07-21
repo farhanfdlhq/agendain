@@ -2,62 +2,80 @@
 
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { ArrowUp, ArrowDown, GripVertical, Save, Globe, Type } from 'lucide-react'
+import { ArrowUp, ArrowDown, GripVertical, Save, Globe, Type, FolderOpen, Trash2, X } from 'lucide-react'
 import { Reorder } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { useConfirm } from "@/components/Providers/ConfirmProvider"
+import { MediaPicker } from "@/components/ui/media-picker"
 
 export default function HomeCMSPage() {
   const [data, setData] = useState<any>({
-    heroTitle: '',
-    heroTitle_en: '',
-    heroTitleColor: '',
-    heroSubtitle: '',
-    heroSubtitle_en: '',
-    heroSubtitleColor: '',
-    featuresTitle: '',
-    featuresTitle_en: '',
-    featuresTitleColor: '',
-    ctaTitle: '',
-    ctaTitle_en: '',
-    ctaTitleColor: '',
-    ctaText: '',
-    ctaText_en: '',
-    ctaTextColor: '',
-    ctaBtn1Text: '',
-    ctaBtn1Text_en: '',
-    ctaBtn1Link: '',
-    ctaBtn1Color: '',
-    ctaBtn1HoverColor: '',
-    ctaBtn1TextColor: '',
-    ctaBtn2Text: '',
-    ctaBtn2Text_en: '',
-    ctaBtn2Link: '',
-    ctaBtn2Color: '',
-    ctaBtn2HoverColor: '',
-    ctaBtn2TextColor: '',
-    sectionOrder: 'packages,destinations,features,cta'
+    // Hero
+    heroTitle: '', heroTitle_en: '',
+    heroSubtitle: '', heroSubtitle_en: '',
+    
+    // Why
+    whyTitleMain: '', whyTitleMain_en: '',
+    whyTitleSub: '', whyTitleSub_en: '',
+
+    // Destinations
+    destEyebrow: '', destEyebrow_en: '',
+    destTitle: '', destTitle_en: '',
+
+    // Testimonial
+    testiBadge: '', testiBadge_en: '',
+    testiTitle: '', testiTitle_en: '',
+
+    // Accordion
+    accTitle: '', accTitle_en: '',
+    accSubtitle: '', accSubtitle_en: '',
+
+    // Social Proof
+    socialName: '', socialName_en: '',
+    socialQuote: '', socialQuote_en: '',
+    socialTitle: '', socialTitle_en: '',
+    socialSubtitle: '', socialSubtitle_en: '',
+
+    // FAQ
+    faqTitle: '', faqTitle_en: '',
+    faqSubtitle: '', faqSubtitle_en: '',
+
+    sectionOrder: 'hero,why,destinations,testimonial,accordion,socialproof,faq'
   })
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
 
+  const { showConfirm } = useConfirm()
+
   const SECTION_NAMES: Record<string, string> = {
-    'packages': 'Paket Unggulan',
+    'hero': 'Beranda Utama (Hero)',
+    'why': 'Mengapa Memilih Kami',
     'destinations': 'Destinasi Favorit',
-    'features': 'Fitur Keunggulan',
-    'cta': 'Ajakan Bertindak (CTA)'
+    'testimonial': 'Sudut Pandang (Testimonial)',
+    'accordion': 'Lihat, Hirup, Simpan (Accordion)',
+    'socialproof': 'Kutipan Pelanggan (Social Proof)',
+    'faq': 'Tanya Jawab (FAQ)'
   }
 
   useEffect(() => {
     fetch('/api/settings/home')
       .then(res => res.json())
       .then(res => {
-        if (!res.error) setData((prev: any) => ({ ...prev, ...res }))
+        if (!res.error) {
+          // Fix for legacy database data
+          if (res.sectionOrder && res.sectionOrder.includes('packages')) {
+            res.sectionOrder = 'hero,why,destinations,testimonial,accordion,socialproof,faq'
+          }
+          setData((prev: any) => ({ ...prev, ...res }))
+        }
         setFetching(false)
       })
       .catch(() => {
@@ -67,7 +85,7 @@ export default function HomeCMSPage() {
   }, [])
 
   const handleMoveSection = (index: number, direction: 'up' | 'down') => {
-    const order = (data.sectionOrder || 'packages,destinations,features,cta').split(',')
+    const order = (data.sectionOrder || 'hero,why,destinations,testimonial,accordion,socialproof,faq').split(',')
     if (direction === 'up' && index > 0) {
       const temp = order[index - 1]
       order[index - 1] = order[index]
@@ -105,20 +123,38 @@ export default function HomeCMSPage() {
     setData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const renderImageInput = (label: string, fieldName: string, placeholder = '') => {
+    // Sharing the exact same field across both languages for images
+    const activeFieldName = fieldName; 
+    return (
+      <div className="space-y-3">
+        <Label className="flex items-center gap-2">
+          {label}
+        </Label>
+        <MediaPicker 
+          value={data[activeFieldName] || ''}
+          onChange={(url) => setData((prev: any) => ({ ...prev, [activeFieldName]: url }))}
+          label="Pilih Gambar"
+          description={placeholder ? `Disarankan seperti: ${placeholder}` : undefined}
+        />
+      </div>
+    )
+  }
+
   const renderSectionOrder = () => {
-    const orderArray = (data.sectionOrder || 'packages,destinations,features,cta').split(',')
+    const orderArray = (data.sectionOrder || 'hero,why,destinations,testimonial,accordion,socialproof,faq').split(',')
     
     const handleReorder = (newOrder: string[]) => {
       setData((prev: any) => ({ ...prev, sectionOrder: newOrder.join(',') }))
     }
 
     return (
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>Pengaturan Urutan Bagian (Section Order)</CardTitle>
+      <Card className="mt-8 border shadow-sm">
+        <CardHeader className="p-4 border-b bg-muted/20">
+          <CardTitle className="text-lg">Pengaturan Urutan Bagian (Section Order)</CardTitle>
           <CardDescription>Geser ke atas atau bawah untuk mengatur urutan tampilan bagian di halaman beranda. Anda juga bisa menarik kotak (drag and drop) untuk menyusunnya dengan cepat!</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <Reorder.Group axis="y" values={orderArray} onReorder={handleReorder} className="flex flex-col gap-2 list-none p-0 m-0">
             {orderArray.map((key: string, idx: number) => (
               <Reorder.Item key={key} value={key} className="relative cursor-grab" whileDrag={{ scale: 1.02, zIndex: 10 }}>
@@ -159,80 +195,9 @@ export default function HomeCMSPage() {
     )
   }
 
-  const renderColorSelect = (label: string, fieldName: string) => {
-    const value = data[fieldName] as string || '';
-    
-    let activeType = 'custom';
-    if (value === '' || value === 'var(--color-primary)') activeType = 'primary';
-    else if (value === 'var(--color-dominant)') activeType = 'secondary';
-    
-    const customValue = activeType === 'custom' ? value : '#000000';
-    
-    return (
-      <div className="space-y-3 pt-2">
-        <Label>{label}</Label>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button 
-            type="button"
-            variant={activeType === 'primary' ? 'default' : 'outline'}
-            className={`h-9 px-3 rounded-full ${activeType === 'primary' ? 'ring-2 ring-primary ring-offset-2' : ''}`}
-            onClick={() => handleChange({ target: { name: fieldName, value: 'var(--color-primary)' } } as any)}
-          >
-            <span className="w-4 h-4 rounded-full bg-[var(--color-primary)] mr-2 border border-black/10 dark:border-white/10"></span>
-            Primer
-          </Button>
-          
-          <Button 
-            type="button"
-            variant={activeType === 'secondary' ? 'default' : 'outline'}
-            className={`h-9 px-3 rounded-full ${activeType === 'secondary' ? 'ring-2 ring-primary ring-offset-2' : ''}`}
-            onClick={() => handleChange({ target: { name: fieldName, value: 'var(--color-dominant)' } } as any)}
-          >
-            <span className="w-4 h-4 rounded-full bg-[var(--color-dominant)] mr-2 border border-black/10 dark:border-white/10"></span>
-            Sekunder
-          </Button>
-          
-          <div className="flex items-center gap-2">
-            <Button 
-              type="button"
-              variant={activeType === 'custom' ? 'default' : 'outline'}
-              className={`h-9 px-3 rounded-full ${activeType === 'custom' ? 'ring-2 ring-primary ring-offset-2' : ''}`}
-              onClick={() => {
-                if (activeType !== 'custom') {
-                  handleChange({ target: { name: fieldName, value: '#000000' } } as any)
-                }
-              }}
-            >
-              <span className="w-4 h-4 rounded-full mr-2" style={{ background: 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)' }}></span>
-              Kustom
-            </Button>
-            
-            {activeType === 'custom' && (
-              <div className="flex items-center gap-2 bg-muted p-1 rounded-md">
-                <input 
-                  type="color" 
-                  name={fieldName}
-                  value={customValue}
-                  onChange={handleChange}
-                  className="w-7 h-7 rounded cursor-pointer border-0 p-0"
-                />
-                <Input 
-                  type="text" 
-                  name={fieldName}
-                  value={customValue}
-                  onChange={handleChange}
-                  className="h-7 w-24 text-xs font-mono"
-                  placeholder="#000000"
-                />
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    )
-  }
 
-  const renderTextInput = (label: string, fieldName: string, isTextarea = false) => {
+
+  const renderTextInput = (label: string, fieldName: string, isTextarea = false, placeholder = '') => {
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
     return (
       <div className="space-y-2">
@@ -247,7 +212,7 @@ export default function HomeCMSPage() {
             name={activeFieldName} 
             value={data[activeFieldName] || ''} 
             onChange={handleChange} 
-            required={activeTab === 'id'}
+            placeholder={placeholder}
             rows={3}
           />
         ) : (
@@ -256,11 +221,100 @@ export default function HomeCMSPage() {
             name={activeFieldName} 
             value={data[activeFieldName] || ''} 
             onChange={handleChange} 
-            required={activeTab === 'id'} 
+            placeholder={placeholder}
           />
         )}
       </div>
     )
+  }
+
+  const renderArrayEditor = (
+    label: string, 
+    fieldName: string, 
+    fields: { name: string; label: string; isTextarea?: boolean; isImage?: boolean }[]
+  ) => {
+    const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
+    const items = data[activeFieldName] || [];
+
+    const handleItemChange = (index: number, field: string, value: string) => {
+      const newItems = [...items];
+      newItems[index] = { ...newItems[index], [field]: value };
+      setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
+    };
+
+    const handleAddItem = () => {
+      const newItem = fields.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {});
+      setData((prev: any) => ({ ...prev, [activeFieldName]: [...items, newItem] }));
+    };
+
+    const handleRemoveItem = (index: number) => {
+      const newItems = items.filter((_: any, i: number) => i !== index);
+      setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
+    };
+
+    return (
+      <div className="space-y-4 pt-4 border-t mt-4">
+        <div className="flex items-center justify-between">
+          <Label className="flex items-center gap-2 font-bold text-base">
+            {label}
+            <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-medium uppercase tracking-wider">{activeTab}</span>
+          </Label>
+          <Button type="button" variant="outline" size="sm" onClick={handleAddItem} className="rounded-full h-8 text-xs">
+            + Tambah Item
+          </Button>
+        </div>
+        
+        {items.length === 0 && (
+          <div className="text-sm text-muted-foreground italic bg-muted/50 p-4 rounded-lg text-center border border-dashed">
+            Belum ada data kustom. Sistem menggunakan data bawaan (Default).
+          </div>
+        )}
+
+        <div className="space-y-4">
+          {items.map((item: any, index: number) => (
+            <div key={index} className="p-4 border rounded-xl bg-card relative shadow-sm">
+              <Button 
+                type="button" 
+                variant="destructive" 
+                size="icon" 
+                className="absolute top-3 right-3 h-6 w-6 rounded-full"
+                onClick={() => handleRemoveItem(index)}
+              >
+                &times;
+              </Button>
+              <h4 className="text-sm font-semibold mb-3">Item #{index + 1}</h4>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {fields.map((f) => (
+                  <div key={f.name} className={`space-y-1.5 ${f.isTextarea ? 'sm:col-span-2' : ''}`}>
+                    <Label className="text-xs">{f.label}</Label>
+                    {f.isImage ? (
+                      <div className="space-y-3 items-start flex flex-col">
+                        <MediaPicker 
+                          value={item[f.name] || ''}
+                          onChange={(url) => handleItemChange(index, f.name, url)}
+                          label="Pilih Media"
+                        />
+                      </div>
+                    ) : f.isTextarea ? (
+                      <Textarea 
+                        value={item[f.name] || ''} 
+                        onChange={(e) => handleItemChange(index, f.name, e.target.value)}
+                        className="min-h-[80px]"
+                      />
+                    ) : (
+                      <Input 
+                        value={item[f.name] || ''} 
+                        onChange={(e) => handleItemChange(index, f.name, e.target.value)} 
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (fetching) return (
@@ -270,35 +324,38 @@ export default function HomeCMSPage() {
   )
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto py-4">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto py-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground">CMS Halaman Beranda</h2>
-          <p className="text-muted-foreground text-sm">Kelola teks dan warna untuk elemen-elemen di halaman depan.</p>
+          <p className="text-muted-foreground text-sm mt-1">Kelola teks dan warna untuk elemen-elemen di halaman depan.</p>
         </div>
         <Button 
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full sm:w-auto"
+          className="w-full sm:w-auto bg-primary hover:bg-primary/90 font-semibold rounded-full px-6"
+          style={{ color: '#ffffff' }}
         >
           {loading ? <AirplaneLoader size={18} className="mr-2" /> : <Save size={18} className="mr-2" />}
           Simpan Perubahan
         </Button>
       </div>
       
-      <div className="flex gap-2 border-b pb-4">
+      <div className="flex gap-2">
         <Button 
+          type="button"
           variant={activeTab === 'id' ? 'default' : 'outline'}
           onClick={() => setActiveTab('id')}
-          className="gap-2 rounded-full"
+          className="gap-2 rounded-full font-medium"
         >
           <img src="https://flagcdn.com/w20/id.png" alt="ID" width={20} height={15} className="rounded-sm object-cover" /> 
           Indonesia
         </Button>
         <Button 
+          type="button"
           variant={activeTab === 'en' ? 'default' : 'outline'}
           onClick={() => setActiveTab('en')}
-          className="gap-2 rounded-full"
+          className="gap-2 rounded-full font-medium"
         >
           <img src="https://flagcdn.com/w20/gb.png" alt="EN" width={20} height={15} className="rounded-sm object-cover" /> 
           English
@@ -307,66 +364,127 @@ export default function HomeCMSPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Bagian Hero (Beranda Utama)</CardTitle>
+        <Card className="border shadow-sm">
+          <CardHeader className="p-4 border-b bg-muted/20">
+            <CardTitle className="text-lg">Bagian Hero (Beranda Utama)</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Judul Utama (Hero)', 'heroTitle')}
-              {renderColorSelect('Warna Teks Judul Utama', 'heroTitleColor')}
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2">
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', true)}
               {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true)}
-              {renderColorSelect('Warna Teks Sub-judul', 'heroSubtitleColor')}
+            </div>
+            {renderImageInput('URL Gambar Background', 'heroBgImage', '/hero-coastal.webp')}
+          </CardContent>
+        </Card>
+
+        <Card className="border shadow-sm">
+          <CardHeader className="p-4 border-b bg-muted/20">
+            <CardTitle className="text-lg">Bagian Mengapa Memilih Kami (Why Choose Us)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-6">
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderTextInput('Eyebrow (Teks Kecil Atas)', 'whyTitleMain')}
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'whyTitleSub')}
+            </div>
+            {renderArrayEditor('Kartu Keunggulan', 'whyItems', [
+              { name: 'number', label: 'Angka/Nomor (Contoh: 01, 02)' },
+              { name: 'image', label: 'URL Ikon/Gambar', isImage: true },
+              { name: 'title', label: 'Judul' },
+              { name: 'desc', label: 'Deskripsi Singkat', isTextarea: true }
+            ])}
+          </CardContent>
+        </Card>
+
+        <Card className="border shadow-sm">
+          <CardHeader className="p-4 border-b bg-muted/20">
+            <CardTitle className="text-lg">Bagian Destinasi Favorit</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6 sm:grid-cols-2 pt-6">
+            {renderTextInput('Eyebrow (Teks Kecil Atas)', 'destEyebrow')}
+            {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'destTitle')}
+          </CardContent>
+        </Card>
+
+        <Card className="border shadow-sm">
+          <CardHeader className="p-4 border-b bg-muted/20">
+            <CardTitle className="text-lg">Bagian Testimonial (Sudut Pandang)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-6">
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderTextInput('Badge / Tagline', 'testiBadge')}
+              {renderTextInput('Kutipan Judul (Bisa pakai <span>Italia</span>)', 'testiTitle')}
+            </div>
+            
+            <div className="space-y-4 pt-4 border-t mt-4">
+              <Label className="font-bold text-base">URL Gambar Galeri</Label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {renderImageInput('Gambar 1 (Kiri Atas)', 'galleryImg1')}
+                {renderImageInput('Gambar 2 (Kiri Bawah)', 'galleryImg2')}
+                {renderImageInput('Gambar 3 (Tengah - Besar)', 'galleryImg3')}
+                {renderImageInput('Gambar 4 (Kanan Atas)', 'galleryImg4')}
+                {renderImageInput('Gambar 5 (Kanan Bawah)', 'galleryImg5')}
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Bagian Fitur Keunggulan</CardTitle>
+        <Card className="border shadow-sm">
+          <CardHeader className="p-4 border-b bg-muted/20">
+            <CardTitle className="text-lg">Bagian Accordion (Lihat, Hirup, Simpan)</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-6 sm:grid-cols-2">
-            {renderTextInput('Judul Keunggulan (Features)', 'featuresTitle')}
-            {renderColorSelect('Warna Teks Judul Fitur', 'featuresTitleColor')}
+          <CardContent className="space-y-6 pt-6">
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle')}
+              {renderTextInput('Deskripsi Subtitle', 'accSubtitle', true)}
+            </div>
+            {renderImageInput('URL Gambar (Kanan)', 'accImage', '/accordion-street.webp')}
+            
+            {renderArrayEditor('Item Accordion', 'accItems', [
+              { name: 'title', label: 'Judul Pertanyaan/Topik' },
+              { name: 'body', label: 'Deskripsi Jawaban', isTextarea: true }
+            ])}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Bagian Ajakan Bertindak (CTA)</CardTitle>
+        <Card className="border shadow-sm">
+          <CardHeader className="p-4 border-b bg-muted/20">
+            <CardTitle className="text-lg">Bagian Bukti Sosial (Social Proof)</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Judul Ajakan Bertindak (CTA)', 'ctaTitle')}
-              {renderColorSelect('Warna Teks Judul CTA', 'ctaTitleColor')}
+              {renderTextInput('Nama Tokoh/Pelanggan', 'socialName')}
+              {renderTextInput('Judul Sorotan Utama', 'socialTitle', true)}
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Deskripsi Singkat CTA', 'ctaText', true)}
-              {renderColorSelect('Warna Teks Deskripsi CTA', 'ctaTextColor')}
+              {renderTextInput('Kutipan Lengkap', 'socialQuote', true)}
+              {renderTextInput('Deskripsi Subtitle', 'socialSubtitle', true)}
+            </div>
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderImageInput('URL Gambar Tokoh (Kiri)', 'socialImage', '/el-rumi-syifa.webp')}
+              {renderImageInput('URL Gambar Background (Kanan)', 'socialBgImg', '/dest-italy.webp')}
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 mt-4 pt-4 border-t">
-              <div className="space-y-4 bg-muted/20 p-4 rounded-xl border">
-                <h4 className="font-semibold text-foreground">Pengaturan Tombol 1 (Primary)</h4>
-                {renderTextInput('Label Tombol', 'ctaBtn1Text')}
-                <div className="space-y-4 pt-2">
-                  {renderColorSelect('Warna Background', 'ctaBtn1Color')}
-                  {renderColorSelect('Warna Hover', 'ctaBtn1HoverColor')}
-                  {renderColorSelect('Warna Label (Teks)', 'ctaBtn1TextColor')}
-                </div>
-              </div>
-              <div className="space-y-4 bg-muted/20 p-4 rounded-xl border">
-                <h4 className="font-semibold text-foreground">Pengaturan Tombol 2 (Secondary)</h4>
-                {renderTextInput('Label Tombol', 'ctaBtn2Text')}
-                <div className="space-y-4 pt-2">
-                  {renderColorSelect('Warna Background', 'ctaBtn2Color')}
-                  {renderColorSelect('Warna Hover', 'ctaBtn2HoverColor')}
-                  {renderColorSelect('Warna Label (Teks)', 'ctaBtn2TextColor')}
-                </div>
-              </div>
+            {renderArrayEditor('Kutipan Testimoni Slider', 'testiItems', [
+              { name: 'name', label: 'Nama Pelanggan' },
+              { name: 'text', label: 'Teks Kutipan Testimoni', isTextarea: true }
+            ])}
+          </CardContent>
+        </Card>
+
+        <Card className="border shadow-sm">
+          <CardHeader className="p-4 border-b bg-muted/20">
+            <CardTitle className="text-lg">Bagian Tanya Jawab (FAQ)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6 pt-6">
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle')}
+              {renderTextInput('Teks Pendek (CTA WhatsApp)', 'faqSubtitle')}
             </div>
+
+            {renderArrayEditor('Daftar FAQ', 'faqItems', [
+              { name: 'q', label: 'Pertanyaan (Q)' },
+              { name: 'a', label: 'Jawaban (A)', isTextarea: true }
+            ])}
           </CardContent>
         </Card>
 

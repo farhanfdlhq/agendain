@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Star } from 'lucide-react'
+import { MapPin, Circle } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import styles from './PackageCard.module.css'
 
@@ -17,8 +17,8 @@ interface PackageProps {
   label?: string | null
 }
 
-export default function PackageCard({ slug, nama, harga, durasi, destinasi, fotoThumbnail, label }: PackageProps) {
-  const { t, locale, translateData } = useTranslation()
+export default function PackageCard({ slug, nama, harga, durasi, destinasi, fotoThumbnail }: PackageProps) {
+  const { t, translateData } = useTranslation()
 
   // Format harga to IDR in a shorter way, e.g. 18 Juta if possible, else full format
   let formattedHarga = ''
@@ -33,8 +33,18 @@ export default function PackageCard({ slug, nama, harga, durasi, destinasi, foto
     }).format(harga)
   }
 
+  // Format durasi
+  const malam = durasi > 1 ? durasi - 2 : durasi - 1;
+  const durasiText = `${durasi} Hari ${malam > 0 ? malam : 0} Malam`;
+
+  // Parse title: in the db it might be "Eksplorasi Eropa Barat", but the user wants it to look like "Roma".
+  // For the sake of the card's visual parity with the mockup, we will use the first word or the provided name.
+  // We can just use `nama`, but the mockup specifically shows short titles like "Roma", "Matterhorn", "Venesia".
+  // Since we use the DB data, we'll render `nama` directly.
+  const displayTitle = nama.length > 25 ? nama.substring(0, 25) + '...' : nama;
+
   return (
-    <Link href={`/paket/${slug}`} className={styles.destCard} suppressHydrationWarning aria-label={`Lihat detail paket ${nama}`}>
+    <Link href={`/open-trip/${slug}`} className={styles.destCard} suppressHydrationWarning aria-label={`Lihat detail paket ${nama}`}>
       <div className={styles.destCardImageWrapper} suppressHydrationWarning>
         <Image 
           src={fotoThumbnail || '/placeholder.webp'} 
@@ -44,25 +54,44 @@ export default function PackageCard({ slug, nama, harga, durasi, destinasi, foto
           className={styles.image} 
           loading="lazy"
         />
-      </div>
-      <div className={styles.destCardBody} suppressHydrationWarning>
-        <div className={styles.destCardTop} suppressHydrationWarning>
-          <h3 className={styles.destCardName}>{translateData(destinasi?.nama) || nama}</h3>
-          <span className={styles.destCardRating}>
-            <Star size={12} fill="#f59e0b" className={styles.destCardRatingStar} />
-            <span className={styles.destCardRatingText}>5/5</span>
-          </span>
+        <div className={styles.locationBadge}>
+          <MapPin size={12} strokeWidth={2.5} />
+          <span>{translateData(destinasi?.nama) || 'Eropa'}</span>
         </div>
-        <div className={styles.destCardBottom} suppressHydrationWarning>
-          <div className={styles.destCardPriceWrapper}>
-            <div className={styles.destCardPriceLabel}>
-              {t('home.dest.startFrom').split(' ').map((word: string, i: number) => (
-                <span key={i}>{word}</span>
-              ))}
-            </div>
-            <span className={styles.destCardPriceValue}>{formattedHarga}</span>
+      </div>
+      
+      <div className={styles.destCardBody} suppressHydrationWarning>
+        <h3 className={styles.destCardName}>{displayTitle}</h3>
+        
+        <div className={styles.destCardPriceWrapper}>
+          <div className={styles.destCardPriceLabel}>
+            <span>Start</span>
+            <span>From</span>
           </div>
-          <span className={styles.destCardBooking}>Booking</span>
+          <span className={styles.destCardPriceValue}>{formattedHarga}</span>
+        </div>
+
+        <ul className={styles.scheduleList}>
+          <li>
+            <Circle size={10} className={styles.scheduleIcon} />
+            {durasiText}
+          </li>
+          <li>
+            <Circle size={10} className={styles.scheduleIcon} />
+            Spring 11 April | 23 Mei
+          </li>
+          <li>
+            <Circle size={10} className={styles.scheduleIcon} />
+            Summer 6 Juni - 19 Sept
+          </li>
+          <li>
+            <Circle size={10} className={styles.scheduleIcon} />
+            Autumn 17 Okt - 28 Nov
+          </li>
+        </ul>
+
+        <div className={styles.destCardBottom} suppressHydrationWarning>
+          <span className={styles.destCardBooking}>Hubungi Kami</span>
         </div>
       </div>
     </Link>

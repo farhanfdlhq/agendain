@@ -6,10 +6,10 @@ import { revalidatePath } from "next/cache"
 
 export async function GET() {
   try {
-    const settings: any[] = await prisma.$queryRaw`SELECT * FROM Setting`
+    const settings = await prisma.setting.findMany()
     
     // Convert array of {key, value} to object
-    const settingsObj = settings.reduce((acc: any, curr: any) => {
+    const settingsObj = settings.reduce((acc: any, curr: { key: string, value: string }) => {
       acc[curr.key] = curr.value
       return acc
     }, {})
@@ -34,7 +34,11 @@ export async function POST(req: Request) {
     // Upsert each setting using raw query to bypass generated types issue
     const promises = Object.entries(data).map(([key, value]) => {
       if (typeof value !== 'string') return Promise.resolve()
-      return prisma.$executeRaw`INSERT INTO Setting (\`key\`, \`value\`) VALUES (${key}, ${value}) ON DUPLICATE KEY UPDATE \`value\` = ${value}`
+      return prisma.setting.upsert({
+        where: { key },
+        update: { value },
+        create: { key, value }
+      })
     })
 
     await Promise.all(promises)

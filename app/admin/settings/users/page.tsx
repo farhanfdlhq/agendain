@@ -230,7 +230,7 @@ export default function UserManagementPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="w-40 rounded-xl">
                             <DropdownMenuItem onClick={() => handleOpenDialog(u)}>Edit User</DropdownMenuItem>
-                            {!isYou && (
+                            {!isYou && u.role !== 'super_admin' && (
                               <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(u.id)}>Hapus User</DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
@@ -272,7 +272,7 @@ export default function UserManagementPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="role">Peran Akses (Role)</Label>
-                <Select value={formData.role} onValueChange={(val) => setFormData({...formData, role: val})}>
+                <Select value={formData.role} onValueChange={(val) => setFormData({...formData, role: val})} disabled={editingId ? users.find(u => u.id === editingId)?.role === 'super_admin' : false}>
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih Role" />
                   </SelectTrigger>

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { MediaPicker } from "@/components/ui/media-picker"
 
 export default function TambahDestinasiPage() {
   const router = useRouter()
@@ -32,33 +33,7 @@ export default function TambahDestinasiPage() {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const [uploadingImage, setUploadingImage] = useState(false)
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setUploadingImage(true)
-    const uploadData = new FormData()
-    uploadData.append('file', file)
-
-    try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: uploadData,
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setFormData(prev => ({ ...prev, foto: data.url }))
-      } else {
-        toast.error("Upload gagal: " + data.error)
-      }
-    } catch (err) {
-      toast.error("Terjadi kesalahan saat upload gambar.")
-    } finally {
-      setUploadingImage(false)
-    }
-  }
+  // handleImageUpload is now handled internally by MediaPicker.
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -144,40 +119,10 @@ export default function TambahDestinasiPage() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Upload Foto Utama</label>
-                <div className="flex flex-col gap-4">
-                  <div className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center bg-muted/20 hover:bg-muted/40 transition-colors">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      id="upload-foto"
-                    />
-                    <label htmlFor="upload-foto" className="cursor-pointer flex flex-col items-center gap-2">
-                      {uploadingImage ? (
-                        <AirplaneLoader size={32} />
-                      ) : (
-                        <ImageIcon size={32} className="text-muted-foreground" />
-                      )}
-                      <span className="font-medium text-sm text-foreground">
-                        {uploadingImage ? 'Mengupload gambar...' : 'Klik untuk memilih gambar'}
-                      </span>
-                      <span className="text-xs text-muted-foreground">PNG, JPG atau WEBP (Maks. 5MB)</span>
-                    </label>
-                  </div>
-                  
-                  {formData.foto && (
-                    <div className="flex items-center gap-4 p-3 bg-muted/20 border rounded-lg">
-                      <div className="w-16 h-16 rounded-md overflow-hidden relative shrink-0">
-                        <img src={formData.foto} alt="Preview" className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex flex-col overflow-hidden">
-                        <p className="text-xs text-muted-foreground truncate">{formData.foto}</p>
-                        <p className="text-sm font-medium text-emerald-600 dark:text-emerald-500">Berhasil diupload</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <MediaPicker 
+                  value={formData.foto} 
+                  onChange={(url) => setFormData(prev => ({ ...prev, foto: url }))} 
+                />
               </div>
             </CardContent>
           </Card>

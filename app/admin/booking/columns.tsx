@@ -16,7 +16,7 @@ export type Booking = {
   jumlahPax: number
   total: number
   status: string
-  paket?: { nama: string }
+  openTrip?: { nama: string }
 }
 
 const formatDate = (dateString: string) => {
@@ -82,7 +82,7 @@ export const createColumns = (
     accessorKey: "paket",
     header: "Paket",
     cell: ({ row }) => {
-      const paketNama = row.original.paket?.nama || "Paket Dihapus"
+      const paketNama = row.original.openTrip?.nama || "Paket Dihapus"
       return (
         <Badge variant="secondary" className="font-normal bg-muted hover:bg-muted whitespace-nowrap">
           {paketNama}
