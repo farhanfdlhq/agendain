@@ -71,8 +71,13 @@ export default function HomeCMSPage() {
       .then(res => {
         if (!res.error) {
           // Fix for legacy database data
-          if (res.sectionOrder && res.sectionOrder.includes('packages')) {
-            res.sectionOrder = 'hero,why,destinations,testimonial,accordion,socialproof,faq'
+          if (res.sectionOrder) {
+            if (!res.sectionOrder.includes('hero')) {
+              res.sectionOrder = 'hero,' + res.sectionOrder
+            }
+            if (res.sectionOrder.includes('packages')) {
+              res.sectionOrder = res.sectionOrder.replace('packages,', '').replace(',packages', '').replace('packages', '')
+            }
           }
           setData((prev: any) => ({ ...prev, ...res }))
         }

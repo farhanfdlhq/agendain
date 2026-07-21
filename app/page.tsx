@@ -72,8 +72,13 @@ async function HomeDataFetcher() {
     if (setting) {
       const parsedSettings = JSON.parse(setting.value)
       // Fix for legacy database data
-      if (parsedSettings.sectionOrder && parsedSettings.sectionOrder.includes('packages')) {
-        parsedSettings.sectionOrder = 'hero,why,destinations,testimonial,accordion,socialproof,faq'
+      if (parsedSettings.sectionOrder) {
+        if (!parsedSettings.sectionOrder.includes('hero')) {
+          parsedSettings.sectionOrder = 'hero,' + parsedSettings.sectionOrder
+        }
+        if (parsedSettings.sectionOrder.includes('packages')) {
+          parsedSettings.sectionOrder = parsedSettings.sectionOrder.replace('packages,', '').replace(',packages', '').replace('packages', '')
+        }
       }
       homeSettings = { ...homeSettings, ...parsedSettings }
     }
