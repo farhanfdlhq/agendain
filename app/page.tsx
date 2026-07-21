@@ -27,7 +27,7 @@ async function HomeDataFetcher() {
   
   try {
     const dbPackages = await prisma.openTrip.findMany({
-      where: { status: 'published' },
+      where: { status: { in: ['published', 'publish'] } },
       take: 4,
       include: { destinasi: true }
     })
@@ -35,24 +35,39 @@ async function HomeDataFetcher() {
     // Transform foto from JSON
     packages = dbPackages.map((p: any) => {
       const foto = p.foto as any;
+      const firstFoto = Array.isArray(foto) ? foto[0] : foto;
       return {
         ...p,
         harga: Number(p.harga),
-        fotoThumbnail: foto?.thumb || foto?.medium || DUMMY_PACKAGES[0].fotoThumbnail,
+        fotoThumbnail: firstFoto?.thumb || firstFoto?.medium || (typeof firstFoto === 'string' ? firstFoto : DUMMY_PACKAGES[0].fotoThumbnail),
         label: p.label || null
       }
     })
     
     const dbDest = await prisma.destinasi.findMany({
       take: 3,
-      include: { _count: { select: { openTrips: true } } }
+      include: { 
+        openTrips: {
+          select: { harga: true },
+          where: { status: { in: ['published', 'publish'] } }
+        } 
+      }
     })
     
-    destinations = dbDest.map((d: any) => ({
-      ...d,
-      openTripCount: d._count.openTrips,
-      foto: d.foto || DUMMY_DESTINATIONS[0].foto
-    }))
+    destinations = dbDest.map((d: any) => {
+      const minPrice = d.openTrips.length > 0 
+        ? Math.min(...d.openTrips.map((ot: any) => Number(ot.harga))) 
+        : null;
+        
+      const { openTrips, ...rest } = d;
+
+      return {
+        ...rest,
+        openTripCount: d.openTrips.length,
+        minPrice: minPrice,
+        foto: d.foto || DUMMY_DESTINATIONS[0].foto
+      }
+    })
     
   } catch (error) {
     console.error('DB fetch failed, using dummy data', error)

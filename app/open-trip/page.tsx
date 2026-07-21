@@ -13,7 +13,7 @@ export default async function PaketPage({
   const urutkanFilter = params?.urutkan as string
   
   // Build query
-  const where: any = { status: 'published' }
+  const where: any = { status: { in: ['published', 'publish'] } }
   if (destinasiFilter) {
     where.destinasi = {
       nama: {
@@ -55,10 +55,11 @@ export default async function PaketPage({
     
     packages = dbPackages.map((p: any) => {
       const foto = p.foto as any;
+      const firstFoto = Array.isArray(foto) ? foto[0] : foto;
       return {
         ...p,
         harga: Number(p.harga),
-        fotoThumbnail: foto?.thumb || foto?.medium || '/placeholder.webp'
+        fotoThumbnail: firstFoto?.thumb || firstFoto?.medium || (typeof firstFoto === 'string' ? firstFoto : '/placeholder.webp')
       }
     })
   } catch (error) {

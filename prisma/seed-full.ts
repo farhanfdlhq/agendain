@@ -46,7 +46,7 @@ async function main() {
       slug: 'eropa-barat',
       negara: 'Prancis, Swiss, Italia',
       deskripsi: 'Kumpulan negara eksotis di Eropa Barat.',
-      foto: '/placeholder.webp',
+      foto: '/uploads/seed/paris.png',
     }
   })
 
@@ -59,7 +59,7 @@ async function main() {
       slug: 'skandinavia',
       negara: 'Norwegia, Swedia',
       deskripsi: 'Pesona salju dan fenomena alam di Eropa Utara.',
-      foto: '/placeholder.webp',
+      foto: '/uploads/seed/aurora.png',
     }
   })
 
@@ -72,7 +72,7 @@ async function main() {
       slug: 'turki',
       negara: 'Turki',
       deskripsi: 'Negara lintas benua dengan kekayaan sejarah peradaban Islam.',
-      foto: '/placeholder.webp',
+      foto: '/uploads/seed/turki.png',
     }
   })
 
@@ -84,7 +84,7 @@ async function main() {
       harga: 28500000,
       durasi: 10,
       destinasiId: destinasiEropaBarat.id,
-      foto: ['/placeholder.webp', '/placeholder.webp'],
+      foto: [{ thumb: '/uploads/seed/paris.png', medium: '/uploads/seed/paris.png', full: '/uploads/seed/paris.png' }],
       itinerary: [
         { hari: 1, judul: 'Keberangkatan Jakarta - Paris', deskripsi: 'Berkumpul di Bandara Internasional Soekarno Hatta 4 jam sebelum keberangkatan. Proses check-in dan imigrasi, kemudian penerbangan malam menuju Paris (CDG).' },
         { hari: 2, judul: 'Tiba di Paris & City Tour', deskripsi: 'Tiba di Paris pada pagi hari. Langsung memulai city tour mengunjungi ikon kota Paris: Menara Eiffel (Photo Stop di Trocadero), Arc de Triomphe, Champs-Élysées, dan menikmati suasana Sungai Seine dari Bateaux Mouches Cruise. Check-in hotel untuk beristirahat.' },
@@ -132,7 +132,7 @@ async function main() {
       harga: 35000000,
       durasi: 8,
       destinasiId: destinasiSkandinavia.id,
-      foto: ['/placeholder.webp'],
+      foto: [{ thumb: '/uploads/seed/aurora.png', medium: '/uploads/seed/aurora.png', full: '/uploads/seed/aurora.png' }],
       itinerary: [
         { hari: 1, judul: 'Jakarta - Oslo', deskripsi: 'Keberangkatan dari Jakarta dengan penerbangan transit menuju Oslo, ibu kota Norwegia.' },
         { hari: 2, judul: 'Oslo City Tour', deskripsi: 'Tiba di Oslo. Kunjungan ke Vigeland Sculpture Park, taman patung terbesar di dunia oleh satu seniman, dan berfoto di Oslo Opera House.' },
@@ -173,7 +173,7 @@ async function main() {
       harga: 18900000,
       durasi: 7,
       destinasiId: destinasiTurki.id,
-      foto: ['/placeholder.webp'],
+      foto: [{ thumb: '/uploads/seed/turki.png', medium: '/uploads/seed/turki.png', full: '/uploads/seed/turki.png' }],
       itinerary: [
         { hari: 1, judul: 'Jakarta - Istanbul', deskripsi: 'Berkumpul di Bandara Soekarno Hatta untuk penerbangan direct/transit menuju Istanbul. Setibanya di Istanbul, Anda akan dijemput oleh Guide Lokal kami.' },
         { hari: 2, judul: 'Istanbul Historical Tour', deskripsi: 'Memulai hari dengan mengunjungi situs warisan dunia UNESCO: Blue Mosque (Masjid Sultan Ahmed) yang megah, Hagia Sophia (Kini berfungsi kembali sebagai masjid), dan Topkapi Palace (Istana Kesultanan Utsmaniyah).' },
@@ -212,6 +212,7 @@ async function main() {
       where: { slug: p.slug },
       update: {
         deskripsi: p.deskripsi,
+        foto: p.foto,
         itinerary: p.itinerary,
         fasilitas: p.fasilitas,
         termasuk: p.termasuk,

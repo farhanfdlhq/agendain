@@ -62,7 +62,7 @@ export default function HomeContent({
       case 'why': 
         return <WhySection key="why" gs={gs} t={t} locale={locale} homeSettings={homeSettings} />
       case 'destinations': 
-        return <DestinationsSection key="destinations" gs={gs} t={t} destinations={destinations} />
+        return <DestinationsSection key="destinations" gs={gs} t={t} packages={packages} />
       case 'testimonial': 
         return <TestimonialSection key="testimonial" gs={gs} t={t} waLink={waLink} />
       case 'accordion': 

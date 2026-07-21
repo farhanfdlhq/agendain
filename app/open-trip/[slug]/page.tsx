@@ -74,15 +74,25 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
     ]
   }
 
-  const fotos = pkg?.foto as any || {}
-  const mainImage = (fotos.large || fotos.medium) ? (fotos.large || fotos.medium) : '/placeholder.webp'
-  
-  let gallery = []
+  let mainImage = '/placeholder.webp'
+  let gallery: string[] = []
+
   if (Array.isArray(pkg?.foto) && pkg.foto.length > 0) {
-    gallery = pkg.foto
-  } else if (fotos.gallery && fotos.gallery.length > 0) {
-    gallery = fotos.gallery
-  } else {
+    gallery = pkg.foto.map((f: any) => {
+      if (typeof f === 'string') return f
+      if (typeof f === 'object' && f !== null) return f.full || f.medium || f.thumb || '/placeholder.webp'
+      return '/placeholder.webp'
+    })
+    mainImage = gallery[0]
+  } else if (pkg?.foto && typeof pkg.foto === 'object') {
+    const fotos = pkg.foto as any
+    mainImage = fotos.full || fotos.large || fotos.medium || '/placeholder.webp'
+    if (Array.isArray(fotos.gallery) && fotos.gallery.length > 0) {
+      gallery = fotos.gallery
+    }
+  }
+
+  if (gallery.length === 0) {
     gallery = [mainImage, mainImage, mainImage, mainImage, mainImage]
   }
 

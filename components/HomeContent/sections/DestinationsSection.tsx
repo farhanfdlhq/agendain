@@ -13,7 +13,7 @@ const DESTINATIONS = [
   { name: 'Italy', price: '20 Juta', rating: '5/5', image: '/dest-italy.webp', slug: 'italia' },
 ]
 
-export default function DestinationsSection({ gs, t, destinations }: { gs: any, t: any, destinations: any[] }) {
+export default function DestinationsSection({ gs, t, packages }: { gs: any, t: any, packages: any[] }) {
   return (
     <section key="destinations" className={styles.destSection}>
       <div className={styles.container}>
@@ -22,30 +22,39 @@ export default function DestinationsSection({ gs, t, destinations }: { gs: any, 
             <div className={styles.destHeaderLeftWrapper}>
               <p className={styles.destEyebrow}>{gs('destEyebrow', undefined, 'Eksplor Bersama Agendain')}</p>
               <h2 className={styles.destTitle}>{renderHighlightedTitle(gs('destTitle', undefined, 'Favorite Destination'))}</h2>
-              <p className={styles.destSubtitleSmall}>From</p>
               <Link href="/destinasi" className={styles.destViewAll}>Lihat Semua Destinasi &rarr;</Link>
             </div>
         <Stagger className={styles.destGrid}>
-          {(destinations.length > 0 ? destinations : DESTINATIONS).map((dest) => (
-            <Link key={dest.slug} href={`/destinasi/${dest.slug}`} className={styles.destCard}>
+          {((packages || []).length > 0 ? packages.slice(0, 3) : DESTINATIONS).map((pkg) => (
+            <Link key={pkg.slug} href={`/open-trip/${pkg.slug}`} className={styles.destCard}>
               <div className={styles.destCardImageWrapper}>
-                <Image src={dest.foto || dest.image || '/placeholder.webp'} alt={dest.nama || dest.name} fill className={styles.destCardImage} />
+                <Image src={pkg.fotoThumbnail || pkg.image || '/placeholder.webp'} alt={pkg.nama || pkg.name} fill className={styles.destCardImage} />
               </div>
               <div className={styles.destCardBody}>
                 <div className={styles.destCardTop}>
-                  <h3 className={styles.destCardName}>{dest.nama || dest.name}</h3>
+                  <h3 className={styles.destCardName}>{pkg.nama || pkg.name}</h3>
                   <span className={styles.destCardRating}>
                     <Star size={12} fill="#f59e0b" className={styles.destCardRatingStar} />
-                    <span className={styles.destCardRatingText}>{dest.rating || '5/5'}</span>
+                    <span className={styles.destCardRatingText}>{pkg.rating || '5/5'}</span>
                   </span>
                 </div>
                 <div className={styles.destCardBottom}>
                   <div className={styles.destCardPriceWrapper}>
-                    <div className={styles.destCardPriceLabel}>
-                      <span>Start</span>
-                      <span>From</span>
-                    </div>
-                    <span className={styles.destCardPriceValue}>{dest.openTripCount ? `${dest.openTripCount} Paket` : (dest.price || 'Lihat')}</span>
+                    {pkg.harga || pkg.price ? (
+                      <>
+                        <div className={styles.destCardPriceLabel}>
+                          <span>Start</span>
+                          <span>From</span>
+                        </div>
+                        <span className={styles.destCardPriceValue}>{
+                          pkg.harga 
+                            ? `${(pkg.harga / 1000000).toLocaleString('id-ID')} Juta` 
+                            : pkg.price
+                        }</span>
+                      </>
+                    ) : (
+                      <span className={styles.destCardPriceValue} style={{ fontSize: '1.25rem', paddingLeft: '0.5rem' }}>Eksplor</span>
+                    )}
                   </div>
                   <span className={styles.destCardBooking}>Booking</span>
                 </div>
