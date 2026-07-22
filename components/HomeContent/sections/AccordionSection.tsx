@@ -68,7 +68,7 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
             </FadeIn>
           </div>
           <FadeIn direction="right" delay={0.2}>
-            <div className={styles.accordionRight}><Image src={gs('accImage', undefined, '/accordion-street.webp')} alt="Accordion" fill /></div>
+            <div className={styles.accordionRight}><Image src={gs('accImage', undefined, '/accordion-street.webp')} alt="Accordion" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
           </FadeIn>
         </div>
       </div>

@@ -28,7 +28,7 @@ export default function DestinationsSection({ gs, t, packages }: { gs: any, t: a
           {((packages || []).length > 0 ? packages.slice(0, 3) : DESTINATIONS).map((pkg) => (
             <Link key={pkg.slug} href={`/open-trip/${pkg.slug}`} className={styles.destCard}>
               <div className={styles.destCardImageWrapper}>
-                <Image src={pkg.fotoThumbnail || pkg.image || '/placeholder.webp'} alt={pkg.nama || pkg.name} fill className={styles.destCardImage} />
+                <Image src={pkg.fotoThumbnail || pkg.image || '/placeholder.webp'} alt={pkg.nama || pkg.name} fill className={styles.destCardImage}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
               </div>
               <div className={styles.destCardBody}>
                 <div className={styles.destCardTop}>

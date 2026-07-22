@@ -50,7 +50,7 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
             <FadeIn key={i} direction="up" delay={i * 0.1}>
               <div className={isReversed ? styles.whyCardReverse : styles.whyCard}>
                 <div className={styles.whyCardImage}>
-                  <Image src={card.image || card.foto || '/placeholder.webp'} alt={card.title} fill className={styles.whyCardImageItem} />
+                  <Image src={card.image || card.foto || '/placeholder.webp'} alt={card.title} fill className={styles.whyCardImageItem}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
                   <div className={isReversed ? styles.whyCardNumberRight : styles.whyCardNumberLeft}>{card.number}</div>
                 </div>
                 <div className={styles.whyCardText}>

@@ -1,28 +1,45 @@
-"use client"
-import { motion, useInView, Variants } from "framer-motion"
-import { useRef } from "react"
+"use client";
+import { motion, useInView, Variants } from "framer-motion";
+import { useRef } from "react";
 
 interface FadeInProps {
-  children: React.ReactNode
-  delay?: number
-  direction?: "up" | "down" | "left" | "right" | "none"
-  className?: string
-  duration?: number
+  children: React.ReactNode;
+  delay?: number;
+  direction?: "up" | "down" | "left" | "right" | "none";
+  className?: string;
+  duration?: number;
 }
 
-export default function FadeIn({ children, delay = 0, direction = "up", className = "", duration = 0.6 }: FadeInProps) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-10%" })
+export default function FadeIn({
+  children,
+  delay = 0,
+  direction = "up",
+  className = "",
+  duration = 0.6,
+}: FadeInProps) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-10%" });
 
   const getVariants = (): Variants => {
     switch (direction) {
-      case "up": return { hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }
-      case "down": return { hidden: { opacity: 0, y: -40 }, visible: { opacity: 1, y: 0 } }
-      case "left": return { hidden: { opacity: 0, x: 40 }, visible: { opacity: 1, x: 0 } }
-      case "right": return { hidden: { opacity: 0, x: -40 }, visible: { opacity: 1, x: 0 } }
-      case "none": return { hidden: { opacity: 0 }, visible: { opacity: 1 } }
+      case "up":
+        return { hidden: { opacity: 0, y: 25 }, visible: { opacity: 1, y: 0 } };
+      case "down":
+        return {
+          hidden: { opacity: 0, y: -25 },
+          visible: { opacity: 1, y: 0 },
+        };
+      case "left":
+        return { hidden: { opacity: 0, x: 20 }, visible: { opacity: 1, x: 0 } };
+      case "right":
+        return {
+          hidden: { opacity: 0, x: -20 },
+          visible: { opacity: 1, x: 0 },
+        };
+      case "none":
+        return { hidden: { opacity: 0 }, visible: { opacity: 1 } };
     }
-  }
+  };
 
   return (
     <motion.div
@@ -35,5 +52,5 @@ export default function FadeIn({ children, delay = 0, direction = "up", classNam
     >
       {children}
     </motion.div>
-  )
+  );
 }

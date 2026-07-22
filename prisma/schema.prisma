@@ -111,3 +111,15 @@ model Setting {
   key   String @id
   value String @db.Text
 }
+
+model PrivateTripPackage {
+  id          Int      @id @default(autoincrement())
+  title       String
+  subtitle    String
+  image       String
+  locationTab String
+  chips       Json
+  features    Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

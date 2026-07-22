@@ -24,14 +24,14 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
 
   return (
     <section key="socialproof" className={styles.socialProofSection}>
-      <div className={styles.socialProofBg}><Image src={gs('socialBgImg', undefined, '/dest-italy.webp')} alt="" fill aria-hidden="true" /></div>
+      <div className={styles.socialProofBg}><Image src={gs('socialBgImg', undefined, '/dest-italy.webp')} alt="" fill aria-hidden="true"  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
       <div className={`${styles.container} ${styles.socialProofContent}`}>
         <FadeIn direction="left">
           <div className={styles.socialProofLeft}>
             <div className={styles.socialProofImageWrapper}>
               <AnimatePresence mode="wait">
                 <motion.div key={activeTestimonial} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', inset: 0 }}>
-                  <Image src={testiItems[activeTestimonial]?.photo || gs('socialImage', undefined, '/el-rumi-syifa.webp')} alt="Social Proof" fill style={{ objectFit: 'cover' }} />
+                  <Image src={testiItems[activeTestimonial]?.photo || gs('socialImage', undefined, '/el-rumi-syifa.webp')} alt="Social Proof" fill style={{ objectFit: 'cover' }}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
                 </motion.div>
               </AnimatePresence>
               <div className={styles.socialProofQuestionMark}>?</div>

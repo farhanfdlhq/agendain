@@ -9,7 +9,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: any, t: any, waLink
   return (
     <section key="hero" className={styles.hero}>
       <div className={styles.heroImageWrapper}>
-        <Image src={gs('heroBgImage', undefined, '/hero-coastal.webp')} alt="Hero" fill priority className={styles.heroImage} />
+        <Image src={gs('heroBgImage', undefined, '/hero-coastal.webp')} alt="Hero" fill priority className={styles.heroImage}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
         <div className={styles.heroOverlay} />
       </div>
       <div className={styles.heroContent}>

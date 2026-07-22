@@ -22,7 +22,7 @@
   min-height: 70vh;
   display: flex;
   align-items: center;
-  background-image: url('/open_trip_hero.webp');
+  background-image: url("/open_trip_hero.webp");
   background-size: cover;
   background-position: center;
 }
@@ -30,7 +30,11 @@
 .heroOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(5,69,105,0.8) 0%, rgba(0,0,0,0.1) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(5, 69, 105, 0.8) 0%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
   z-index: 1;
 }
 
@@ -68,7 +72,7 @@
   border: 1px solid #0f3050; /* Thin blue outline */
   border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
   justify-content: space-between;
 }
 
@@ -161,104 +165,13 @@
   margin-top: 3rem;
 }
 
-/* CTA Banner */
-.ctaBannerWrapper {
-  padding: var(--space-xl) var(--space-lg);
-  max-width: 1280px;
-  margin: 0 auto var(--space-section);
-}
-
-.ctaBanner {
-  background: linear-gradient(90deg, #0284c7 0%, #0f3050 100%);
-  border-radius: 1.5rem;
-  padding: 4rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 3rem;
-}
-
-.ctaLabel {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-dominant);
-  letter-spacing: 0.1em;
-  margin-bottom: 0.5rem;
-}
-
-.ctaContent h2 {
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
-  font-weight: 700;
-  color: var(--color-on-primary);
-  margin-bottom: 1rem;
-  line-height: 1.2;
-}
-
-.ctaContent p {
-  color: rgba(255,255,255,0.85);
-  font-size: 1.125rem;
-  line-height: 1.6;
-  max-width: 500px;
-}
-
-.ctaActions {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 280px;
-}
-
-.btnPrimary {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: #25D366; /* WhatsApp Green */
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: var(--radius-full);
-  font-weight: 600;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.btnPrimary:hover {
-  background: #128C7E;
-  transform: translateY(-2px);
-}
-
-.btnSecondary {
-  text-align: center;
-  color: rgba(255,255,255,0.8);
-  font-weight: 500;
-  text-decoration: underline;
-  padding: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.btnSecondary:hover {
-  color: white;
-}
-
 @media (max-width: 744px) {
   .filterBar {
     flex-direction: column;
     gap: var(--space-md);
   }
-  
+
   .select {
-    width: 100%;
-  }
-
-  .ctaBanner {
-    flex-direction: column;
-    padding: 2rem;
-    text-align: center;
-  }
-
-  .ctaActions {
     width: 100%;
   }
 

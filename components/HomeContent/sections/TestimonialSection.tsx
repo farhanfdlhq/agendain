@@ -31,18 +31,18 @@ export default function TestimonialSection({ gs, t, waLink }: { gs: any, t: any,
         <FadeIn direction="up" delay={0.2}>
           <div className={styles.galleryMasonry}>
             <div className={styles.galleryCol}>
-              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg1', undefined, GALLERY_IMAGES.leftTop)} alt="Gallery 1" fill /></div>
-              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg2', undefined, GALLERY_IMAGES.leftBottom)} alt="Gallery 2" fill /></div>
+              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg1', undefined, GALLERY_IMAGES.leftTop)} alt="Gallery 1" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
+              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg2', undefined, GALLERY_IMAGES.leftBottom)} alt="Gallery 2" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
             </div>
             <div className={styles.galleryCol}>
               <div className={styles.galleryItemTall}>
-                <Image src={gs('galleryImg3', undefined, GALLERY_IMAGES.center)} alt="Gallery 3" fill />
+                <Image src={gs('galleryImg3', undefined, GALLERY_IMAGES.center)} alt="Gallery 3" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
                 <Link href="/open-trip" className={styles.galleryOverlayBtn}>Eksplor Trip →</Link>
               </div>
             </div>
             <div className={styles.galleryCol}>
-              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg4', undefined, GALLERY_IMAGES.rightTop)} alt="Gallery 4" fill /></div>
-              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg5', undefined, GALLERY_IMAGES.rightBottom)} alt="Gallery 5" fill /></div>
+              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg4', undefined, GALLERY_IMAGES.rightTop)} alt="Gallery 4" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
+              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg5', undefined, GALLERY_IMAGES.rightBottom)} alt="Gallery 5" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
             </div>
           </div>
         </FadeIn>
