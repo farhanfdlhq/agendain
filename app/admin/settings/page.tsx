@@ -115,37 +115,57 @@ export default function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="site_name">Nama Website</Label>
-              <Input
-                id="site_name"
-                name="site_name"
-                value={formData.site_name}
-                onChange={handleChange}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Logo Website</Label>
-              <div className="flex flex-col gap-2">
-                <MediaPicker 
-                  value={formData.site_logo}
-                  onChange={(url) => setFormData(prev => ({ ...prev, site_logo: url }))}
-                  label="Pilih Logo"
-                  description="Disarankan gambar PNG berlatar transparan."
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="site_name">Nama Website</Label>
+                <Input
+                  id="site_name"
+                  name="site_name"
+                  value={formData.site_name}
+                  onChange={handleChange}
                 />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Logo Website</Label>
+                <div className="flex flex-col gap-2">
+                  <MediaPicker 
+                    value={formData.site_logo}
+                    onChange={(url) => setFormData(prev => ({ ...prev, site_logo: url }))}
+                    label="Pilih Logo"
+                    description="Disarankan gambar PNG berlatar transparan."
+                  />
+                </div>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Logo Title (Favicon Browser)</Label>
-              <div className="flex flex-col gap-2">
-                <MediaPicker 
-                  value={formData.site_favicon || ""}
-                  onChange={(url) => setFormData(prev => ({ ...prev, site_favicon: url }))}
-                  label="Pilih Favicon"
-                  description="Disarankan ikon bujur sangkar (ICO/PNG, 512x512 px)."
-                />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label>Logo Title (Favicon Browser)</Label>
+                <div className="flex flex-col gap-2">
+                  <MediaPicker 
+                    value={formData.site_favicon || ""}
+                    onChange={(url) => setFormData(prev => ({ ...prev, site_favicon: url }))}
+                    label="Pilih Favicon"
+                    description="Ikon untuk penampil judul tab di browser."
+                  />
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 shadow-xs">
+                <div className="flex items-start gap-3.5">
+                  <div className="text-primary mt-0.5 shrink-0">
+                    <Info className="h-5 w-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold leading-none tracking-tight text-foreground">
+                      TIP: Saran Praktik Terbaik
+                    </p>
+                    <p className="text-xs text-muted-foreground leading-relaxed pt-1">
+                      Saat memilih foto untuk Favicon / Logo Title, pastikan gambar berformat <span className="font-semibold text-foreground">PNG</span> atau <span className="font-semibold text-foreground">ICO</span> dan berwujud <span className="font-semibold text-foreground">Bujur Sangkar (contoh: 512x512 piksel)</span> agar dijamin 100% langsung termuat meluncur di tab semua perangkat web dan HP!
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
             

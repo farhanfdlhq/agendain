@@ -20,6 +20,7 @@ export async function GET(request: Request) {
       for (const file of fileNames) {
         if (file.startsWith(".")) continue; // skip hidden files
         const stats = await stat(path.join(uploadDir, file));
+        if (!stats.isFile()) continue; // skip directories like avatars and seed
         files.push({
           url: `/uploads/${file}`,
           name: file,
