@@ -51,7 +51,7 @@ export default function LoginPage() {
         {/* Left Side - Image/Branding */}
         <div className="hidden md:flex flex-col items-center justify-center bg-primary p-12 text-primary-foreground relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/80" />
-          <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:20px_20px] opacity-30" />
           <div className="relative z-10 flex flex-col items-center text-center space-y-4">
             <h1 className="text-5xl font-bold tracking-tight">Agendain</h1>
             <p className="text-lg text-primary-foreground/80">Sistem Manajemen Perjalanan Eksklusif</p>
