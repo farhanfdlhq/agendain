@@ -6,8 +6,10 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding Destinasi & Paket Wisata...");
 
-  // Seed Super Admin
-  const hashedPassword = await bcrypt.hash("password", 10);
+  // Seed Super Admin, Manager & Editor (Segregation of Duties & Kredensial Aman)
+  const initialPassword = process.env.ADMIN_INITIAL_PASSWORD || "Agendain!SuperSecure2026@";
+  const hashedPassword = await bcrypt.hash(initialPassword, 10);
+  
   await prisma.adminUser.upsert({
     where: { email: "admin@agendain.com" },
     update: {
@@ -21,7 +23,35 @@ async function main() {
       role: "super_admin",
     },
   });
-  console.log("Super Admin user created: admin@agendain.com");
+  console.log("Super Admin user updated/created: admin@agendain.com");
+  if (!process.env.ADMIN_INITIAL_PASSWORD) {
+    console.warn("WARNING: Segera ganti password default admin@agendain.com di production!");
+  }
+
+  // Akun Manager (Admin Trip)
+  await prisma.adminUser.upsert({
+    where: { email: "manager@agendain.com" },
+    update: { role: "admin" },
+    create: {
+      email: "manager@agendain.com",
+      password: hashedPassword,
+      nama: "Trip Manager",
+      role: "admin",
+    },
+  });
+
+  // Akun Content Editor
+  await prisma.adminUser.upsert({
+    where: { email: "editor@agendain.com" },
+    update: { role: "editor" },
+    create: {
+      email: "editor@agendain.com",
+      password: hashedPassword,
+      nama: "Content Editor",
+      role: "editor",
+    },
+  });
+  console.log("Segregation of duties users created (Manager & Editor).");
 
   // Default Settings
   await prisma.setting.upsert({

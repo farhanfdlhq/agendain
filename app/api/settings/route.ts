@@ -7,11 +7,19 @@ import { purgeCloudflareCache } from "@/lib/cloudflare";
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    const role = (session?.user as any)?.role;
+    const isSuperAdmin = role === 'super_admin' || role === 'admin';
+
     const settings = await prisma.setting.findMany();
 
     // Convert array of {key, value} to object
     const settingsObj = settings.reduce(
       (acc: any, curr: { key: string; value: string }) => {
+        // Jangan ekspos info rezeki/pembayaran atau rahasia lainnya jika bukan administrator yang terotentikasi
+        if (!isSuperAdmin && curr.key === 'payment_instructions') {
+          return acc;
+        }
         acc[curr.key] = curr.value;
         return acc;
       },
@@ -31,8 +39,9 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const role = (session?.user as any)?.role;
+    if (!session || role !== 'super_admin') {
+      return NextResponse.json({ error: "Forbidden - Super Admin required" }, { status: 403 });
     }
 
     const data = await req.json();

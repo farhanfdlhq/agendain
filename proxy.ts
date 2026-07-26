@@ -8,12 +8,12 @@ const ROLE_HIERARCHY: Record<string, number> = {
 }
 
 export default withAuth(
-  function middleware(req) {
+  function proxy(req) {
     const role = (req.nextauth.token?.role as string) || ''
     const path = req.nextUrl.pathname
     const method = req.method
 
-    const userLevel = ROLE_HIERARCHY[role] !== undefined ? ROLE_HIERARCHY[role] : 1
+    const userLevel = ROLE_HIERARCHY[role] !== undefined ? ROLE_HIERARCHY[role] : 0
 
     // ==========================================
     // 1. FRONTEND PROTECTIONS (/admin)
@@ -43,8 +43,8 @@ export default withAuth(
       if (userLevel < 3) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // API Paket
-    if (path.startsWith('/api/paket')) {
+    // API Open Trip (dulunya paket)
+    if (path.startsWith('/api/open-trip')) {
       if (method === 'GET') return NextResponse.next()
       if (method === 'DELETE' && userLevel < 2) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
       if (method !== 'GET' && userLevel < 1) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -78,12 +78,13 @@ export default withAuth(
 export const config = {
   matcher: [
     '/admin/:path*',
-    '/api/paket/:path*',
+    '/api/open-trip/:path*',
     '/api/booking/:path*',
     '/api/inquiries/:path*',
     '/api/private-trip/:path*',
     '/api/destinasi/:path*',
     '/api/admin/:path*',
-    '/api/settings/:path*'
+    '/api/settings/:path*',
+    '/api/upload/:path*'
   ]
 }

@@ -6,8 +6,10 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Update Data Dummy Paket Wisata menjadi Full Lengkap...')
 
-  // Seed Super Admin
-  const hashedPassword = await bcrypt.hash('password', 10)
+  // Seed Super Admin, Manager & Editor (Segregation of Duties & Kredensial Aman)
+  const initialPassword = process.env.ADMIN_INITIAL_PASSWORD || 'Agendain!SuperSecure2026@'
+  const hashedPassword = await bcrypt.hash(initialPassword, 10)
+  
   await prisma.adminUser.upsert({
     where: { email: 'admin@agendain.com' },
     update: {
@@ -22,6 +24,31 @@ async function main() {
     }
   })
   console.log('Super Admin user created: admin@agendain.com')
+
+  // Akun Manager (Admin Trip)
+  await prisma.adminUser.upsert({
+    where: { email: 'manager@agendain.com' },
+    update: { role: 'admin' },
+    create: {
+      email: 'manager@agendain.com',
+      password: hashedPassword,
+      nama: 'Trip Manager',
+      role: 'admin'
+    }
+  })
+
+  // Akun Content Editor
+  await prisma.adminUser.upsert({
+    where: { email: 'editor@agendain.com' },
+    update: { role: 'editor' },
+    create: {
+      email: 'editor@agendain.com',
+      password: hashedPassword,
+      nama: 'Content Editor',
+      role: 'editor'
+    }
+  })
+  console.log('Segregation of duties users created (Manager & Editor).')
 
   // Default Settings
   await prisma.setting.upsert({
