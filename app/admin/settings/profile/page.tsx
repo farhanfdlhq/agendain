@@ -5,7 +5,7 @@ import Cropper from "react-easy-crop"
 import { getCroppedImg } from "@/lib/cropImage"
 
 import { useSession } from "next-auth/react"
-import { Save, UploadCloud, Eye, EyeOff } from "lucide-react"
+import { Save, UploadCloud, Eye, EyeOff, ImageIcon } from "lucide-react"
 import { toast } from "react-hot-toast"
 
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { MediaPicker } from "@/components/ui/media-picker"
 
 export default function ProfilePage() {
   const { update } = useSession()
@@ -190,6 +191,29 @@ export default function ProfilePage() {
     }
   }
 
+  const handleSelectFromBank = async (url: string) => {
+    if (!url) return;
+    setUploadingAvatar(true)
+    try {
+      const res = await fetch("/api/admin/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ avatar: url })
+      })
+      if (!res.ok) throw new Error("Gagal memperbarui foto dari bank media")
+      
+      setAccountData(prev => ({ ...prev, avatar: url }))
+      await update({ avatar: url })
+      const event = new Event("visibilitychange")
+      document.dispatchEvent(event)
+      toast.success("Foto profil berhasil diperbarui dari Bank Media!")
+    } catch (err: any) {
+      toast.error(err.message || "Terjadi kesalahan sistem")
+    } finally {
+      setUploadingAvatar(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -237,15 +261,32 @@ export default function ProfilePage() {
                 onChange={handleAvatarChange}
               />
               
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploadingAvatar}
-              >
-                <UploadCloud className="mr-2 h-4 w-4" />
-                Ganti Foto
-              </Button>
+              <div className="flex flex-col gap-2.5 w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingAvatar}
+                >
+                  <UploadCloud className="mr-2 h-4 w-4" />
+                  Upload & Potong
+                </Button>
+                <MediaPicker
+                  value={accountData.avatar}
+                  onChange={handleSelectFromBank}
+                  trigger={
+                    <Button 
+                      variant="secondary" 
+                      type="button" 
+                      className="w-full bg-primary/10 text-primary hover:bg-primary/20 font-medium"
+                      disabled={uploadingAvatar}
+                    >
+                      <ImageIcon className="mr-2 h-4 w-4" />
+                      Pilih Bank Media
+                    </Button>
+                  }
+                />
+              </div>
               <p className="text-xs text-muted-foreground text-center">Format JPG, PNG, atau WEBP. Maks 2MB.</p>
             </CardContent>
           </Card>

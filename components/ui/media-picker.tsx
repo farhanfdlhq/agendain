@@ -23,9 +23,10 @@ interface MediaPickerProps {
   onChange: (url: string) => void
   label?: string
   description?: string
+  trigger?: React.ReactNode
 }
 
-export function MediaPicker({ value, onChange, label = "Upload Foto", description = "PNG, JPG atau WEBP (Maks. 5MB)" }: MediaPickerProps) {
+export function MediaPicker({ value, onChange, label = "Upload Foto", description = "PNG, JPG atau WEBP (Maks. 5MB)", trigger }: MediaPickerProps) {
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("upload")
   const [uploading, setUploading] = useState(false)
@@ -126,30 +127,36 @@ export function MediaPicker({ value, onChange, label = "Upload Foto", descriptio
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="border-2 border-dashed rounded-xl p-2 flex flex-col items-center justify-center bg-muted/10 hover:bg-muted/30 transition-colors relative min-h-[160px]">
-        {value ? (
-          <div className="w-full h-full relative group rounded-lg overflow-hidden flex items-center justify-center bg-black/5">
-            <img src={value} alt="Preview" className="max-h-[200px] max-w-full object-contain" />
-            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-              <Button type="button" variant="secondary" size="sm" onClick={() => setOpen(true)}>
-                Ganti Foto
-              </Button>
-              <Button type="button" variant="destructive" size="sm" onClick={() => onChange("")}>
-                <X size={16} />
-              </Button>
+      {trigger ? (
+        <div onClick={() => setOpen(true)} className="cursor-pointer w-full">
+          {trigger}
+        </div>
+      ) : (
+        <div className="border-2 border-dashed rounded-xl p-2 flex flex-col items-center justify-center bg-muted/10 hover:bg-muted/30 transition-colors relative min-h-[160px]">
+          {value ? (
+            <div className="w-full h-full relative group rounded-lg overflow-hidden flex items-center justify-center bg-black/5">
+              <img src={value} alt="Preview" className="max-h-[200px] max-w-full object-contain" />
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                <Button type="button" variant="secondary" size="sm" onClick={() => setOpen(true)}>
+                  Ganti Foto
+                </Button>
+                <Button type="button" variant="destructive" size="sm" onClick={() => onChange("")}>
+                  <X size={16} />
+                </Button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center py-6 cursor-pointer" onClick={() => setOpen(true)}>
-            <div className="bg-primary/10 text-primary p-3 rounded-full mb-3">
-              <ImageIcon size={28} />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center py-6 cursor-pointer" onClick={() => setOpen(true)}>
+              <div className="bg-primary/10 text-primary p-3 rounded-full mb-3">
+                <ImageIcon size={28} />
+              </div>
+              <span className="font-semibold text-sm text-foreground mb-1">{label}</span>
+              <span className="text-xs text-muted-foreground">{description}</span>
+              <span className="text-xs text-primary mt-2 font-medium hover:underline">Pilih dari Media Bank</span>
             </div>
-            <span className="font-semibold text-sm text-foreground mb-1">{label}</span>
-            <span className="text-xs text-muted-foreground">{description}</span>
-            <span className="text-xs text-primary mt-2 font-medium hover:underline">Pilih dari Media Bank</span>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden bg-background">

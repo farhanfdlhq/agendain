@@ -717,7 +717,7 @@
 
 .accordionIconOpen {
   composes: accordionIcon;
-  transform: rotate(45deg);
+  transform: rotate(180deg);
   border-color: var(--color-primary);
 }
 
@@ -1105,7 +1105,7 @@
 
 .faqIconOpen {
   composes: faqIcon;
-  transform: rotate(45deg);
+  transform: rotate(180deg);
 }
 
 .faqBody {

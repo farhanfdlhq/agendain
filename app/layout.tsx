@@ -22,10 +22,16 @@ const getSettings = unstable_cache(async () => {
 export async function generateMetadata(): Promise<Metadata> {
   const settingsObj = await getSettings()
   const siteName = settingsObj.site_name || "Agendain"
+  const siteFavicon = settingsObj.site_favicon || "/favicon.ico"
   
   return {
     title: `${siteName} | Travel Agency Indonesia ke Eropa`,
     description: `Paket perjalanan terbaik dari Indonesia ke Eropa bersama ${siteName}.`,
+    icons: {
+      icon: siteFavicon,
+      shortcut: siteFavicon,
+      apple: siteFavicon,
+    },
   }
 }
 

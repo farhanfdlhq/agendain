@@ -22,6 +22,7 @@ export default function SettingsPage() {
     whatsapp_message: "Halo Agendain, saya ingin bertanya tentang paket wisata.",
     payment_instructions: "Silakan transfer ke rekening BCA 1234567890 a.n PT Agendain.",
     site_logo: "/logo.png",
+    site_favicon: "/favicon.ico",
     logo_height: "42",
     global_informasi_penting: "Paspor minimal masa berlaku 6 bulan dari tanggal kepulangan.\nVisa Schengen diwajibkan bagi pemegang paspor Indonesia.\nJadwal perjalanan dan akomodasi dapat berubah sewaktu-waktu menyesuaikan kondisi cuaca.",
     global_kebijakan_pembatalan: "Pembatalan > 30 hari sebelum keberangkatan: Pengembalian 50% dari total.\nPembatalan 15-30 hari sebelum keberangkatan: Pengembalian 25% dari total.\nPembatalan < 14 hari sebelum keberangkatan: Tidak ada pengembalian dana (Non-refundable).\nJika visa ditolak, biaya visa tidak dapat dikembalikan.",
@@ -132,6 +133,18 @@ export default function SettingsPage() {
                   onChange={(url) => setFormData(prev => ({ ...prev, site_logo: url }))}
                   label="Pilih Logo"
                   description="Disarankan gambar PNG berlatar transparan."
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Logo Title (Favicon Browser)</Label>
+              <div className="flex flex-col gap-2">
+                <MediaPicker 
+                  value={formData.site_favicon || ""}
+                  onChange={(url) => setFormData(prev => ({ ...prev, site_favicon: url }))}
+                  label="Pilih Favicon"
+                  description="Disarankan ikon bujur sangkar (ICO/PNG, 512x512 px)."
                 />
               </div>
             </div>

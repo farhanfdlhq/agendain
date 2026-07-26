@@ -20,13 +20,14 @@ export async function PUT(req: NextRequest) {
   if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { nama, email, currentPassword, newPassword } = body
+  const { nama, email, currentPassword, newPassword, avatar } = body
 
   const user = await prisma.adminUser.findUnique({ where: { email: session.user.email } })
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
   const updateData: any = {}
   if (nama) updateData.nama = nama
+  if (avatar !== undefined) updateData.avatar = avatar
   if (email && email !== user.email) {
     const existing = await prisma.adminUser.findUnique({ where: { email } })
     if (existing) return NextResponse.json({ error: 'Email sudah digunakan' }, { status: 400 })

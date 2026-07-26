@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import FadeIn from '@/components/Motion/FadeIn'
+import { ChevronDown } from 'lucide-react'
 import styles from '../HomeContent.module.css'
 import { WhatsAppIcon, renderHighlightedTitle } from '../shared'
 
@@ -50,7 +51,7 @@ export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs
               <div className={styles.faqItem}>
                 <button className={styles.faqTrigger} onClick={() => setActiveFaq(activeFaq === i ? null : i)} aria-expanded={activeFaq === i}>
                   <span>{item.q}</span>
-                  <span className={activeFaq === i ? styles.faqIconOpen : styles.faqIcon}>+</span>
+                  <span className={activeFaq === i ? styles.faqIconOpen : styles.faqIcon}><ChevronDown size={18} /></span>
                 </button>
                 <AnimatePresence initial={false}>
                   {activeFaq === i && (
