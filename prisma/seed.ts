@@ -315,8 +315,8 @@ async function main() {
   // Seed Home CMS Settings (seluruh sub-judul & deskripsi font weight: Medium / 500)
   const homeSettings = {
     // Hero
-    heroTitle: 'Jelajahi *Eropa* Tanpa Beban',
-    heroTitle_en: 'Explore *Europe* Burden-Free',
+    heroTitle: 'Jangan Cuma Jadi Wacana, *Agendain* Aja!',
+    heroTitle_en: 'Don\'t Just Plan It, *Agendain* It!',
     heroTitleWeight: '700',
     heroSubtitle: 'Rencanakan perjalanan impian Anda bersama ahlinya. Transparan, terpercaya, dan berkesan.',
     heroSubtitle_en: 'Plan your dream journey with the experts. Transparent, trusted, and memorable.',
@@ -324,21 +324,23 @@ async function main() {
     heroBgImage: '/hero-coastal.webp',
 
     // Why Choose Us
-    whyTitleMain: 'Mengapa Memilih Kami',
-    whyTitleMain_en: 'Why Choose Us',
+    whyTitleMain: 'Masih Ragu?',
+    whyTitleMain_en: 'Still Unsure?',
     whyTitleMainWeight: '500',
-    whyTitleSub: 'Kenapa Memilih *Agendain?*',
-    whyTitleSub_en: 'Why Choose *Agendain?*',
+    whyTitleSub: 'Kenapa *Agendain* Travel Jadi Pilihan Wisata Kamu',
+    whyTitleSub_en: 'Why *Agendain* Travel Is Your Best Choice',
     whyTitleSubWeight: '700',
     whyItems: [
-      { number: '01', image: '/uploads/seed/paris.png', title: 'Transparan & Terpercaya', desc: 'Harga jelas, tanpa biaya tersembunyi. Kami berkomitmen pada kejujuran dan keterbukaan.', titleWeight: '500', descWeight: '500' },
-      { number: '02', image: '/uploads/seed/swiss.png', title: 'Pengalaman Lokal Autentik', desc: 'Nikmati perjalanan dengan sentuhan lokal yang otentik dan berkesan.', titleWeight: '500', descWeight: '500' },
-      { number: '03', image: '/uploads/seed/italy.png', title: 'Layanan Premium', desc: 'Hotel bintang 4-5, transportasi VIP, dan tour leader berpengalaman.', titleWeight: '500', descWeight: '500' },
+      { number: '#1', image: '/why-hotel.webp', title: 'All Service', desc: 'Kami menangani semua kebutuhan perjalanan Anda dari A sampai Z. Mulai dari akomodasi, transportasi, hingga panduan wisata lokal.', titleWeight: '500', descWeight: '500' },
+      { number: '#2', image: '/placeholder.webp', title: 'Harga Terbaik', desc: 'Dapatkan pengalaman premium dengan harga yang transparan dan kompetitif tanpa biaya tersembunyi.', titleWeight: '500', descWeight: '500' },
+      { number: '#3', image: '/why-support.webp', title: 'Dukungan 24/7', desc: 'Tim kami siap membantu Anda kapan saja selama perjalanan. Nikmati liburan tanpa khawatir.', titleWeight: '500', descWeight: '500' },
+      { number: '#4', image: '/why-camera.webp', title: 'Dokumentasi Pro', desc: 'Setiap momen berharga Anda didokumentasikan secara profesional untuk kenangan abadi.', titleWeight: '500', descWeight: '500' },
     ],
     whyItems_en: [
-      { number: '01', image: '/uploads/seed/paris.png', title: 'Transparent & Trusted', desc: 'Clear pricing, no hidden fees. We are committed to honesty and transparency.', titleWeight: '500', descWeight: '500' },
-      { number: '02', image: '/uploads/seed/swiss.png', title: 'Authentic Local Experience', desc: 'Enjoy trips with an authentic and memorable local touch.', titleWeight: '500', descWeight: '500' },
-      { number: '03', image: '/uploads/seed/italy.png', title: 'Premium Service', desc: '4-5 star hotels, VIP transport, and experienced tour leaders.', titleWeight: '500', descWeight: '500' },
+      { number: '#1', image: '/why-hotel.webp', title: 'All Service', desc: 'We handle all your travel needs from A to Z. From accommodation, transportation, to local tour guides.', titleWeight: '500', descWeight: '500' },
+      { number: '#2', image: '/placeholder.webp', title: 'Best Price', desc: 'Get a premium experience with transparent and competitive pricing without hidden fees.', titleWeight: '500', descWeight: '500' },
+      { number: '#3', image: '/why-support.webp', title: '24/7 Support', desc: 'Our team is ready to help you anytime during your trip. Enjoy your holiday worry-free.', titleWeight: '500', descWeight: '500' },
+      { number: '#4', image: '/why-camera.webp', title: 'Pro Documentation', desc: 'Every precious moment is professionally documented for everlasting memories.', titleWeight: '500', descWeight: '500' },
     ],
 
     // Destinations
@@ -353,10 +355,10 @@ async function main() {
     testiBadge: 'Sudut Pandang Pelanggan',
     testiBadge_en: 'Customer Perspectives',
     testiBadgeWeight: '500',
-    testiTitle: '"Perjalanan ke *Italia* yang Tak Terlupakan"',
-    testiTitle_en: '"An Unforgettable Trip to *Italy*"',
+    testiTitle: '"Satu Hari di *Italia* , dan Gue Langsung Jatuh Cinta!"',
+    testiTitle_en: '"One Day in *Italy* , and I Instantly Fell in Love!"',
     testiTitleWeight: '700',
-    galleryImg1: '', galleryImg2: '', galleryImg3: '', galleryImg4: '', galleryImg5: '',
+    galleryImg1: '/gallery-amalfi.webp', galleryImg2: '/dest-swiss.webp', galleryImg3: '/gallery-colosseum.webp', galleryImg4: '/dest-france.webp', galleryImg5: '/dest-italy.webp',
 
     // Accordion
     accTitle: 'Lihat, Hirup, & *Simpan* Memori',

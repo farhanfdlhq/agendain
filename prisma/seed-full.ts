@@ -272,16 +272,16 @@ async function main() {
     whyTitleSub_en: 'Why *Agendain* Travel Is Your Best Choice',
     whyTitleSubWeight: '700',
     whyItems: [
-      { number: '01', image: '/uploads/seed/paris.png', title: 'All Service', desc: 'Kami menangani semua kebutuhan perjalanan Anda dari A sampai Z. Mulai dari akomodasi, transportasi, hingga panduan wisata lokal.', titleWeight: '500', descWeight: '500' },
-      { number: '02', image: '/uploads/seed/swiss.png', title: 'Harga Terbaik', desc: 'Dapatkan pengalaman premium dengan harga yang transparan dan kompetitif tanpa biaya tersembunyi.', titleWeight: '500', descWeight: '500' },
-      { number: '03', image: '/uploads/seed/italy.png', title: 'Dukungan 24/7', desc: 'Tim kami siap membantu Anda kapan saja selama perjalanan. Nikmati liburan tanpa khawatir.', titleWeight: '500', descWeight: '500' },
-      { number: '04', image: '/uploads/seed/paris.png', title: 'Dokumentasi Pro', desc: 'Setiap momen berharga Anda didokumentasikan secara profesional untuk kenangan abadi.', titleWeight: '500', descWeight: '500' },
+      { number: '#1', image: '/why-hotel.webp', title: 'All Service', desc: 'Kami menangani semua kebutuhan perjalanan Anda dari A sampai Z. Mulai dari akomodasi, transportasi, hingga panduan wisata lokal.', titleWeight: '500', descWeight: '500' },
+      { number: '#2', image: '/placeholder.webp', title: 'Harga Terbaik', desc: 'Dapatkan pengalaman premium dengan harga yang transparan dan kompetitif tanpa biaya tersembunyi.', titleWeight: '500', descWeight: '500' },
+      { number: '#3', image: '/why-support.webp', title: 'Dukungan 24/7', desc: 'Tim kami siap membantu Anda kapan saja selama perjalanan. Nikmati liburan tanpa khawatir.', titleWeight: '500', descWeight: '500' },
+      { number: '#4', image: '/why-camera.webp', title: 'Dokumentasi Pro', desc: 'Setiap momen berharga Anda didokumentasikan secara profesional untuk kenangan abadi.', titleWeight: '500', descWeight: '500' },
     ],
     whyItems_en: [
-      { number: '01', image: '/uploads/seed/paris.png', title: 'All Service', desc: 'We handle all your travel needs from A to Z. From accommodation, transportation, to local tour guides.', titleWeight: '500', descWeight: '500' },
-      { number: '02', image: '/uploads/seed/swiss.png', title: 'Best Price', desc: 'Get a premium experience with transparent and competitive pricing without hidden fees.', titleWeight: '500', descWeight: '500' },
-      { number: '03', image: '/uploads/seed/italy.png', title: '24/7 Support', desc: 'Our team is ready to help you anytime during your trip. Enjoy your holiday worry-free.', titleWeight: '500', descWeight: '500' },
-      { number: '04', image: '/uploads/seed/paris.png', title: 'Pro Documentation', desc: 'Every precious moment is professionally documented for everlasting memories.', titleWeight: '500', descWeight: '500' },
+      { number: '#1', image: '/why-hotel.webp', title: 'All Service', desc: 'We handle all your travel needs from A to Z. From accommodation, transportation, to local tour guides.', titleWeight: '500', descWeight: '500' },
+      { number: '#2', image: '/placeholder.webp', title: 'Best Price', desc: 'Get a premium experience with transparent and competitive pricing without hidden fees.', titleWeight: '500', descWeight: '500' },
+      { number: '#3', image: '/why-support.webp', title: '24/7 Support', desc: 'Our team is ready to help you anytime during your trip. Enjoy your holiday worry-free.', titleWeight: '500', descWeight: '500' },
+      { number: '#4', image: '/why-camera.webp', title: 'Pro Documentation', desc: 'Every precious moment is professionally documented for everlasting memories.', titleWeight: '500', descWeight: '500' },
     ],
 
     // Destinations
@@ -296,10 +296,10 @@ async function main() {
     testiBadge: 'Sudut Pandang Pelanggan',
     testiBadge_en: 'Customer Perspectives',
     testiBadgeWeight: '500',
-    testiTitle: '"Perjalanan ke *Italia* yang Tak Terlupakan"',
-    testiTitle_en: '"An Unforgettable Trip to *Italy*"',
+    testiTitle: '"Satu Hari di *Italia* , dan Gue Langsung Jatuh Cinta!"',
+    testiTitle_en: '"One Day in *Italy* , and I Instantly Fell in Love!"',
     testiTitleWeight: '700',
-    galleryImg1: '', galleryImg2: '', galleryImg3: '', galleryImg4: '', galleryImg5: '',
+    galleryImg1: '/gallery-amalfi.webp', galleryImg2: '/dest-swiss.webp', galleryImg3: '/gallery-colosseum.webp', galleryImg4: '/dest-france.webp', galleryImg5: '/dest-italy.webp',
 
     // Accordion
     accTitle: 'Lihat, Hirup, & *Simpan* Memori',
