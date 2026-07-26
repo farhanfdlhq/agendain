@@ -19,7 +19,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: any, t: any, waLink
           </h1>
         </FadeIn>
         <FadeIn delay={0.4} direction="up">
-          <p className={styles.heroSubtitle}>{gs('heroSubtitle', 'home.hero.desc')}</p>
+          <p className={styles.heroSubtitle} style={gs('heroSubtitleWeight') ? { fontWeight: Number(gs('heroSubtitleWeight')) } : undefined}>{gs('heroSubtitle', 'home.hero.desc')}</p>
         </FadeIn>
         <FadeIn delay={0.6} direction="up">
           <div className={styles.heroButtons}>

@@ -11,7 +11,7 @@ export default function TestimonialSection({ gs, t, waLink }: { gs: any, t: any,
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.testimonialHeader}>
-            <span className={styles.testimonialBadge}>{gs('testiBadge', 'home.testi.badge')}</span>
+            <span className={styles.testimonialBadge} style={gs('testiBadgeWeight') ? { fontWeight: Number(gs('testiBadgeWeight')) } : undefined}>{gs('testiBadge', 'home.testi.badge')}</span>
             <h2 className={styles.testimonialTitle}>
               {gs('testiTitle') ? (
                 renderHighlightedTitle(gs('testiTitle'), '', styles.testimonialTitleHighlight)

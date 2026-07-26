@@ -57,7 +57,7 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
                 </>
               )}
             </h2>
-            <p className={styles.socialProofRightSubtitle}>{gs('socialSubtitle', 'home.social.subtitle')}</p>
+            <p className={styles.socialProofRightSubtitle} style={gs('socialSubtitleWeight') ? { fontWeight: Number(gs('socialSubtitleWeight')) } : undefined}>{gs('socialSubtitle', 'home.social.subtitle')}</p>
             <div className={styles.testimonialSliderContainer} onMouseEnter={() => setIsSliderHovered(true)} onMouseLeave={() => setIsSliderHovered(false)}>
               <div className={styles.testimonialSlider}>
                 <div className={styles.testimonialSlides}>

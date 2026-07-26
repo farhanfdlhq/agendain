@@ -40,7 +40,7 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.whySectionHeader}>
-            <h2 className={styles.whyTitleMain}>{gs('whyTitleMain', 'home.faq.title')}</h2>
+            <h2 className={styles.whyTitleMain} style={gs('whyTitleMainWeight') ? { fontWeight: Number(gs('whyTitleMainWeight')) } : undefined}>{gs('whyTitleMain', 'home.faq.title')}</h2>
             <h3 className={styles.whyTitleSub}>{renderHighlightedTitle(gs('whyTitleSub', 'home.whyTitle'))}</h3>
           </div>
         </FadeIn>

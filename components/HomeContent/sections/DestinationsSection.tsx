@@ -20,7 +20,7 @@ export default function DestinationsSection({ gs, t, packages }: { gs: any, t: a
         <FadeIn direction="up">
           <div className={styles.destWrapper}>
             <div className={styles.destHeaderLeftWrapper}>
-              <p className={styles.destEyebrow}>{gs('destEyebrow', undefined, 'Eksplor Bersama Agendain')}</p>
+              <p className={styles.destEyebrow} style={gs('destEyebrowWeight') ? { fontWeight: Number(gs('destEyebrowWeight')) } : undefined}>{gs('destEyebrow', undefined, 'Eksplor Bersama Agendain')}</p>
               <h2 className={styles.destTitle}>{renderHighlightedTitle(gs('destTitle', undefined, 'Favorite Destination'))}</h2>
               <Link href="/destinasi" className={styles.destViewAll}>Lihat Semua Destinasi &rarr;</Link>
             </div>

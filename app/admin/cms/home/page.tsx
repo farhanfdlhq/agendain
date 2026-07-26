@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { MediaPicker } from "@/components/ui/media-picker"
+import { FontWeightPicker } from "@/components/ui/font-weight-picker"
 
 export default function HomeCMSPage() {
   const [data, setData] = useState<any>({
@@ -202,32 +203,49 @@ export default function HomeCMSPage() {
 
 
 
-  const renderTextInput = (label: string, fieldName: string, isTextarea = false, placeholder = '') => {
+  const renderTextInput = (label: string, fieldName: string, isTextarea = false, placeholder = '', enableWeight = false, defaultWeight = "400") => {
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
+    const weightField = `${fieldName}Weight`;
+    const selectedWeight = data[weightField] ? Number(data[weightField]) : undefined;
+
     return (
-      <div className="space-y-2">
-        <Label className="flex items-center gap-2">
-          {label}
-          <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-medium uppercase tracking-wider">
-            {activeTab}
-          </span>
-        </Label>
-        {isTextarea ? (
-          <Textarea 
-            name={activeFieldName} 
-            value={data[activeFieldName] || ''} 
-            onChange={handleChange} 
-            placeholder={placeholder}
-            rows={3}
-          />
-        ) : (
-          <Input 
-            type="text" 
-            name={activeFieldName} 
-            value={data[activeFieldName] || ''} 
-            onChange={handleChange} 
-            placeholder={placeholder}
-          />
+      <div className="space-y-3 p-3.5 rounded-xl border border-border/60 bg-muted/10 shadow-xs">
+        <div className="space-y-2">
+          <Label className="flex items-center justify-between gap-2 text-sm font-semibold">
+            <span>{label}</span>
+            <span className="text-[10px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded uppercase tracking-wider shrink-0">
+              {activeTab}
+            </span>
+          </Label>
+          {isTextarea ? (
+            <Textarea 
+              name={activeFieldName} 
+              value={data[activeFieldName] || ''} 
+              onChange={handleChange} 
+              placeholder={placeholder}
+              rows={3}
+              style={enableWeight && selectedWeight ? { fontWeight: selectedWeight } : undefined}
+            />
+          ) : (
+            <Input 
+              type="text" 
+              name={activeFieldName} 
+              value={data[activeFieldName] || ''} 
+              onChange={handleChange} 
+              placeholder={placeholder}
+              style={enableWeight && selectedWeight ? { fontWeight: selectedWeight } : undefined}
+            />
+          )}
+        </div>
+        
+        {enableWeight && (
+          <div className="pt-2 border-t border-border/40">
+            <FontWeightPicker
+              value={data[weightField]}
+              onChange={(val) => setData((prev: any) => ({ ...prev, [weightField]: val }))}
+              defaultWeight={defaultWeight}
+            />
+          </div>
         )}
       </div>
     )
@@ -376,7 +394,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', true)}
-              {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true)}
+              {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true, '', true, '400')}
             </div>
             {renderImageInput('URL Gambar Background', 'heroBgImage', '/hero-coastal.webp')}
           </CardContent>
@@ -388,7 +406,7 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Eyebrow (Teks Kecil Atas)', 'whyTitleMain')}
+              {renderTextInput('Eyebrow (Teks Kecil Atas)', 'whyTitleMain', false, '', true, '800')}
               {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'whyTitleSub')}
             </div>
             {renderArrayEditor('Kartu Keunggulan', 'whyItems', [
@@ -405,7 +423,7 @@ export default function HomeCMSPage() {
             <CardTitle className="text-lg">Bagian Destinasi Favorit</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-6 sm:grid-cols-2 pt-6">
-            {renderTextInput('Eyebrow (Teks Kecil Atas)', 'destEyebrow')}
+            {renderTextInput('Eyebrow (Teks Kecil Atas)', 'destEyebrow', false, '', true, '700')}
             {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'destTitle')}
           </CardContent>
         </Card>
@@ -416,7 +434,7 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Badge / Tagline', 'testiBadge')}
+              {renderTextInput('Badge / Tagline', 'testiBadge', false, '', true, '800')}
               {renderTextInput('Kutipan Judul (Bisa pakai <span>Italia</span>)', 'testiTitle')}
             </div>
             
@@ -440,7 +458,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle')}
-              {renderTextInput('Deskripsi Subtitle', 'accSubtitle', true)}
+              {renderTextInput('Deskripsi Subtitle', 'accSubtitle', true, '', true, '700')}
             </div>
             {renderImageInput('URL Gambar (Kanan)', 'accImage', '/accordion-street.webp')}
             
@@ -462,7 +480,7 @@ export default function HomeCMSPage() {
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Kutipan Lengkap', 'socialQuote', true)}
-              {renderTextInput('Deskripsi Subtitle', 'socialSubtitle', true)}
+              {renderTextInput('Deskripsi Subtitle', 'socialSubtitle', true, '', true, '800')}
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               {renderImageInput('URL Gambar Tokoh (Kiri)', 'socialImage', '/el-rumi-syifa.webp')}
@@ -483,7 +501,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle')}
-              {renderTextInput('Teks Pendek (CTA WhatsApp)', 'faqSubtitle')}
+              {renderTextInput('Teks Pendek (CTA WhatsApp)', 'faqSubtitle', false, '', true, '800')}
             </div>
 
             {renderArrayEditor('Daftar FAQ', 'faqItems', [
