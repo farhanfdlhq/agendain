@@ -426,14 +426,14 @@ export default function ProfilePage() {
           
           <div className="flex items-center gap-4 py-4">
             <span className="text-sm font-medium">Zoom</span>
-            <input
+            <Input
               type="range"
               value={zoom}
               min={1}
               max={3}
               step={0.1}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1 h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+              className="flex-1 cursor-pointer accent-primary"
             />
           </div>
 

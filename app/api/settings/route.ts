@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
     await Promise.all(promises);
 
-    revalidateTag("settings");
+    revalidateTag("settings", { expire: 0 });
     revalidatePath("/", "layout");
 
     // Purge cloudflare cache to ensure static assets and edge cache mirror the new DB state
