@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, ChevronDown } from 'lucide-react'
+import { ArrowRight, ArrowDown } from 'lucide-react'
 import FadeIn from '@/components/Motion/FadeIn'
 import styles from '../HomeContent.module.css'
 import { renderHighlightedTitle } from '../shared'
@@ -49,7 +49,7 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
                 <div className={activeAccordion === i ? styles.accordionItemActive : styles.accordionItem}>
                   <button className={styles.accordionTrigger} onClick={() => setActiveAccordion(activeAccordion === i ? -1 : i)} aria-expanded={activeAccordion === i}>
                     <span>{item.title}</span>
-                    <span className={activeAccordion === i ? styles.accordionIconOpen : styles.accordionIcon}><ChevronDown size={16} /></span>
+                    <span className={activeAccordion === i ? styles.accordionIconOpen : styles.accordionIcon}><ArrowDown size={16} /></span>
                   </button>
                   <AnimatePresence initial={false}>
                     {activeAccordion === i && (

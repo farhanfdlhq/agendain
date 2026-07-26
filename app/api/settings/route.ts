@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { purgeCloudflareCache } from "@/lib/cloudflare";
 
 export async function GET() {
@@ -59,6 +59,7 @@ export async function POST(req: Request) {
 
     await Promise.all(promises);
 
+    revalidateTag("settings");
     revalidatePath("/", "layout");
 
     // Purge cloudflare cache to ensure static assets and edge cache mirror the new DB state

@@ -191,27 +191,10 @@ export default function ProfilePage() {
     }
   }
 
-  const handleSelectFromBank = async (url: string) => {
+  const handleSelectFromBank = (url: string) => {
     if (!url) return;
-    setUploadingAvatar(true)
-    try {
-      const res = await fetch("/api/admin/profile", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ avatar: url })
-      })
-      if (!res.ok) throw new Error("Gagal memperbarui foto dari bank media")
-      
-      setAccountData(prev => ({ ...prev, avatar: url }))
-      await update({ avatar: url })
-      const event = new Event("visibilitychange")
-      document.dispatchEvent(event)
-      toast.success("Foto profil berhasil diperbarui dari Bank Media!")
-    } catch (err: any) {
-      toast.error(err.message || "Terjadi kesalahan sistem")
-    } finally {
-      setUploadingAvatar(false)
-    }
+    setImageSrc(url)
+    setCropDialogOpen(true)
   }
 
   if (loading) {
@@ -282,7 +265,7 @@ export default function ProfilePage() {
                       disabled={uploadingAvatar}
                     >
                       <ImageIcon className="mr-2 h-4 w-4" />
-                      Pilih Bank Media
+                      Bank Media & Potong
                     </Button>
                   }
                 />
