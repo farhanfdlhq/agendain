@@ -14,7 +14,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: any, t: any, waLink
       </div>
       <div className={styles.heroContent}>
         <FadeIn delay={0.2} direction="up">
-          <h1 className={styles.heroTitle}>
+          <h1 className={styles.heroTitle} style={gs('heroTitleWeight') ? { fontWeight: Number(gs('heroTitleWeight')) } : undefined}>
             {renderHighlightedTitle(gs('heroTitle', 'home.hero.title'), styles.heroTitleWhite, styles.heroTitleGold)}
           </h1>
         </FadeIn>

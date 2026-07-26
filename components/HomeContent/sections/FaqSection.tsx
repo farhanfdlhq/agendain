@@ -41,7 +41,7 @@ export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs
         <FadeIn direction="up">
           <div className={styles.faqHeader}>
             <span className={styles.faqBadge}><span className={styles.faqBadgeQ}>?</span> {t('home.faq.subtitle')}</span>
-            <h2 className={styles.faqTitle}>{renderHighlightedTitle(gs('faqTitle', 'home.faq.title'))}</h2>
+            <h2 className={styles.faqTitle} style={gs('faqTitleWeight') ? { fontWeight: Number(gs('faqTitleWeight')) } : undefined}>{renderHighlightedTitle(gs('faqTitle', 'home.faq.title'))}</h2>
             <p className={styles.faqSubtitle} style={gs('faqSubtitleWeight') ? { fontWeight: Number(gs('faqSubtitleWeight')) } : undefined}>{gs('faqSubtitle', 'home.faq.moreSub')}</p>
           </div>
         </FadeIn>

@@ -41,7 +41,7 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
         <FadeIn direction="up">
           <div className={styles.whySectionHeader}>
             <h2 className={styles.whyTitleMain} style={gs('whyTitleMainWeight') ? { fontWeight: Number(gs('whyTitleMainWeight')) } : undefined}>{gs('whyTitleMain', 'home.faq.title')}</h2>
-            <h3 className={styles.whyTitleSub}>{renderHighlightedTitle(gs('whyTitleSub', 'home.whyTitle'))}</h3>
+            <h3 className={styles.whyTitleSub} style={gs('whyTitleSubWeight') ? { fontWeight: Number(gs('whyTitleSubWeight')) } : undefined}>{renderHighlightedTitle(gs('whyTitleSub', 'home.whyTitle'))}</h3>
           </div>
         </FadeIn>
         {whyItems.map((card: any, i: number) => {
@@ -54,8 +54,8 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
                   <div className={isReversed ? styles.whyCardNumberRight : styles.whyCardNumberLeft}>{card.number}</div>
                 </div>
                 <div className={styles.whyCardText}>
-                  <h3 className={styles.whyCardTitle}>{card.title}</h3>
-                  <p className={styles.whyCardDesc}>{card.desc}</p>
+                  <h3 className={styles.whyCardTitle} style={card.titleWeight ? { fontWeight: Number(card.titleWeight) } : undefined}>{card.title}</h3>
+                  <p className={styles.whyCardDesc} style={card.descWeight ? { fontWeight: Number(card.descWeight) } : undefined}>{card.desc}</p>
                 </div>
               </div>
             </FadeIn>

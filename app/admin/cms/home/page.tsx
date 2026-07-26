@@ -254,7 +254,7 @@ export default function HomeCMSPage() {
   const renderArrayEditor = (
     label: string, 
     fieldName: string, 
-    fields: { name: string; label: string; isTextarea?: boolean; isImage?: boolean }[]
+    fields: { name: string; label: string; isTextarea?: boolean; isImage?: boolean; enableWeight?: boolean }[]
   ) => {
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
     const items = data[activeFieldName] || [];
@@ -323,12 +323,22 @@ export default function HomeCMSPage() {
                         value={item[f.name] || ''} 
                         onChange={(e) => handleItemChange(index, f.name, e.target.value)}
                         className="min-h-[80px]"
+                        style={f.enableWeight && item[`${f.name}Weight`] ? { fontWeight: Number(item[`${f.name}Weight`]) } : undefined}
                       />
                     ) : (
                       <Input 
                         value={item[f.name] || ''} 
-                        onChange={(e) => handleItemChange(index, f.name, e.target.value)} 
+                        onChange={(e) => handleItemChange(index, f.name, e.target.value)}
+                        style={f.enableWeight && item[`${f.name}Weight`] ? { fontWeight: Number(item[`${f.name}Weight`]) } : undefined}
                       />
+                    )}
+                    {f.enableWeight && (
+                      <div className="pt-1">
+                        <FontWeightPicker
+                          value={item[`${f.name}Weight`]}
+                          onChange={(val) => handleItemChange(index, `${f.name}Weight`, val)}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}
@@ -393,7 +403,7 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', true)}
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', true, '', true, '700')}
               {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true, '', true, '400')}
             </div>
             {renderImageInput('URL Gambar Background', 'heroBgImage', '/hero-coastal.webp')}
@@ -407,13 +417,13 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Eyebrow (Teks Kecil Atas)', 'whyTitleMain', false, '', true, '800')}
-              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'whyTitleSub')}
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'whyTitleSub', false, '', true, '700')}
             </div>
             {renderArrayEditor('Kartu Keunggulan', 'whyItems', [
               { name: 'number', label: 'Angka/Nomor (Contoh: 01, 02)' },
               { name: 'image', label: 'URL Ikon/Gambar', isImage: true },
-              { name: 'title', label: 'Judul' },
-              { name: 'desc', label: 'Deskripsi Singkat', isTextarea: true }
+              { name: 'title', label: 'Judul', enableWeight: true },
+              { name: 'desc', label: 'Deskripsi Singkat', isTextarea: true, enableWeight: true }
             ])}
           </CardContent>
         </Card>
@@ -424,7 +434,7 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="grid gap-6 sm:grid-cols-2 pt-6">
             {renderTextInput('Eyebrow (Teks Kecil Atas)', 'destEyebrow', false, '', true, '700')}
-            {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'destTitle')}
+            {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'destTitle', false, '', true, '700')}
           </CardContent>
         </Card>
 
@@ -435,7 +445,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Badge / Tagline', 'testiBadge', false, '', true, '800')}
-              {renderTextInput('Kutipan Judul (Bisa pakai <span>Italia</span>)', 'testiTitle')}
+              {renderTextInput('Kutipan Judul (Bisa pakai <span>Italia</span>)', 'testiTitle', false, '', true, '700')}
             </div>
             
             <div className="space-y-4 pt-4 border-t mt-4">
@@ -457,7 +467,7 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle')}
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle', false, '', true, '700')}
               {renderTextInput('Deskripsi Subtitle', 'accSubtitle', true, '', true, '700')}
             </div>
             {renderImageInput('URL Gambar (Kanan)', 'accImage', '/accordion-street.webp')}
@@ -476,7 +486,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Nama Tokoh/Pelanggan', 'socialName')}
-              {renderTextInput('Judul Sorotan Utama', 'socialTitle', true)}
+              {renderTextInput('Judul Sorotan Utama', 'socialTitle', true, '', true, '700')}
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Kutipan Lengkap', 'socialQuote', true)}
@@ -500,7 +510,7 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle')}
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle', false, '', true, '700')}
               {renderTextInput('Teks Pendek (CTA WhatsApp)', 'faqSubtitle', false, '', true, '800')}
             </div>
 

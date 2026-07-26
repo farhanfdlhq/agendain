@@ -48,7 +48,7 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
         </FadeIn>
         <FadeIn direction="right" delay={0.2} className={styles.socialProofRightWrapper}>
           <div className={styles.socialProofRight}>
-            <h2 className={styles.socialProofRightTitle}>
+            <h2 className={styles.socialProofRightTitle} style={gs('socialTitleWeight') ? { fontWeight: Number(gs('socialTitleWeight')) } : undefined}>
               {gs('socialTitle') ? (
                 renderHighlightedTitle(gs('socialTitle'), '', styles.textYellow)
               ) : (
