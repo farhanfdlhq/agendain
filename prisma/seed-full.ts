@@ -256,8 +256,8 @@ async function main() {
   // Seed Home CMS Settings (seluruh sub-judul & deskripsi font weight: Medium / 500)
   const homeSettings = {
     // Hero
-    heroTitle: 'Jelajahi *Eropa* Tanpa Beban',
-    heroTitle_en: 'Explore *Europe* Burden-Free',
+    heroTitle: 'Jangan Cuma Jadi Wacana, *Agendain* Aja!',
+    heroTitle_en: 'Don\'t Just Plan It, *Agendain* It!',
     heroTitleWeight: '700',
     heroSubtitle: 'Rencanakan perjalanan impian Anda bersama ahlinya. Transparan, terpercaya, dan berkesan.',
     heroSubtitle_en: 'Plan your dream journey with the experts. Transparent, trusted, and memorable.',
@@ -265,21 +265,23 @@ async function main() {
     heroBgImage: '/hero-coastal.webp',
 
     // Why Choose Us
-    whyTitleMain: 'Mengapa Memilih Kami',
-    whyTitleMain_en: 'Why Choose Us',
+    whyTitleMain: 'Masih Ragu?',
+    whyTitleMain_en: 'Still Unsure?',
     whyTitleMainWeight: '500',
-    whyTitleSub: 'Kenapa Memilih *Agendain?*',
-    whyTitleSub_en: 'Why Choose *Agendain?*',
+    whyTitleSub: 'Kenapa *Agendain* Travel Jadi Pilihan Wisata Kamu',
+    whyTitleSub_en: 'Why *Agendain* Travel Is Your Best Choice',
     whyTitleSubWeight: '700',
     whyItems: [
-      { number: '01', image: '/uploads/seed/paris.png', title: 'Transparan & Terpercaya', desc: 'Harga jelas, tanpa biaya tersembunyi. Kami berkomitmen pada kejujuran dan keterbukaan.', titleWeight: '500', descWeight: '500' },
-      { number: '02', image: '/uploads/seed/swiss.png', title: 'Pengalaman Lokal Autentik', desc: 'Nikmati perjalanan dengan sentuhan lokal yang otentik dan berkesan.', titleWeight: '500', descWeight: '500' },
-      { number: '03', image: '/uploads/seed/italy.png', title: 'Layanan Premium', desc: 'Hotel bintang 4-5, transportasi VIP, dan tour leader berpengalaman.', titleWeight: '500', descWeight: '500' },
+      { number: '01', image: '/uploads/seed/paris.png', title: 'All Service', desc: 'Kami menangani semua kebutuhan perjalanan Anda dari A sampai Z. Mulai dari akomodasi, transportasi, hingga panduan wisata lokal.', titleWeight: '500', descWeight: '500' },
+      { number: '02', image: '/uploads/seed/swiss.png', title: 'Harga Terbaik', desc: 'Dapatkan pengalaman premium dengan harga yang transparan dan kompetitif tanpa biaya tersembunyi.', titleWeight: '500', descWeight: '500' },
+      { number: '03', image: '/uploads/seed/italy.png', title: 'Dukungan 24/7', desc: 'Tim kami siap membantu Anda kapan saja selama perjalanan. Nikmati liburan tanpa khawatir.', titleWeight: '500', descWeight: '500' },
+      { number: '04', image: '/uploads/seed/paris.png', title: 'Dokumentasi Pro', desc: 'Setiap momen berharga Anda didokumentasikan secara profesional untuk kenangan abadi.', titleWeight: '500', descWeight: '500' },
     ],
     whyItems_en: [
-      { number: '01', image: '/uploads/seed/paris.png', title: 'Transparent & Trusted', desc: 'Clear pricing, no hidden fees. We are committed to honesty and transparency.', titleWeight: '500', descWeight: '500' },
-      { number: '02', image: '/uploads/seed/swiss.png', title: 'Authentic Local Experience', desc: 'Enjoy trips with an authentic and memorable local touch.', titleWeight: '500', descWeight: '500' },
-      { number: '03', image: '/uploads/seed/italy.png', title: 'Premium Service', desc: '4-5 star hotels, VIP transport, and experienced tour leaders.', titleWeight: '500', descWeight: '500' },
+      { number: '01', image: '/uploads/seed/paris.png', title: 'All Service', desc: 'We handle all your travel needs from A to Z. From accommodation, transportation, to local tour guides.', titleWeight: '500', descWeight: '500' },
+      { number: '02', image: '/uploads/seed/swiss.png', title: 'Best Price', desc: 'Get a premium experience with transparent and competitive pricing without hidden fees.', titleWeight: '500', descWeight: '500' },
+      { number: '03', image: '/uploads/seed/italy.png', title: '24/7 Support', desc: 'Our team is ready to help you anytime during your trip. Enjoy your holiday worry-free.', titleWeight: '500', descWeight: '500' },
+      { number: '04', image: '/uploads/seed/paris.png', title: 'Pro Documentation', desc: 'Every precious moment is professionally documented for everlasting memories.', titleWeight: '500', descWeight: '500' },
     ],
 
     // Destinations
@@ -363,7 +365,7 @@ async function main() {
 
   await prisma.setting.upsert({
     where: { key: 'home_settings' },
-    update: { value: JSON.stringify(homeSettings) },
+    update: {},
     create: { key: 'home_settings', value: JSON.stringify(homeSettings) },
   })
   console.log('Home CMS Settings seeded (all subtitles/descriptions font-weight: Medium 500).')

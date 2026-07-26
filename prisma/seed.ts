@@ -422,7 +422,7 @@ async function main() {
 
   await prisma.setting.upsert({
     where: { key: 'home_settings' },
-    update: { value: JSON.stringify(homeSettings) },
+    update: {},
     create: { key: 'home_settings', value: JSON.stringify(homeSettings) },
   });
   console.log("Home CMS Settings seeded (all subtitles/descriptions font-weight: Medium 500).");
