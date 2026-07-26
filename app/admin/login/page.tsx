@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { Lock, Mail, AlertCircle, Eye, EyeOff } from "lucide-react"
@@ -19,6 +19,18 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [logoUrl, setLogoUrl] = useState("/Logo ( White Version ).png")
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.site_logo) {
+          setLogoUrl(data.site_logo)
+        }
+      })
+      .catch((err) => console.error("Error fetching site logo:", err))
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -52,9 +64,13 @@ export default function LoginPage() {
         <div className="hidden md:flex flex-col items-center justify-center bg-primary p-12 text-primary-foreground relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary/80" />
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:20px_20px] opacity-30" />
-          <div className="relative z-10 flex flex-col items-center text-center space-y-4">
-            <h1 className="text-5xl font-bold tracking-tight">Agendain</h1>
-            <p className="text-lg text-primary-foreground/80">Sistem Manajemen Perjalanan Eksklusif</p>
+          <div className="relative z-10 flex flex-col items-center text-center space-y-6">
+            <img 
+              src={logoUrl} 
+              alt="Logo Website" 
+              className="max-h-24 w-auto object-contain drop-shadow-sm transition-all duration-300" 
+            />
+            <p className="text-lg text-primary-foreground/80 font-medium">Sistem Manajemen Perjalanan Eksklusif</p>
           </div>
         </div>
 
@@ -62,6 +78,9 @@ export default function LoginPage() {
         <div className="p-8 md:p-12 flex flex-col justify-center">
           <div className="w-full max-w-sm mx-auto space-y-6">
             <div className="space-y-2 text-center md:text-left">
+              <div className="md:hidden flex justify-center mb-4">
+                <img src={logoUrl} alt="Logo Website" className="max-h-14 w-auto object-contain" />
+              </div>
               <h2 className="text-3xl font-bold tracking-tight">Selamat Datang Kembali</h2>
               <p className="text-muted-foreground">Silakan masuk ke panel admin Anda.</p>
             </div>
