@@ -336,14 +336,14 @@ async function main() {
     socialImage: '/el-rumi-syifa.webp',
     socialBgImg: '/dest-italy.webp',
     testiItems: [
-      { name: 'Netizen 1', text: '"Pengalaman pertama ke Eropa dan semuanya beyond expectations. Dari hotel, makanan, sampai guide-nya — semuanya top. Ga nyesel pilih Agendain!"' },
-      { name: 'Netizen 2', text: '"Trip ke Italia bareng Agendain itu magical banget. Itinerary-nya detail, hotelnya strategis, dan yang paling berkesan dokumentasi-nya keren abis!"' },
-      { name: 'Netizen 3', text: '"Awalnya ragu karena pertama kali pakai travel agent, tapi Agendain beneran all-in. Harga transparan, support 24 jam, dan hasilnya beyond!"' },
+      { name: 'Netizen 1', text: '"Pengalaman pertama ke Eropa dan semuanya beyond expectations. Dari hotel, makanan, sampai guide-nya — semuanya top. Ga nyesel pilih Agendain!"', photo: '/el-rumi-syifa.webp' },
+      { name: 'Netizen 2', text: '"Trip ke Italia bareng Agendain itu magical banget. Itinerary-nya detail, hotelnya strategis, dan yang paling berkesan dokumentasi-nya keren abis!"', photo: '/dest-france.webp' },
+      { name: 'Netizen 3', text: '"Awalnya ragu karena pertama kali pakai travel agent, tapi Agendain beneran all-in. Harga transparan, support 24 jam, dan hasilnya beyond!"', photo: '/dest-swiss.webp' },
     ],
     testiItems_en: [
-      { name: 'Netizen 1', text: '"First trip to Europe and everything was beyond expectations. From hotel, food, to guide — top notch. No regrets choosing Agendain!"' },
-      { name: 'Netizen 2', text: '"Our Italy trip with Agendain was magical. Detailed itinerary, strategic hotel, and pro documentation!"' },
-      { name: 'Netizen 3', text: '"Initially hesitant as a first time travel agent user, but Agendain is truly all-in. Transparent price, 24/7 support!"' },
+      { name: 'Netizen 1', text: '"First trip to Europe and everything was beyond expectations. From hotel, food, to guide — top notch. No regrets choosing Agendain!"', photo: '/el-rumi-syifa.webp' },
+      { name: 'Netizen 2', text: '"Our Italy trip with Agendain was magical. Detailed itinerary, strategic hotel, and pro documentation!"', photo: '/dest-france.webp' },
+      { name: 'Netizen 3', text: '"Initially hesitant as a first time travel agent user, but Agendain is truly all-in. Transparent price, 24/7 support!"', photo: '/dest-swiss.webp' },
     ],
 
     // FAQ
