@@ -258,7 +258,7 @@ async function main() {
     // Hero
     heroTitle: 'Jangan Cuma Jadi Wacana, *Agendain* Aja!',
     heroTitle_en: 'Don\'t Just Dream It, *Agendain* It!',
-    heroTitleWeight: '700',
+    heroTitleWeight: '800',
     heroSubtitle: 'Dari tiket, hotel, sampai itinerary, semua udah kami siapkan. Kamu tinggal ajak teman dan siap berangkat.',
     heroSubtitle_en: 'From tickets, hotels, to itineraries, we have prepared everything. You just invite your friends and get ready to go.',
     heroSubtitleWeight: '500',
@@ -267,21 +267,21 @@ async function main() {
     // Why Choose Us
     whyTitleMain: 'Masih Ragu?',
     whyTitleMain_en: 'Still Unsure?',
-    whyTitleMainWeight: '500',
+    whyTitleMainWeight: '800',
     whyTitleSub: 'Kenapa *Agendain* Travel Jadi Solusi Wacana Kamu',
     whyTitleSub_en: 'Why *Agendain* Travel is Your Best Solution',
-    whyTitleSubWeight: '700',
+    whyTitleSubWeight: '800',
     whyItems: [
-      { number: '#1', image: '/why-hotel.webp', title: 'All-in-One!', desc: 'Ga usah ribet ngurus sana-sini. Di Agendain, dari tiket pesawat, hotel, sampai itinerary harian semua udah kami siapin. Kamu tinggal bawa koper dan ajak teman — semuanya sudah beres!', titleWeight: '500', descWeight: '500' },
-      { number: '#2', image: '/placeholder.webp', title: 'Harga Terbaik', desc: 'Kami bekerja langsung dengan partner lokal di Eropa, jadi harga yang kamu dapat itu harga terbaik, transparan, tanpa biaya tersembunyi. Worth it banget buat pengalaman yang kamu dapat!', titleWeight: '500', descWeight: '500' },
-      { number: '#3', image: '/why-support.webp', title: 'Dukungan 24/7', desc: 'Tim Agendain selalu stand by 24 jam selama perjalanan kamu. Mulai dari pertanyaan soal hotel, transportasi, atau darurat — kamu ga bakal sendirian. Kami ada di setiap langkah!', titleWeight: '500', descWeight: '500' },
-      { number: '#4', image: '/why-camera.webp', title: 'Dokumentasi Pro', desc: 'Setiap momen berharga akan diabadikan secara sinematik oleh tim dokumentasi profesional kami. Pulang liburan bawa foto & video keren tanpa repot mikirin angle!', titleWeight: '500', descWeight: '500' },
+      { number: '#1', image: '/why-hotel.webp', title: 'All-in-One!', desc: 'Ga usah ribet ngurus sana-sini. Di Agendain, dari tiket pesawat, hotel, sampai itinerary harian semua udah kami siapin. Kamu tinggal bawa koper dan ajak teman — semuanya sudah beres!', titleWeight: '800', descWeight: '500' },
+      { number: '#2', image: '/placeholder.webp', title: 'Harga Terbaik', desc: 'Kami bekerja langsung dengan partner lokal di Eropa, jadi harga yang kamu dapat itu harga terbaik, transparan, tanpa biaya tersembunyi. Worth it banget buat pengalaman yang kamu dapat!', titleWeight: '800', descWeight: '500' },
+      { number: '#3', image: '/why-support.webp', title: 'Dukungan 24/7', desc: 'Tim Agendain selalu stand by 24 jam selama perjalanan kamu. Mulai dari pertanyaan soal hotel, transportasi, atau darurat — kamu ga bakal sendirian. Kami ada di setiap langkah!', titleWeight: '800', descWeight: '500' },
+      { number: '#4', image: '/why-camera.webp', title: 'Dokumentasi Pro', desc: 'Setiap momen berharga akan diabadikan secara sinematik oleh tim dokumentasi profesional kami. Pulang liburan bawa foto & video keren tanpa repot mikirin angle!', titleWeight: '800', descWeight: '500' },
     ],
     whyItems_en: [
-      { number: '#1', image: '/why-hotel.webp', title: 'All-in-One!', desc: 'No need to stress over the details. At Agendain, from flights, hotels, to daily itineraries, we have everything sorted. Just pack your bags and bring your friends — it\'s all set!', titleWeight: '500', descWeight: '500' },
-      { number: '#2', image: '/placeholder.webp', title: 'Best Price Guarantee', desc: 'We work directly with local partners in Europe, so the price you get is the best, transparent, and with no hidden fees. Definitely worth the experience you receive!', titleWeight: '500', descWeight: '500' },
-      { number: '#3', image: '/why-support.webp', title: '24/7 Support', desc: 'The Agendain team is always on standby 24 hours during your trip. From questions about hotels, transport, or emergencies — you will never be alone. We are with you every step of the way!', titleWeight: '500', descWeight: '500' },
-      { number: '#4', image: '/why-camera.webp', title: 'Pro Documentation', desc: 'Every precious moment will be captured cinematically by our professional documentation team. Go home with awesome photos & videos without worrying about the angle!', titleWeight: '500', descWeight: '500' },
+      { number: '#1', image: '/why-hotel.webp', title: 'All-in-One!', desc: 'No need to stress over the details. At Agendain, from flights, hotels, to daily itineraries, we have everything sorted. Just pack your bags and bring your friends — it\'s all set!', titleWeight: '800', descWeight: '500' },
+      { number: '#2', image: '/placeholder.webp', title: 'Best Price Guarantee', desc: 'We work directly with local partners in Europe, so the price you get is the best, transparent, and with no hidden fees. Definitely worth the experience you receive!', titleWeight: '800', descWeight: '500' },
+      { number: '#3', image: '/why-support.webp', title: '24/7 Support', desc: 'The Agendain team is always on standby 24 hours during your trip. From questions about hotels, transport, or emergencies — you will never be alone. We are with you every step of the way!', titleWeight: '800', descWeight: '500' },
+      { number: '#4', image: '/why-camera.webp', title: 'Pro Documentation', desc: 'Every precious moment will be captured cinematically by our professional documentation team. Go home with awesome photos & videos without worrying about the angle!', titleWeight: '800', descWeight: '500' },
     ],
 
     // Destinations
@@ -290,7 +290,7 @@ async function main() {
     destEyebrowWeight: '500',
     destTitle: '*Destinasi* Favorit',
     destTitle_en: 'Favorite *Destinations*',
-    destTitleWeight: '700',
+    destTitleWeight: '800',
 
     // Testimonial
     testiBadge: 'Sudut Pandang',
@@ -298,13 +298,13 @@ async function main() {
     testiBadgeWeight: '500',
     testiTitle: '"Satu Hari di *Italia* , dan Gue Langsung Jatuh Cinta!"',
     testiTitle_en: '"One Day in *Italy* , and I Immediately Fell in Love!"',
-    testiTitleWeight: '700',
+    testiTitleWeight: '800',
     galleryImg1: '/gallery-amalfi.webp', galleryImg2: '/dest-swiss.webp', galleryImg3: '/gallery-colosseum.webp', galleryImg4: '/dest-france.webp', galleryImg5: '/dest-italy.webp',
 
     // Accordion
     accTitle: 'Lihat, Hirup, & *Simpan* Memori',
     accTitle_en: 'See, Breathe, & *Keep* Memories',
-    accTitleWeight: '700',
+    accTitleWeight: '800',
     accSubtitle: 'Sudut Terbaik Eropa',
     accSubtitle_en: 'The Best Corners of Europe',
     accSubtitleWeight: '500',
@@ -327,7 +327,7 @@ async function main() {
     socialName_en: 'El Rumi & Syifa',
     socialTitle: 'Dari *Artis* Sampai Netizen, Semua Udah Gak *Wacana* Lagi!',
     socialTitle_en: 'From *Celebrities* to Netizens, None of It is Just a *Dream* Anymore!',
-    socialTitleWeight: '700',
+    socialTitleWeight: '800',
     socialQuote: 'Biasanya kalau ngerencanain trip tuh paling pusing nyamain jadwal dan ngurusin printilannya.',
     socialQuote_en: 'Usually when planning a trip, synchronizing schedules and sorting out details is the biggest headache.',
     socialSubtitle: 'Intip cerita seru El Rumi, Syifa, dan ratusan traveler lainnya yang udah berhasil nge-realisasiin liburan impian mereka bareng Agendain.',
@@ -349,7 +349,7 @@ async function main() {
     // FAQ
     faqTitle: 'Masih *Ragu?*',
     faqTitle_en: 'Still *Unsure?*',
-    faqTitleWeight: '700',
+    faqTitleWeight: '800',
     faqSubtitle: 'FAQ',
     faqSubtitle_en: 'FAQ',
     faqSubtitleWeight: '500',

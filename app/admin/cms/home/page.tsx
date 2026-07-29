@@ -403,8 +403,8 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', true, '', true, '700')}
-              {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true, '', true, '400')}
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', true, '', true, '800')}
+              {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true, '', true, '500')}
             </div>
             {renderImageInput('URL Gambar Background', 'heroBgImage', '/hero-coastal.webp')}
           </CardContent>
@@ -417,7 +417,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Eyebrow (Teks Kecil Atas)', 'whyTitleMain', false, '', true, '800')}
-              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'whyTitleSub', false, '', true, '700')}
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'whyTitleSub', false, '', true, '800')}
             </div>
             {renderArrayEditor('Kartu Keunggulan', 'whyItems', [
               { name: 'number', label: 'Angka/Nomor (Contoh: 01, 02)' },
@@ -433,8 +433,8 @@ export default function HomeCMSPage() {
             <CardTitle className="text-lg">Bagian Destinasi Favorit</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-6 sm:grid-cols-2 pt-6">
-            {renderTextInput('Eyebrow (Teks Kecil Atas)', 'destEyebrow', false, '', true, '700')}
-            {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'destTitle', false, '', true, '700')}
+            {renderTextInput('Eyebrow (Teks Kecil Atas)', 'destEyebrow', false, '', true, '500')}
+            {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'destTitle', false, '', true, '800')}
           </CardContent>
         </Card>
 
@@ -444,8 +444,8 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Badge / Tagline', 'testiBadge', false, '', true, '800')}
-              {renderTextInput('Kutipan Judul (Bisa pakai <span>Italia</span>)', 'testiTitle', false, '', true, '700')}
+              {renderTextInput('Badge / Tagline', 'testiBadge', false, '', true, '500')}
+              {renderTextInput('Kutipan Judul (Bisa pakai <span>Italia</span>)', 'testiTitle', false, '', true, '800')}
             </div>
             
             <div className="space-y-4 pt-4 border-t mt-4">
@@ -467,8 +467,8 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle', false, '', true, '700')}
-              {renderTextInput('Deskripsi Subtitle', 'accSubtitle', true, '', true, '700')}
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle', false, '', true, '800')}
+              {renderTextInput('Deskripsi Subtitle', 'accSubtitle', true, '', true, '500')}
             </div>
             {renderImageInput('URL Gambar (Kanan)', 'accImage', '/accordion-street.webp')}
             
@@ -486,11 +486,11 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Nama Tokoh/Pelanggan', 'socialName')}
-              {renderTextInput('Judul Sorotan Utama', 'socialTitle', true, '', true, '700')}
+              {renderTextInput('Judul Sorotan Utama', 'socialTitle', true, '', true, '800')}
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Kutipan Lengkap', 'socialQuote', true)}
-              {renderTextInput('Deskripsi Subtitle', 'socialSubtitle', true, '', true, '800')}
+              {renderTextInput('Deskripsi Subtitle', 'socialSubtitle', true, '', true, '500')}
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
               {renderImageInput('URL Gambar Tokoh (Kiri)', 'socialImage', '/el-rumi-syifa.webp')}
@@ -510,8 +510,8 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle', false, '', true, '700')}
-              {renderTextInput('Teks Pendek (CTA WhatsApp)', 'faqSubtitle', false, '', true, '800')}
+              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle', false, '', true, '800')}
+              {renderTextInput('Teks Pendek (CTA WhatsApp)', 'faqSubtitle', false, '', true, '500')}
             </div>
 
             {renderArrayEditor('Daftar FAQ', 'faqItems', [
