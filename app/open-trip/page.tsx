@@ -41,8 +41,14 @@ export default async function PaketPage({
   
   let packages: any[] = []
   let destList: string[] = []
+  let opentripSettings: any = {}
   
   try {
+    const setting = await prisma.setting.findUnique({ where: { key: 'opentrip_settings' } })
+    if (setting) {
+      opentripSettings = JSON.parse(setting.value)
+    }
+
     const dbDest = await prisma.destinasi.findMany({ select: { nama: true } })
     destList = dbDest.map((d: { nama: string }) => d.nama)
 
@@ -76,5 +82,5 @@ export default async function PaketPage({
     ]
   }
 
-  return <OpenTripContent packages={packages} destList={destList} />
+  return <OpenTripContent packages={packages} destList={destList} opentripSettings={opentripSettings} />
 }

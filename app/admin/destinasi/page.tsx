@@ -254,7 +254,7 @@ export default function AdminDestinasiPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="px-4">
-                        {d._count?.pakets || 0}
+                        {d._count?.openTrips || 0}
                       </TableCell>
                       <TableCell className="text-right px-4">
                         <div className="flex justify-end gap-2">

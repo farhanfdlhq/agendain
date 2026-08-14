@@ -5,7 +5,7 @@ import Cropper from "react-easy-crop"
 import { getCroppedImg } from "@/lib/cropImage"
 
 import { useSession } from "next-auth/react"
-import { Save, UploadCloud, Eye, EyeOff, ImageIcon } from "lucide-react"
+import { Save, UploadCloud, Eye, EyeOff, ImageIcon, Info, Minus, Plus } from "lucide-react"
 import { toast } from "react-hot-toast"
 
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { MediaPicker } from "@/components/ui/media-picker"
+import PasswordValidator, { isPasswordValid } from "@/components/PasswordValidator/PasswordValidator"
 
 export default function ProfilePage() {
   const { update } = useSession()
@@ -101,6 +102,11 @@ export default function ProfilePage() {
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    if (!isPasswordValid(passwordData.newPassword)) {
+      toast.error("Kata sandi baru belum memenuhi syarat keamanan")
+      return
+    }
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast.error("Konfirmasi kata sandi baru tidak cocok")
       return
@@ -270,7 +276,15 @@ export default function ProfilePage() {
                   }
                 />
               </div>
-              <p className="text-xs text-muted-foreground text-center">Format JPG, PNG, atau WEBP. Maks 2MB.</p>
+              <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg w-full mt-2">
+                <Info className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
+                <p>
+                  <strong>Informasi Foto:</strong><br/>
+                  Rekomendasi rasio 1:1 (min. 500x500px).<br/>
+                  Format file: JPG, PNG, atau WEBP.<br/>
+                  Ukuran maksimal: 2MB.
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -364,6 +378,7 @@ export default function ProfilePage() {
                       {showPassword.new ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
+                  <PasswordValidator password={passwordData.newPassword} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Konfirmasi Kata Sandi Baru</Label>
@@ -424,8 +439,15 @@ export default function ProfilePage() {
             </div>
           )}
           
-          <div className="flex items-center gap-4 py-4">
-            <span className="text-sm font-medium">Zoom</span>
+          <div className="flex items-center gap-3 py-4 px-2">
+            <span className="text-sm font-medium w-12">Zoom</span>
+            <button 
+              type="button" 
+              onClick={() => setZoom(Math.max(1, zoom - 0.1))} 
+              className="p-1.5 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground shrink-0"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
             <Input
               type="range"
               value={zoom}
@@ -435,6 +457,13 @@ export default function ProfilePage() {
               onChange={(e) => setZoom(Number(e.target.value))}
               className="flex-1 cursor-pointer accent-primary"
             />
+            <button 
+              type="button" 
+              onClick={() => setZoom(Math.min(3, zoom + 0.1))} 
+              className="p-1.5 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground shrink-0"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
           </div>
 
           <DialogFooter className="sm:justify-end gap-2">

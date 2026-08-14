@@ -127,7 +127,7 @@
 /* ---------- WHY CHOOSE US ---------- */
 .whySection {
   padding: 5rem 0;
-  background: #f8f9fa;
+  background: var(--color-canvas);
 }
 
 .container {
@@ -160,19 +160,27 @@
 /* Alternating cards */
 .whyCard {
   display: grid;
-  grid-template-columns: 4fr 6fr;
+  grid-template-columns: 4.5fr 5.5fr;
   gap: 0;
-  margin-bottom: 3rem;
+  margin-bottom: 4rem;
   border-radius: var(--radius-xl);
   overflow: hidden;
-  background: #f9f9fa;
-  min-height: 280px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+  background: #ffffff;
+  border: 1.5px solid #f1f5f9;
+  min-height: 400px;
+  box-shadow: 0 10px 40px -5px rgba(0,0,0,0.04);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.whyCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 50px -10px rgba(0,0,0,0.08);
+  border-color: #e2e8f0;
 }
 
 .whyCardReverse {
   composes: whyCard;
-  grid-template-columns: 6fr 4fr;
+  grid-template-columns: 5.5fr 4.5fr;
 }
 
 .whyCardReverse .whyCardImage {
@@ -185,7 +193,7 @@
 
 .whyCardImage {
   position: relative;
-  min-height: 280px;
+  min-height: 400px;
   overflow: hidden;
 }
 
@@ -223,11 +231,11 @@
 }
 
 .whyCardText {
-  padding: 3rem 4rem;
+  padding: 4rem 5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .whyCardTitle {
@@ -247,7 +255,7 @@
 /* ---------- FAVORITE DESTINATIONS ---------- */
 .destSection {
   padding: 5rem 0;
-  background: #ffffff;
+  background: var(--color-canvas);
 }
 
 .destWrapper {
@@ -609,7 +617,7 @@
 /* ---------- ACCORDION / FEATURES ---------- */
 .accordionSection {
   padding: 5rem 0;
-  background: #ffffff;
+  background: var(--color-canvas);
 }
 
 .accordionLayout {
@@ -1017,7 +1025,7 @@
 /* ---------- FAQ ---------- */
 .faqSection {
   padding: 5rem 0;
-  background: #f8f9fa;
+  background: var(--color-canvas);
 }
 
 .faqHeader {

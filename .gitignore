@@ -57,6 +57,10 @@ materi
 .impeccable
 aapanelVps.txt
 /project/
+.superpowers
+.vscode
+
+
 # Worktrees
 /.worktrees/
 llms.txt

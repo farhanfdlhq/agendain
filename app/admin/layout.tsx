@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users, Info, Image as ImageIcon, Shield } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
@@ -104,6 +104,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       collapsible: true,
       items: [
         { name: 'Halaman Beranda', href: '/admin/cms/home', icon: <LayoutDashboard size={18} />, minRole: 'admin' },
+        { name: 'Tentang Kami', href: '/admin/cms/about', icon: <Info size={18} />, minRole: 'admin' },
+        { name: 'Header Open Trip', href: '/admin/cms/open-trip', icon: <ImageIcon size={18} />, minRole: 'admin' },
+        { name: 'Header Private Trip', href: '/admin/cms/private-trip', icon: <ImageIcon size={18} />, minRole: 'admin' },
+        { name: 'Kebijakan Privasi', href: '/admin/cms/privacy', icon: <Shield size={18} />, minRole: 'admin' },
         { name: 'Tema & Tampilan', href: '/admin/settings/design', icon: <Palette size={18} />, minRole: 'super_admin' },
       ]
     }

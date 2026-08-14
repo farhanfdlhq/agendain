@@ -188,7 +188,7 @@ export default function TambahPaketPage() {
         opsiPenjemputan
       }
 
-      const res = await fetch("/api/paket", {
+      const res = await fetch("/api/open-trip", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

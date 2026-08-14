@@ -70,7 +70,7 @@ export default function AdminPaketPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/paket");
+      const res = await fetch("/api/open-trip");
       if (res.ok) {
         const data = await res.json();
         setPackages(data);
@@ -87,7 +87,7 @@ export default function AdminPaketPage() {
 
   const handleStatusChange = async (slug: string, newStatus: string) => {
     try {
-      const res = await fetch(`/api/paket/${slug}`, {
+      const res = await fetch(`/api/open-trip/${slug}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -108,7 +108,7 @@ export default function AdminPaketPage() {
     if (!confirm("Apakah Anda yakin ingin menghapus paket ini?")) return;
 
     try {
-      const res = await fetch(`/api/paket/${slug}`, {
+      const res = await fetch(`/api/open-trip/${slug}`, {
         method: "DELETE",
       });
       if (res.ok) {
@@ -348,7 +348,7 @@ export default function AdminPaketPage() {
                           title="Lihat di Web"
                           className="h-8 w-8 text-muted-foreground hover:text-foreground"
                         >
-                          <Link href={`/paket/${pkg.slug}`} target="_blank">
+                          <Link href={`/open-trip/${pkg.slug}`} target="_blank">
                             <Eye className="h-4 w-4" />
                           </Link>
                         </Button>

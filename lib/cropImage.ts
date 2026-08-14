@@ -40,8 +40,9 @@ export async function getCroppedImg(
         resolve(null)
         return
       }
-      const file = new File([blob], 'avatar.jpg', { type: 'image/jpeg' })
+      // Simpan sebagai PNG untuk menjaga transparansi (penting untuk logo/favicon)
+      const file = new File([blob], 'image.png', { type: 'image/png' })
       resolve(file)
-    }, 'image/jpeg', 0.9)
+    }, 'image/png')
   })
 }

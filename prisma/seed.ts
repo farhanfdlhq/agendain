@@ -436,6 +436,113 @@ async function main() {
     create: { key: 'home_settings', value: JSON.stringify(homeSettings) },
   });
   console.log("Home CMS Settings seeded (all subtitles/descriptions font-weight: Medium 500).");
+
+  // Seed About Us CMS Settings
+  const aboutSettings = {
+    heroTitle: 'Apa itu *Agendain*?',
+    heroTitle_en: 'What is *Agendain*?',
+    heroTitleWeight: '800',
+    heroSubtitle: 'Bagi kami, menjelajahi Eropa bukan sekadar berpindah dari satu destinasi ke destinasi lain, melainkan tentang mengumpulkan cerita baru yang membekas di hati. Agendain hadir untuk memastikan seluruh langkah perjalananmu berjalan mulus, aman, dan bebas dari drama printilan logistik yang membingungkan. Ruang blog ini kami dedikasikan sebagai panduan lokal, tempat berbagi cerita nyata, serta kurasi hidden gems terbaik langsung dari sudut-sudut tercantik Eropa. Yuk, persiapkan kopermu, resapi setiap keindahannya, dan mari agendakan petualangan sinematikmu bersama kami.',
+    heroSubtitle_en: 'For us, exploring Europe is not just moving from one destination to another, but about collecting new stories that leave an impression on the heart. Agendain is here to ensure your entire journey runs smoothly, safely, and free from the drama of confusing logistical details. We dedicate this blog space as a local guide, a place to share real stories, and curate the best hidden gems directly from the most beautiful corners of Europe. Let\'s prepare your suitcase, absorb every beauty, and let\'s schedule your cinematic adventure with us.',
+    heroSubtitleWeight: '500',
+    heroImage: '/dest-swiss.webp',
+    missionLabel: 'Misi kami',
+    missionLabel_en: 'Our Mission',
+    missionLabelWeight: '600',
+    missionTitle: 'Mengubah rencana liburanmu jadi kenyataan tanpa drama!',
+    missionTitle_en: 'Turning your vacation plans into reality without drama!',
+    missionTitleWeight: '800',
+    missionDesc: 'Di Agendain, fokus kami adalah memastikan momen liburanmu di Eropa 100% dinikmati tanpa perlu memusingkan logistik, jadwal kereta yang rumit, atau drama nyasar di negeri orang. Semua udah kami agendain dengan rapi!',
+    missionDesc_en: 'At Agendain, our focus is to ensure your vacation moments in Europe are 100% enjoyed without worrying about logistics, complicated train schedules, or the drama of getting lost in a foreign land. We have scheduled everything neatly!',
+    missionDescWeight: '500',
+    guidePill: 'Dibalik Agendain',
+    guidePill_en: 'Behind Agendain',
+    guideTitle: 'Meet Our *Lead Guide*',
+    guideTitle_en: 'Meet Our *Lead Guide*',
+    guideTitleWeight: '800',
+    guideDescP1: '"Eropa punya sejuta pesona yang sayang banget kalau cuma dilewatin gitu aja dari balik jendela bus wisata. Aku pengen kalian ngerasain Eropa layaknya local traveler — jalan kaki di gang kecil berbatu, ngopi di cafe hidden gem, dan ngobrol sama warga lokal."',
+    guideDescP1_en: '"Europe has a million charms that are a pity if just passed by from behind the window of a tour bus. I want you to experience Europe like a local traveler — walking down small cobbled alleys, having coffee at hidden gem cafes, and chatting with locals."',
+    guideDescP2: 'Kenalin, sosok di balik setiap rute anti-mainstream dan jadwal yang super efisien. Berbekal pengalaman bertahun-tahun wara-wiri di benua biru, ia siap bawa kamu ngerasain petualangan Eropa yang sesungguhnya.',
+    guideDescP2_en: 'Meet the person behind every anti-mainstream route and super efficient schedule. Armed with years of experience wandering around the blue continent, they are ready to take you on a true European adventure.',
+    guideDescWeight: '500',
+    guideImage: '/why-camera.webp',
+  };
+
+  await prisma.setting.upsert({
+    where: { key: 'about_settings' },
+    update: { value: JSON.stringify(aboutSettings) },
+    create: { key: 'about_settings', value: JSON.stringify(aboutSettings) },
+  });
+  console.log("About Us CMS Settings seeded.");
+
+  // Seed Privacy Policy CMS Settings
+  const privacySettings = {
+    privacyContent: '<h2>Kebijakan Privasi</h2><p>Ini adalah kebijakan privasi bawaan (default) Agendain. Data Anda aman bersama kami.</p>',
+    privacyContent_en: '<h2>Privacy Policy</h2><p>This is the default privacy policy of Agendain. Your data is safe with us.</p>'
+  };
+
+  await prisma.setting.upsert({
+    where: { key: 'privacy_settings' },
+    update: { value: JSON.stringify(privacySettings) },
+    create: { key: 'privacy_settings', value: JSON.stringify(privacySettings) },
+  });
+  console.log("Privacy Policy CMS Settings seeded.");
+
+  // Seed Open Trip CMS Settings
+  const opentripSettings = {
+    heroTitle: 'Eksplorasi Eropa *Lebih Seru* Bareng Teman Baru',
+    heroTitle_en: 'Explore Europe *More Exciting* With New Friends',
+    heroTitleWeight: '800',
+    heroSubtitle: 'Gabung di Open Trip Agendain. Perjalanan terencana, budget terjangkau, dan pengalaman tak terlupakan.',
+    heroSubtitle_en: 'Join the Agendain Open Trip. Planned journey, affordable budget, and unforgettable experience.',
+    heroSubtitleWeight: '500',
+    heroImage: '/hero-coastal.webp',
+    packagesTitle: 'Pilih *Destinasi* Open Trip Kamu',
+    packagesTitle_en: 'Choose Your Open Trip *Destination*',
+    packagesTitleWeight: '800',
+    packagesSubtitle: 'Beragam pilihan rute menarik yang dirancang khusus untuk memberikan pengalaman liburan terbaik di Eropa.',
+    packagesSubtitle_en: 'Various exciting route options specially designed to provide the best holiday experience in Europe.',
+    packagesSubtitleWeight: '500',
+  };
+
+  await prisma.setting.upsert({
+    where: { key: 'opentrip_settings' },
+    update: { value: JSON.stringify(opentripSettings) },
+    create: { key: 'opentrip_settings', value: JSON.stringify(opentripSettings) },
+  });
+  console.log("Open Trip CMS Settings seeded.");
+
+  // Seed Private Trip CMS Settings
+  const privatetripSettings = {
+    heroTitle: 'Eropa Eksklusif *Sesuai Cara* Kamu',
+    heroTitle_en: 'Exclusive Europe *Your Way*',
+    heroTitleWeight: '800',
+    heroSubtitle: 'Rancang perjalanan impianmu ke Eropa dengan fleksibilitas penuh. Private trip kami memberikan kebebasan untuk liburan tanpa kompromi.',
+    heroSubtitle_en: 'Design your dream trip to Europe with full flexibility. Our private trip gives you the freedom for an uncompromising vacation.',
+    heroSubtitleWeight: '500',
+    heroImage: '/hero-coastal.webp',
+    packagesTitle: 'Pilihan *Private Trip* Kami',
+    packagesTitle_en: 'Our *Private Trip* Options',
+    packagesTitleWeight: '800',
+    packagesSubtitle: 'Beragam kelas layanan yang disesuaikan dengan gaya liburan dan kenyamanan Anda bersama keluarga atau sahabat.',
+    packagesSubtitle_en: 'Various service classes adapted to your vacation style and comfort with family or friends.',
+    packagesSubtitleWeight: '500',
+    ctaTitle: 'Siap *Agendain* Private Trip Kamu?',
+    ctaTitle_en: 'Ready to *Agendain* Your Private Trip?',
+    ctaTitleWeight: '800',
+    ctaSubtitle: 'Mari diskusikan rencana perjalanan impianmu bersama tim kami yang berpengalaman.',
+    ctaSubtitle_en: 'Let\'s discuss your dream itinerary with our experienced team.',
+    ctaSubtitleWeight: '500',
+    ctaBtnText: 'Hubungi Konsultan Kami',
+    ctaBtnText_en: 'Contact Our Consultant',
+  };
+
+  await prisma.setting.upsert({
+    where: { key: 'privatetrip_settings' },
+    update: { value: JSON.stringify(privatetripSettings) },
+    create: { key: 'privatetrip_settings', value: JSON.stringify(privatetripSettings) },
+  });
+  console.log("Private Trip CMS Settings seeded.");
 }
 
 main()

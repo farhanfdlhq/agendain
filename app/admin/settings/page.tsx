@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Settings, Save, Link as LinkIcon, MessageSquare, CreditCard, LayoutTemplate, Info } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
@@ -8,9 +8,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { MediaPicker } from "@/components/ui/media-picker"
 import { formatWhatsAppNumber } from "@/lib/utils"
+import Cropper from "react-easy-crop"
+import { getCroppedImg } from "@/lib/cropImage"
+import { Minus, Plus, UploadCloud } from "lucide-react"
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
@@ -29,7 +33,47 @@ export default function SettingsPage() {
     global_opsi_penjemputan: "Bandara Internasional Soekarno Hatta (Terminal 3).\nPenjemputan area Jakarta (sesuai konfirmasi).\nSilakan kumpul 4 jam sebelum keberangkatan."
   })
 
-  // Logo upload is handled internally by MediaPicker
+  // Cropper states for Favicon
+  const [cropDialogOpen, setCropDialogOpen] = useState(false)
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
+  const [uploadingCropped, setUploadingCropped] = useState(false)
+
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }, [])
+
+  const handleUploadCropped = async () => {
+    if (!imageToCrop || !croppedAreaPixels) return
+    setUploadingCropped(true)
+    try {
+      const croppedImage = await getCroppedImg(imageToCrop, croppedAreaPixels)
+      if (!croppedImage) throw new Error("Gagal memotong gambar")
+
+      const formDataUpload = new FormData()
+      formDataUpload.append("file", croppedImage)
+      formDataUpload.append("type", "system")
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataUpload
+      })
+      
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Gagal mengunggah foto")
+      
+      setFormData(prev => ({ ...prev, site_favicon: data.url }))
+      toast.success("Favicon berhasil dipotong")
+      setCropDialogOpen(false)
+      setImageToCrop(null)
+    } catch (error: any) {
+      toast.error(error.message || "Terjadi kesalahan saat memotong gambar")
+    } finally {
+      setUploadingCropped(false)
+    }
+  }
 
   useEffect(() => {
     fetch("/api/settings")
@@ -145,7 +189,10 @@ export default function SettingsPage() {
                 <div className="flex flex-col gap-2">
                   <MediaPicker 
                     value={formData.site_favicon || ""}
-                    onChange={(url) => setFormData(prev => ({ ...prev, site_favicon: url }))}
+                    onChange={(url) => {
+                      setImageToCrop(url)
+                      setCropDialogOpen(true)
+                    }}
                     label="Pilih Favicon"
                     description="Ikon untuk penampil judul tab di browser."
                   />
@@ -301,6 +348,76 @@ export default function SettingsPage() {
         </Card>
 
       </form>
+
+      <Dialog open={cropDialogOpen} onOpenChange={(open) => {
+        setCropDialogOpen(open)
+        if (!open) setImageToCrop(null)
+      }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Sesuaikan Favicon</DialogTitle>
+            <DialogDescription>
+              Geser dan perbesar gambar untuk menyesuaikan posisi Favicon Anda (berbentuk kotak).
+            </DialogDescription>
+          </DialogHeader>
+          
+          {imageToCrop && (
+            <div className="relative w-full h-[300px] mt-2 rounded-xl overflow-hidden bg-muted">
+              <Cropper
+                image={imageToCrop}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                cropShape="rect"
+                showGrid={false}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+              />
+            </div>
+          )}
+          
+          <div className="flex items-center gap-3 py-4 px-2">
+            <span className="text-sm font-medium w-12">Zoom</span>
+            <button 
+              type="button" 
+              onClick={() => setZoom(Math.max(1, zoom - 0.1))} 
+              className="p-1.5 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground shrink-0"
+            >
+              <Minus className="h-4 w-4" />
+            </button>
+            <Input
+              type="range"
+              value={zoom}
+              min={1}
+              max={3}
+              step={0.1}
+              onChange={(e) => setZoom(Number(e.target.value))}
+              className="flex-1 cursor-pointer accent-primary"
+            />
+            <button 
+              type="button" 
+              onClick={() => setZoom(Math.min(3, zoom + 0.1))} 
+              className="p-1.5 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground shrink-0"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+
+          <DialogFooter className="sm:justify-end gap-2">
+            <Button type="button" variant="outline" onClick={() => {
+              setCropDialogOpen(false)
+              setImageToCrop(null)
+            }}>
+              Batal
+            </Button>
+            <Button type="button" onClick={handleUploadCropped} disabled={uploadingCropped}>
+              {uploadingCropped ? <AirplaneLoader className="mr-2 h-4 w-4" /> : <UploadCloud className="mr-2 h-4 w-4" />}
+              {uploadingCropped ? "Menyimpan..." : "Simpan Potongan"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

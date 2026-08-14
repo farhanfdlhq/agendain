@@ -38,6 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 import { Providers } from "@/components/Providers/Providers";
 import OfflineDetector from "@/components/ui/offline-detector";
+import { getServerLocale } from "@/lib/i18n/server";
 
 export default async function RootLayout({
   children,
@@ -45,6 +46,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const settingsObj = await getSettings()
+  const initialLocale = await getServerLocale()
 
   let theme = {
     colorPrimary: '#054569',
@@ -89,7 +91,7 @@ export default async function RootLayout({
   `
 
   return (
-    <html lang="id" data-scroll-behavior="smooth" className={montserrat.variable} suppressHydrationWarning>
+    <html lang={initialLocale} data-scroll-behavior="smooth" className={montserrat.variable} suppressHydrationWarning>
       <head>
         <style>{`
           :root {
@@ -126,7 +128,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning>
         <OfflineDetector />
         <Providers>
-          <FrontLayout settings={settingsObj}>{children}</FrontLayout>
+          <FrontLayout settings={settingsObj} initialLocale={initialLocale}>{children}</FrontLayout>
         </Providers>
       </body>
     </html>

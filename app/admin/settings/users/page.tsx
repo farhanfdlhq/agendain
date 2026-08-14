@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useDeferredValue } from "react"
 import { useSession } from "next-auth/react"
 import { toast } from "react-hot-toast"
-import { Plus, Users, Shield, MoreVertical, Search } from "lucide-react"
+import { Plus, Users, Shield, MoreVertical, Search, Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import PasswordValidator, { isPasswordValid } from "@/components/PasswordValidator/PasswordValidator"
 
 type RoleConfig = {
   id: string
@@ -44,6 +45,7 @@ export default function UserManagementPage() {
   const [editingId, setEditingId] = useState<number | null>(null)
   const [formData, setFormData] = useState({ nama: '', email: '', password: '', role: 'editor' })
   const [isSaving, setIsSaving] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     if (session && (session.user as any)?.role !== 'super_admin') {
@@ -89,7 +91,16 @@ export default function UserManagementPage() {
       const method = editingId ? 'PUT' : 'POST'
       
       const payload = { ...formData }
-      if (editingId && !payload.password) delete (payload as any).password
+      if (editingId && !payload.password) {
+        delete (payload as any).password
+      } else {
+        // Enforce password validation before submitting
+        if (!isPasswordValid(payload.password as string)) {
+          toast.error("Password belum memenuhi semua kriteria keamanan")
+          setIsSaving(false)
+          return
+        }
+      }
 
       const res = await fetch(url, {
         method,
@@ -268,7 +279,25 @@ export default function UserManagementPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} required={!editingId} placeholder={editingId ? '(Kosongkan jika tidak ingin diubah)' : 'Minimal 6 karakter'} />
+                <div className="relative">
+                  <Input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"} 
+                    value={formData.password} 
+                    onChange={(e) => setFormData({...formData, password: e.target.value})} 
+                    required={!editingId} 
+                    placeholder={editingId ? '(Kosongkan jika tidak ingin diubah)' : 'Minimal 8 karakter beserta kombinasi huruf & angka'} 
+                    className="pr-10"
+                  />
+                  <button 
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                <PasswordValidator password={formData.password} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="role">Peran Akses (Role)</Label>

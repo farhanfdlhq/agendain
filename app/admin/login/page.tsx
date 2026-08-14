@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/reui/alert"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import PasswordValidator from "@/components/PasswordValidator/PasswordValidator"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -19,7 +20,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const [logoUrl, setLogoUrl] = useState("/Logo ( White Version ).png")
+  const [logoUrl, setLogoUrl] = useState("/logo_present.webp")
 
   useEffect(() => {
     fetch("/api/settings")
@@ -130,6 +131,7 @@ export default function LoginPage() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                <PasswordValidator password={password} />
               </div>
 
               <Button 

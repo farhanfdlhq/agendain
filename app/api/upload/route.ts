@@ -55,6 +55,7 @@ export async function POST(request: Request) {
 
     const data = await request.formData();
     const file: File | null = data.get("file") as unknown as File;
+    const type = data.get("type") as string;
 
     if (!file) {
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
@@ -112,16 +113,22 @@ export async function POST(request: Request) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const cleanFilename = filename.replace(/[^a-zA-Z0-9.-]/g, "");
     const finalName = `${uniqueSuffix}-${cleanFilename}`;
-    const uploadDir = path.join(process.cwd(), "public/uploads");
-    const filepath = path.join(uploadDir, finalName);
+    let uploadDir = path.join(process.cwd(), "public/uploads");
+    let relativeUrl = `/uploads/${finalName}`;
+
+    if (type === "system") {
+      uploadDir = path.join(uploadDir, "system");
+      relativeUrl = `/uploads/system/${finalName}`;
+    }
 
     // Ensure directory exists
     if (!fsSync.existsSync(uploadDir)) {
       fsSync.mkdirSync(uploadDir, { recursive: true });
     }
 
+    const filepath = path.join(uploadDir, finalName);
     await writeFile(filepath, fileBuffer);
-    return NextResponse.json({ url: `/uploads/${finalName}` });
+    return NextResponse.json({ url: relativeUrl });
   } catch (error) {
     console.error("Error uploading file:", error);
     return NextResponse.json(

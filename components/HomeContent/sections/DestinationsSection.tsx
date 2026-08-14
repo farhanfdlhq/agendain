@@ -22,7 +22,7 @@ export default function DestinationsSection({ gs, t, packages }: { gs: any, t: a
             <div className={styles.destHeaderLeftWrapper}>
               <p className={styles.destEyebrow} style={gs('destEyebrowWeight') ? { fontWeight: Number(gs('destEyebrowWeight')) } : undefined}>{gs('destEyebrow', undefined, 'Eksplor Bersama Agendain')}</p>
               <h2 className={styles.destTitle} style={gs('destTitleWeight') ? { fontWeight: Number(gs('destTitleWeight')) } : undefined}>{renderHighlightedTitle(gs('destTitle', undefined, 'Favorite Destination'))}</h2>
-              <Link href="/destinasi" className={styles.destViewAll}>Lihat Semua Destinasi &rarr;</Link>
+              <Link href="/open-trip" className={styles.destViewAll}>Lihat Semua Destinasi &rarr;</Link>
             </div>
         <Stagger className={styles.destGrid}>
           {((packages || []).length > 0 ? packages.slice(0, 3) : DESTINATIONS).map((pkg) => (

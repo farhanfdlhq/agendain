@@ -376,6 +376,250 @@ async function main() {
     update: { value: JSON.stringify(homeSettings) },
     create: { key: 'home_settings', value: JSON.stringify(homeSettings) },
   })
+
+  // Seed About Us CMS Settings
+  const aboutSettings = {
+    heroTitle: 'Apa itu *Agendain*?',
+    heroTitle_en: 'What is *Agendain*?',
+    heroTitleWeight: '800',
+    heroSubtitle: 'Bagi kami, menjelajahi Eropa bukan sekadar berpindah dari satu destinasi ke destinasi lain, melainkan tentang mengumpulkan cerita baru yang membekas di hati. Agendain hadir untuk memastikan seluruh langkah perjalananmu berjalan mulus, aman, dan bebas dari drama printilan logistik yang membingungkan. Ruang blog ini kami dedikasikan sebagai panduan lokal, tempat berbagi cerita nyata, serta kurasi hidden gems terbaik langsung dari sudut-sudut tercantik Eropa. Yuk, persiapkan kopermu, resapi setiap keindahannya, dan mari agendakan petualangan sinematikmu bersama kami.',
+    heroSubtitle_en: 'For us, exploring Europe is not just moving from one destination to another, but about collecting new stories that leave an impression on the heart. Agendain is here to ensure your entire journey runs smoothly, safely, and free from the drama of confusing logistical details. We dedicate this blog space as a local guide, a place to share real stories, and curate the best hidden gems directly from the most beautiful corners of Europe. Let\'s prepare your suitcase, absorb every beauty, and let\'s schedule your cinematic adventure with us.',
+    heroSubtitleWeight: '500',
+    heroImage: '/dest-swiss.webp',
+    missionLabel: 'Misi kami',
+    missionLabel_en: 'Our Mission',
+    missionLabelWeight: '600',
+    missionTitle: 'Mengubah rencana liburanmu jadi kenyataan tanpa drama!',
+    missionTitle_en: 'Turning your vacation plans into reality without drama!',
+    missionTitleWeight: '800',
+    missionDesc: 'Di Agendain, fokus kami adalah memastikan momen liburanmu di Eropa 100% dinikmati tanpa perlu memusingkan logistik, jadwal kereta yang rumit, atau drama nyasar di negeri orang. Semua udah kami agendain dengan rapi!',
+    missionDesc_en: 'At Agendain, our focus is to ensure your vacation moments in Europe are 100% enjoyed without worrying about logistics, complicated train schedules, or the drama of getting lost in a foreign land. We have scheduled everything neatly!',
+    missionDescWeight: '500',
+    guidePill: 'Dibalik Agendain',
+    guidePill_en: 'Behind Agendain',
+    guideTitle: 'Meet Our *Lead Guide*',
+    guideTitle_en: 'Meet Our *Lead Guide*',
+    guideTitleWeight: '800',
+    guideDescP1: '"Eropa punya sejuta pesona yang sayang banget kalau cuma dilewatin gitu aja dari balik jendela bus wisata. Aku pengen kalian ngerasain Eropa layaknya local traveler — jalan kaki di gang kecil berbatu, ngopi di cafe hidden gem, dan ngobrol sama warga lokal."',
+    guideDescP1_en: '"Europe has a million charms that are a pity if just passed by from behind the window of a tour bus. I want you to experience Europe like a local traveler — walking down small cobbled alleys, having coffee at hidden gem cafes, and chatting with locals."',
+    guideDescP2: 'Kenalin, sosok di balik setiap rute anti-mainstream dan jadwal yang super efisien. Berbekal pengalaman bertahun-tahun wara-wiri di benua biru, ia siap bawa kamu ngerasain petualangan Eropa yang sesungguhnya.',
+    guideDescP2_en: 'Meet the person behind every anti-mainstream route and super efficient schedule. Armed with years of experience wandering around the blue continent, they are ready to take you on a true European adventure.',
+    guideDescWeight: '500',
+    guideImage: '/why-camera.webp',
+  };
+
+  await prisma.setting.upsert({
+    where: { key: 'about_settings' },
+    update: { value: JSON.stringify(aboutSettings) },
+    create: { key: 'about_settings', value: JSON.stringify(aboutSettings) },
+  });
+  console.log("About Us CMS Settings seeded.");
+
+  // Seed Privacy Policy CMS Settings
+  const privacySettings = {
+    heroImage: '/hero-coastal.webp',
+    heroTitle: '*Kebijakan Privasi* Agendain',
+    heroTitle_en: 'Agendain *Privacy Policy*',
+    heroTitleWeight: '800',
+    heroSubtitle: 'Pelajari bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda saat menggunakan layanan kami.',
+    heroSubtitle_en: 'Learn how we collect, use, and protect your personal data when using our services.',
+    heroSubtitleWeight: '500',
+    privacyContent: `
+<h2>Kebijakan Privasi Agendain</h2>
+<p>Terakhir Diperbarui: <strong>Agustus 2026</strong></p>
+<p>Selamat datang di Agendain. Kami menghargai privasi Anda dan berkomitmen untuk melindungi data pribadi yang Anda bagikan kepada kami. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi Anda saat Anda menggunakan layanan tour & travel kami.</p>
+
+<h3>1. Informasi yang Kami Kumpulkan</h3>
+<p>Kami dapat mengumpulkan jenis informasi berikut saat Anda berinteraksi dengan layanan kami:</p>
+<ul>
+  <li><strong>Informasi Identitas Pribadi:</strong> Nama lengkap, alamat email, nomor telepon, alamat tempat tinggal, dan salinan paspor/KTP (untuk keperluan pemesanan tiket pesawat dan pengajuan visa).</li>
+  <li><strong>Informasi Pembayaran:</strong> Detail kartu kredit/debit atau informasi rekening bank (meskipun kami menggunakan gateway pembayaran pihak ketiga yang aman dan tidak menyimpan data mentah kartu kredit Anda).</li>
+  <li><strong>Informasi Perjalanan:</strong> Preferensi diet, kondisi kesehatan khusus, kontak darurat, dan riwayat perjalanan Anda sebelumnya bersama Agendain.</li>
+</ul>
+
+<h3>2. Bagaimana Kami Menggunakan Informasi Anda</h3>
+<p>Informasi yang kami kumpulkan digunakan untuk tujuan berikut:</p>
+<ul>
+  <li>Memproses pemesanan, tiket pesawat, reservasi hotel, dan aplikasi visa Anda.</li>
+  <li>Berkomunikasi dengan Anda terkait status perjalanan, perubahan jadwal, dan informasi darurat.</li>
+  <li>Meningkatkan layanan dan penawaran kami melalui analisis preferensi pelanggan.</li>
+  <li>Mematuhi kewajiban hukum dan persyaratan regulasi terkait industri pariwisata.</li>
+</ul>
+
+<h3>3. Pembagian Informasi dengan Pihak Ketiga</h3>
+<p>Kami tidak akan menjual atau menyewakan informasi pribadi Anda. Kami hanya membagikan data Anda kepada pihak ketiga yang secara langsung terlibat dalam pelaksanaan perjalanan Anda, seperti:</p>
+<ul>
+  <li>Maskapai penerbangan, hotel, dan penyedia transportasi lokal di Eropa.</li>
+  <li>Kedutaan atau agen pengurusan visa.</li>
+  <li>Penyedia asuransi perjalanan (jika Anda membeli asuransi melalui kami).</li>
+</ul>
+
+<h3>4. Keamanan Data</h3>
+<p>Kami menerapkan langkah-langkah keamanan teknis dan organisasi yang ketat untuk melindungi data pribadi Anda dari akses yang tidak sah, kehilangan, atau penyalahgunaan. Sistem kami dilindungi oleh enkripsi SSL dan firewall standar industri.</p>
+
+<h3>5. Hak Anda</h3>
+<p>Anda memiliki hak untuk meminta akses, koreksi, atau penghapusan data pribadi Anda yang ada di sistem kami. Anda juga dapat menarik persetujuan Anda untuk menerima komunikasi pemasaran kapan saja dengan menghubungi tim dukungan kami.</p>
+
+<h3>Hubungi Kami</h3>
+<p>Jika Anda memiliki pertanyaan tentang Kebijakan Privasi ini, silakan hubungi kami melalui email di <strong>privacy@agendain.com</strong> atau melalui nomor WhatsApp resmi kami.</p>
+`,
+    privacyContent_en: `
+<h2>Agendain Privacy Policy</h2>
+<p>Last Updated: <strong>August 2026</strong></p>
+<p>Welcome to Agendain. We value your privacy and are committed to protecting the personal data you share with us. This Privacy Policy explains how we collect, use, and safeguard your information when you use our tour & travel services.</p>
+
+<h3>1. Information We Collect</h3>
+<p>We may collect the following types of information when you interact with our services:</p>
+<ul>
+  <li><strong>Personally Identifiable Information:</strong> Full name, email address, phone number, residential address, and passport/ID copies (for flight bookings and visa applications).</li>
+  <li><strong>Payment Information:</strong> Credit/debit card details or bank account information (although we use secure third-party payment gateways and do not store your raw credit card data).</li>
+  <li><strong>Travel Information:</strong> Dietary preferences, specific health conditions, emergency contacts, and your previous travel history with Agendain.</li>
+</ul>
+
+<h3>2. How We Use Your Information</h3>
+<p>The information we collect is used for the following purposes:</p>
+<ul>
+  <li>Processing your bookings, flight tickets, hotel reservations, and visa applications.</li>
+  <li>Communicating with you regarding travel status, schedule changes, and emergency information.</li>
+  <li>Improving our services and offerings through customer preference analysis.</li>
+  <li>Complying with legal obligations and regulatory requirements related to the tourism industry.</li>
+</ul>
+
+<h3>3. Information Sharing with Third Parties</h3>
+<p>We will not sell or rent your personal information. We only share your data with third parties directly involved in executing your trip, such as:</p>
+<ul>
+  <li>Airlines, hotels, and local transportation providers in Europe.</li>
+  <li>Embassies or visa processing agents.</li>
+  <li>Travel insurance providers (if you purchase insurance through us).</li>
+</ul>
+
+<h3>4. Data Security</h3>
+<p>We implement strict technical and organizational security measures to protect your personal data from unauthorized access, loss, or misuse. Our systems are protected by industry-standard SSL encryption and firewalls.</p>
+
+<h3>5. Your Rights</h3>
+<p>You have the right to request access, correction, or deletion of your personal data in our systems. You can also withdraw your consent to receive marketing communications at any time by contacting our support team.</p>
+
+<h3>Contact Us</h3>
+<p>If you have any questions about this Privacy Policy, please contact us via email at <strong>privacy@agendain.com</strong> or through our official WhatsApp number.</p>
+`
+  };
+
+  await prisma.setting.upsert({
+    where: { key: 'privacy_settings' },
+    update: { value: JSON.stringify(privacySettings) },
+    create: { key: 'privacy_settings', value: JSON.stringify(privacySettings) },
+  });
+  console.log("Privacy Policy CMS Settings seeded.");
+
+  // Seed Open Trip CMS Settings
+  const opentripSettings = {
+    heroTitle: 'Eksplorasi Eropa *Lebih Seru* Bareng Teman Baru',
+    heroTitle_en: 'Explore Europe *More Exciting* With New Friends',
+    heroTitleWeight: '800',
+    heroSubtitle: 'Gabung di Open Trip Agendain. Perjalanan terencana, budget terjangkau, dan pengalaman tak terlupakan.',
+    heroSubtitle_en: 'Join the Agendain Open Trip. Planned journey, affordable budget, and unforgettable experience.',
+    heroSubtitleWeight: '500',
+    heroImage: '/hero-coastal.webp',
+    packagesTitle: 'Pilih *Destinasi* Open Trip Kamu',
+    packagesTitle_en: 'Choose Your Open Trip *Destination*',
+    packagesTitleWeight: '800',
+    packagesSubtitle: 'Beragam pilihan rute menarik yang dirancang khusus untuk memberikan pengalaman liburan terbaik di Eropa.',
+    packagesSubtitle_en: 'Various exciting route options specially designed to provide the best holiday experience in Europe.',
+    packagesSubtitleWeight: '500',
+  };
+
+  await prisma.setting.upsert({
+    where: { key: 'opentrip_settings' },
+    update: { value: JSON.stringify(opentripSettings) },
+    create: { key: 'opentrip_settings', value: JSON.stringify(opentripSettings) },
+  });
+  console.log("Open Trip CMS Settings seeded.");
+
+  // Private Trip Packages
+  const privateTripPackages = [
+    {
+      title: "VALUE TRIP — Jelajahi Lebih Banyak, Bayar Lebih Hemat!",
+      subtitle: "Italy - Value",
+      image: "/gallery-colosseum.webp",
+      locationTab: "Italy",
+      chips: ["Durasi fleksibel", "Semua Ukuran Grup", "Jadwal Bebas"],
+      features: [
+        "Solusi terbaik buat kamu yang pengen keliling Eropa hemat tapi gak mau keganggu orang lain di open trip.",
+        "Rasakan pengalaman otentik naik transportasi lokal, serasa jadi traveler sejati!",
+        "Menginap nyaman di Hotel Bintang 2/3 atau Apartemen pilihan terbaik",
+        "Bebas pilih sarapan (Tidak Termasuk)",
+      ],
+    },
+    {
+      title: "BALANCE TRIP — Nyaman, Seru, Tetap Worth It!",
+      subtitle: "Italy - Balance",
+      image: "/dest-italy.webp",
+      locationTab: "Italy",
+      chips: ["Durasi fleksibel", "Semua Ukuran Grup", "Jadwal Bebas"],
+      features: [
+        "Pilihan paling cerdas buat kamu yang mau liburan berkesan tanpa kompromi kenyamanan",
+        "Nikmati istirahat berkualitas di Hotel Bintang 3 yang cozy",
+        "Bebas pilih sarapan (Tidak Termasuk)",
+        "Dilengkapi 1x Private Car — bebas macet, bebas ribet!",
+      ],
+    },
+    {
+      title: "PREMIUM TRIP — Liburan Mewah, Semua Sudah Beres!",
+      subtitle: "Italy - Premium",
+      image: "/dest-france.webp",
+      locationTab: "Italy",
+      chips: ["Durasi fleksibel", "Semua Ukuran Grup", "Jadwal Bebas"],
+      features: [
+        "Untuk kamu yang percaya bahwa liburan terbaik = tanpa drama dan tanpa ribet",
+        "Tidur pulas di Hotel Bintang 4 pilihan eksklusif",
+        "3-4x Private Car siap mengantar ke mana pun kamu mau",
+        "Luggage Forwarding Service — kopermu duluan sampai, kamu tinggal santai!",
+      ],
+    },
+  ];
+
+  // Bersihkan data lama agar id tidak terus bertambah jika berulang
+  await prisma.privateTripPackage.deleteMany({});
+
+  for (const pt of privateTripPackages) {
+    await prisma.privateTripPackage.create({
+      data: pt,
+    });
+  }
+  console.log("Dummy Private Trip Packages berhasil ditambahkan!");
+
+  // Seed Private Trip CMS Settings
+  const privatetripSettings = {
+    heroTitle: 'Eropa Eksklusif *Sesuai Cara* Kamu',
+    heroTitle_en: 'Exclusive Europe *Your Way*',
+    heroTitleWeight: '800',
+    heroSubtitle: 'Rancang perjalanan impianmu ke Eropa dengan fleksibilitas penuh. Private trip kami memberikan kebebasan untuk liburan tanpa kompromi.',
+    heroSubtitle_en: 'Design your dream trip to Europe with full flexibility. Our private trip gives you the freedom for an uncompromising vacation.',
+    heroSubtitleWeight: '500',
+    heroImage: '/hero-coastal.webp',
+    packagesTitle: 'Pilihan *Private Trip* Kami',
+    packagesTitle_en: 'Our *Private Trip* Options',
+    packagesTitleWeight: '800',
+    packagesSubtitle: 'Beragam kelas layanan yang disesuaikan dengan gaya liburan dan kenyamanan Anda bersama keluarga atau sahabat.',
+    packagesSubtitle_en: 'Various service classes adapted to your vacation style and comfort with family or friends.',
+    packagesSubtitleWeight: '500',
+    ctaTitle: 'Siap *Agendain* Private Trip Kamu?',
+    ctaTitle_en: 'Ready to *Agendain* Your Private Trip?',
+    ctaTitleWeight: '800',
+    ctaSubtitle: 'Mari diskusikan rencana perjalanan impianmu bersama tim kami yang berpengalaman.',
+    ctaSubtitle_en: 'Let\'s discuss your dream itinerary with our experienced team.',
+    ctaSubtitleWeight: '500',
+    ctaBtnText: 'Hubungi Konsultan Kami',
+    ctaBtnText_en: 'Contact Our Consultant',
+  };
+
+  await prisma.setting.upsert({
+    where: { key: 'privatetrip_settings' },
+    update: { value: JSON.stringify(privatetripSettings) },
+    create: { key: 'privatetrip_settings', value: JSON.stringify(privatetripSettings) },
+  });
+  console.log("Private Trip CMS Settings seeded.");
+
   console.log('Home CMS Settings seeded (all subtitles/descriptions font-weight: Medium 500).')
 }
 

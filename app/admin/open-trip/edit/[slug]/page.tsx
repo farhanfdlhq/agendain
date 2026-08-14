@@ -63,7 +63,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
 
   const fetchPackageData = async () => {
     try {
-      const res = await fetch(`/api/paket/${params.slug}`)
+      const res = await fetch(`/api/open-trip/${params.slug}`)
       if (res.ok) {
         const data = await res.json()
         
@@ -250,7 +250,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
         opsiPenjemputan
       }
 
-      const res = await fetch(`/api/paket/${params.slug}`, {
+      const res = await fetch(`/api/open-trip/${params.slug}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"

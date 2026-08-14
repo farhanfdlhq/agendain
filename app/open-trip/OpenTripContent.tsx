@@ -6,17 +6,25 @@ import HeroHeader from "@/components/HeroHeader/HeroHeader";
 import CallToActionBanner from "@/components/CallToActionBanner/CallToActionBanner";
 import styles from "./page.module.css";
 import { useTranslation } from "@/lib/i18n/useTranslation";
+import { parseGoldText } from "@/lib/utils/textFormatting";
 
 interface OpenTripContentProps {
   packages: any[];
   destList: string[];
+  opentripSettings?: any;
 }
 
 export default function OpenTripContent({
   packages,
   destList,
+  opentripSettings = {}
 }: OpenTripContentProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const isEn = locale === 'en'
+  const getSetting = (key: string) => {
+    const val = isEn ? (opentripSettings[`${key}_en`] || opentripSettings[key]) : opentripSettings[key];
+    return val;
+  }
 
   return (
     <div className={styles.page}>
@@ -25,13 +33,13 @@ export default function OpenTripContent({
           <div className={styles.heroOverlay} />
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>
-              {t("openTrip.hero.title1")}
-              <br />
-              {t("openTrip.hero.title2")}
-              <br />
-              {t("openTrip.hero.title3")}{" "}
-              <span className={styles.textGold}>Agendain.</span>
+              {parseGoldText(getSetting('heroTitle') || (isEn ? 'Explore Europe *More Exciting* With New Friends' : 'Eksplorasi Eropa *Lebih Seru* Bareng Teman Baru'), styles, getSetting('heroTitleWeight'))}
             </h1>
+            {getSetting('heroSubtitle') && (
+              <p className={styles.heroSubtitle} style={{ fontWeight: getSetting('heroSubtitleWeight') ? Number(getSetting('heroSubtitleWeight')) : undefined }}>
+                {getSetting('heroSubtitle')}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -41,22 +49,22 @@ export default function OpenTripContent({
           <div className={styles.statBox}>
             <h4>2+</h4>
             <p>
-              Pengalaman
+              {isEn ? 'Years of' : 'Pengalaman'}
               <br />
-              Bertahun-tahun
+              {isEn ? 'Experience' : 'Bertahun-tahun'}
             </p>
           </div>
           <div className={styles.statBox}>
             <h4>63+</h4>
-            <p>Destinasi Unik</p>
+            <p>{t("openTrip.stats.dest")}</p>
           </div>
           <div className={styles.statBox}>
             <h4>32K+</h4>
-            <p>Traveler Senang</p>
+            <p>{t("openTrip.stats.travelers")}</p>
           </div>
           <div className={styles.statBox}>
             <h4>94%</h4>
-            <p>Traveler Senang</p>
+            <p>{t("openTrip.stats.satisfaction")}</p>
           </div>
         </div>
       </div>
@@ -64,14 +72,27 @@ export default function OpenTripContent({
       <div className={styles.content}>
         <div className={styles.container}>
           <div className={styles.sectionHeader}>
-            <p className={styles.sectionLabel}>{t("openTrip.section.label")}</p>
-            <h2 className={styles.sectionTitle}>
-              {t("openTrip.section.title1")}
-              <br />
-              {t("openTrip.section.title2")}
-              <br />
-              {t("openTrip.section.title3")}
-            </h2>
+            {getSetting('packagesTitle') ? (
+              <h2 className={styles.sectionTitle}>
+                {parseGoldText(getSetting('packagesTitle'), styles, getSetting('packagesTitleWeight'))}
+              </h2>
+            ) : (
+              <>
+                <p className={styles.sectionLabel}>{getSetting('sectionLabel') || t("openTrip.section.label")}</p>
+                <h2 className={styles.sectionTitle}>
+                  {getSetting('sectionTitle1') || t("openTrip.section.title1")}
+                  <br />
+                  {getSetting('sectionTitle2') || t("openTrip.section.title2")}
+                  <br />
+                  {getSetting('sectionTitle3') || t("openTrip.section.title3")}
+                </h2>
+              </>
+            )}
+            {getSetting('packagesSubtitle') && (
+              <p className={styles.sectionSubtitle} style={{ fontWeight: getSetting('packagesSubtitleWeight') ? Number(getSetting('packagesSubtitleWeight')) : undefined, textAlign: 'center', marginTop: '1rem', color: 'var(--text-secondary)' }}>
+                {getSetting('packagesSubtitle')}
+              </p>
+            )}
           </div>
 
           <OpenTripFilter destList={destList} />
@@ -85,13 +106,13 @@ export default function OpenTripContent({
       </div>
 
       <CallToActionBanner
-        label={t("openTrip.cta.label")}
-        titleLine1={t("openTrip.cta.title1")}
-        titleLine2={t("openTrip.cta.title2")}
-        titleHighlight="500rb"
-        titleLine3={t("openTrip.cta.title3")}
-        description={t("openTrip.cta.desc")}
-        primaryBtnText={t("openTrip.cta.btnPrimary")}
+        label={getSetting('ctaLabel') || t("openTrip.cta.label")}
+        titleLine1={getSetting('ctaTitle') ? parseGoldText(getSetting('ctaTitle'), styles, getSetting('ctaTitleWeight')) : (getSetting('ctaTitle1') || t("openTrip.cta.title1"))}
+        titleLine2={getSetting('ctaTitle') ? undefined : (getSetting('ctaTitle2') || t("openTrip.cta.title2"))}
+        titleHighlight={getSetting('ctaTitle') ? undefined : (getSetting('ctaTitleHighlight') || "500rb")}
+        titleLine3={getSetting('ctaTitle') ? undefined : (getSetting('ctaTitle3') || t("openTrip.cta.title3"))}
+        description={getSetting('ctaSubtitle') || getSetting('ctaDesc') || t("openTrip.cta.desc")}
+        primaryBtnText={getSetting('ctaBtnText') || t("openTrip.cta.btnPrimary")}
         primaryBtnLink="https://wa.me/6281234567890"
         secondaryBtnText={t("openTrip.cta.btnSecondary")}
         secondaryBtnLink="#jadwal"

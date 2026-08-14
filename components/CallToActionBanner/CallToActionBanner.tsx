@@ -1,8 +1,9 @@
+import React from 'react';
 import styles from "./CallToActionBanner.module.css";
 
 interface CallToActionBannerProps {
   label?: string;
-  titleLine1?: string;
+  titleLine1?: string | React.ReactNode;
   titleLine2?: string;
   titleHighlight?: string;
   titleLine3?: string;

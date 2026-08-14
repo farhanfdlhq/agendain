@@ -6,7 +6,7 @@ import Footer from "@/components/Footer/Footer"
 import FloatingWhatsApp from "@/components/FloatingWhatsApp/FloatingWhatsApp"
 import { LanguageProvider } from "@/lib/i18n/LanguageContext"
 
-export default function FrontLayout({ children, settings }: { children: React.ReactNode, settings?: any }) {
+export default function FrontLayout({ children, settings, initialLocale = 'id' }: { children: React.ReactNode, settings?: any, initialLocale?: 'id' | 'en' }) {
   const pathname = usePathname()
   
   // Hide global Navbar and Footer on admin routes
@@ -17,7 +17,7 @@ export default function FrontLayout({ children, settings }: { children: React.Re
   const isHome = pathname === '/'
 
   return (
-    <LanguageProvider>
+    <LanguageProvider initialLocale={initialLocale}>
       <Navbar settings={settings} />
       <main className={!isHome ? "non-home-main" : ""}>{children}</main>
       <Footer settings={settings} />

@@ -192,8 +192,8 @@ export default function RolesPermissionsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (['super_admin', 'admin', 'editor'].includes(id)) {
-      toast.error("Role bawaan sistem tidak dapat dihapus")
+    if (id === 'super_admin') {
+      toast.error("Role Super Admin adalah role sistem utama dan tidak dapat dihapus")
       return
     }
     if (!confirm("Hapus role ini? User dengan role ini mungkin kehilangan akses.")) return
@@ -271,7 +271,7 @@ export default function RolesPermissionsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40 rounded-xl">
                           <DropdownMenuItem onClick={() => handleOpenDialog(r)}>Edit Role</DropdownMenuItem>
-                          {!['super_admin', 'admin', 'editor'].includes(r.id) && (
+                          {r.id !== 'super_admin' && (
                             <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(r.id)}>Hapus Role</DropdownMenuItem>
                           )}
                         </DropdownMenuContent>

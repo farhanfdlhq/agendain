@@ -38,7 +38,7 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
         <FadeIn direction="up">
           <div className={styles.accordionHeaderCenter}>
             <div className={styles.accordionEyebrowPill}>Sudut Pandang</div>
-            <h2 className={styles.accordionTitleCenter} style={gs('accTitleWeight') ? { fontWeight: Number(gs('accTitleWeight')) } : undefined}>{gs('accTitle', undefined, 'Lihat, Hirup, & Simpan Memori')}</h2>
+            <h2 className={styles.accordionTitleCenter} style={gs('accTitleWeight') ? { fontWeight: Number(gs('accTitleWeight')) } : undefined}>{renderHighlightedTitle(gs('accTitle', undefined, 'Lihat, Hirup, & Simpan Memori'))}</h2>
             <h3 className={styles.accordionSubtitleCenter} style={gs('accSubtitleWeight') ? { fontWeight: Number(gs('accSubtitleWeight')) } : undefined}>{gs('accSubtitle', undefined, 'Sudut Terbaik Eropa')}</h3>
           </div>
         </FadeIn>
