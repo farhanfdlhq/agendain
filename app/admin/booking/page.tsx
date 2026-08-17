@@ -22,14 +22,6 @@ import {
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -60,6 +52,7 @@ import { DataGridTable } from "@/components/reui/data-grid/data-grid-table";
 import { DataGridPagination } from "@/components/reui/data-grid/data-grid-pagination";
 import { createColumns, Booking } from "./columns";
 import AirplaneLoader from "@/components/ui/airplane-loader";
+import { PageSizeSelect } from "@/components/ui/page-size-select";
 
 export default function AdminBookingPage() {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -224,24 +217,16 @@ export default function AdminBookingPage() {
 
     if (error) {
       return (
-        <TableRow>
-          <TableCell colSpan={7} className="h-64 text-center">
-            <div className="flex flex-col items-center justify-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
-                <AlertCircle className="h-6 w-6 text-destructive" />
-              </div>
-              <h3 className="text-lg font-medium">Terjadi Kesalahan</h3>
-              <p className="text-sm text-muted-foreground">{error}</p>
-              <Button
-                onClick={fetchBookings}
-                variant="outline"
-                className="mt-2"
-              >
-                <RefreshCw className="mr-2 h-4 w-4" /> Coba Lagi
-              </Button>
-            </div>
-          </TableCell>
-        </TableRow>
+        <div className="flex flex-col items-center justify-center space-y-3 h-64">
+          <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+            <AlertCircle className="h-6 w-6 text-destructive" />
+          </div>
+          <h3 className="text-lg font-medium">Terjadi Kesalahan</h3>
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <Button onClick={fetchBookings} variant="outline" className="mt-2">
+            <RefreshCw className="mr-2 h-4 w-4" /> Coba Lagi
+          </Button>
+        </div>
       );
     }
 
@@ -266,20 +251,9 @@ export default function AdminBookingPage() {
       );
     }
 
-    return (
-      <DataGrid
-        table={table}
-        recordCount={filteredBookings.length}
-        tableLayout={{ width: "auto" }}
-      >
-        <DataGridContainer border={false}>
-          <DataGridTable />
-          <div className="p-4 border-t">
-            <DataGridPagination />
-          </div>
-        </DataGridContainer>
-      </DataGrid>
-    );
+    // Sukses: biarkan render site di CardContent (di bawah) yang menampilkan
+    // DataGrid. renderState hanya menangani state offline/error/loading/kosong.
+    return null;
   };
 
   const getStatusColor = (status: string) => {
@@ -302,29 +276,38 @@ export default function AdminBookingPage() {
 
       <Card>
         <CardHeader className="p-4 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-muted/20">
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Cari nama, email, atau openTrip..."
-              className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Cari nama, email, atau openTrip..."
+                className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="w-full sm:w-48">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="rounded-full bg-white dark:bg-zinc-900 border-zinc-200">
+                  <SelectValue placeholder="Semua Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Status</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="paid">Lunas (Paid)</SelectItem>
+                  <SelectItem value="cancelled">Dibatalkan</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="w-full sm:w-48">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="rounded-full bg-white dark:bg-zinc-900 border-zinc-200">
-                <SelectValue placeholder="Semua Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="paid">Lunas (Paid)</SelectItem>
-                <SelectItem value="cancelled">Dibatalkan</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <PageSizeSelect
+            value={table.getState().pagination.pageSize}
+            onValueChange={(n) => {
+              table.setPageSize(n);
+              table.setPageIndex(0);
+            }}
+          />
         </CardHeader>
 
         <CardContent className="p-0">
@@ -340,7 +323,12 @@ export default function AdminBookingPage() {
               >
                 <DataGridTable />
                 <div className="p-4 border-t border-border">
-                  <DataGridPagination />
+                  <DataGridPagination
+                    showSizes={false}
+                    info="{from} – {to} dari {count}"
+                    previousPageLabel="Halaman sebelumnya"
+                    nextPageLabel="Halaman berikutnya"
+                  />
                 </div>
               </DataGridContainer>
             </DataGrid>

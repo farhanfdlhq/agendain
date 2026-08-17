@@ -29,6 +29,9 @@ import {
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import AirplaneLoader from "@/components/ui/airplane-loader";
 import { Badge } from "@/components/ui/badge";
+import { PageSizeSelect } from "@/components/ui/page-size-select";
+import { TablePagination } from "@/components/ui/table-pagination";
+import { useTablePagination } from "@/lib/use-table-pagination";
 
 export default function AdminDestinasiPage() {
   const [destinasi, setDestinasi] = useState<any[]>([]);
@@ -103,11 +106,19 @@ export default function AdminDestinasiPage() {
     return destinasi.filter((d) => d.nama.toLowerCase().includes(searchLower));
   }, [destinasi, deferredSearch]);
 
+  const pagination = useTablePagination(filteredData);
+  const { pageItems, startIndex, setPage } = pagination;
+
+  // Balik ke halaman 1 saat pencarian berubah.
+  useEffect(() => { setPage(1); }, [deferredSearch, setPage]);
+
+  const showPagination = !loading && !error && !isOffline && filteredData.length > 0;
+
   const renderState = () => {
     if (isOffline) {
       return (
         <TableRow>
-          <TableCell colSpan={4} className="h-64 text-center">
+          <TableCell colSpan={5} className="h-64 text-center">
             <div className="flex flex-col items-center justify-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
                 <WifiOff className="h-6 w-6 text-destructive" />
@@ -133,7 +144,7 @@ export default function AdminDestinasiPage() {
     if (error) {
       return (
         <TableRow>
-          <TableCell colSpan={4} className="h-64 text-center">
+          <TableCell colSpan={5} className="h-64 text-center">
             <div className="flex flex-col items-center justify-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
                 <AlertCircle className="h-6 w-6 text-destructive" />
@@ -156,7 +167,7 @@ export default function AdminDestinasiPage() {
     if (loading) {
       return (
         <TableRow>
-          <TableCell colSpan={4} className="h-64 text-center">
+          <TableCell colSpan={5} className="h-64 text-center">
             <div className="flex w-full items-center justify-center">
               <AirplaneLoader size={32} className="text-primary" />
               <span className="ml-2 text-muted-foreground">Memuat data...</span>
@@ -169,7 +180,7 @@ export default function AdminDestinasiPage() {
     if (filteredData.length === 0) {
       return (
         <TableRow>
-          <TableCell colSpan={4} className="p-4">
+          <TableCell colSpan={5} className="p-4">
             <EmptyState
               icon={<Map size={32} strokeWidth={1.5} />}
               title="Tidak Ada Destinasi Ditemukan"
@@ -203,7 +214,7 @@ export default function AdminDestinasiPage() {
       />
 
       <Card className="border shadow-sm">
-        <CardHeader className="p-4 border-b bg-muted/20">
+        <CardHeader className="p-4 border-b bg-muted/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -214,6 +225,7 @@ export default function AdminDestinasiPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
+          <PageSizeSelect value={pagination.pageSize} onValueChange={pagination.setPageSize} />
         </CardHeader>
 
         <CardContent className="p-0">
@@ -221,6 +233,9 @@ export default function AdminDestinasiPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12 py-4 px-4 font-semibold">
+                    #
+                  </TableHead>
                   <TableHead className="w-[35%] py-4 px-4 font-semibold">
                     Nama Destinasi
                   </TableHead>
@@ -237,8 +252,11 @@ export default function AdminDestinasiPage() {
               </TableHeader>
               <TableBody>
                 {renderState() ||
-                  filteredData.map((d) => (
+                  pageItems.map((d, i) => (
                     <TableRow key={d.id}>
+                      <TableCell className="py-3 px-4 text-muted-foreground tabular-nums">
+                        {startIndex + i + 1}
+                      </TableCell>
                       <TableCell className="py-3 px-4">
                         <div className="flex items-center gap-2 font-medium">
                           <MapPin size={16} className="text-primary" />
@@ -285,6 +303,18 @@ export default function AdminDestinasiPage() {
               </TableBody>
             </Table>
           </div>
+          {showPagination && (
+            <div className="border-t p-4">
+              <TablePagination
+                page={pagination.page}
+                pageCount={pagination.pageCount}
+                total={pagination.total}
+                from={pagination.from}
+                to={pagination.to}
+                onPageChange={pagination.setPage}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -7,7 +7,10 @@ async function main() {
   console.log("Seeding Destinasi & Paket Wisata...");
 
   // Seed Super Admin, Manager & Editor (Segregation of Duties & Kredensial Aman)
-  const initialPassword = process.env.ADMIN_INITIAL_PASSWORD || "Elenmor123&";
+  const initialPassword = process.env.ADMIN_INITIAL_PASSWORD;
+  if (!initialPassword) {
+    throw new Error("ADMIN_INITIAL_PASSWORD wajib di-set sebelum menjalankan seed.");
+  }
   const hashedPassword = await bcrypt.hash(initialPassword, 10);
 
   await prisma.adminUser.upsert({
@@ -24,12 +27,6 @@ async function main() {
     },
   });
   console.log("Super Admin user updated/created: admin@agendain.com");
-  if (!process.env.ADMIN_INITIAL_PASSWORD) {
-    console.warn(
-      "WARNING: Segera ganti password default admin@agendain.com di production!",
-    );
-  }
-
   // Akun Manager (Admin Trip)
   await prisma.adminUser.upsert({
     where: { email: "manager@agendain.com" },

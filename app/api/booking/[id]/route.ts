@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { BookingStatusSchema, isAllowedRole } from '@/lib/security'
 
 export async function PATCH(
   request: Request,
@@ -9,10 +10,17 @@ export async function PATCH(
 ) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const role = (session?.user as any)?.role
+    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     const { id } = await params
-    const data = await request.json()
+    const result = BookingStatusSchema.safeParse(await request.json())
+    if (!result.success) {
+      return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+    }
+    const data = result.data
     const bookingId = parseInt(id)
 
     if (isNaN(bookingId)) {
@@ -39,7 +47,10 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const role = (session?.user as any)?.role
+    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     const { id } = await params
     const bookingId = parseInt(id)

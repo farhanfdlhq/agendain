@@ -16,6 +16,9 @@ import { useRouter } from "next/navigation"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import PasswordValidator, { isPasswordValid } from "@/components/PasswordValidator/PasswordValidator"
+import { PageSizeSelect } from "@/components/ui/page-size-select"
+import { TablePagination } from "@/components/ui/table-pagination"
+import { useTablePagination } from "@/lib/use-table-pagination"
 
 type RoleConfig = {
   id: string
@@ -157,11 +160,18 @@ export default function UserManagementPage() {
 
   const filteredUsers = useMemo(() => {
     const searchLower = deferredSearch.toLowerCase()
-    return users.filter(u => 
-      u.nama.toLowerCase().includes(searchLower) || 
+    return users.filter(u =>
+      u.nama.toLowerCase().includes(searchLower) ||
       u.email.toLowerCase().includes(searchLower)
     )
   }, [users, deferredSearch])
+
+  const pagination = useTablePagination(filteredUsers)
+  const { pageItems, startIndex, setPage } = pagination
+
+  // Balik ke halaman 1 saat kriteria pencarian berubah agar hasil filter
+  // selalu tampil dari awal (bukan tersangkut di halaman yang kini kosong).
+  useEffect(() => { setPage(1) }, [deferredSearch, setPage])
 
   if (loading) return <div className="flex h-64 items-center justify-center"><AirplaneLoader size={48} /></div>
 
@@ -194,11 +204,16 @@ export default function UserManagementPage() {
             <Users className="w-5 h-5" />
             <h3 className="font-bold text-lg">Daftar Pengguna</h3>
           </div>
-          
+
+          <div className="mb-4">
+            <PageSizeSelect value={pagination.pageSize} onValueChange={pagination.setPageSize} />
+          </div>
+
           <div className="overflow-x-auto rounded-xl border bg-card">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent border-b">
+                  <TableHead className="w-12 font-semibold text-muted-foreground py-4">#</TableHead>
                   <TableHead className="font-semibold text-muted-foreground py-4">Nama</TableHead>
                   <TableHead className="font-semibold text-muted-foreground text-center">Role</TableHead>
                   <TableHead className="font-semibold text-muted-foreground text-center">Permissions</TableHead>
@@ -207,10 +222,11 @@ export default function UserManagementPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredUsers.map((u) => {
+                {pageItems.map((u, i) => {
                   const isYou = (session?.user as any)?.id == u.id
                   return (
                     <TableRow key={u.id} className={`border-b-0 ${isYou ? 'bg-primary/5 dark:bg-primary/10' : ''}`}>
+                      <TableCell className="text-muted-foreground tabular-nums">{startIndex + i + 1}</TableCell>
                       <TableCell className="py-4">
                         <div className="flex flex-col">
                           <div className="flex items-center gap-2 font-semibold">
@@ -252,12 +268,25 @@ export default function UserManagementPage() {
                 })}
                 {filteredUsers.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">Tidak ada pengguna ditemukan.</TableCell>
+                    <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">Tidak ada pengguna ditemukan.</TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
           </div>
+
+          {filteredUsers.length > 0 && (
+            <div className="border-t mt-4 pt-4">
+              <TablePagination
+                page={pagination.page}
+                pageCount={pagination.pageCount}
+                total={pagination.total}
+                from={pagination.from}
+                to={pagination.to}
+                onPageChange={pagination.setPage}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 

@@ -37,6 +37,9 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import AirplaneLoader from "@/components/ui/airplane-loader";
+import { PageSizeSelect } from "@/components/ui/page-size-select";
+import { TablePagination } from "@/components/ui/table-pagination";
+import { useTablePagination } from "@/lib/use-table-pagination";
 
 export default function AdminPaketPage() {
   const [packages, setPackages] = useState<any[]>([]);
@@ -134,6 +137,14 @@ export default function AdminPaketPage() {
     });
   }, [packages, deferredSearch, statusFilter]);
 
+  const pagination = useTablePagination(filteredPackages);
+  const { pageItems, startIndex, setPage } = pagination;
+
+  // Balik ke halaman 1 saat pencarian atau filter status berubah.
+  useEffect(() => { setPage(1); }, [deferredSearch, statusFilter, setPage]);
+
+  const showPagination = !loading && !error && !isOffline && filteredPackages.length > 0;
+
   const formatPrice = (price: any) => {
     return formatIDR(Number(price));
   };
@@ -142,7 +153,7 @@ export default function AdminPaketPage() {
     if (isOffline) {
       return (
         <TableRow>
-          <TableCell colSpan={6} className="h-64 text-center">
+          <TableCell colSpan={7} className="h-64 text-center">
             <div className="flex flex-col items-center justify-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
                 <WifiOff className="h-6 w-6 text-destructive" />
@@ -168,7 +179,7 @@ export default function AdminPaketPage() {
     if (error) {
       return (
         <TableRow>
-          <TableCell colSpan={6} className="h-64 text-center">
+          <TableCell colSpan={7} className="h-64 text-center">
             <div className="flex flex-col items-center justify-center space-y-3">
               <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
                 <AlertCircle className="h-6 w-6 text-destructive" />
@@ -191,7 +202,7 @@ export default function AdminPaketPage() {
     if (loading) {
       return (
         <TableRow>
-          <TableCell colSpan={6} className="h-64 text-center">
+          <TableCell colSpan={7} className="h-64 text-center">
             <div className="flex w-full items-center justify-center">
               <AirplaneLoader size={32} className="text-primary" />
               <span className="ml-2 text-muted-foreground">Memuat data...</span>
@@ -204,7 +215,7 @@ export default function AdminPaketPage() {
     if (filteredPackages.length === 0) {
       return (
         <TableRow>
-          <TableCell colSpan={6} className="p-4">
+          <TableCell colSpan={7} className="p-4">
             <EmptyState
               icon={<PackageX size={32} strokeWidth={1.5} />}
               title="Tidak Ada Paket Ditemukan"
@@ -239,28 +250,31 @@ export default function AdminPaketPage() {
 
       <Card>
         <CardHeader className="p-4 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-muted/20">
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Cari nama paket atau destinasi..."
-              className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Cari nama paket atau destinasi..."
+                className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="w-full sm:w-48">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="rounded-full bg-white dark:bg-zinc-900 border-zinc-200">
+                  <SelectValue placeholder="Semua Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Status</SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="w-full sm:w-48">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="rounded-full bg-white dark:bg-zinc-900 border-zinc-200">
-                <SelectValue placeholder="Semua Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Semua Status</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
-                <SelectItem value="draft">Draft</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <PageSizeSelect value={pagination.pageSize} onValueChange={pagination.setPageSize} />
         </CardHeader>
 
         <CardContent className="p-0">
@@ -268,6 +282,9 @@ export default function AdminPaketPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30">
+                  <TableHead className="font-semibold text-foreground w-12">
+                    #
+                  </TableHead>
                   <TableHead className="font-semibold text-foreground min-w-[200px]">
                     Nama Paket
                   </TableHead>
@@ -290,11 +307,14 @@ export default function AdminPaketPage() {
               </TableHeader>
               <TableBody>
                 {renderState() ||
-                  filteredPackages.map((pkg) => (
+                  pageItems.map((pkg, i) => (
                     <TableRow
                       key={pkg.id}
                       className="hover:bg-muted/30 transition-colors"
                     >
+                      <TableCell className="text-muted-foreground tabular-nums">
+                        {startIndex + i + 1}
+                      </TableCell>
                       <TableCell className="font-semibold text-foreground">
                         <div className="line-clamp-2">{pkg.nama}</div>
                       </TableCell>
@@ -378,6 +398,18 @@ export default function AdminPaketPage() {
               </TableBody>
             </Table>
           </div>
+          {showPagination && (
+            <div className="border-t p-4">
+              <TablePagination
+                page={pagination.page}
+                pageCount={pagination.pageCount}
+                total={pagination.total}
+                from={pagination.from}
+                to={pagination.to}
+                onPageChange={pagination.setPage}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

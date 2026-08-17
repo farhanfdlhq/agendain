@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { getClientIp, serverError } from "@/lib/security"
+import { logAudit } from "@/lib/audit"
+import { reportServerError } from "@/lib/error-log"
 
 const DEFAULT_ROLES = [
   { id: 'super_admin', name: 'Super Admin', description: 'Akses penuh ke semua fitur sistem', permissions: ['all'] },
@@ -38,7 +41,11 @@ export async function GET() {
       if (!hasOldFormat) {
         roles = parsedRoles
       }
-    } catch (e) {}
+    } catch (e) {
+      // Data roles_config rusak/tidak valid JSON — pakai DEFAULT_ROLES (fallback
+      // aman, bukan 500), tetapi catat agar korupsi data ini terlihat.
+      reportServerError({ route: "GET /api/admin/roles", code: "roles_read_failed" }, e)
+    }
   }
 
   const rolesWithCount = roles.map(r => ({
@@ -58,12 +65,24 @@ export async function POST(req: Request) {
     const value = JSON.stringify(newRoles)
     
     await prisma.$executeRaw`
-      INSERT INTO Setting (\`key\`, value) 
+      INSERT INTO Setting (\`key\`, value)
       VALUES ('roles_config', ${value})
       ON DUPLICATE KEY UPDATE value = ${value}
     `
+
+    await logAudit({
+      action: "role.update",
+      actorId: Number((session?.user as any)?.id),
+      actorEmail: (session?.user as any)?.email,
+      targetType: "Setting",
+      targetId: "roles_config",
+      detail: { roleNames: Array.isArray(newRoles) ? newRoles.map((r: any) => r?.name) : null },
+      ip: getClientIp(req),
+      userAgent: req.headers.get("user-agent"),
+    })
+
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: 'Gagal menyimpan roles' }, { status: 500 })
+    return serverError('POST /api/admin/roles', error, { req })
   }
 }

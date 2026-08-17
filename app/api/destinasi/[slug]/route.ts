@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { DestinasiSchema, serverError } from '@/lib/security'
 
 export async function GET(
   request: Request,
@@ -19,7 +20,7 @@ export async function GET(
     
     return NextResponse.json(dest)
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch destinasi' }, { status: 500 })
+    return serverError('GET /api/destinasi/[slug]', error, { req: request })
   }
 }
 
@@ -35,7 +36,11 @@ export async function PUT(
     }
 
     const { slug } = await params
-    const data = await request.json()
+    const result = DestinasiSchema.safeParse(await request.json())
+    if (!result.success) {
+      return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+    }
+    const data = result.data
     
     if (!data.slug && data.nama) {
       data.slug = data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
@@ -58,8 +63,7 @@ export async function PUT(
 
     return NextResponse.json(updatedDest)
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: 'Failed to update destinasi' }, { status: 500 })
+    return serverError('PUT /api/destinasi/[slug]', error, { req: request })
   }
 }
 
@@ -81,6 +85,6 @@ export async function DELETE(
 
     return NextResponse.json({ message: 'Destinasi deleted successfully' })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete destinasi' }, { status: 500 })
+    return serverError('DELETE /api/destinasi/[slug]', error, { req: request })
   }
 }

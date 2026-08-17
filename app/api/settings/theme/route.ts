@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { isAllowedRole, serverError } from '@/lib/security'
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const role = (session?.user as any)?.role
+    if (!session || !isAllowedRole(role, ['super_admin'])) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const data = await req.json()
@@ -65,7 +67,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, message: 'Tema berhasil diperbarui' })
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return serverError('settings/theme', error)
   }
 }
 
@@ -99,6 +101,6 @@ export async function GET() {
     }
     return NextResponse.json(JSON.parse(setting.value))
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return serverError('settings/theme', error)
   }
 }

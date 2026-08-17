@@ -18,6 +18,7 @@ import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 import { DataGridPagination } from "@/components/reui/data-grid/data-grid-pagination"
 import { createTripColumns, createInquiryColumns } from "./columns"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { PageSizeSelect } from "@/components/ui/page-size-select"
 
 export default function AdminInquiriesPage() {
   const [activeTab, setActiveTab] = useState<"privatetrip" | "inquiries">("privatetrip")
@@ -27,6 +28,8 @@ export default function AdminInquiriesPage() {
   const deferredSearch = useDeferredValue(search)
   const [error, setError] = useState<string | null>(null)
   const [isOffline, setIsOffline] = useState(false)
+  // Satu kontrol page-size dibagikan ke kedua tabel (Private Trip & Pesan Masuk).
+  const [pageSize, setPageSize] = useState(10)
 
   useEffect(() => {
     // Handle offline status
@@ -132,6 +135,21 @@ export default function AdminInquiriesPage() {
     }
   })
 
+  // Sinkronkan pilihan "Tampilkan N entri" ke kedua tabel; kembali ke halaman 1
+  // agar pilihan baru tak mendarat di tengah data (TanStack tak reset sendiri).
+  useEffect(() => {
+    tripsTable.setPageSize(pageSize)
+    tripsTable.setPageIndex(0)
+    inquiriesTable.setPageSize(pageSize)
+    inquiriesTable.setPageIndex(0)
+  }, [pageSize, tripsTable, inquiriesTable])
+
+  // Balik ke halaman 1 saat kriteria pencarian berubah (kedua tabel).
+  useEffect(() => {
+    tripsTable.setPageIndex(0)
+    inquiriesTable.setPageIndex(0)
+  }, [deferredSearch, tripsTable, inquiriesTable])
+
   const renderState = () => {
     if (isOffline) {
       return (
@@ -204,14 +222,15 @@ export default function AdminInquiriesPage() {
           <CardHeader className="p-4 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-muted/20">
             <div className="relative w-full sm:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                type="text" 
-                placeholder="Cari nama, email, atau destinasi..." 
+              <Input
+                type="text"
+                placeholder="Cari nama, email, atau destinasi..."
                 className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+            <PageSizeSelect value={pageSize} onValueChange={setPageSize} />
           </CardHeader>
           
           <CardContent className="p-0">
@@ -221,7 +240,12 @@ export default function AdminInquiriesPage() {
                   <DataGridContainer border={false} className="border-0 rounded-none">
                     <DataGridTable />
                     <div className="p-4 border-t border-border">
-                      <DataGridPagination />
+                      <DataGridPagination
+                        showSizes={false}
+                        info="{from} – {to} dari {count}"
+                        previousPageLabel="Halaman sebelumnya"
+                        nextPageLabel="Halaman berikutnya"
+                      />
                     </div>
                   </DataGridContainer>
                 </DataGrid>
@@ -242,7 +266,12 @@ export default function AdminInquiriesPage() {
                   <DataGridContainer border={false} className="border-0 rounded-none">
                     <DataGridTable />
                     <div className="p-4 border-t border-border">
-                      <DataGridPagination />
+                      <DataGridPagination
+                        showSizes={false}
+                        info="{from} – {to} dari {count}"
+                        previousPageLabel="Halaman sebelumnya"
+                        nextPageLabel="Halaman berikutnya"
+                      />
                     </div>
                   </DataGridContainer>
                 </DataGrid>

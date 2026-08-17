@@ -45,6 +45,8 @@ next-env.d.ts
 # Agent and Documentation files
 /.agents/
 .agent
+.claude
+.vscode
 docs
 SKILL.md
 PEMBARUAN.txt

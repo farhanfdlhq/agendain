@@ -7,6 +7,7 @@ import Stagger from '@/components/Motion/Stagger'
 import HeroHeader from '@/components/HeroHeader/HeroHeader'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { parseGoldText } from '@/lib/utils/textFormatting'
+import { sanitizeHtml } from '@/lib/sanitize'
 
 export default function TentangContent({ aboutSettings = {} }: { aboutSettings?: any }) {
   const { t, locale } = useTranslation()
@@ -49,7 +50,7 @@ export default function TentangContent({ aboutSettings = {} }: { aboutSettings?:
               <h2 className={styles.missionTitle} style={{ fontWeight: getSetting('missionTitleWeight') ? Number(getSetting('missionTitleWeight')) : undefined }}>
                 {getSetting('missionTitle') || t('about.new.missionTitle')}
               </h2>
-              <p className={styles.missionDesc} style={{ fontWeight: getSetting('missionDescWeight') ? Number(getSetting('missionDescWeight')) : undefined }} dangerouslySetInnerHTML={{ __html: (getSetting('missionDesc') || t('about.new.missionDesc')).replace(/\\n/g, '<br/>') }} />
+              <p className={styles.missionDesc} style={{ fontWeight: getSetting('missionDescWeight') ? Number(getSetting('missionDescWeight')) : undefined }} dangerouslySetInnerHTML={{ __html: sanitizeHtml(getSetting('missionDesc') || t('about.new.missionDesc')).replace(/\\n/g, '<br/>') }} />
             </div>
           </div>
         </FadeIn>

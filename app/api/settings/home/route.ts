@@ -2,15 +2,22 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import { isAllowedRole, sanitizeSettingsPayload, serverError } from '@/lib/security'
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const role = (session?.user as any)?.role
+    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
-    const data = await req.json()
-    const jsonValue = JSON.stringify(data)
-    
+    const parsed = sanitizeSettingsPayload(await req.json())
+    if (!parsed.ok) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 })
+    }
+    const jsonValue = parsed.serialized
+
     await prisma.setting.upsert({
       where: { key: 'home_settings' },
       update: { value: jsonValue },
@@ -19,7 +26,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, message: 'Konten beranda berhasil diperbarui' })
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return serverError('settings/home', error)
   }
 }
 
@@ -64,6 +71,6 @@ export async function GET() {
     
     return NextResponse.json(JSON.parse(setting.value))
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return serverError('settings/home', error)
   }
 }

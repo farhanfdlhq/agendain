@@ -187,12 +187,21 @@ export default function SettingsPage() {
               <div className="space-y-2">
                 <Label>Logo Title (Favicon Browser)</Label>
                 <div className="flex flex-col gap-2">
-                  <MediaPicker 
+                  <MediaPicker
                     value={formData.site_favicon || ""}
                     onChange={(url) => {
+                      // ICO tidak bisa dilewatkan cropper — getCroppedImg
+                      // meng-encode PNG via canvas sehingga ICO akan hilang.
+                      // Untuk .ico, terapkan langsung tanpa membuka dialog crop.
+                      if (/\.ico(\?|#|$)/i.test(url)) {
+                        setFormData(prev => ({ ...prev, site_favicon: url }))
+                        toast.success("Favicon (ICO) diterapkan")
+                        return
+                      }
                       setImageToCrop(url)
                       setCropDialogOpen(true)
                     }}
+                    accept="image/png,image/x-icon,image/vnd.microsoft.icon,.ico"
                     label="Pilih Favicon"
                     description="Ikon untuk penampil judul tab di browser."
                   />
@@ -209,7 +218,7 @@ export default function SettingsPage() {
                       TIP: Saran Praktik Terbaik
                     </p>
                     <p className="text-xs text-muted-foreground leading-relaxed pt-1">
-                      Saat memilih foto untuk Favicon / Logo Title, pastikan gambar berformat <span className="font-semibold text-foreground">PNG</span> atau <span className="font-semibold text-foreground">ICO</span> dan berwujud <span className="font-semibold text-foreground">Bujur Sangkar (contoh: 512x512 piksel)</span> agar dijamin 100% langsung termuat meluncur di tab semua perangkat web dan HP!
+                      Gunakan format <span className="font-semibold text-foreground">PNG</span> (mendukung transparansi) atau <span className="font-semibold text-foreground">ICO</span>, sebaiknya berwujud <span className="font-semibold text-foreground">Bujur Sangkar (contoh: 512×512 piksel)</span>, maksimal <span className="font-semibold text-foreground">10MB</span>. File PNG disimpan tetap PNG (tidak dikonversi ke WebP), dan file ICO diunggah apa adanya agar langsung termuat di tab semua perangkat.
                     </p>
                   </div>
                 </div>

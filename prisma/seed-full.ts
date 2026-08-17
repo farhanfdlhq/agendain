@@ -7,7 +7,10 @@ async function main() {
   console.log('Update Data Dummy Paket Wisata menjadi Full Lengkap...')
 
   // Seed Super Admin, Manager & Editor (Segregation of Duties & Kredensial Aman)
-  const initialPassword = process.env.ADMIN_INITIAL_PASSWORD || 'Agendain!SuperSecure2026@'
+  const initialPassword = process.env.ADMIN_INITIAL_PASSWORD
+  if (!initialPassword) {
+    throw new Error('ADMIN_INITIAL_PASSWORD wajib di-set sebelum menjalankan seed.')
+  }
   const hashedPassword = await bcrypt.hash(initialPassword, 10)
   
   await prisma.adminUser.upsert({

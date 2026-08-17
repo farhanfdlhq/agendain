@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
+import { validateUploadedFile, matchesFileSignature, getClientIp } from '@/lib/security'
+import { logAudit } from '@/lib/audit'
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -18,14 +20,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Tidak ada file yang diunggah' }, { status: 400 })
     }
 
+    const validation = validateUploadedFile(file)
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 })
+    }
+
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
+
+    // Verifikasi konten nyata cocok dengan tipe yang diklaim (anti-spoof).
+    if (!matchesFileSignature(new Uint8Array(bytes.slice(0, 16)), file.type)) {
+      return NextResponse.json({ error: 'Isi file tidak cocok dengan formatnya.' }, { status: 400 })
+    }
 
     const user = await prisma.adminUser.findUnique({ where: { email: session.user.email } })
     if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-    const ext = file.name.split('.').pop() || 'png'
-    const fileName = `avatar-${user.id}-${Date.now()}.${ext}`
+    const fileName = `avatar-${user.id}-${Date.now()}.${validation.extension}`
     
     const uploadDir = join(process.cwd(), 'public', 'uploads', 'avatars')
     if (!existsSync(uploadDir)) {
@@ -39,6 +50,16 @@ export async function POST(req: NextRequest) {
     await prisma.adminUser.update({
       where: { id: user.id },
       data: { avatar: avatarUrl }
+    })
+
+    await logAudit({
+      action: "profile.avatar_change",
+      actorId: user.id,
+      actorEmail: user.email,
+      targetType: "AdminUser",
+      targetId: user.id,
+      ip: getClientIp(req),
+      userAgent: req.headers.get("user-agent"),
     })
 
     return NextResponse.json({ avatar: avatarUrl })

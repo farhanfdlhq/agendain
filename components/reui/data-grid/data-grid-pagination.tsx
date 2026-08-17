@@ -30,6 +30,10 @@ interface DataGridPaginationProps {
   previousPageLabel?: string
   nextPageLabel?: string
   ellipsisText?: string
+  // Bila false, selector "Rows per page" bawaan disembunyikan (page-size
+  // dikontrol oleh PageSizeSelect di toolbar atas). Info berpindah ke kiri &
+  // navigasi ke kanan agar tetap seimbang. Default true = perilaku vendor utuh.
+  showSizes?: boolean
 }
 
 function DataGridPagination(props: DataGridPaginationProps): React.JSX.Element {
@@ -48,6 +52,7 @@ function DataGridPagination(props: DataGridPaginationProps): React.JSX.Element {
     previousPageLabel: "Go to previous page",
     nextPageLabel: "Go to next page",
     ellipsisText: "...",
+    showSizes: true,
   }
 
   const mergedProps: DataGridPaginationProps = { ...defaultProps, ...props }
@@ -146,36 +151,45 @@ function DataGridPagination(props: DataGridPaginationProps): React.JSX.Element {
         mergedProps?.className
       )}
     >
-      <div className="order-2 flex flex-wrap items-center space-x-2.5 pb-2.5 sm:order-1 sm:pb-0">
-        {isLoading ? (
-          mergedProps?.sizesSkeleton
-        ) : (
-          <>
-            <div className="text-muted-foreground text-sm">
-              {mergedProps.rowsPerPageLabel}
-            </div>
-            <Select
-              value={`${pageSize}`}
-              onValueChange={(value) => {
-                const newPageSize = Number(value)
-                table.setPageSize(newPageSize)
-              }}
-            >
-              <SelectTrigger className="w-14" size="sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent side="top" className="min-w-18">
-                {mergedProps?.sizes?.map((size: number) => (
-                  <SelectItem key={size} value={`${size}`}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </>
+      {mergedProps.showSizes && (
+        <div className="order-2 flex flex-wrap items-center space-x-2.5 pb-2.5 sm:order-1 sm:pb-0">
+          {isLoading ? (
+            mergedProps?.sizesSkeleton
+          ) : (
+            <>
+              <div className="text-muted-foreground text-sm">
+                {mergedProps.rowsPerPageLabel}
+              </div>
+              <Select
+                value={`${pageSize}`}
+                onValueChange={(value) => {
+                  const newPageSize = Number(value)
+                  table.setPageSize(newPageSize)
+                }}
+              >
+                <SelectTrigger className="w-14" size="sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent side="top" className="min-w-18">
+                  {mergedProps?.sizes?.map((size: number) => (
+                    <SelectItem key={size} value={`${size}`}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
+          )}
+        </div>
+      )}
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center gap-2.5 pt-2.5 sm:flex-row sm:pt-0",
+          mergedProps.showSizes
+            ? "order-1 sm:order-2 sm:justify-end"
+            : "order-1 grow sm:justify-between"
         )}
-      </div>
-      <div className="order-1 flex flex-col items-center justify-center gap-2.5 pt-2.5 sm:order-2 sm:flex-row sm:justify-end sm:pt-0">
+      >
         {isLoading ? (
           mergedProps?.infoSkeleton
         ) : (

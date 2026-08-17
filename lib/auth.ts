@@ -1,7 +1,10 @@
 import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import { headers } from "next/headers"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
+import { rateLimit, getClientIpFromHeaders } from "@/lib/security"
+import { logAudit } from "@/lib/audit"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -12,23 +15,71 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        // Tangkap IP & user-agent untuk audit. authorize() tak menerima `req`,
+        // jadi ambil dari next/headers (async di Next 16). Dibungkus try/catch
+        // agar kegagalan capture tak pernah menggagalkan proses login.
+        let ip: string | null = null, userAgent: string | null = null
+        try {
+          const h = await headers()
+          ip = getClientIpFromHeaders(h)
+          userAgent = h.get("user-agent")
+        } catch {}
+
         if (!credentials?.email || !credentials?.password) {
+          await logAudit({
+            action: "login.failed",
+            actorEmail: credentials?.email?.toLowerCase().trim() ?? null,
+            detail: { reason: "missing_fields" },
+            ip, userAgent,
+          })
           throw new Error("Email dan password harus diisi")
         }
 
+        const email = credentials.email.toLowerCase().trim()
+        const loginLimit = rateLimit(`login:${email}`, 8, 5 * 60 * 1000)
+        if (!loginLimit.success) {
+          await logAudit({
+            action: "login.failed",
+            actorEmail: email,
+            detail: { reason: "rate_limited" },
+            ip, userAgent,
+          })
+          throw new Error("Terlalu banyak percobaan login. Coba lagi nanti.")
+        }
+
         const user = await prisma.adminUser.findUnique({
-          where: { email: credentials.email }
+          where: { email }
         })
 
         if (!user) {
-          throw new Error("Email tidak ditemukan")
+          await logAudit({
+            action: "login.failed",
+            actorEmail: email,
+            detail: { reason: "user_not_found" },
+            ip, userAgent,
+          })
+          throw new Error("Email atau password salah")
         }
 
         const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
 
         if (!isPasswordValid) {
-          throw new Error("Password salah")
+          await logAudit({
+            action: "login.failed",
+            actorId: user.id,
+            actorEmail: email,
+            detail: { reason: "bad_password" },
+            ip, userAgent,
+          })
+          throw new Error("Email atau password salah")
         }
+
+        await logAudit({
+          action: "login.success",
+          actorId: user.id,
+          actorEmail: email,
+          ip, userAgent,
+        })
 
         return {
           id: user.id.toString(),

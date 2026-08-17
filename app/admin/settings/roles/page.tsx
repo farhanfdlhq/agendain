@@ -14,6 +14,9 @@ import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { PageSizeSelect } from "@/components/ui/page-size-select"
+import { TablePagination } from "@/components/ui/table-pagination"
+import { useTablePagination } from "@/lib/use-table-pagination"
 
 type Role = {
   id: string
@@ -214,11 +217,13 @@ export default function RolesPermissionsPage() {
     }
   }
 
+  const pagination = useTablePagination(roles)
+  const { pageItems, startIndex } = pagination
+
   if (loading) return <div className="flex h-64 items-center justify-center"><AirplaneLoader size={48} /></div>
 
   const isAllSelected = formData.permissions.includes('all')
   const isSuperAdmin = editingId === 'super_admin'
-
   return (
     <div className="flex flex-col gap-6 w-full max-w-6xl mx-auto py-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
@@ -237,11 +242,16 @@ export default function RolesPermissionsPage() {
             <Shield className="w-5 h-5" />
             <h3 className="font-bold text-lg">Daftar Role</h3>
           </div>
-          
+
+          <div className="mb-4">
+            <PageSizeSelect value={pagination.pageSize} onValueChange={pagination.setPageSize} />
+          </div>
+
           <div className="overflow-x-auto rounded-xl border bg-card">
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-12 font-semibold text-muted-foreground">#</TableHead>
                   <TableHead className="font-semibold text-muted-foreground">Nama Role</TableHead>
                   <TableHead className="font-semibold text-muted-foreground">Deskripsi</TableHead>
                   <TableHead className="font-semibold text-muted-foreground text-center">Permissions</TableHead>
@@ -250,8 +260,9 @@ export default function RolesPermissionsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {roles.map((r) => (
+                {pageItems.map((r, i) => (
                   <TableRow key={r.id} className="border-b-0">
+                    <TableCell className="text-muted-foreground tabular-nums">{startIndex + i + 1}</TableCell>
                     <TableCell className="font-semibold">{r.name}</TableCell>
                     <TableCell className="text-muted-foreground">{r.description}</TableCell>
                     <TableCell className="text-center font-medium">
@@ -279,9 +290,27 @@ export default function RolesPermissionsPage() {
                     </TableCell>
                   </TableRow>
                 ))}
+                {roles.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">Belum ada role.</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
+
+          {roles.length > 0 && (
+            <div className="border-t mt-4 pt-4">
+              <TablePagination
+                page={pagination.page}
+                pageCount={pagination.pageCount}
+                total={pagination.total}
+                from={pagination.from}
+                to={pagination.to}
+                onPageChange={pagination.setPage}
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 

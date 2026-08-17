@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 import { z } from "zod";
-import { rateLimit, checkCSRF } from "@/lib/security";
+import { rateLimit, checkCSRF, getClientIp } from "@/lib/security";
 
 const PrivateTripSchema = z.object({
   nama: z.string().min(1, "Nama harus diisi").max(100),
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   }
 
   // 2. Rate Limiting (Max 5 requests per minute per IP)
-  const ip = req.headers.get("x-forwarded-for") || "127.0.0.1";
+  const ip = getClientIp(req);
   const rateLimitResult = rateLimit(ip, 5, 60000);
   if (!rateLimitResult.success) {
     return NextResponse.json(

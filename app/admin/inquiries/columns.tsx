@@ -36,6 +36,15 @@ const formatDate = (dateString: string) => {
 
 export const createTripColumns = (): ColumnDef<PrivateTrip>[] => [
   {
+    // Nomor urut. row.index benar selama tabel tak di-sort (belum ada sorting);
+    // bila kelak sorting ditambah, ganti ke nomor berbasis data asli.
+    id: "rowNumber",
+    header: () => <div className="text-muted-foreground">#</div>,
+    cell: ({ row }) => <span className="text-muted-foreground tabular-nums">{row.index + 1}</span>,
+    size: 48,
+    enableResizing: false,
+  },
+  {
     accessorKey: "nama",
     header: "Pelanggan",
     cell: ({ row }) => {
@@ -114,6 +123,15 @@ export const createTripColumns = (): ColumnDef<PrivateTrip>[] => [
 export const createInquiryColumns = (
   handleMarkAsReplied: (id: number, type: string) => void
 ): ColumnDef<Inquiry>[] => [
+  {
+    // Nomor urut. row.index benar selama tabel tak di-sort (belum ada sorting);
+    // bila kelak sorting ditambah, ganti ke nomor berbasis data asli.
+    id: "rowNumber",
+    header: () => <div className="text-muted-foreground">#</div>,
+    cell: ({ row }) => <span className="text-muted-foreground tabular-nums">{row.index + 1}</span>,
+    size: 48,
+    enableResizing: false,
+  },
   {
     accessorKey: "nama",
     header: "Pengirim",

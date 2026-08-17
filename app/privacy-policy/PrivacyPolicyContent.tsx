@@ -5,6 +5,7 @@ import HeroHeader from '@/components/HeroHeader/HeroHeader'
 import FadeIn from '@/components/Motion/FadeIn'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { parseGoldText } from '@/lib/utils/textFormatting'
+import { sanitizeHtml } from '@/lib/sanitize'
 
 export default function PrivacyPolicyContent({ privacySettings = {} }: { privacySettings?: any }) {
   const { t, locale } = useTranslation()
@@ -13,6 +14,7 @@ export default function PrivacyPolicyContent({ privacySettings = {} }: { privacy
   const content = isEn
     ? (privacySettings.privacyContent_en || privacySettings.privacyContent) 
     : privacySettings.privacyContent;
+  const safeContent = sanitizeHtml(content);
 
   const getSetting = (key: string) => {
     const val = isEn ? (privacySettings[`${key}_en`] || privacySettings[key]) : privacySettings[key];
@@ -45,10 +47,10 @@ export default function PrivacyPolicyContent({ privacySettings = {} }: { privacy
       <div className={styles.container}>
         <FadeIn direction="up" delay={0.2}>
           <div className={styles.contentCard}>
-            {content ? (
+            {safeContent ? (
               <div 
                 className="whitespace-pre-wrap leading-relaxed text-slate-700 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4"
-                dangerouslySetInnerHTML={{ __html: content }} 
+                dangerouslySetInnerHTML={{ __html: safeContent }} 
               />
             ) : (
               <>

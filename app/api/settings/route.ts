@@ -17,7 +17,8 @@ export async function GET() {
     const settingsObj = settings.reduce(
       (acc: any, curr: { key: string; value: string }) => {
         // Jangan ekspos info rezeki/pembayaran atau rahasia lainnya jika bukan administrator yang terotentikasi
-        if (!isSuperAdmin && curr.key === 'payment_instructions') {
+        const sensitiveKey = /payment|secret|token|password|credential/i.test(curr.key);
+        if (!isSuperAdmin && sensitiveKey) {
           return acc;
         }
         acc[curr.key] = curr.value;

@@ -2,20 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
-import { z } from "zod"
-import { rateLimit, checkCSRF } from '@/lib/security'
-
-const DestinasiSchema = z.object({
-  nama: z.string().min(1, "Nama destinasi harus diisi"),
-  slug: z.string().optional(),
-  negara: z.string().min(1, "Negara harus diisi"),
-  deskripsi: z.string().min(1, "Deskripsi harus diisi"),
-  foto: z.string().min(1, "Foto harus diisi"),
-  bahasa: z.string().optional().nullable(),
-  matauang: z.string().optional().nullable(),
-  waktuTerbaik: z.string().optional().nullable(),
-  infoVisa: z.string().optional().nullable(),
-})
+import { rateLimit, checkCSRF, DestinasiSchema, getClientIp, serverError } from '@/lib/security'
 
 export async function GET() {
   try {
@@ -26,7 +13,7 @@ export async function GET() {
     })
     return NextResponse.json(destinations)
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch destinations' }, { status: 500 })
+    return serverError('GET /api/destinasi', error)
   }
 }
 
@@ -37,7 +24,7 @@ export async function POST(request: Request) {
   }
 
   // 2. Rate Limiting (Max 5 requests per minute per IP)
-  const ip = request.headers.get('x-forwarded-for') || '127.0.0.1'
+  const ip = getClientIp(request)
   const rateLimitResult = rateLimit(ip, 5, 60000)
   if (!rateLimitResult.success) {
     return NextResponse.json({ error: 'Too Many Requests. Please try again later.' }, { status: 429 })
@@ -79,7 +66,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newDest, { status: 201 })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: 'Failed to create destination' }, { status: 500 })
+    return serverError('POST /api/destinasi', error, { req: request })
   }
 }

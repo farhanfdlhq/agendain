@@ -24,9 +24,10 @@ interface MediaPickerProps {
   label?: string
   description?: string
   trigger?: React.ReactNode
+  accept?: string
 }
 
-export function MediaPicker({ value, onChange, label = "Upload Foto", description = "PNG, JPG atau WEBP (Maks. 5MB)", trigger }: MediaPickerProps) {
+export function MediaPicker({ value, onChange, label = "Upload Foto", description = "PNG, JPG atau WEBP (Maks. 10MB)", trigger, accept = "image/*" }: MediaPickerProps) {
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("upload")
   const [uploading, setUploading] = useState(false)
@@ -177,9 +178,9 @@ export function MediaPicker({ value, onChange, label = "Upload Foto", descriptio
 
             <TabsContent value="upload" className="flex-1 overflow-y-auto p-6 m-0 focus-visible:outline-none">
               <div className="border-2 border-dashed border-border rounded-2xl h-full flex flex-col items-center justify-center bg-muted/10 hover:bg-muted/30 transition-all cursor-pointer relative overflow-hidden group">
-                <input 
-                  type="file" 
-                  accept="image/*"
+                <input
+                  type="file"
+                  accept={accept}
                   onChange={handleUpload}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   disabled={uploading}

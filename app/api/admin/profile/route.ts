@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { ProfileUpdateSchema, getClientIp } from '@/lib/security'
+import { logAudit } from '@/lib/audit'
 
 export async function GET() {
   const session = await getServerSession(authOptions)
@@ -19,7 +21,12 @@ export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json()
+  const result = ProfileUpdateSchema.safeParse(await req.json())
+  if (!result.success) {
+    return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+  }
+
+  const body = result.data
   const { nama, email, currentPassword, newPassword, avatar } = body
 
   const user = await prisma.adminUser.findUnique({ where: { email: session.user.email } })
@@ -45,5 +52,28 @@ export async function PUT(req: NextRequest) {
     data: updateData,
     select: { id: true, nama: true, email: true, role: true }
   })
+
+  const ip = getClientIp(req)
+  const userAgent = req.headers.get("user-agent")
+  await logAudit({
+    action: "profile.update",
+    actorId: user.id,
+    actorEmail: user.email,
+    targetType: "AdminUser",
+    targetId: user.id,
+    detail: { emailChanged: !!(email && email !== user.email) },
+    ip, userAgent,
+  })
+  if (updateData.password) {
+    await logAudit({
+      action: "profile.password_change",
+      actorId: user.id,
+      actorEmail: user.email,
+      targetType: "AdminUser",
+      targetId: user.id,
+      ip, userAgent,
+    })
+  }
+
   return NextResponse.json(updated)
 }

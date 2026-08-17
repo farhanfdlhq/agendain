@@ -51,6 +51,15 @@ export const createColumns = (
   handleViewDetails: (booking: Booking) => void
 ): ColumnDef<Booking>[] => [
   {
+    // Nomor urut. row.index benar selama tabel tak di-sort (belum ada sorting);
+    // bila kelak sorting ditambah, ganti ke nomor berbasis data asli.
+    id: "rowNumber",
+    header: () => <div className="text-muted-foreground">#</div>,
+    cell: ({ row }) => <span className="text-muted-foreground tabular-nums">{row.index + 1}</span>,
+    size: 48,
+    enableResizing: false,
+  },
+  {
     accessorKey: "nama",
     header: "Pelanggan",
     cell: ({ row }) => {

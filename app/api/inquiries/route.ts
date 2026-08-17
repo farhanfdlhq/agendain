@@ -2,12 +2,14 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { InquiryUpdateSchema, isAllowedRole, serverError } from '@/lib/security'
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const role = (session?.user as any)?.role
+    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const inquiries = await prisma.inquiry.findMany({
@@ -23,19 +25,23 @@ export async function GET() {
 
     return NextResponse.json({ inquiries, privateTrips })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch inquiries' }, { status: 500 })
+    return serverError('GET /api/inquiries', error)
   }
 }
 
 export async function PUT(request: Request) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const role = (session?.user as any)?.role
+    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const body = await request.json()
-    const { id, type, sudahDibalas } = body
+    const result = InquiryUpdateSchema.safeParse(await request.json())
+    if (!result.success) {
+      return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+    }
+    const { id, type, sudahDibalas } = result.data
 
     if (type === 'inquiry') {
       await prisma.inquiry.update({
@@ -51,6 +57,6 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
+    return serverError('PUT /api/inquiries', error, { req: request })
   }
 }

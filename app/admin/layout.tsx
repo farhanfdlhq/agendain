@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users, Info, Image as ImageIcon, Shield } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users, Info, Image as ImageIcon, Shield, ScrollText } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
@@ -95,6 +95,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items: [
         { name: 'Pengaturan Sistem', href: '/admin/settings', icon: <Settings size={18} />, minRole: 'super_admin' },
         { name: 'Kelola User', href: '/admin/settings/users', icon: <Users size={18} />, minRole: 'super_admin' },
+        { name: 'Audit Log', href: '/admin/settings/audit-log', icon: <ScrollText size={18} />, minRole: 'super_admin' },
         { name: 'Roles & Permissions', href: '/admin/settings/roles', icon: <PlugConnectedIcon size={18} />, minRole: 'super_admin' },
         { name: 'Akun & Profil', href: '/admin/settings/profile', icon: <UserCog size={18} />, minRole: 'editor' },
       ]

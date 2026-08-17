@@ -123,3 +123,20 @@ model PrivateTripPackage {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  action     String   // "login.success" | "login.failed" | "user.create" | "user.update" | "user.delete" | "role.update" | "profile.update" | "profile.password_change" | "profile.avatar_change"
+  actorId    Int?     // null bila pelaku tak dikenal (mis. login gagal email tak terdaftar)
+  actorEmail String?  // email yang dicoba / pelaku
+  targetType String?  // "AdminUser" | "Setting"
+  targetId   String?  // id entitas terdampak (String agar seragam Int/key)
+  detail     String?  @db.Text // JSON string: { reason }, { roleFrom, roleTo }, dst.
+  ip         String?
+  userAgent  String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([action])
+  @@index([actorId])
+  @@index([createdAt])
+}

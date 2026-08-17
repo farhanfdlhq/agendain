@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { z } from "zod"
-import { rateLimit, checkCSRF } from '@/lib/security'
+import { rateLimit, checkCSRF, isAllowedRole, getClientIp } from '@/lib/security'
 
 const BookingSchema = z.object({
   nama: z.string().min(1, "Nama harus diisi").max(100),
@@ -18,8 +18,9 @@ const BookingSchema = z.object({
 export async function GET() {
   try {
     const session = await getServerSession(authOptions)
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const role = (session?.user as any)?.role
+    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const bookings = await prisma.booking.findMany({
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
   }
 
   // 2. Rate Limiting (Max 5 requests per minute per IP)
-  const ip = req.headers.get('x-forwarded-for') || '127.0.0.1'
+  const ip = getClientIp(req)
   const rateLimitResult = rateLimit(ip, 5, 60000)
   if (!rateLimitResult.success) {
     return NextResponse.json({ error: 'Too Many Requests. Please try again later.' }, { status: 429 })
@@ -86,4 +87,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Gagal membuat pesanan' }, { status: 500 })
   }
 }
-

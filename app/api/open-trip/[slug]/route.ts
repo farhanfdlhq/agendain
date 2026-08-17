@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { OpenTripPatchSchema, OpenTripSchema } from "@/lib/security"
 
 export async function GET(
   request: Request,
@@ -36,7 +37,11 @@ export async function PATCH(
     }
 
     const { slug } = await params
-    const data = await request.json()
+    const result = OpenTripPatchSchema.safeParse(await request.json())
+    if (!result.success) {
+      return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+    }
+    const data = result.data
 
     const updatedPackage = await prisma.openTrip.update({
       where: { slug },
@@ -65,7 +70,11 @@ export async function PUT(
     }
 
     const { slug } = await params
-    const data = await request.json()
+    const result = OpenTripSchema.safeParse(await request.json())
+    if (!result.success) {
+      return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+    }
+    const data = result.data
     
     if (!data.slug && data.nama) {
       data.slug = data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')

@@ -2,23 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
-import { z } from "zod"
-
-const PaketSchema = z.object({
-  nama: z.string().min(1, "Nama paket harus diisi"),
-  slug: z.string().optional(),
-  deskripsi: z.string().min(1, "Deskripsi harus diisi"),
-  harga: z.coerce.number().positive("Harga harus lebih dari 0"),
-  durasi: z.coerce.number().positive("Durasi harus lebih dari 0"),
-  destinasiId: z.coerce.number().positive(),
-  foto: z.any().optional(),
-  itinerary: z.any().optional(),
-  fasilitas: z.any().optional(),
-  termasuk: z.any().optional(),
-  tidakTermasuk: z.any().optional(),
-  status: z.enum(['draft', 'published', 'archived']).optional().default('draft'),
-  label: z.string().nullable().optional(),
-})
+import { OpenTripSchema, serverError } from "@/lib/security"
 
 export async function GET(request: Request) {
   try {
@@ -46,7 +30,7 @@ export async function GET(request: Request) {
     
     return NextResponse.json(packages)
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch packages' }, { status: 500 })
+    return serverError('GET /api/open-trip', error, { req: request })
   }
 }
 
@@ -61,7 +45,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     
     // Validate with Zod
-    const result = PaketSchema.safeParse(body)
+    const result = OpenTripSchema.safeParse(body)
     if (!result.success) {
       return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
     }
@@ -91,7 +75,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newPackage, { status: 201 })
   } catch (error) {
-    console.error(error)
-    return NextResponse.json({ error: 'Failed to create package' }, { status: 500 })
+    return serverError('POST /api/open-trip', error, { req: request })
   }
 }
