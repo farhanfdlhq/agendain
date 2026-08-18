@@ -1,0 +1,5 @@
+# Skrip shell WAJIB LF. Repo ini dikembangkan di Windows (core.autocrlf=true),
+# sementara `scripts/deploy.sh` dijalankan di VPS Linux. Baris berakhiran CRLF
+# membuat bash gagal ("bad interpreter" / token ikut membawa \r), jadi eol=lf
+# dipaksa di sini agar tidak bergantung pada setelan git tiap mesin.
+*.sh text eol=lf
