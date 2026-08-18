@@ -1,7 +1,7 @@
 .page {
   padding-bottom: var(--space-section);
   background: var(--color-canvas);
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 

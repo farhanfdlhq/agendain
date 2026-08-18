@@ -1,104 +1,130 @@
 'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
-import { Calendar, Clock, ChevronRight, Search } from 'lucide-react'
+import { useState, useEffect, useMemo, useDeferredValue } from 'react'
+import { Calendar, Clock, ChevronRight, Search, RefreshCw } from 'lucide-react'
 import styles from './page.module.css'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import FadeIn from '@/components/Motion/FadeIn'
 import Stagger from '@/components/Motion/Stagger'
 import HeroHeader from '@/components/HeroHeader/HeroHeader'
+import AirplaneLoader from '@/components/ui/airplane-loader'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
-const BLOG_POSTS = [
-  {
-    id: 1,
-    title: '5 Spot Tersembunyi di Roma yang Wajib Kamu Kunjungi',
-    excerpt: 'Lupakan sejenak Colosseum, ini dia 5 tempat rahasia di Roma yang jarang diketahui turis tapi punya pemandangan spektakuler.',
-    category: 'Destinasi',
-    date: '12 Okt 2026',
-    readTime: '4 min read',
-    image: '/dest-italy.webp', // Using existing image
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'Tips Packing Musim Dingin ke Eropa Tanpa Koper Overweight',
-    excerpt: 'Cara cerdas menyusun pakaian musim dingin agar tetap stylish di Eropa tanpa harus pusing memikirkan bagasi berlebih.',
-    category: 'Tips',
-    date: '08 Okt 2026',
-    readTime: '5 min read',
-    image: '/why-hotel.webp',
-    featured: false
-  },
-  {
-    id: 3,
-    title: 'Rekomendasi Gelato Paling Otentik di Florence',
-    excerpt: 'Perjalanan ke Italia belum lengkap tanpa mencoba Gelato asli. Berikut rekomendasi kedai Gelato terbaik menurut warga lokal.',
-    category: 'Kuliner',
-    date: '03 Okt 2026',
-    readTime: '3 min read',
-    image: '/dest-swiss.webp',
-    featured: false
-  },
-  {
-    id: 4,
-    title: 'Itinerary 7 Hari Keliling Swiss Pakai Kereta',
-    excerpt: 'Menjelajahi keindahan pegunungan Alpen dan danau-danau Swiss dengan Swiss Travel Pass. Praktis, nyaman, dan tak terlupakan.',
-    category: 'Itinerary',
-    date: '28 Sep 2026',
-    readTime: '6 min read',
-    image: '/why-camera.webp',
-    featured: false
-  },
-  {
-    id: 5,
-    title: 'Berapa Budget Ideal Liburan ke Paris Selama Seminggu?',
-    excerpt: 'Rincian lengkap biaya mulai dari tiket pesawat, akomodasi, transportasi lokal, hingga tiket masuk museum Louvre.',
-    category: 'Tips',
-    date: '21 Sep 2026',
-    readTime: '7 min read',
-    image: '/placeholder.webp',
-    featured: false
-  },
-]
-
-const CATEGORIES = ['Semua', 'Destinasi', 'Tips', 'Kuliner', 'Itinerary']
+type BlogCategory = { id: number; nama: string; namaEn: string | null; slug: string }
+type BlogPost = {
+  id: number
+  title: string
+  titleEn: string | null
+  slug: string
+  excerpt: string
+  excerptEn: string | null
+  thumbnail: string
+  publishedAt: string
+  createdAt: string
+  category: BlogCategory
+  content: string // To calculate read time
+  contentEn: string | null
+}
 
 export default function BlogContent() {
-  const { t } = useTranslation()
-  const [activeCategory, setActiveCategory] = useState('Semua')
-  const [searchQuery, setSearchQuery] = useState('')
-
-  const featuredPost = BLOG_POSTS.find(post => post.featured)
+  const { t, locale: language } = useTranslation()
+  const [categories, setCategories] = useState<BlogCategory[]>([])
+  const [posts, setPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   
-  const filteredPosts = BLOG_POSTS.filter(post => {
-    const matchesCategory = activeCategory === 'Semua' || post.category === activeCategory
-    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          post.excerpt.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesCategory && matchesSearch && !post.featured
-  })
+  const [activeCategorySlug, setActiveCategorySlug] = useState('semua')
+  const [searchQuery, setSearchQuery] = useState('')
+  const deferredSearch = useDeferredValue(searchQuery)
+
+  const fetchData = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const [catRes, postRes] = await Promise.all([
+        fetch('/api/blog/categories'),
+        fetch('/api/blog?pageSize=100') // Fetch max 100 for client-side filtering for simplicity on public page
+      ])
+      
+      if (!catRes.ok || !postRes.ok) throw new Error('Gagal memuat artikel')
+      
+      setCategories(await catRes.json())
+      const postData = await postRes.json()
+      setPosts(postData.posts || [])
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const filteredPosts = useMemo(() => {
+    return posts.filter(post => {
+      const title = language === 'en' ? (post.titleEn || post.title) : post.title
+      const excerpt = language === 'en' ? (post.excerptEn || post.excerpt) : post.excerpt
+      
+      const matchesCategory = activeCategorySlug === 'semua' || post.category.slug === activeCategorySlug
+      const matchesSearch = title.toLowerCase().includes(deferredSearch.toLowerCase()) || 
+                            excerpt.toLowerCase().includes(deferredSearch.toLowerCase())
+      return matchesCategory && matchesSearch
+    })
+  }, [posts, activeCategorySlug, deferredSearch, language])
+
+  // Get the first post as featured if no search is active
+  const featuredPost = (activeCategorySlug === 'semua' && deferredSearch === '' && filteredPosts.length > 0) 
+    ? filteredPosts[0] 
+    : null
+    
+  const gridPosts = featuredPost ? filteredPosts.slice(1) : filteredPosts
+
+  const getTitle = (post: BlogPost) => language === 'en' ? (post.titleEn || post.title) : post.title
+  const getExcerpt = (post: BlogPost) => language === 'en' ? (post.excerptEn || post.excerpt) : post.excerpt
+  const getCategoryName = (cat: BlogCategory) => language === 'en' ? (cat.namaEn || cat.nama) : cat.nama
+  
+  const getReadTime = (content: string) => {
+    const words = content.replace(/<[^>]*>?/gm, '').split(/\s+/).length
+    return Math.max(1, Math.ceil(words / 200)) // 200 words per minute average
+  }
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString(language === 'en' ? 'en-GB' : 'id-ID', { 
+      day: 'numeric', month: 'short', year: 'numeric' 
+    })
+  }
 
   return (
     <div className={styles.page}>
-      {/* Hero Section */}
       <HeroHeader 
         backgroundImage="/dest-italy.webp"
-        title={<>Jurnal <span className={styles.textGold}>Agendain</span></>}
-        subtitle="Temukan inspirasi liburan impianmu, tips perjalanan praktis, dan cerita seru dari berbagai sudut Eropa."
+        title={<>{language === 'en' ? 'Agendain' : 'Jurnal'} <span className={styles.textGold}>{language === 'en' ? 'Journal' : 'Agendain'}</span></>}
+        subtitle={language === 'en' 
+          ? "Discover your dream vacation inspiration, practical travel tips, and exciting stories from around Europe."
+          : "Temukan inspirasi liburan impianmu, tips perjalanan praktis, dan cerita seru dari berbagai sudut Eropa."}
       />
 
       <div className={styles.container}>
-        {/* Search & Filter Bar */}
         <FadeIn direction="up" delay={0.2}>
           <div className={styles.filterSection}>
             <div className={styles.categoryScroll}>
-              {CATEGORIES.map(cat => (
+              <button 
+                onClick={() => setActiveCategorySlug('semua')}
+                className={`${styles.categoryBadge} ${activeCategorySlug === 'semua' ? styles.categoryActive : ''}`}
+              >
+                {language === 'en' ? 'All' : 'Semua'}
+              </button>
+              {categories.map(cat => (
                 <button 
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`${styles.categoryBadge} ${activeCategory === cat ? styles.categoryActive : ''}`}
+                  key={cat.id}
+                  onClick={() => setActiveCategorySlug(cat.slug)}
+                  className={`${styles.categoryBadge} ${activeCategorySlug === cat.slug ? styles.categoryActive : ''}`}
                 >
-                  {cat}
+                  {getCategoryName(cat)}
                 </button>
               ))}
             </div>
@@ -107,7 +133,7 @@ export default function BlogContent() {
               <Search size={18} className={styles.searchIcon} />
               <input 
                 type="text" 
-                placeholder="Cari artikel..." 
+                placeholder={language === 'en' ? "Search articles..." : "Cari artikel..."}
                 className={styles.searchInput}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -116,83 +142,97 @@ export default function BlogContent() {
           </div>
         </FadeIn>
 
-        {/* Featured Post (Only show if 'Semua' and no search) */}
-        {activeCategory === 'Semua' && searchQuery === '' && featuredPost && (
-          <FadeIn direction="up" delay={0.3}>
-            <Link href={`/blog/${featuredPost.id}`} className={styles.featuredCard}>
-              <div className={styles.featuredImageWrapper}>
-                <Image 
-                  src={featuredPost.image} 
-                  alt={featuredPost.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority={true}
-                  className={styles.featuredImage}
-                />
-                <span className={styles.featuredTag}>Artikel Utama</span>
-              </div>
-              <div className={styles.featuredContent}>
-                <span className={styles.postCategory}>{featuredPost.category}</span>
-                <h2 className={styles.featuredTitle}>{featuredPost.title}</h2>
-                <p className={styles.featuredExcerpt}>{featuredPost.excerpt}</p>
-                
-                <div className={styles.postMeta}>
-                  <div className={styles.metaItem}>
-                    <Calendar size={16} /> {featuredPost.date}
+        {loading ? (
+          <div className="flex justify-center py-20"><AirplaneLoader size={48} /></div>
+        ) : error ? (
+          <div className="text-center py-20 space-y-4">
+            <p className="text-destructive font-medium">{error}</p>
+            <Button variant="outline" onClick={fetchData} className="gap-2"><RefreshCw size={16} /> Coba lagi</Button>
+          </div>
+        ) : (
+          <>
+            {/* Featured Post */}
+            {featuredPost && (
+              <FadeIn direction="up" delay={0.3}>
+                <Link href={`/blog/${featuredPost.slug}`} className={styles.featuredCard}>
+                  <div className={styles.featuredImageWrapper}>
+                    <Image 
+                      src={featuredPost.thumbnail} 
+                      alt={getTitle(featuredPost)}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={true}
+                      className={styles.featuredImage}
+                    />
+                    <span className={styles.featuredTag}>{language === 'en' ? 'Featured Article' : 'Artikel Utama'}</span>
                   </div>
-                  <div className={styles.metaItem}>
-                    <Clock size={16} /> {featuredPost.readTime}
-                  </div>
-                </div>
-                
-                <div className={styles.readMoreBtn}>
-                  Baca Selengkapnya <ChevronRight size={18} />
-                </div>
-              </div>
-            </Link>
-          </FadeIn>
-        )}
-
-        {filteredPosts.length > 0 ? (
-          <Stagger staggerDelay={0.1} className={styles.postsGrid}>
-            {filteredPosts.map((post, i) => (
-              <FadeIn key={post.id} direction="up" delay={0.2 + (i * 0.1)} className={styles.postCardWrapper}>
-                <Link href={`/blog/${post.id}`} className={styles.postCard}>
-                    <div className={styles.postImageWrapper}>
-                      <Image 
-                        src={post.image} 
-                        alt={post.title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className={styles.postImage}
-                      />
-                      <span className={styles.postCategoryBadge}>{post.category}</span>
+                  <div className={styles.featuredContent}>
+                    <span className={styles.postCategory}>{getCategoryName(featuredPost.category)}</span>
+                    <h2 className={styles.featuredTitle}>{getTitle(featuredPost)}</h2>
+                    <p className={styles.featuredExcerpt}>{getExcerpt(featuredPost)}</p>
+                    
+                    <div className={styles.postMeta}>
+                      <div className={styles.metaItem}>
+                        <Calendar size={16} /> {formatDate(featuredPost.publishedAt || featuredPost.createdAt)}
+                      </div>
+                      <div className={styles.metaItem}>
+                        <Clock size={16} /> {getReadTime(language === 'en' && featuredPost.contentEn ? featuredPost.contentEn : featuredPost.content)} min read
+                      </div>
                     </div>
-                    <div className={styles.postContent}>
-                      <h3 className={styles.postTitle}>{post.title}</h3>
-                      <p className={styles.postExcerpt}>{post.excerpt}</p>
-                      
-                      <div className={styles.postMetaBottom}>
-                        <div className={styles.postMeta}>
-                          <div className={styles.metaItem}>
-                            <Calendar size={14} /> {post.date}
-                          </div>
-                          <div className={styles.metaItem}>
-                            <Clock size={14} /> {post.readTime}
+                    
+                    <div className={styles.readMoreBtn}>
+                      {language === 'en' ? 'Read More' : 'Baca Selengkapnya'} <ChevronRight size={18} />
+                    </div>
+                  </div>
+                </Link>
+              </FadeIn>
+            )}
+
+            {/* Grid Posts */}
+            {gridPosts.length > 0 ? (
+              <Stagger staggerDelay={0.1} className={styles.postsGrid}>
+                {gridPosts.map((post, i) => (
+                  <FadeIn key={post.id} direction="up" delay={0.2 + (i * 0.1)} className={styles.postCardWrapper}>
+                    <Link href={`/blog/${post.slug}`} className={styles.postCard}>
+                      <div className={styles.postImageWrapper}>
+                        <Image 
+                          src={post.thumbnail} 
+                          alt={getTitle(post)}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className={styles.postImage}
+                        />
+                        <span className={styles.postCategoryBadge}>{getCategoryName(post.category)}</span>
+                      </div>
+                      <div className={styles.postContent}>
+                        <h3 className={styles.postTitle}>{getTitle(post)}</h3>
+                        <p className={styles.postExcerpt}>{getExcerpt(post)}</p>
+                        
+                        <div className={styles.postMetaBottom}>
+                          <div className={styles.postMeta}>
+                            <div className={styles.metaItem}>
+                              <Calendar size={14} /> {formatDate(post.publishedAt || post.createdAt)}
+                            </div>
+                            <div className={styles.metaItem}>
+                              <Clock size={14} /> {getReadTime(language === 'en' && post.contentEn ? post.contentEn : post.content)} min read
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </FadeIn>
-              ))}
-            </Stagger>
-          ) : (
-            <div className={styles.emptyState}>
-              <h3>Tidak ada artikel yang ditemukan</h3>
-              <p>Coba gunakan kata kunci lain atau pilih kategori yang berbeda.</p>
-            </div>
-          )}
+                    </Link>
+                  </FadeIn>
+                ))}
+              </Stagger>
+            ) : (
+              !featuredPost && (
+                <div className={styles.emptyState}>
+                  <h3>{language === 'en' ? 'No articles found' : 'Tidak ada artikel yang ditemukan'}</h3>
+                  <p>{language === 'en' ? 'Try using different keywords or categories.' : 'Coba gunakan kata kunci lain atau pilih kategori yang berbeda.'}</p>
+                </div>
+              )
+            )}
+          </>
+        )}
       </div>
     </div>
   )

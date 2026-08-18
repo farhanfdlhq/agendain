@@ -1,6 +1,6 @@
 .hero {
   position: relative;
-  min-height: 85vh;
+  min-height: 85dvh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,6 +100,6 @@
 
 @media (max-width: 744px) {
   .hero {
-    min-height: 90vh;
+    min-height: 90dvh;
   }
 }

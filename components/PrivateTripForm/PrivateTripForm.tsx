@@ -4,13 +4,25 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { CheckCircle } from "lucide-react";
 import FadeIn from "@/components/Motion/FadeIn";
+import { parseGoldText } from "@/lib/utils/textFormatting";
 import styles from "./PrivateTripForm.module.css";
 
-export default function PrivateTripForm() {
-  const { t } = useTranslation();
+export default function PrivateTripForm({ privatetripSettings }: { privatetripSettings?: any }) {
+  const { t, locale } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [whatsappNumber, setWhatsappNumber] = useState("6281234567890");
+
+  const gs = (key: string, fallbackText: string) => {
+    const dataKey = locale === 'en' ? `${key}_en` : key;
+    if (privatetripSettings?.[dataKey] && privatetripSettings[dataKey].trim() !== '') {
+      return privatetripSettings[dataKey];
+    }
+    if (privatetripSettings?.[key] && privatetripSettings[key].trim() !== '') {
+      return privatetripSettings[key];
+    }
+    return fallbackText;
+  };
 
   useEffect(() => {
     fetch("/api/settings")
@@ -64,10 +76,10 @@ export default function PrivateTripForm() {
   return (
     <section className={styles.section} id="form-booking">
       <div className={styles.container}>
-        <FadeIn direction="up">
+        <FadeIn direction="up" delay={0.2} className={styles.formContainer}>
           <div className={styles.header}>
-            <h2 className={styles.title}>{t("pt.formTitle")}</h2>
-            <p className={styles.subtitle}>{t("pt.formDesc")}</p>
+            <h2 className={styles.title}>{parseGoldText(gs('formTitle', t("pt.formTitle")), styles, privatetripSettings?.formTitleWeight)}</h2>
+            <p className={styles.subtitle}>{gs('formSubtitle', t("pt.formDesc"))}</p>
           </div>
         </FadeIn>
 

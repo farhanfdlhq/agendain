@@ -1,5 +1,5 @@
 .page {
-  min-height: 100vh;
+  min-height: 100dvh;
   background: var(--color-canvas);
 }
 
@@ -19,7 +19,7 @@
   position: relative;
   border-radius: 2rem;
   overflow: hidden;
-  min-height: 70vh;
+  min-height: 70dvh;
   display: flex;
   align-items: center;
   background-image: url("/open_trip_hero.webp");

@@ -37,6 +37,10 @@
   margin-bottom: 0.75rem;
 }
 
+.textGold {
+  color: var(--color-dominant);
+}
+
 .subtitle {
   font-size: 1.125rem;
   color: var(--color-ink-light);

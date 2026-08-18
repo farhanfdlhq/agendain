@@ -262,17 +262,29 @@ export default function OpenTripCMSPage() {
             </CardContent>
           </Card>
 
-          <Card className="border shadow-sm overflow-hidden">
-            <CardHeader className="bg-slate-50/50 border-b pb-4">
-              <CardTitle className="text-lg text-primary">Teks Daftar Paket</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6 grid gap-6">
-              {renderTextInput('Judul Daftar Paket (*Highlight Kuning*)', 'packagesTitle', false, 'Pilih *Destinasi* Open Trip Kamu', true, '800')}
-              {renderTextInput('Deskripsi Daftar Paket', 'packagesSubtitle', true, 'Beragam pilihan rute menarik...', true, '500')}
-            </CardContent>
-          </Card>
+            <Card className="border shadow-sm overflow-hidden">
+              <CardHeader className="bg-slate-50/50 border-b pb-4">
+                <CardTitle className="text-lg text-primary">Teks Daftar Paket</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 grid gap-6">
+                {renderTextInput('Judul Daftar Paket (*Highlight Kuning*)', 'packagesTitle', false, 'Pilih *Destinasi* Open Trip Kamu', true, '800')}
+                {renderTextInput('Deskripsi Daftar Paket', 'packagesSubtitle', true, 'Beragam pilihan rute menarik...', true, '500')}
+              </CardContent>
+            </Card>
 
-      </form>
+            <Card className="border shadow-sm overflow-hidden">
+              <CardHeader className="bg-slate-50/50 border-b pb-4">
+                <CardTitle className="text-lg text-primary">Banner Promo (Bawah)</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 grid gap-6">
+                {renderTextInput('Label Kecil di Atas', 'ctaLabel', false, 'Penawaran Spesial')}
+                {renderTextInput('Baris 1: Judul Utama (*Kuning*)', 'ctaTitle', false, 'Booking Sekarang', true, '800')}
+                {renderTextInput('Baris 2: Sub-Judul (Opsional)', 'ctaSubtitle', true, 'Amankan kursi Anda sebelum kehabisan.', true, '500')}
+                {renderTextInput('Teks Tombol Primary', 'ctaBtnText', false, 'Chat Whatsapp Sekarang')}
+              </CardContent>
+            </Card>
+
+        </form>
 
       {/* Apple / macOS-style Frosted Glass Floating Pill Dock */}
       <div 

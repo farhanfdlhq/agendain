@@ -1,13 +1,14 @@
 'use client'
 import { useTranslation } from '@/lib/i18n/useTranslation'
-import { motion } from 'framer-motion'
+import { motion, LayoutGroup } from 'framer-motion'
 import styles from './LanguageToggle.module.css'
 
 export default function LanguageToggle() {
   const { locale, setLocale } = useTranslation()
 
   return (
-    <div className={styles.toggleGroup}>
+    <LayoutGroup>
+      <div className={styles.toggleGroup}>
       <button
         className={`${styles.toggleBtn} ${locale === 'id' ? styles.activeText : ''}`}
         onClick={() => setLocale('id')}
@@ -32,6 +33,7 @@ export default function LanguageToggle() {
           <img src="/flags/en.png" alt="EN" width={20} height={15} className={styles.flag} /> EN
         </span>
       </button>
-    </div>
+      </div>
+    </LayoutGroup>
   )
 }

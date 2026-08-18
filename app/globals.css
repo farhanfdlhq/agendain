@@ -4,6 +4,7 @@
 @layer base {
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html, body { overflow-x: hidden; }
   html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
   body {
@@ -18,7 +19,7 @@
   .non-home-main {
     padding-top: 80px;
     background-color: var(--color-canvas); /* Default */
-    min-height: 100vh;
+    min-height: 100dvh;
   }
   
   /* Force white background on specific pages if needed */

@@ -37,9 +37,9 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.accordionHeaderCenter}>
-            <div className={styles.accordionEyebrowPill}>Sudut Pandang</div>
-            <h2 className={styles.accordionTitleCenter} style={gs('accTitleWeight') ? { fontWeight: Number(gs('accTitleWeight')) } : undefined}>{renderHighlightedTitle(gs('accTitle', undefined, 'Lihat, Hirup, & Simpan Memori'))}</h2>
-            <h3 className={styles.accordionSubtitleCenter} style={gs('accSubtitleWeight') ? { fontWeight: Number(gs('accSubtitleWeight')) } : undefined}>{gs('accSubtitle', undefined, 'Sudut Terbaik Eropa')}</h3>
+            <div className={styles.accordionEyebrowPill}>{t('home.testi.badge') || 'Sudut Pandang'}</div>
+            <h2 className={styles.accordionTitleCenter} style={gs('accTitleWeight') ? { fontWeight: Number(gs('accTitleWeight')) } : undefined}>{renderHighlightedTitle(gs('accTitle', 'home.accTitle', 'Lihat, Hirup, & Simpan Memori'))}</h2>
+            <h3 className={styles.accordionSubtitleCenter} style={gs('accSubtitleWeight') ? { fontWeight: Number(gs('accSubtitleWeight')) } : undefined}>{gs('accSubtitle', 'home.accSubtitle', 'Sudut Terbaik Eropa')}</h3>
           </div>
         </FadeIn>
         <div className={styles.accordionLayout}>
@@ -63,7 +63,7 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
             ))}
             <FadeIn direction="up" delay={0.3}>
               <div className={styles.accordionBtnWrapper}>
-                <Link href="/open-trip" className={styles.accordionBottomBtn}>{t('home.acc.btnMore') || 'Pertanyaan Lain'} &rarr;</Link>
+                <Link href="/open-trip" className={styles.accordionBottomBtn}>{t('home.faq.more')?.replace('?', '') || 'Pertanyaan Lain'} &rarr;</Link>
               </div>
             </FadeIn>
           </div>

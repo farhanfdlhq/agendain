@@ -26,6 +26,7 @@ async function main() {
       role: 'super_admin'
     }
   })
+
   console.log('Super Admin user created: admin@agendain.com')
 
   // Akun Manager (Admin Trip)
@@ -545,7 +546,7 @@ async function main() {
       subtitle: "Italy - Value",
       image: "/gallery-colosseum.webp",
       locationTab: "Italy",
-      chips: ["Durasi fleksibel", "Semua Ukuran Grup", "Jadwal Bebas"],
+      chips: ["[Clock] Durasi Fleksibel", "[Users] Semua Ukuran Grup", "[Calendar] Jadwal Bebas"],
       features: [
         "Solusi terbaik buat kamu yang pengen keliling Eropa hemat tapi gak mau keganggu orang lain di open trip.",
         "Rasakan pengalaman otentik naik transportasi lokal, serasa jadi traveler sejati!",
@@ -558,7 +559,7 @@ async function main() {
       subtitle: "Italy - Balance",
       image: "/dest-italy.webp",
       locationTab: "Italy",
-      chips: ["Durasi fleksibel", "Semua Ukuran Grup", "Jadwal Bebas"],
+      chips: ["[Clock] Durasi Fleksibel", "[Users] Semua Ukuran Grup", "[Calendar] Jadwal Bebas"],
       features: [
         "Pilihan paling cerdas buat kamu yang mau liburan berkesan tanpa kompromi kenyamanan",
         "Nikmati istirahat berkualitas di Hotel Bintang 3 yang cozy",
@@ -571,7 +572,7 @@ async function main() {
       subtitle: "Italy - Premium",
       image: "/dest-france.webp",
       locationTab: "Italy",
-      chips: ["Durasi fleksibel", "Semua Ukuran Grup", "Jadwal Bebas"],
+      chips: ["[Clock] Durasi Fleksibel", "[Users] Semua Ukuran Grup", "[Calendar] Jadwal Bebas"],
       features: [
         "Untuk kamu yang percaya bahwa liburan terbaik = tanpa drama dan tanpa ribet",
         "Tidur pulas di Hotel Bintang 4 pilihan eksklusif",
@@ -614,6 +615,36 @@ async function main() {
     ctaSubtitleWeight: '500',
     ctaBtnText: 'Hubungi Konsultan Kami',
     ctaBtnText_en: 'Contact Our Consultant',
+    whyTitle: 'Eksplorasi Eropa bareng ahlinya, *semua sudut aman terkendali*',
+    whyTitle_en: 'Explore Europe with experts, *every corner is safe and controlled*',
+    whySubtitle: 'Mencari teman perjalanan ke Eropa itu mudah, tapi menemukan yang benar-benar paham luar-dalam sekaligus bisa mengabadikan momen estetikmu itu langka.',
+    whySubtitle_en: 'Finding travel buddies to Europe is easy, but finding those who truly understand inside out while capturing your aesthetic moments is rare.',
+    whyItems: [
+      { icon: "Globe", title: "Khatam Seluk-Beluk Eropa", desc: "Bukan cuma hapal rute turis mainstream, tapi paham betul kultur lokal, bahasa, hingga sistem transportasi paling efisien di sana." },
+      { icon: "MapPin", title: "Kolektor Spot Hidden Gems", desc: "Bosan dengan destinasi yang penuh sesak? Kamu bakal diajak blusukan ke sudut-sudut cantik, kafe lokal tersembunyi, dan lanskap rahasia." },
+      { icon: "Camera", title: "Fotografer Pro Siap Beraksi", desc: "Gak usah pusing mikirin angle atau pasrah sama hasil foto temen yang blur. Berbekal kamera pro, guide kamu siap mengabadikan tiap momen." }
+    ],
+    whyItems_en: [
+      { icon: "Globe", title: "Master of Europe", desc: "Not just knowing mainstream tourist routes, but deeply understanding local culture, language, and the most efficient transport systems." },
+      { icon: "MapPin", title: "Hidden Gems Collector", desc: "Bored of crowded destinations? You will be taken to explore beautiful corners, hidden local cafes, and secret landscapes." },
+      { icon: "Camera", title: "Pro Photographer Ready", desc: "No need to worry about angles or blurry photos. Armed with a pro camera, your guide is ready to capture every cinematic moment." }
+    ],
+    workflowTitle: 'Cara *Booking* Private Trip',
+    workflowTitle_en: 'How to *Book* Private Trip',
+    workflowSubtitle: 'Proses mudah dan transparan dari awal hingga akhir',
+    workflowSubtitle_en: 'Easy and transparent process from start to finish',
+    workflowSteps: [
+      { title: "Konsultasi & Itinerary", desc: "Ngobrol santai dengan tim kami untuk membahas rute impian." },
+      { title: "Booking & Administrasi", desc: "Setelah cocok dengan itinerary, kami akan siapkan rincian biaya dan dokumen." },
+      { title: "Persiapan & Visa", desc: "Gak usah pusing urus dokumen, tim kami siap bantu pengurusan Visa." },
+      { title: "Berangkat Liburan", desc: "Semua sudah beres! Kamu tinggal packing dan bersiap menikmati Eropa." }
+    ],
+    workflowSteps_en: [
+      { title: "Consultation & Itinerary", desc: "Have a casual chat with our team to discuss your dream route." },
+      { title: "Booking & Administration", desc: "Once the itinerary fits, we'll prepare the cost details and documents." },
+      { title: "Preparation & Visa", desc: "No need to stress about documents, our team is ready to assist with Visa." },
+      { title: "Departure", desc: "Everything is set! You just pack and get ready to enjoy Europe." }
+    ]
   };
 
   await prisma.setting.upsert({
@@ -624,6 +655,59 @@ async function main() {
   console.log("Private Trip CMS Settings seeded.");
 
   console.log('Home CMS Settings seeded (all subtitles/descriptions font-weight: Medium 500).')
+
+  // 5. BLOG CATEGORIES & POST
+  console.log('Menyiapkan kategori blog...')
+  const catDestinasi = await prisma.blogCategory.upsert({
+    where: { slug: 'destinasi' },
+    update: {},
+    create: { nama: 'Destinasi', namaEn: 'Destinations', slug: 'destinasi' }
+  })
+  const catTips = await prisma.blogCategory.upsert({
+    where: { slug: 'tips' },
+    update: {},
+    create: { nama: 'Tips', namaEn: 'Tips', slug: 'tips' }
+  })
+  const catKuliner = await prisma.blogCategory.upsert({
+    where: { slug: 'kuliner' },
+    update: {},
+    create: { nama: 'Kuliner', namaEn: 'Culinary', slug: 'kuliner' }
+  })
+  const catItinerary = await prisma.blogCategory.upsert({
+    where: { slug: 'itinerary' },
+    update: {},
+    create: { nama: 'Itinerary', namaEn: 'Itinerary', slug: 'itinerary' }
+  })
+
+  console.log('Menyiapkan artikel blog dummy...')
+  await prisma.blogPost.upsert({
+    where: { slug: '5-spot-tersembunyi-di-roma' },
+    update: {},
+    create: {
+      title: '5 Spot Tersembunyi di Roma yang Wajib Kamu Kunjungi',
+      titleEn: '5 Hidden Spots in Rome You Must Visit',
+      slug: '5-spot-tersembunyi-di-roma',
+      excerpt: 'Lupakan sejenak Colosseum, ini dia 5 tempat rahasia di Roma yang jarang diketahui turis tapi punya pemandangan spektakuler.',
+      excerptEn: 'Forget the Colosseum for a moment, here are 5 secret spots in Rome that are rarely known by tourists but have spectacular views.',
+      content: '<p>Roma bukan hanya tentang Colosseum dan Vatikan. Jika Anda ingin melihat sisi lain dari kota abadi ini, berikut adalah daftar tempat rahasia yang patut dikunjungi.</p><p>Sangat cocok untuk perjalanan fotografi Anda.</p>',
+      contentEn: '<p>Rome is not just about the Colosseum and Vatican. If you want to see the other side of this eternal city, here is a list of secret spots worth visiting.</p><p>Perfect for your photography trip.</p>',
+      thumbnail: '/dest-italy.webp',
+      categoryId: catDestinasi.id,
+      tags: ['roma', 'italia', 'hidden-gems'],
+      status: 'published',
+      publishedAt: new Date(),
+    }
+  })
+
+  console.log(`
+Seeding selesai!
+- Super Admin: admin@agendain.com / agendain2024
+- 3 Destinasi
+- 3 Paket Wisata
+- Pengaturan Default
+- Private Trip Packages
+- Blog Categories & 1 Sample Post
+  `)
 }
 
 main()

@@ -1,6 +1,6 @@
 .heroSection {
   position: relative;
-  min-height: 60vh; /* Shorter height to form a wide rectangle */
+  min-height: 60dvh; /* Shorter height to form a wide rectangle */
   display: flex;
   align-items: center;
   justify-content: flex-end; /* Align content to the right as per design */

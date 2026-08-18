@@ -140,3 +140,38 @@ model AuditLog {
   @@index([actorId])
   @@index([createdAt])
 }
+
+model BlogCategory {
+  id        Int        @id @default(autoincrement())
+  nama      String
+  namaEn    String?
+  slug      String     @unique
+  posts     BlogPost[]
+  createdAt DateTime   @default(now())
+}
+
+model BlogPost {
+  id              Int           @id @default(autoincrement())
+  title           String
+  titleEn         String?
+  slug            String        @unique
+  excerpt         String        @db.Text
+  excerptEn       String?       @db.Text
+  content         String        @db.LongText
+  contentEn       String?       @db.LongText
+  thumbnail       String
+  categoryId      Int
+  category        BlogCategory  @relation(fields: [categoryId], references: [id])
+  tags            Json          // array string ["travel","eropa"]
+  status          String        @default("draft") // "draft" | "published"
+  metaTitle       String?
+  metaDescription String?       @db.Text
+  ogImage         String?
+  publishedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([categoryId])
+  @@index([slug])
+}

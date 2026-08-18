@@ -171,7 +171,7 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
     z-index: calc(var(--z-sticky) - 1);
@@ -183,12 +183,13 @@
     position: fixed;
     top: 0;
     right: 0;
-    height: 100vh;
+    height: 100dvh;
     width: 280px;
     background: var(--color-navbar-bg);
     z-index: var(--z-sticky);
-    padding: 100px var(--space-xl) var(--space-xl);
+    padding: 100px var(--space-xl) calc(var(--space-xl) + env(safe-area-inset-bottom, 20px));
     box-shadow: -4px 0 24px rgba(0,0,0,0.1);
+    overflow-y: auto;
   }
 
   .mobileLinks {

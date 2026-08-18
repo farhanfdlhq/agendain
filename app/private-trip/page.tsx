@@ -45,10 +45,10 @@ export default async function PrivateTripPage() {
   return (
     <main>
       <PrivateTripHero privatetripSettings={privatetripSettings} />
-      <PrivateTripWhy />
+      <PrivateTripWhy privatetripSettings={privatetripSettings} />
       <PrivateTripPricing packages={packages} privatetripSettings={privatetripSettings} />
-      <PrivateTripWorkflow />
-      <PrivateTripForm />
+      <PrivateTripWorkflow privatetripSettings={privatetripSettings} />
+      <PrivateTripForm privatetripSettings={privatetripSettings} />
 
       <div style={{ height: "40px" }} />
 

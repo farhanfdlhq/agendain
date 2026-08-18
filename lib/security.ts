@@ -90,6 +90,30 @@ export const InquiryUpdateSchema = z.object({
   sudahDibalas: z.boolean(),
 });
 
+// === Blog Schemas ===
+export const BlogCategorySchema = z.object({
+  nama: z.string().min(1).max(100),
+  namaEn: z.string().max(100).optional().nullable(),
+  slug: z.string().min(1).max(100).optional(),
+});
+
+export const BlogPostSchema = z.object({
+  title: z.string().min(1).max(255),
+  titleEn: z.string().max(255).optional().nullable(),
+  slug: z.string().min(1).max(255).optional(),
+  excerpt: z.string().min(1).max(1000),
+  excerptEn: z.string().max(1000).optional().nullable(),
+  content: z.string().min(1),
+  contentEn: z.string().optional().nullable(),
+  thumbnail: z.string().min(1),
+  categoryId: z.number().int().positive(),
+  tags: z.array(z.string().max(50)).max(20).default([]),
+  status: z.enum(["draft", "published"]).default("draft"),
+  metaTitle: z.string().max(160).optional().nullable(),
+  metaDescription: z.string().max(320).optional().nullable(),
+  ogImage: z.string().optional().nullable(),
+});
+
 const allowedUploadTypes: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",

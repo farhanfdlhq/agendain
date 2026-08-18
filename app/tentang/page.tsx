@@ -1,23 +1,33 @@
-import TentangContent from './TentangContent'
 import { prisma } from '@/lib/prisma'
+import TentangContent from './TentangContent'
+
+export const revalidate = 60
 
 export const metadata = {
   title: 'Tentang Kami | Agendain',
-  description: 'Mengenal lebih dekat Agendain, partner perjalanan Eropa terpercaya Anda.',
+  description: 'Mengenal lebih dekat Agendain, teman perjalanan Eropa Anda.',
 }
 
-export const revalidate = 60;
-
 export default async function TentangPage() {
-  let aboutSettings = {};
+  let aboutSettings = {}
   try {
-    const setting = await prisma.setting.findUnique({ where: { key: 'about_settings' } });
-    if (setting) {
-      aboutSettings = JSON.parse(setting.value);
-    }
-  } catch (error) {
-    console.error('Failed to fetch about settings', error);
+    const res = await prisma.setting.findUnique({ where: { key: 'about_settings' } })
+    if (res) aboutSettings = JSON.parse(res.value)
+  } catch (e) {
+    console.error(e)
   }
 
-  return <TentangContent aboutSettings={aboutSettings} />
+  let recentPosts: any[] = []
+  try {
+    recentPosts = await prisma.blogPost.findMany({
+      where: { status: 'published' },
+      orderBy: { publishedAt: 'desc' },
+      take: 3,
+      include: { category: true }
+    })
+  } catch (e) {
+    console.error(e)
+  }
+
+  return <TentangContent aboutSettings={aboutSettings} recentPosts={recentPosts} />
 }

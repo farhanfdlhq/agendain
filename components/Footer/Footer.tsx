@@ -33,9 +33,7 @@ export default function Footer({ settings }: { settings?: any }) {
               )}
             </Link>
             <div className={styles.topBandDivider} />
-            <p className={styles.topBandTagline}>
-              Mau Jalan tapi Wacana Doang? <strong>Agendain aja!</strong>
-            </p>
+            <p className={styles.topBandTagline} dangerouslySetInnerHTML={{ __html: t('footer.tagline') || 'Mau Jalan tapi Wacana Doang? <strong>Agendain aja!</strong>' }} />
           </div>
         </div>
       </div>

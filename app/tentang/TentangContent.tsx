@@ -9,7 +9,7 @@ import { useTranslation } from '@/lib/i18n/useTranslation'
 import { parseGoldText } from '@/lib/utils/textFormatting'
 import { sanitizeHtml } from '@/lib/sanitize'
 
-export default function TentangContent({ aboutSettings = {} }: { aboutSettings?: any }) {
+export default function TentangContent({ aboutSettings = {}, recentPosts = [] }: { aboutSettings?: any, recentPosts?: any[] }) {
   const { t, locale } = useTranslation()
   const isEn = locale === 'en'
   const getSetting = (key: string) => {
@@ -56,73 +56,46 @@ export default function TentangContent({ aboutSettings = {} }: { aboutSettings?:
         </FadeIn>
 
         {/* Articles Grid Section */}
-        <div className={styles.articlesSection}>
-          <Stagger staggerDelay={0.1}>
-            <div className={styles.articleGrid}>
-              {/* Article 1 */}
-              <FadeIn direction="up" delay={0.3}>
-                <div className={styles.articleCard}>
-                  <div className={styles.articleImageWrapper}>
-                    <Image 
-                      src="/why-hotel.webp" 
-                      alt="Gelato Roma"
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className={styles.articleImage}
-                    />
-                  </div>
-                  <div className={styles.articleContent}>
-                    <div className={styles.articleMeta}>
-                      <span className={styles.metaDate}>
-                        <span className={styles.bullet}>•</span> April 29, 2026
-                      </span>
-                      <span className={styles.metaCategory}>{isEn ? 'Italy, Culinary' : 'Italia, Kuliner'}</span>
-                    </div>
-                    <h3 className={styles.articleTitle}>{isEn ? 'Hunting for the Best Budget-Friendly Gelato in Rome' : 'Berburu Gelato Terenak di Roma yang Harganya Ramah Kantong'}</h3>
-                    <p className={styles.articleExcerpt}>{isEn ? "Don't get trapped in expensive tourist stalls. Here's the secret to hidden authentic gelaterias..." : 'Jangan sampai kejebak kedai turis yang mahal. Ini bocoran gelateria autentik tersembunyi...'}</p>
-                    <Link href="#" className={styles.readMoreBtn}>{t('about.new.readMore')}</Link>
-                  </div>
-                </div>
-              </FadeIn>
-
-              {/* Article 2 */}
-              <FadeIn direction="up" delay={0.4}>
-                <div className={styles.articleCard}>
-                  <div className={styles.articleImageWrapper}>
-                    <Image 
-                      src="/dest-swiss.webp" 
-                      alt="Keliling Milan"
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className={styles.articleImage}
-                    />
-                  </div>
-                  <div className={styles.articleContent}>
-                    <div className={styles.articleMeta}>
-                      <span className={styles.metaDate}>
-                        <span className={styles.bullet}>•</span> {isEn ? 'June 16, 2026' : 'Juni 16, 2026'}
-                      </span>
-                      <span className={styles.metaCategory}>{isEn ? 'Italy, Tips' : 'Italia, Tips'}</span>
-                    </div>
-                    <h3 className={styles.articleTitle}>{isEn ? 'How to Explore Milan in 24 Hours with Only Google Maps' : 'Cara Jitu Keliling Milan 24 Jam Cuma Modal Google Maps'}</h3>
-                    <p className={styles.articleExcerpt}>{isEn ? "Only have one day in the fashion capital? Don't panic, here is the most efficient walking route cheat sheet..." : 'Punya waktu seharian doang di kota mode? Gak usah panik, ini contekan rute jalan kaki paling efisien...'}</p>
-                    <Link href="#" className={styles.readMoreBtn}>{t('about.new.readMore')}</Link>
-                  </div>
-                </div>
-              </FadeIn>
-            </div>
-          </Stagger>
-
-          {/* Pagination */}
-          <FadeIn direction="up" delay={0.5}>
-            <div className={styles.pagination}>
-              <button className={styles.pageBtnActive}>1</button>
-              <button className={styles.pageBtn}>2</button>
-              <span className={styles.pageDots}>...</span>
-              <button className={styles.pageBtn}>&gt;&gt;</button>
-            </div>
-          </FadeIn>
-        </div>
+        {recentPosts && recentPosts.length > 0 && (
+          <div className={styles.articlesSection}>
+            <Stagger staggerDelay={0.1}>
+              <div className={styles.articleGrid}>
+                {recentPosts.map((post, index) => {
+                  const title = isEn ? (post.titleEn || post.title) : post.title;
+                  const excerpt = isEn ? (post.excerptEn || post.excerpt) : post.excerpt;
+                  const categoryName = isEn ? (post.category?.namaEn || post.category?.nama) : post.category?.nama;
+                  
+                  return (
+                    <FadeIn direction="up" delay={0.3 + (index * 0.1)} key={post.id}>
+                      <div className={styles.articleCard}>
+                        <div className={styles.articleImageWrapper}>
+                          <Image 
+                            src={post.thumbnail || "/placeholder.webp"} 
+                            alt={title}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className={styles.articleImage}
+                          />
+                        </div>
+                        <div className={styles.articleContent}>
+                          <div className={styles.articleMeta}>
+                            <span className={styles.metaDate}>
+                              <span className={styles.bullet}>•</span> {new Date(post.publishedAt || post.createdAt).toLocaleDateString(isEn ? 'en-US' : 'id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                            </span>
+                            {categoryName && <span className={styles.metaCategory}>{categoryName}</span>}
+                          </div>
+                          <h3 className={styles.articleTitle}>{title}</h3>
+                          <p className={styles.articleExcerpt}>{excerpt}</p>
+                          <Link href={`/blog/${post.slug}`} className={styles.readMoreBtn}>{t('about.new.readMore')}</Link>
+                        </div>
+                      </div>
+                    </FadeIn>
+                  )
+                })}
+              </div>
+            </Stagger>
+          </div>
+        )}
 
         {/* Lead Guide Section */}
         <FadeIn direction="up" delay={0.6}>

@@ -20,9 +20,9 @@ export default function DestinationsSection({ gs, t, packages }: { gs: any, t: a
         <FadeIn direction="up">
           <div className={styles.destWrapper}>
             <div className={styles.destHeaderLeftWrapper}>
-              <p className={styles.destEyebrow} style={gs('destEyebrowWeight') ? { fontWeight: Number(gs('destEyebrowWeight')) } : undefined}>{gs('destEyebrow', undefined, 'Eksplor Bersama Agendain')}</p>
-              <h2 className={styles.destTitle} style={gs('destTitleWeight') ? { fontWeight: Number(gs('destTitleWeight')) } : undefined}>{renderHighlightedTitle(gs('destTitle', undefined, 'Favorite Destination'))}</h2>
-              <Link href="/open-trip" className={styles.destViewAll}>Lihat Semua Destinasi &rarr;</Link>
+              <p className={styles.destEyebrow} style={gs('destEyebrowWeight') ? { fontWeight: Number(gs('destEyebrowWeight')) } : undefined}>{gs('destEyebrow', 'dest.subtitle', 'Eksplor Bersama Agendain')}</p>
+              <h2 className={styles.destTitle} style={gs('destTitleWeight') ? { fontWeight: Number(gs('destTitleWeight')) } : undefined}>{renderHighlightedTitle(gs('destTitle', 'home.popularDest', 'Favorite Destination'))}</h2>
+              <Link href="/open-trip" className={styles.destViewAll}>{t('home.exploreDest') || 'Lihat Semua Destinasi →'}</Link>
             </div>
         <Stagger className={styles.destGrid}>
           {((packages || []).length > 0 ? packages.slice(0, 3) : DESTINATIONS).map((pkg) => (
@@ -43,8 +43,8 @@ export default function DestinationsSection({ gs, t, packages }: { gs: any, t: a
                     {pkg.harga || pkg.price ? (
                       <>
                         <div className={styles.destCardPriceLabel}>
-                          <span>Start</span>
-                          <span>From</span>
+                          <span>{t('home.dest.startFrom')?.split(' ')[0] || 'Start'}</span>
+                          <span>{t('home.dest.startFrom')?.split(' ')[1] || 'From'}</span>
                         </div>
                         <span className={styles.destCardPriceValue}>{
                           pkg.harga 
@@ -53,10 +53,10 @@ export default function DestinationsSection({ gs, t, packages }: { gs: any, t: a
                         }</span>
                       </>
                     ) : (
-                      <span className={styles.destCardPriceValue} style={{ fontSize: '1.25rem', paddingLeft: '0.5rem' }}>Eksplor</span>
+                      <span className={styles.destCardPriceValue} style={{ fontSize: '1.25rem', paddingLeft: '0.5rem' }}>{t('nav.destinations')}</span>
                     )}
                   </div>
-                  <span className={styles.destCardBooking}>Booking</span>
+                  <span className={styles.destCardBooking}>{t('nav.cta') || 'Booking'}</span>
                 </div>
               </div>
             </Link>

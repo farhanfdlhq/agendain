@@ -4,6 +4,7 @@ import PackageCard from "@/components/PackageCard/PackageCard";
 import OpenTripFilter from "@/components/OpenTripFilter/OpenTripFilter";
 import HeroHeader from "@/components/HeroHeader/HeroHeader";
 import CallToActionBanner from "@/components/CallToActionBanner/CallToActionBanner";
+import Counter from "@/components/Motion/Counter";
 import styles from "./page.module.css";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { parseGoldText } from "@/lib/utils/textFormatting";
@@ -47,23 +48,23 @@ export default function OpenTripContent({
       <div className={styles.statsWrapper}>
         <div className={styles.statsContainer}>
           <div className={styles.statBox}>
-            <h4>2+</h4>
+            <h4><Counter value={2} suffix="+" duration={1.5} /></h4>
             <p>
-              {isEn ? 'Years of' : 'Pengalaman'}
+              {t('openTrip.stats.years') || (isEn ? 'Years of' : 'Pengalaman')}
               <br />
-              {isEn ? 'Experience' : 'Bertahun-tahun'}
+              {t('openTrip.stats.experience') || (isEn ? 'Experience' : 'Bertahun-tahun')}
             </p>
           </div>
           <div className={styles.statBox}>
-            <h4>63+</h4>
+            <h4><Counter value={63} suffix="+" duration={1.5} /></h4>
             <p>{t("openTrip.stats.dest")}</p>
           </div>
           <div className={styles.statBox}>
-            <h4>32K+</h4>
+            <h4><Counter value={32} suffix="K+" duration={1.5} /></h4>
             <p>{t("openTrip.stats.travelers")}</p>
           </div>
           <div className={styles.statBox}>
-            <h4>94%</h4>
+            <h4><Counter value={94} suffix="%" duration={1.5} /></h4>
             <p>{t("openTrip.stats.satisfaction")}</p>
           </div>
         </div>

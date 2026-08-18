@@ -1,37 +1,52 @@
+"use client"
 import FadeIn from "@/components/Motion/FadeIn";
 import styles from "./PrivateTripWorkflow.module.css";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+import { parseGoldText } from "@/lib/utils/textFormatting";
 
-const workflowSteps = [
+const getWorkflowSteps = (t: any) => [
   {
-    number: "1",
-    title: "Konsultasi Gratis",
-    desc: "Chat tim Agendain via WA. Ceritakan jumlah pax, budget, tanggal, dan keinginan destinasi — kami bantu susun opsi terbaik.",
+    title: t('pt.workflow.step1.title'),
+    desc: t('pt.workflow.step1.desc'),
   },
   {
-    number: "2",
-    title: "Terima Itinerary Custom",
-    desc: "Kami kirimkan draft itinerary dalam 1x24 jam. Revisi sampai sesuai keinginan kamu — tanpa biaya tambahan.",
+    title: t('pt.workflow.step2.title'),
+    desc: t('pt.workflow.step2.desc'),
   },
   {
-    number: "3",
-    title: "DP & Konfirmasi",
-    desc: "Amankan slot dengan DP Rp 500.000/pax. Tim AWSTour mulai proses visa, tiket pesawat, dan akomodasi.",
+    title: t('pt.workflow.step3.title'),
+    desc: t('pt.workflow.step3.desc'),
   },
   {
-    number: "4",
-    title: "Berangkat & Nikmati!",
-    desc: "Guide pribadi siap menemani baik dari Jepang maupun Indonesia. Semua sudah kami urus — kamu tinggal menikmati.",
+    title: t('pt.workflow.step4.title'),
+    desc: t('pt.workflow.step4.desc'),
   },
 ];
 
-export default function PrivateTripWorkflow() {
+export default function PrivateTripWorkflow({ privatetripSettings }: { privatetripSettings?: any }) {
+  const { t, locale } = useTranslation();
+  
+  const gs = (key: string, fallbackText: string) => {
+    const dataKey = locale === 'en' ? `${key}_en` : key;
+    if (privatetripSettings?.[dataKey] && privatetripSettings[dataKey].trim() !== '') {
+      return privatetripSettings[dataKey];
+    }
+    if (privatetripSettings?.[key] && privatetripSettings[key].trim() !== '') {
+      return privatetripSettings[key];
+    }
+    return fallbackText;
+  };
+
+  const rawSteps = privatetripSettings?.[locale === 'en' ? 'workflowSteps_en' : 'workflowSteps'] || privatetripSettings?.workflowSteps;
+  const workflowSteps = (rawSteps && Array.isArray(rawSteps) && rawSteps.length > 0) ? rawSteps : getWorkflowSteps(t);
+
   return (
     <section className={styles.section}>
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.header}>
-            <h2 className={styles.title}>Cara Booking Private Trip</h2>
-            <p className={styles.subtitle}>Dari Konsultasi Sampai Berangkat</p>
+            <h2 className={styles.title}>{parseGoldText(gs('workflowTitle', t('pt.workflow.title')), styles, privatetripSettings?.workflowTitleWeight)}</h2>
+            <p className={styles.subtitle}>{gs('workflowSubtitle', t('pt.workflow.subtitle'))}</p>
           </div>
         </FadeIn>
 

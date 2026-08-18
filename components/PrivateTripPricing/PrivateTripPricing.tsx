@@ -4,6 +4,7 @@ import Image from "next/image";
 import FadeIn from "@/components/Motion/FadeIn";
 import styles from "./PrivateTripPricing.module.css";
 import { WhatsAppIcon } from "@/components/HomeContent/shared";
+import DynamicIcon from "@/components/DynamicIcon/DynamicIcon";
 import { parseGoldText } from "@/lib/utils/textFormatting";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 
@@ -153,12 +154,26 @@ export default function PrivateTripPricing({
                   {/* Chips Row */}
                   <div className={styles.chipsRow}>
                     {Array.isArray(tier.chips) &&
-                      tier.chips.map((chip: string, cIdx: number) => (
-                        <span key={cIdx} className={styles.chip}>
-                          {renderChipIcon(cIdx)}
-                          <span>{chip}</span>
-                        </span>
-                      ))}
+                      tier.chips.map((chip: string, cIdx: number) => {
+                        const iconMatch = chip.match(/^\[(.*?)\]\s*(.*)$/);
+                        let iconName = "";
+                        let chipText = chip;
+                        if (iconMatch) {
+                          iconName = iconMatch[1];
+                          chipText = iconMatch[2];
+                        }
+
+                        return (
+                          <span key={cIdx} className={styles.chip}>
+                            {iconName ? (
+                              <DynamicIcon name={iconName} size={13} className={styles.chipIcon} />
+                            ) : (
+                              renderChipIcon(cIdx)
+                            )}
+                            <span>{chipText}</span>
+                          </span>
+                        );
+                      })}
                   </div>
 
                   {/* Feature Bullet List */}
