@@ -22,8 +22,8 @@ type BlogPost = {
   content: string
   contentEn: string | null
   thumbnail: string
-  publishedAt: string | null
-  createdAt: string
+  publishedAt: Date | string | null
+  createdAt: Date | string
   tags: any
   category: BlogCategory
 }
@@ -47,7 +47,7 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
     return Math.max(1, Math.ceil(words / 200))
   }
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: Date | string) => {
     return new Date(dateStr).toLocaleDateString(language === 'en' ? 'en-GB' : 'id-ID', { 
       day: 'numeric', month: 'long', year: 'numeric' 
     })
