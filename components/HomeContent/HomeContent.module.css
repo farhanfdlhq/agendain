@@ -327,6 +327,12 @@
   flex: 1;
 }
 
+.destGrid > div {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .destCard {
   border-radius: 1.5rem;
   overflow: hidden;
@@ -336,6 +342,8 @@
   text-decoration: none;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  flex: 1;
 }
 
 .destCard:hover {
