@@ -56,7 +56,7 @@ export default function DestinationsSection({ gs, t, packages }: { gs: any, t: a
                       <span className={styles.destCardPriceValue} style={{ fontSize: '1.25rem', paddingLeft: '0.5rem' }}>{t('nav.destinations')}</span>
                     )}
                   </div>
-                  <span className={styles.destCardBooking}>{t('nav.cta') || 'Booking'}</span>
+                  <span className={styles.destCardBooking}>{t('home.viewDetails') || (t('nav.home') === 'Beranda' ? 'Lihat Detail' : 'View Details')}</span>
                 </div>
               </div>
             </Link>
