@@ -1,28 +1,33 @@
-import { NextAuthOptions } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import { headers } from "next/headers"
-import { prisma } from "@/lib/prisma"
-import bcrypt from "bcryptjs"
-import { rateLimit, getClientIpFromHeaders } from "@/lib/security"
-import { logAudit } from "@/lib/audit"
+import { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { headers } from "next/headers";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
+import { rateLimit, getClientIpFromHeaders } from "@/lib/security";
+import { logAudit } from "@/lib/audit";
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "admin@agendain.com" },
-        password: { label: "Password", type: "password" }
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "admin@agendain.com",
+        },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         // Tangkap IP & user-agent untuk audit. authorize() tak menerima `req`,
         // jadi ambil dari next/headers (async di Next 16). Dibungkus try/catch
         // agar kegagalan capture tak pernah menggagalkan proses login.
-        let ip: string | null = null, userAgent: string | null = null
+        let ip: string | null = null,
+          userAgent: string | null = null;
         try {
-          const h = await headers()
-          ip = getClientIpFromHeaders(h)
-          userAgent = h.get("user-agent")
+          const h = await headers();
+          ip = getClientIpFromHeaders(h);
+          userAgent = h.get("user-agent");
         } catch {}
 
         if (!credentials?.email || !credentials?.password) {
@@ -30,38 +35,44 @@ export const authOptions: NextAuthOptions = {
             action: "login.failed",
             actorEmail: credentials?.email?.toLowerCase().trim() ?? null,
             detail: { reason: "missing_fields" },
-            ip, userAgent,
-          })
-          throw new Error("Email dan password harus diisi")
+            ip,
+            userAgent,
+          });
+          throw new Error("Email dan password harus diisi");
         }
 
-        const email = credentials.email.toLowerCase().trim()
-        const loginLimit = rateLimit(`login:${email}`, 8, 5 * 60 * 1000)
+        const email = credentials.email.toLowerCase().trim();
+        const loginLimit = rateLimit(`login:${email}`, 8, 5 * 60 * 1000);
         if (!loginLimit.success) {
           await logAudit({
             action: "login.failed",
             actorEmail: email,
             detail: { reason: "rate_limited" },
-            ip, userAgent,
-          })
-          throw new Error("Terlalu banyak percobaan login. Coba lagi nanti.")
+            ip,
+            userAgent,
+          });
+          throw new Error("Terlalu banyak percobaan login. Coba lagi nanti.");
         }
 
         const user = await prisma.adminUser.findUnique({
-          where: { email }
-        })
+          where: { email },
+        });
 
         if (!user) {
           await logAudit({
             action: "login.failed",
             actorEmail: email,
             detail: { reason: "user_not_found" },
-            ip, userAgent,
-          })
-          throw new Error("Email atau password salah")
+            ip,
+            userAgent,
+          });
+          throw new Error("Email atau password salah");
         }
 
-        const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password,
+        );
 
         if (!isPasswordValid) {
           await logAudit({
@@ -69,26 +80,29 @@ export const authOptions: NextAuthOptions = {
             actorId: user.id,
             actorEmail: email,
             detail: { reason: "bad_password" },
-            ip, userAgent,
-          })
-          throw new Error("Email atau password salah")
+            ip,
+            userAgent,
+          });
+          throw new Error("Email atau password salah");
         }
 
         await logAudit({
           action: "login.success",
           actorId: user.id,
           actorEmail: email,
-          ip, userAgent,
-        })
+          ip,
+          userAgent,
+        });
 
         return {
           id: user.id.toString(),
           name: user.nama,
           email: user.email,
           role: user.role,
-        }
-      }
-    })
+          avatar: user.avatar ?? undefined,
+        };
+      },
+    }),
   ],
   session: {
     strategy: "jwt",
@@ -97,30 +111,30 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (trigger === "update") {
-        if (session?.name) token.name = session.name
-        if (session?.avatar !== undefined) token.avatar = session.avatar
+        if (session?.name) token.name = session.name;
+        if (session?.avatar !== undefined) token.avatar = session.avatar;
       }
       if (user) {
-        token.id = user.id
-        token.name = user.name
-        token.role = user.role
-        token.avatar = user.avatar
+        token.id = user.id;
+        token.name = user.name;
+        token.role = user.role;
+        token.avatar = user.avatar;
       }
-      return token
+      return token;
     },
     async session({ session, token }) {
       if (session.user) {
         // @ts-ignore
-        session.user.id = token.id as string
-        session.user.name = token.name as string
-        session.user.role = token.role as string
-        session.user.avatar = token.avatar as string
+        session.user.id = token.id as string;
+        session.user.name = token.name as string;
+        session.user.role = token.role as string;
+        session.user.avatar = token.avatar as string;
       }
-      return session
-    }
+      return session;
+    },
   },
   pages: {
     signIn: "/admin/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
-}
+};
