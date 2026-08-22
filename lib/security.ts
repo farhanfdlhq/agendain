@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { after } from "next/server";
 import { z } from "zod";
 export { sanitizeHtml } from "./sanitize";
+import { PRIVATE_TRIP_STATUSES } from "./private-trip-status";
 
 export const ADMIN_ROLES = ["super_admin", "admin", "editor"] as const;
 export type AdminRole = (typeof ADMIN_ROLES)[number];
@@ -84,10 +85,12 @@ export const BookingStatusSchema = z.object({
   status: z.enum(["pending", "confirmed", "cancelled", "completed"]),
 });
 
-export const InquiryUpdateSchema = z.object({
+// Status permintaan Private Trip. Daftar nilainya ada di
+// `lib/private-trip-status.ts` agar bisa dipakai komponen client tanpa menarik
+// `next/server` ke bundle browser; di sini hanya validasi input API-nya.
+export const PrivateTripStatusUpdateSchema = z.object({
   id: z.coerce.number().int().positive(),
-  type: z.enum(["inquiry", "privatetrip"]),
-  sudahDibalas: z.boolean(),
+  status: z.enum(PRIVATE_TRIP_STATUSES),
 });
 
 // === Blog Schemas ===

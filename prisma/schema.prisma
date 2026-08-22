@@ -42,7 +42,6 @@ model OpenTrip {
   status              String    @default("draft")
   label               String?
   bookings            Booking[]
-  inquiries           Inquiry[]
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
@@ -66,20 +65,6 @@ model Booking {
 
   @@index([status])
   @@index([createdAt])
-}
-
-model Inquiry {
-  id           Int      @id @default(autoincrement())
-  nama         String
-  email        String
-  noWa         String?
-  pesan        String   @db.Text
-  openTripId Int?
-  openTrip OpenTrip? @relation(fields: [openTripId], references: [id])
-  sudahDibalas Boolean  @default(false)
-  createdAt    DateTime @default(now())
-
-  @@index([sudahDibalas, createdAt])
 }
 
 model PrivateTrip {

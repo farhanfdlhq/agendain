@@ -87,7 +87,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Paket Wisata', href: '/admin/open-trip', icon: <Package size={18} />, minRole: 'editor' },
         { name: 'Destinasi', href: '/admin/destinasi', icon: <Map size={18} />, minRole: 'editor' },
         { name: 'Pesanan', href: '/admin/booking', icon: <CalendarDays size={18} />, minRole: 'admin' },
-        { name: 'Inquiries', href: '/admin/inquiries', icon: <MessageSquare size={18} />, minRole: 'admin', badge: 'Baru' },
+        { name: 'Permintaan Trip', href: '/admin/inquiries', icon: <MessageSquare size={18} />, minRole: 'admin' },
       ]
     },
     {

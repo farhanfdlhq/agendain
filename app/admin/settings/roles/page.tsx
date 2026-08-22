@@ -55,11 +55,15 @@ const PERMISSIONS_GROUPS = [
     ]
   },
   {
-    category: 'INQUIRIES',
+    // Label saja yang diperbarui; id-nya tetap `inquiry_*` karena sudah
+    // tersimpan di kolom rolesConfig milik user dan divalidasi di
+    // app/api/admin/roles/route.ts — mengganti id akan membatalkan izin
+    // yang sudah tercentang.
+    category: 'PERMINTAAN TRIP',
     items: [
-      { id: 'inquiry_view', label: 'View Inquiries' },
-      { id: 'inquiry_edit', label: 'Edit Inquiries' },
-      { id: 'inquiry_delete', label: 'Delete Inquiries' },
+      { id: 'inquiry_view', label: 'View Permintaan Trip' },
+      { id: 'inquiry_edit', label: 'Edit Permintaan Trip' },
+      { id: 'inquiry_delete', label: 'Delete Permintaan Trip' },
     ]
   },
   {

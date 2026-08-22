@@ -11,17 +11,14 @@ import { Suspense } from 'react'
 import AirplaneLoader from '@/components/ui/airplane-loader'
 
 async function AdminDashboardDataFetcher({ session }: { session: any }) {
-  const [openTripCount, destinasiCount, inquiryCount, recentInquiries, recentPrivateTrips, bookingPendingCount, paidBookings, recentBookings] = await Promise.all([
+  const [openTripCount, destinasiCount, privateTripNewCount, recentPrivateTrips, bookingPendingCount, paidBookings, recentBookings] = await Promise.all([
     prisma.openTrip.count(),
     prisma.destinasi.count(),
-    prisma.inquiry.count({ where: { sudahDibalas: false } }),
-    prisma.inquiry.findMany({
-      take: 3,
-      orderBy: { createdAt: 'desc' },
-      include: { openTrip: true }
-    }),
+    // "Baru" = belum ditindaklanjuti. Nilai legacy "replied" tidak ikut
+    // terhitung karena sudah berarti dihubungi.
+    prisma.privateTrip.count({ where: { status: 'new' } }),
     prisma.privateTrip.findMany({
-      take: 2,
+      take: 5,
       orderBy: { createdAt: 'desc' }
     }),
     prisma.booking.count({ where: { status: 'pending' } }),
@@ -38,7 +35,6 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
 
   // Combine and sort recent activities
   const recentActivity = [
-    ...recentInquiries.map((i: any) => ({ ...i, type: 'inquiry' })),
     ...recentPrivateTrips.map((p: any) => ({ ...p, type: 'privatetrip' })),
     ...recentBookings.map((b: any) => ({ ...b, type: 'booking' }))
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -103,12 +99,12 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
           <Link href="/admin/inquiries" className="absolute inset-0 z-10" />
           <CardHeader className="relative z-20 pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-              Inquiries Baru
+              Permintaan Trip Baru
             </CardTitle>
             <MessageSquare className="w-4 h-4 text-rose-500" />
           </CardHeader>
           <CardContent className="relative z-20">
-            <div className="text-4xl font-black tracking-tight text-foreground">{inquiryCount}</div>
+            <div className="text-4xl font-black tracking-tight text-foreground">{privateTripNewCount}</div>
           </CardContent>
         </Card>
       </div>
@@ -145,7 +141,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
           <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-border bg-background">
             <div>
               <CardTitle className="text-lg">Aktivitas Terbaru</CardTitle>
-              <CardDescription className="mt-1">Pesan, pesanan, dan inquiry yang masuk akhir-akhir ini</CardDescription>
+              <CardDescription className="mt-1">Permintaan Private Trip dan pesanan yang masuk akhir-akhir ini</CardDescription>
             </div>
             <Button variant="ghost" size="sm" asChild className="hidden sm:flex text-muted-foreground hover:text-foreground font-medium shadow-none">
               <Link href="/admin/inquiries">
@@ -159,14 +155,12 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
                 {recentActivity.map((b: any, i: number) => (
                   <div key={`${b.type}-${b.id}`} className={`flex items-start gap-4 p-5 hover:bg-muted/30 transition-colors ${i !== recentActivity.length - 1 ? 'border-b border-border' : ''}`}>
                     <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 bg-muted/50 text-muted-foreground`}>
-                      {b.type === 'inquiry' && <MessageSquare className="h-4 w-4" />}
                       {b.type === 'privatetrip' && <Map className="h-4 w-4" />}
                       {b.type === 'booking' && <ShoppingCart className="h-4 w-4" />}
                     </div>
                     <div className="flex-1 min-w-0 pt-0.5">
                       <p className="text-sm font-medium leading-relaxed text-foreground">
                         <span className="font-semibold">{b.nama}</span>
-                        {b.type === 'inquiry' && (b.paket ? <span className="text-muted-foreground"> bertanya tentang <span className="font-medium text-foreground">{b.openTrip.nama}</span></span> : <span className="text-muted-foreground"> mengirim pesan baru</span>)}
                         {b.type === 'privatetrip' && <span className="text-muted-foreground"> mengajukan Private Trip ke <span className="font-medium text-foreground">{b.destinasi}</span></span>}
                         {b.type === 'booking' && <span className="text-muted-foreground"> membooking <span className="font-medium text-foreground">{b.openTrip?.nama || "Terhapus"}</span> <Badge variant="outline" className="ml-1 font-medium bg-muted/30 shadow-none border-border">{b.jumlahPax} pax</Badge></span>}
                       </p>

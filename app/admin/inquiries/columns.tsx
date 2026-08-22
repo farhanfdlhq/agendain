@@ -1,9 +1,21 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Mail, Phone, Calendar, Users, ArrowUpRight, CheckCircle, Clock } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Mail, Phone, Calendar, Users, ArrowUpRight } from "lucide-react"
+import {
+  PRIVATE_TRIP_STATUSES,
+  PRIVATE_TRIP_STATUS_LABEL,
+  normalizePrivateTripStatus,
+  type PrivateTripStatus,
+} from "@/lib/private-trip-status"
 
 export type PrivateTrip = {
   id: number
@@ -17,24 +29,19 @@ export type PrivateTrip = {
   status: string
 }
 
-export type Inquiry = {
-  id: number
-  nama: string
-  email: string
-  noWa: string
-  pesan: string
-  sudahDibalas: boolean
-  createdAt: string
-  openTrip?: { nama: string }
+// Warna dipilih agar urutan alur terbaca sekilas: biru (masuk) → kuning
+// (sedang digarap) → hijau (menang) → abu (selesai/gugur).
+const STATUS_STYLE: Record<PrivateTripStatus, string> = {
+  new: "text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/40",
+  contacted: "text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40",
+  deal: "text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/40",
+  cancelled: "text-muted-foreground border-border bg-muted/40",
 }
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("id-ID", {
-    day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
-  })
-}
-
-export const createTripColumns = (): ColumnDef<PrivateTrip>[] => [
+export const createTripColumns = (
+  onStatusChange: (id: number, status: PrivateTripStatus) => void,
+  pendingId?: number | null
+): ColumnDef<PrivateTrip>[] => [
   {
     // Nomor urut. row.index benar selama tabel tak di-sort (belum ada sorting);
     // bila kelak sorting ditambah, ganti ke nomor berbasis data asli.
@@ -94,11 +101,29 @@ export const createTripColumns = (): ColumnDef<PrivateTrip>[] => [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.original.status
+      const trip = row.original
+      const current = normalizePrivateTripStatus(trip.status)
       return (
-        <Badge variant={status === 'new' ? 'default' : 'secondary'} className={status === 'new' ? "bg-blue-100 text-blue-700 hover:bg-blue-100/80 dark:bg-blue-900/30 dark:text-blue-400" : ""}>
-          {status === 'new' ? 'Baru' : 'Diproses'}
-        </Badge>
+        <Select
+          value={current}
+          onValueChange={(val) => onStatusChange(trip.id, val as PrivateTripStatus)}
+          disabled={pendingId === trip.id}
+        >
+          <SelectTrigger
+            size="sm"
+            className={`min-w-[120px] font-semibold ${STATUS_STYLE[current]}`}
+            aria-label={`Ubah status ${trip.nama}`}
+          >
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {PRIVATE_TRIP_STATUSES.map((s) => (
+              <SelectItem key={s} value={s}>
+                {PRIVATE_TRIP_STATUS_LABEL[s]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       )
     },
   },
@@ -114,103 +139,6 @@ export const createTripColumns = (): ColumnDef<PrivateTrip>[] => [
               Balas WA <ArrowUpRight className="h-3 w-3" />
             </a>
           </Button>
-        </div>
-      )
-    },
-  },
-]
-
-export const createInquiryColumns = (
-  handleMarkAsReplied: (id: number, type: string) => void
-): ColumnDef<Inquiry>[] => [
-  {
-    // Nomor urut. row.index benar selama tabel tak di-sort (belum ada sorting);
-    // bila kelak sorting ditambah, ganti ke nomor berbasis data asli.
-    id: "rowNumber",
-    header: () => <div className="text-muted-foreground">#</div>,
-    cell: ({ row }) => <span className="text-muted-foreground tabular-nums">{row.index + 1}</span>,
-    size: 48,
-    enableResizing: false,
-  },
-  {
-    accessorKey: "nama",
-    header: "Pengirim",
-    cell: ({ row }) => {
-      const inq = row.original
-      return (
-        <div className="flex flex-col gap-1 min-w-[200px]">
-          <span className="font-semibold text-foreground">{inq.nama}</span>
-          <div className="text-xs text-muted-foreground flex flex-col gap-0.5">
-            <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {inq.email}</span>
-            {inq.noWa && <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {inq.noWa}</span>}
-          </div>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "pesan",
-    header: "Pesan / Pertanyaan",
-    cell: ({ row }) => {
-      const inq = row.original
-      return (
-        <div className="flex flex-col gap-2 max-w-[300px]">
-          {inq.openTrip && (
-            <Badge variant="outline" className="w-fit text-xs bg-muted/50">
-              Terkait: {inq.openTrip.nama}
-            </Badge>
-          )}
-          <p className="text-sm line-clamp-3 text-muted-foreground" title={inq.pesan}>{inq.pesan}</p>
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Tanggal",
-    cell: ({ row }) => {
-      return (
-        <div className="text-muted-foreground whitespace-nowrap">
-          {formatDate(row.original.createdAt)}
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: "sudahDibalas",
-    header: "Status",
-    cell: ({ row }) => {
-      const sudahDibalas = row.original.sudahDibalas
-      return sudahDibalas ? (
-        <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
-          <CheckCircle className="h-4 w-4" /> Dibalas
-        </div>
-      ) : (
-        <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 text-sm font-medium">
-          <Clock className="h-4 w-4" /> Pending
-        </div>
-      )
-    },
-  },
-  {
-    id: "actions",
-    header: () => <div className="text-right">Aksi</div>,
-    cell: ({ row }) => {
-      const inq = row.original
-      return (
-        <div className="flex flex-col sm:flex-row items-center justify-end gap-2">
-          {!inq.sudahDibalas && (
-            <Button size="sm" variant="outline" onClick={() => handleMarkAsReplied(inq.id, 'general')} className="gap-1 whitespace-nowrap">
-              <CheckCircle className="h-3.5 w-3.5" /> Tandai Selesai
-            </Button>
-          )}
-          {inq.noWa && (
-            <Button size="sm" asChild className="gap-1 whitespace-nowrap">
-              <a href={`https://wa.me/${inq.noWa.replace(/\D/g, '')}`} target="_blank" rel="noreferrer">
-                Balas WA <ArrowUpRight className="h-3 w-3" />
-              </a>
-            </Button>
-          )}
         </div>
       )
     },
