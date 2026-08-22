@@ -7,7 +7,7 @@ import { useTranslation } from '@/lib/i18n/useTranslation'
 import FadeIn from '@/components/Motion/FadeIn'
 import Stagger from '@/components/Motion/Stagger'
 import { Badge } from '@/components/ui/badge'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizeRichText } from '@/lib/sanitize-richtext'
 import { Button } from '@/components/ui/button'
 import { toast } from 'react-hot-toast'
 
@@ -36,11 +36,8 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
   const categoryName = language === 'en' ? (post.category.namaEn || post.category.nama) : post.category.nama
   const tags = Array.isArray(post.tags) ? post.tags : []
 
-  // Clean HTML to allow Tiptap formatting + images
-  const cleanHtml = DOMPurify.sanitize(contentRaw, {
-    ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'br', 'hr', 'img', 's', 'u'],
-    ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'title', 'class', 'style']
-  })
+  // Sanitizer bersama — allowlist cocok schema editor TipTap (lihat lib/sanitize-richtext.ts)
+  const cleanHtml = sanitizeRichText(contentRaw)
 
   const getReadTime = (html: string) => {
     const words = html.replace(/<[^>]*>?/gm, '').split(/\s+/).length
@@ -103,11 +100,9 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
         </FadeIn>
 
         <FadeIn direction="up" delay={0.2}>
-          {/* Article Content */}
-          <article 
-            className="prose prose-zinc dark:prose-invert prose-lg max-w-none 
-              prose-headings:font-bold prose-a:text-primary hover:prose-a:text-primary/80 
-              prose-img:rounded-xl prose-img:shadow-sm prose-img:mx-auto"
+          {/* Article Content — kelas .richtext sama dengan kanvas editor CMS (WYSIWYG) */}
+          <article
+            className="richtext"
             dangerouslySetInnerHTML={{ __html: cleanHtml }}
           />
         </FadeIn>

@@ -15,6 +15,7 @@ import {
   Link as LinkIcon, Unlink, ImagePlus
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { toast } from 'react-hot-toast'
 
 interface TiptapEditorProps {
   value: string
@@ -27,7 +28,10 @@ export function TiptapEditor({ value, onChange, placeholder = 'Mulai menulis...'
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      // TipTap 3 sudah membundel Link & Underline di StarterKit. Dimatikan di sini
+      // agar tidak duplikat dengan registrasi eksplisit di bawah (Link butuh
+      // konfigurasi openOnClick/autolink sendiri).
+      StarterKit.configure({ link: false, underline: false }),
       Underline,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       LinkExt.configure({ openOnClick: false, autolink: true }),
@@ -53,14 +57,17 @@ export function TiptapEditor({ value, onChange, placeholder = 'Mulai menulis...'
     formData.append('type', 'blog')
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: formData })
-      const data = await res.json()
-      if (data.url) {
-        editor.chain().focus().setImage({ src: data.url }).run()
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.url) {
+        toast.error(data.error || 'Gagal mengunggah gambar.')
+        return
       }
+      editor.chain().focus().setImage({ src: data.url }).run()
     } catch {
-      // silently fail
+      toast.error('Terjadi kesalahan koneksi saat mengunggah gambar.')
+    } finally {
+      e.target.value = ''
     }
-    e.target.value = ''
   }
 
   if (!editor) return null
@@ -105,8 +112,8 @@ export function TiptapEditor({ value, onChange, placeholder = 'Mulai menulis...'
 
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
 
-      {/* Editor Content */}
-      <EditorContent editor={editor} className="prose prose-sm max-w-none p-4 min-h-[300px] focus:outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[280px]" />
+      {/* Editor Content — kelas .richtext sama dengan render depan (WYSIWYG) */}
+      <EditorContent editor={editor} className="richtext p-4 min-h-[300px] focus:outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[280px] [&_.is-editor-empty:first-child::before]:text-muted-foreground [&_.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.is-editor-empty:first-child::before]:float-left [&_.is-editor-empty:first-child::before]:pointer-events-none [&_.is-editor-empty:first-child::before]:h-0" />
     </div>
   )
 }

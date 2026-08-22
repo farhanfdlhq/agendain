@@ -51,3 +51,99 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Rich text ────────────────────────────────────────────────────────────
+   Satu kelas dipakai IDENTIK di kanvas editor CMS (TipTap) dan render depan
+   (blog, kebijakan privasi) supaya WYSIWYG. Sengaja diletakkan unlayered agar
+   menang atas reset `* { margin: 0 }` di @layer base tanpa perlu !important
+   (aturan unlayered mengalahkan seluruh @layer di cascade CSS).
+   Hanya memakai token yang benar-benar ada di tokens.css. */
+.richtext {
+  color: var(--color-body);
+  font-family: var(--font-body);
+  line-height: 1.8;
+  overflow-wrap: break-word;
+}
+
+.richtext > :first-child { margin-top: 0; }
+.richtext > :last-child { margin-bottom: 0; }
+
+.richtext h1,
+.richtext h2,
+.richtext h3,
+.richtext h4,
+.richtext h5,
+.richtext h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-primary);
+}
+
+.richtext h1 { font-size: 2rem;     margin: 2rem 0 1rem; }
+.richtext h2 { font-size: 1.6rem;   margin: 2rem 0 1rem; }
+.richtext h3 { font-size: 1.25rem;  margin: 1.5rem 0 0.75rem; color: var(--color-ink); }
+.richtext h4 { font-size: 1.1rem;   margin: 1.25rem 0 0.5rem; color: var(--color-ink); }
+.richtext h5,
+.richtext h6 { font-size: 1rem;     margin: 1rem 0 0.5rem;    color: var(--color-ink); }
+
+.richtext p { margin: 0 0 1.25rem; }
+
+.richtext ul,
+.richtext ol { margin: 0 0 1.25rem; padding-left: 1.5rem; }
+.richtext ul { list-style: disc; }
+.richtext ol { list-style: decimal; }
+.richtext li { margin-bottom: 0.5rem; }
+.richtext li > p { margin-bottom: 0.25rem; }
+
+.richtext a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.richtext a:hover { color: var(--color-primary-active); }
+
+.richtext strong, .richtext b { font-weight: 700; }
+.richtext em, .richtext i { font-style: italic; }
+.richtext u { text-decoration: underline; }
+.richtext s, .richtext del, .richtext strike { text-decoration: line-through; }
+
+.richtext img {
+  max-width: 100%;
+  height: auto;
+  margin: 1.5rem auto;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.richtext blockquote {
+  margin: 1.5rem 0;
+  padding: 0.5rem 1.25rem;
+  border-left: 4px solid var(--color-dominant);
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+.richtext hr {
+  border: 0;
+  border-top: 1px solid var(--color-hairline);
+  margin: 2rem 0;
+}
+
+.richtext code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background: var(--color-surface-soft);
+  padding: 0.15em 0.4em;
+  border-radius: var(--radius-sm);
+}
+
+.richtext pre {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--color-ink);
+  color: #fff;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+.richtext pre code { padding: 0; background: transparent; color: inherit; }

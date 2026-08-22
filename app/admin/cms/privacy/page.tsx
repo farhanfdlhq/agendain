@@ -10,113 +10,17 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
-import { useEditor, EditorContent } from '@tiptap/react'
-import { BubbleMenu } from '@tiptap/react/menus'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import Placeholder from '@tiptap/extension-placeholder'
-import TextAlign from '@tiptap/extension-text-align'
-import Link from '@tiptap/extension-link'
-import { Bold, Italic, Strikethrough, Underline as UnderlineIcon, Heading1, Heading2, Heading3, List, ListOrdered, Undo, Redo, AlignLeft, AlignCenter, AlignRight, AlignJustify, Link as LinkIcon, Unlink } from 'lucide-react'
+import { TiptapEditor as SharedTiptapEditor } from "@/components/ui/tiptap-editor"
 import { MediaPicker } from "@/components/ui/media-picker"
 import { FontWeightPicker } from "@/components/ui/font-weight-picker"
 
-const TiptapEditor = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => {
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Link.configure({ openOnClick: false, autolink: true }),
-      Placeholder.configure({
-        placeholder: 'Mulai menulis kebijakan privasi di sini...',
-      }),
-    ],
-    content: value,
-    immediatelyRender: false,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML())
-    },
-  })
-
-  useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value)
-    }
-  }, [value, editor])
-
-  if (!editor) return null
-
-  return (
-    <div className="rounded-xl bg-white max-w-4xl shadow-sm border border-slate-200">
-      {/* Minimal Top Toolbar for Block Styles */}
-      <div className="rounded-t-xl bg-slate-50 border-b border-slate-200 px-3 py-2 flex items-center gap-1 flex-wrap text-slate-600 sticky top-0 z-10 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
-        
-        {/* Font Size (Heading) */}
-        <select
-          onChange={(e) => {
-            const val = e.target.value;
-            if (val === 'p') editor.chain().focus().setParagraph().run();
-            else editor.chain().focus().toggleHeading({ level: parseInt(val) as any }).run();
-          }}
-          value={
-            editor.isActive('heading', { level: 1 }) ? '1' :
-            editor.isActive('heading', { level: 2 }) ? '2' :
-            editor.isActive('heading', { level: 3 }) ? '3' : 'p'
-          }
-          className="bg-white border border-slate-300 text-slate-700 rounded-md px-2 py-1.5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary hover:border-slate-400 transition-all cursor-pointer mr-2 shadow-xs"
-        >
-          <option value="p">Normal Text</option>
-          <option value="1">Heading 1</option>
-          <option value="2">Heading 2</option>
-          <option value="3">Heading 3</option>
-        </select>
-        
-        <div className="w-[1px] h-5 bg-slate-300 mx-1" />
-
-        <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive('bold') ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Bold"><Bold size={16} /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive('italic') ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Italic"><Italic size={16} /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleUnderline().run()} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive('underline') ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Underline"><UnderlineIcon size={16} /></button>
-        
-        <div className="w-[1px] h-5 bg-slate-300 mx-1" />
-
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign('left').run()} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive({ textAlign: 'left' }) ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Align Left"><AlignLeft size={16} /></button>
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign('center').run()} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive({ textAlign: 'center' }) ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Align Center"><AlignCenter size={16} /></button>
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign('right').run()} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive({ textAlign: 'right' }) ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Align Right"><AlignRight size={16} /></button>
-        <button type="button" onClick={() => editor.chain().focus().setTextAlign('justify').run()} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive({ textAlign: 'justify' }) ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Justify"><AlignJustify size={16} /></button>
-
-        <div className="w-[1px] h-5 bg-slate-300 mx-1" />
-        
-        <button type="button" onClick={() => {
-          const url = window.prompt('URL:');
-          if (url) {
-            editor.chain().focus().setLink({ href: url }).run();
-          } else if (url === '') {
-            editor.chain().focus().unsetLink().run();
-          }
-        }} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive('link') ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Add Link"><LinkIcon size={16} /></button>
-        <button type="button" onClick={() => editor.chain().focus().unsetLink().run()} disabled={!editor.isActive('link')} className="p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 disabled:opacity-30 transition-colors" title="Remove Link"><Unlink size={16} /></button>
-
-        <div className="w-[1px] h-5 bg-slate-300 mx-1" />
-
-        <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive('bulletList') ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Bullet List"><List size={16} /></button>
-        <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} className={`p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 transition-colors ${editor.isActive('orderedList') ? 'bg-slate-200 text-slate-900 shadow-inner' : ''}`} title="Numbered List"><ListOrdered size={16} /></button>
-
-        <div className="flex-1" />
-        
-        <button type="button" onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} className="p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors" title="Undo"><Undo size={16} /></button>
-        <button type="button" onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} className="p-1.5 rounded hover:text-slate-900 hover:bg-slate-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors" title="Redo"><Redo size={16} /></button>
-      </div>
-
-      {/* Bubble Menu removed as it is now in the main toolbar */}
-
-      {/* Editor Canvas */}
-      <div className="p-8 sm:p-12 min-h-[600px] cursor-text [&_.is-editor-empty:first-child::before]:text-slate-400 [&_.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.is-editor-empty:first-child::before]:float-left [&_.is-editor-empty:first-child::before]:pointer-events-none [&_.is-editor-empty:first-child::before]:h-0 [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:mt-8 [&_h1]:mb-4 [&_h1]:tracking-tight [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:tracking-tight [&_h3]:text-2xl [&_h3]:font-semibold [&_h3]:mt-6 [&_h3]:mb-3 [&_h3]:tracking-tight [&_p]:mb-4 [&_p]:text-slate-700 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-6 [&_ul]:text-slate-700 [&_ul]:space-y-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-6 [&_ol]:text-slate-700 [&_ol]:space-y-2 [&_a]:text-primary [&_a]:underline focus-visible:outline-none">
-        <EditorContent editor={editor} />
-      </div>
-    </div>
-  )
-}
+const TiptapEditor = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => (
+  <SharedTiptapEditor
+    value={value}
+    onChange={onChange}
+    placeholder="Mulai menulis kebijakan privasi di sini..."
+  />
+)
 
 export default function PrivacyCMSPage() {
   const [data, setData] = useState<any>({

@@ -24,52 +24,9 @@
   line-height: 1.8;
 }
 
-.contentCard h2 {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-top: 3rem;
-  margin-bottom: 1.25rem;
-}
-
-.contentCard h2:first-child {
-  margin-top: 0;
-}
-
-.contentCard h3 {
-  font-size: 1.125rem;
-  font-weight: 700;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
-}
-
-.contentCard p {
-  margin-bottom: 1.5rem;
-  color: var(--color-text-light);
-  font-size: 1.0625rem;
-}
-
-.contentCard ul {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 2rem;
-}
-
-.contentCard li {
-  position: relative;
-  padding-left: 1.5rem;
-  margin-bottom: 0.75rem;
-  color: var(--color-text-light);
-}
-
-.contentCard li::before {
-  content: '•';
-  color: var(--color-dominant);
-  position: absolute;
-  left: 0;
-  font-weight: bold;
-}
+/* Tipografi isi dokumen kini bersumber tunggal dari kelas global `.richtext`
+   (app/globals.css) agar render depan identik dengan kanvas editor CMS.
+   `.contentCard` menyisakan hanya "chrome" kartu: latar, padding, radius, bayangan. */
 
 @media (max-width: 768px) {
   .container {
@@ -79,10 +36,5 @@
   
   .contentCard {
     padding: 2rem;
-  }
-  
-  .contentCard h2 {
-    font-size: 1.5rem;
-    margin-top: 2.5rem;
   }
 }

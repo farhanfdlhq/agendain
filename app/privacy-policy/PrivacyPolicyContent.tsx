@@ -5,7 +5,7 @@ import HeroHeader from '@/components/HeroHeader/HeroHeader'
 import FadeIn from '@/components/Motion/FadeIn'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { parseGoldText } from '@/lib/utils/textFormatting'
-import { sanitizeHtml } from '@/lib/sanitize'
+import { sanitizeRichText } from '@/lib/sanitize-richtext'
 
 export default function PrivacyPolicyContent({ privacySettings = {} }: { privacySettings?: any }) {
   const { t, locale } = useTranslation()
@@ -14,7 +14,7 @@ export default function PrivacyPolicyContent({ privacySettings = {} }: { privacy
   const content = isEn
     ? (privacySettings.privacyContent_en || privacySettings.privacyContent) 
     : privacySettings.privacyContent;
-  const safeContent = sanitizeHtml(content);
+  const safeContent = sanitizeRichText(content);
 
   const getSetting = (key: string) => {
     const val = isEn ? (privacySettings[`${key}_en`] || privacySettings[key]) : privacySettings[key];
@@ -48,12 +48,12 @@ export default function PrivacyPolicyContent({ privacySettings = {} }: { privacy
         <FadeIn direction="up" delay={0.2}>
           <div className={styles.contentCard}>
             {safeContent ? (
-              <div 
-                className="whitespace-pre-wrap leading-relaxed text-slate-700 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4"
-                dangerouslySetInnerHTML={{ __html: safeContent }} 
+              <div
+                className="richtext"
+                dangerouslySetInnerHTML={{ __html: safeContent }}
               />
             ) : (
-              <>
+              <div className="richtext">
                 <h2>{t('privacy.section1.title')}</h2>
                 <p>{t('privacy.section1.p1')}</p>
                 <p>{t('privacy.section1.p2')}</p>
@@ -87,7 +87,7 @@ export default function PrivacyPolicyContent({ privacySettings = {} }: { privacy
                   <li><strong>{t('privacy.section3.li5').split(':')[0]}:</strong> {t('privacy.section3.li5').split(':').slice(1).join(':')}</li>
                   <li><strong>{t('privacy.section3.li6').split(':')[0]}:</strong> {t('privacy.section3.li6').split(':').slice(1).join(':')}</li>
                 </ul>
-              </>
+              </div>
             )}
           </div>
         </FadeIn>
