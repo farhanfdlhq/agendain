@@ -20,15 +20,24 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
 
   const [formData, setFormData] = useState({
     nama: "",
+    namaEn: "",
     slug: "",
     negara: "",
     deskripsi: "",
+    deskripsiEn: "",
     fotoUrl: "",
     bahasa: "",
     matauang: "",
     waktuTerbaik: "",
     infoVisa: ""
   })
+
+  // Hanya nama & deskripsi yang bilingual; field lain bahasa-netral (tab ID saja).
+  const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
+  const tf = (name: string) => (activeTab === 'en' ? `${name}En` : name)
+  const fv = (name: string) => ((formData as any)[tf(name)] ?? '') as string
+  const ph = (name: string, idPlaceholder: string) =>
+    activeTab === 'en' ? ((formData as any)[name] || idPlaceholder) : idPlaceholder
 
   useEffect(() => {
     fetchDestinasiData()
@@ -41,9 +50,11 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
         const data = await res.json()
         setFormData({
           nama: data.nama || "",
+          namaEn: data.namaEn || "",
           slug: data.slug || "",
           negara: data.negara || "",
           deskripsi: data.deskripsi || "",
+          deskripsiEn: data.deskripsiEn || "",
           fotoUrl: data.foto?.medium || data.foto?.large || data.foto || "",
           bahasa: data.bahasa || "",
           matauang: data.matauang || "",
@@ -76,9 +87,11 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
     try {
       const payload = {
         nama: formData.nama,
+        namaEn: formData.namaEn || null,
         slug: formData.slug,
         negara: formData.negara,
         deskripsi: formData.deskripsi,
+        deskripsiEn: formData.deskripsiEn || null,
         foto: { medium: formData.fotoUrl, thumb: formData.fotoUrl },
         bahasa: formData.bahasa,
         matauang: formData.matauang,
@@ -135,6 +148,32 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
         </Button>
       </div>
 
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant={activeTab === 'id' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('id')}
+          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
+        >
+          <img src="/flags/id.png" alt="ID" width={20} height={15} className="rounded-xs object-cover" />
+          Indonesia
+        </Button>
+        <Button
+          type="button"
+          variant={activeTab === 'en' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('en')}
+          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
+        >
+          <img src="/flags/en.png" alt="EN" width={20} height={15} className="rounded-xs object-cover" />
+          English
+        </Button>
+      </div>
+      {activeTab === 'en' && (
+        <p className="text-xs text-muted-foreground -mt-3">
+          Hanya nama & deskripsi yang punya versi Inggris. Field lain (negara, foto, info turis) dipakai bersama — atur di tab Indonesia.
+        </p>
+      )}
+
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <div className="lg:col-span-2 flex flex-col gap-6">
@@ -147,53 +186,60 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
               
               <div className="space-y-2">
                 <label className="text-sm font-medium">Nama Destinasi (Kota/Wilayah)</label>
-                <Input 
-                  name="nama"
-                  placeholder="Contoh: Paris, Swiss Alps, Cappadocia"
-                  value={formData.nama} onChange={handleChange} required 
+                <Input
+                  name={tf('nama')}
+                  placeholder={ph('nama', 'Contoh: Paris, Swiss Alps, Cappadocia')}
+                  value={fv('nama')} onChange={handleChange} required
                 />
               </div>
 
+              {activeTab === 'id' && (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Negara</label>
-                <Input 
-                  name="negara" 
+                <Input
+                  name="negara"
                   placeholder="Contoh: Prancis, Swiss, Turki"
-                  value={formData.negara} onChange={handleChange} required 
+                  value={formData.negara} onChange={handleChange} required
                 />
               </div>
+              )}
 
+              {activeTab === 'id' && (
               <div className="space-y-2">
                 <label className="text-sm font-medium flex justify-between">
                   Slug (URL) <span className="text-muted-foreground font-normal text-xs">Opsional</span>
                 </label>
-                <Input 
-                  name="slug" 
+                <Input
+                  name="slug"
                   placeholder="Contoh: swiss-alps"
                   value={formData.slug} onChange={handleChange}
                 />
               </div>
+              )}
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Deskripsi Singkat</label>
-                <Textarea 
-                  name="deskripsi" rows={4}
-                  placeholder="Deskripsikan pesona destinasi ini..."
-                  value={formData.deskripsi} onChange={handleChange} required 
+                <Textarea
+                  name={tf('deskripsi')} rows={4}
+                  placeholder={ph('deskripsi', 'Deskripsikan pesona destinasi ini...')}
+                  value={fv('deskripsi')} onChange={handleChange} required
                 />
               </div>
 
+              {activeTab === 'id' && (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Upload Foto Utama</label>
-                <MediaPicker 
-                  value={formData.fotoUrl} 
-                  onChange={(url) => setFormData(prev => ({ ...prev, fotoUrl: url }))} 
+                <MediaPicker
+                  value={formData.fotoUrl}
+                  onChange={(url) => setFormData(prev => ({ ...prev, fotoUrl: url }))}
                 />
               </div>
+              )}
             </CardContent>
           </Card>
         </div>
 
+        {activeTab === 'id' && (
         <div className="lg:col-span-1 flex flex-col gap-6">
           <Card>
             <CardHeader className="border-b-2 border-border pb-5 mb-5">
@@ -248,6 +294,7 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
             </CardContent>
           </Card>
         </div>
+        )}
       </form>
     </div>
   )

@@ -17,6 +17,7 @@ import AirplaneLoader from "@/components/ui/airplane-loader"
 import { PageSizeSelect } from "@/components/ui/page-size-select"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { useTablePagination } from "@/lib/use-table-pagination"
+import { hasPermission } from "@/lib/permissions"
 
 type Role = {
   id: string
@@ -67,6 +68,15 @@ const PERMISSIONS_GROUPS = [
     ]
   },
   {
+    category: 'ARTIKEL (BLOG)',
+    items: [
+      { id: 'blog_view', label: 'View Artikel' },
+      { id: 'blog_create', label: 'Create Artikel' },
+      { id: 'blog_edit', label: 'Edit Artikel' },
+      { id: 'blog_delete', label: 'Delete Artikel' },
+    ]
+  },
+  {
     category: 'SYSTEM & SETTINGS',
     items: [
       { id: 'users_manage', label: 'Kelola Users & Roles' },
@@ -75,8 +85,6 @@ const PERMISSIONS_GROUPS = [
     ]
   }
 ]
-
-const ALL_PERMISSION_IDS = PERMISSIONS_GROUPS.flatMap(g => g.items.map(i => i.id))
 
 export default function RolesPermissionsPage() {
   const { data: session } = useSession()
@@ -91,11 +99,28 @@ export default function RolesPermissionsPage() {
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    if (session && (session.user as any)?.role !== 'super_admin') {
-      router.push('/admin')
-      return
-    }
-    fetchRoles()
+    if (!session) return
+    let cancelled = false
+
+    // Akses halaman ini ditentukan permission `users_manage`, bukan id role,
+    // supaya role custom yang diberi izin itu bisa membukanya. Gerbang
+    // sebenarnya tetap di POST/GET /api/admin/roles.
+    ;(async () => {
+      try {
+        const res = await fetch('/api/admin/me')
+        const me = res.ok ? await res.json() : null
+        if (cancelled) return
+        if (!hasPermission(me, 'users_manage')) {
+          router.push('/admin')
+          return
+        }
+        fetchRoles()
+      } catch {
+        if (!cancelled) router.push('/admin')
+      }
+    })()
+
+    return () => { cancelled = true }
   }, [session, router])
 
   const fetchRoles = async () => {

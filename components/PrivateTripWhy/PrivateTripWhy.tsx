@@ -7,6 +7,7 @@ import styles from "./PrivateTripWhy.module.css";
 import { WhatsAppIcon } from "@/components/HomeContent/shared";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { parseGoldText } from "@/lib/utils/textFormatting";
+import { localizeRepeater, PRIVATE_TRIP_REPEATERS } from "@/lib/i18n/localize";
 
 const whyItems = [
   {
@@ -40,8 +41,10 @@ export default function PrivateTripWhy({ privatetripSettings }: { privatetripSet
     return fallbackText;
   }
 
-  const rawWhy = privatetripSettings?.[locale === 'en' ? 'whyItems_en' : 'whyItems'] || privatetripSettings?.whyItems;
-  const items = (rawWhy && Array.isArray(rawWhy) && rawWhy.length > 0) ? rawWhy : whyItems;
+  // Ikon bahasa-netral: satu array untuk kedua bahasa, hanya teks yang punya
+  // versi EN. Sebelumnya array EN diambil utuh sehingga ikonnya bisa beda.
+  const localizedWhy = localizeRepeater(privatetripSettings, 'whyItems', locale, PRIVATE_TRIP_REPEATERS.whyItems);
+  const items = localizedWhy && localizedWhy.length > 0 ? localizedWhy : whyItems;
 
   return (
     <section className={styles.section}>

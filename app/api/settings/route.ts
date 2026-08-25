@@ -4,12 +4,15 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { purgeCloudflareCache } from "@/lib/cloudflare";
+import { hasPermission, requirePermission, resolveActor } from "@/lib/rbac";
 
 export async function GET() {
   try {
+    // Endpoint ini juga dipakai halaman publik (mis. PrivateTripForm) sehingga
+    // TIDAK digerbangi; yang digerbangi adalah key sensitifnya.
     const session = await getServerSession(authOptions);
-    const role = (session?.user as any)?.role;
-    const isSuperAdmin = role === 'super_admin' || role === 'admin';
+    const actor = await resolveActor(session);
+    const canSeeSensitive = hasPermission(actor, "settings_manage");
 
     const settings = await prisma.setting.findMany();
 
@@ -18,7 +21,7 @@ export async function GET() {
       (acc: any, curr: { key: string; value: string }) => {
         // Jangan ekspos info rezeki/pembayaran atau rahasia lainnya jika bukan administrator yang terotentikasi
         const sensitiveKey = /payment|secret|token|password|credential/i.test(curr.key);
-        if (!isSuperAdmin && sensitiveKey) {
+        if (!canSeeSensitive && sensitiveKey) {
           return acc;
         }
         acc[curr.key] = curr.value;
@@ -39,11 +42,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    const role = (session?.user as any)?.role;
-    if (!session || role !== 'super_admin') {
-      return NextResponse.json({ error: "Forbidden - Super Admin required" }, { status: 403 });
-    }
+    const gate = await requirePermission(req, "POST /api/settings", "settings_manage");
+    if (gate.denied) return gate.denied;
 
     const data = await req.json();
 

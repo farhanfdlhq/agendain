@@ -15,6 +15,7 @@ import AirplaneLoader from "@/components/ui/airplane-loader"
 import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { MediaPicker } from "@/components/ui/media-picker"
 import { FontWeightPicker } from "@/components/ui/font-weight-picker"
+import { foldLegacyRepeaters, HOME_REPEATERS } from "@/lib/i18n/localize"
 
 export default function HomeCMSPage() {
   const [data, setData] = useState<any>({
@@ -92,6 +93,11 @@ export default function HomeCMSPage() {
               res.sectionOrder = res.sectionOrder.replace('packages,', '').replace(',packages', '').replace('packages', '')
             }
           }
+          // Data lama menyimpan repeater sebagai DUA array penuh
+          // (whyItems + whyItems_en). Teks EN-nya dilipat ke dalam satu array
+          // dan array warisannya dibuang, jadi simpanan berikutnya sudah
+          // memakai bentuk baru. Tanpa ini gambar/ikon tetap beku per bahasa.
+          foldLegacyRepeaters(res, HOME_REPEATERS)
           setData((prev: any) => ({ ...prev, ...res }))
         }
         setFetching(false)
@@ -322,23 +328,26 @@ export default function HomeCMSPage() {
     fieldName: string, 
     fields: { name: string; label: string; isTextarea?: boolean; isImage?: boolean; enableWeight?: boolean; resolutionHint?: string }[]
   ) => {
-    const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
-    const items = data[activeFieldName] || [];
+    // Satu array dipakai kedua bahasa. Hanya nilai TEKS yang ikut tab aktif
+    // (`title` / `title_en`); gambar & bobot huruf memakai kunci polos supaya
+    // sekali diubah langsung berlaku di ID maupun EN. Lihat lib/i18n/localize.ts.
+    const items = data[fieldName] || [];
+    const textKey = (name: string) => (activeTab === 'en' ? `${name}_en` : name);
 
     const handleItemChange = (index: number, field: string, value: string) => {
       const newItems = [...items];
       newItems[index] = { ...newItems[index], [field]: value };
-      setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
+      setData((prev: any) => ({ ...prev, [fieldName]: newItems }));
     };
 
     const handleAddItem = () => {
       const newItem = fields.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {});
-      setData((prev: any) => ({ ...prev, [activeFieldName]: [...items, newItem] }));
+      setData((prev: any) => ({ ...prev, [fieldName]: [...items, newItem] }));
     };
 
     const handleRemoveItem = (index: number) => {
       const newItems = items.filter((_: any, i: number) => i !== index);
-      setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
+      setData((prev: any) => ({ ...prev, [fieldName]: newItems }));
     };
 
     return (
@@ -353,6 +362,12 @@ export default function HomeCMSPage() {
           </Button>
         </div>
         
+        {activeTab === 'en' && (
+          <p className="text-[11px] text-muted-foreground italic -mt-2">
+            Gambar & bobot huruf dipakai bersama oleh kedua bahasa. Teks yang dibiarkan kosong otomatis memakai versi Indonesia.
+          </p>
+        )}
+
         {items.length === 0 && (
           <div className="text-sm text-muted-foreground italic bg-muted/50 p-4 rounded-lg text-center border border-dashed">
             Belum ada data kustom. Sistem menggunakan data bawaan (Default).
@@ -383,23 +398,25 @@ export default function HomeCMSPage() {
                     )}
                     {f.isImage ? (
                       <div className="space-y-3 items-start flex flex-col">
-                        <MediaPicker 
+                        <MediaPicker
                           value={item[f.name] || ''}
                           onChange={(url) => handleItemChange(index, f.name, url)}
                           label="Pilih Media"
                         />
                       </div>
                     ) : f.isTextarea ? (
-                      <Textarea 
-                        value={item[f.name] || ''} 
-                        onChange={(e) => handleItemChange(index, f.name, e.target.value)}
+                      <Textarea
+                        value={item[textKey(f.name)] || ''}
+                        onChange={(e) => handleItemChange(index, textKey(f.name), e.target.value)}
+                        placeholder={activeTab === 'en' ? item[f.name] || '' : undefined}
                         className="min-h-[80px]"
                         style={f.enableWeight && item[`${f.name}Weight`] ? { fontWeight: Number(item[`${f.name}Weight`]) } : undefined}
                       />
                     ) : (
-                      <Input 
-                        value={item[f.name] || ''} 
-                        onChange={(e) => handleItemChange(index, f.name, e.target.value)}
+                      <Input
+                        value={item[textKey(f.name)] || ''}
+                        onChange={(e) => handleItemChange(index, textKey(f.name), e.target.value)}
+                        placeholder={activeTab === 'en' ? item[f.name] || '' : undefined}
                         style={f.enableWeight && item[`${f.name}Weight`] ? { fontWeight: Number(item[`${f.name}Weight`]) } : undefined}
                       />
                     )}
@@ -427,15 +444,16 @@ export default function HomeCMSPage() {
     imageField: { name: string; label: string; resolutionHint: string },
     textFields: { name: string; label: string; isTextarea?: boolean; enableWeight?: boolean; placeholder?: string }[]
   ) => {
-    const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
-    const items = data[activeFieldName] || [];
+    // Satu array untuk kedua bahasa — lihat catatan di renderArrayEditor.
+    const items = data[fieldName] || [];
+    const textKey = (name: string) => (activeTab === 'en' ? `${name}_en` : name);
 
     const handleAddItem = () => {
       const newItem: any = { [imageField.name]: '' };
       textFields.forEach(f => { newItem[f.name] = ''; });
       setData((prev: any) => ({
         ...prev,
-        [activeFieldName]: [...items, newItem]
+        [fieldName]: [...items, newItem]
       }));
     };
 
@@ -444,7 +462,7 @@ export default function HomeCMSPage() {
       newItems.splice(index, 1);
       setData((prev: any) => ({
         ...prev,
-        [activeFieldName]: newItems
+        [fieldName]: newItems
       }));
     };
 
@@ -453,18 +471,26 @@ export default function HomeCMSPage() {
       newItems[index] = { ...newItems[index], [field]: val };
       setData((prev: any) => ({
         ...prev,
-        [activeFieldName]: newItems
+        [fieldName]: newItems
       }));
     };
 
     return (
       <div className="space-y-4 pt-6 border-t mt-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <Label className="font-bold text-base">{label}</Label>
+          <Label className="flex items-center gap-2 font-bold text-base">
+            {label}
+            <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-medium uppercase tracking-wider">{activeTab}</span>
+          </Label>
           <Button type="button" variant="outline" size="sm" onClick={handleAddItem} className="gap-2">
             <Plus size={16} /> Tambah Item
           </Button>
         </div>
+        {activeTab === 'en' && (
+          <p className="text-[11px] text-muted-foreground italic -mt-2">
+            Foto & bobot huruf dipakai bersama oleh kedua bahasa. Teks yang dibiarkan kosong otomatis memakai versi Indonesia.
+          </p>
+        )}
         {items.length === 0 && (
           <div className="text-sm text-muted-foreground p-4 bg-muted/30 rounded-lg text-center border border-dashed">
             Belum ada data ditambahkan.
@@ -504,18 +530,18 @@ export default function HomeCMSPage() {
                     <div key={tf.name} className="space-y-1.5">
                       <Label className="text-xs">{tf.label}</Label>
                       {tf.isTextarea ? (
-                        <Textarea 
-                          value={item[tf.name] || ''} 
-                          onChange={(e) => handleItemChange(index, tf.name, e.target.value)}
+                        <Textarea
+                          value={item[textKey(tf.name)] || ''}
+                          onChange={(e) => handleItemChange(index, textKey(tf.name), e.target.value)}
                           className="min-h-[100px]"
-                          placeholder={tf.placeholder}
+                          placeholder={activeTab === 'en' ? item[tf.name] || tf.placeholder : tf.placeholder}
                           style={tf.enableWeight && item[`${tf.name}Weight`] ? { fontWeight: Number(item[`${tf.name}Weight`]) } : undefined}
                         />
                       ) : (
-                        <Input 
-                          value={item[tf.name] || ''} 
-                          onChange={(e) => handleItemChange(index, tf.name, e.target.value)}
-                          placeholder={tf.placeholder}
+                        <Input
+                          value={item[textKey(tf.name)] || ''}
+                          onChange={(e) => handleItemChange(index, textKey(tf.name), e.target.value)}
+                          placeholder={activeTab === 'en' ? item[tf.name] || tf.placeholder : tf.placeholder}
                           style={tf.enableWeight && item[`${tf.name}Weight`] ? { fontWeight: Number(item[`${tf.name}Weight`]) } : undefined}
                         />
                       )}

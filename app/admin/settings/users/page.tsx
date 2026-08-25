@@ -19,6 +19,7 @@ import PasswordValidator, { isPasswordValid } from "@/components/PasswordValidat
 import { PageSizeSelect } from "@/components/ui/page-size-select"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { useTablePagination } from "@/lib/use-table-pagination"
+import { hasPermission } from "@/lib/permissions"
 
 type RoleConfig = {
   id: string
@@ -51,11 +52,26 @@ export default function UserManagementPage() {
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
-    if (session && (session.user as any)?.role !== 'super_admin') {
-      router.push('/admin')
-      return
-    }
-    fetchData()
+    if (!session) return
+    let cancelled = false
+
+    // Berbasis permission, bukan id role — lihat lib/permissions.ts.
+    ;(async () => {
+      try {
+        const res = await fetch('/api/admin/me')
+        const me = res.ok ? await res.json() : null
+        if (cancelled) return
+        if (!hasPermission(me, 'users_manage')) {
+          router.push('/admin')
+          return
+        }
+        fetchData()
+      } catch {
+        if (!cancelled) router.push('/admin')
+      }
+    })()
+
+    return () => { cancelled = true }
   }, [session, router])
 
   const fetchData = async () => {

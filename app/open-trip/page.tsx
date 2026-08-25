@@ -40,17 +40,19 @@ export default async function PaketPage({
   }
   
   let packages: any[] = []
-  let destList: string[] = []
+  let destList: { nama: string; namaEn?: string | null }[] = []
   let opentripSettings: any = {}
-  
+
   try {
     const setting = await prisma.setting.findUnique({ where: { key: 'opentrip_settings' } })
     if (setting) {
       opentripSettings = JSON.parse(setting.value)
     }
 
-    const dbDest = await prisma.destinasi.findMany({ select: { nama: true } })
-    destList = dbDest.map((d: { nama: string }) => d.nama)
+    // `namaEn` hanya untuk label dropdown; nilai filternya tetap nama Indonesia
+    // karena query `where.destinasi.nama` mencocokkan kolom Indonesia.
+    const dbDest = await prisma.destinasi.findMany({ select: { nama: true, namaEn: true } })
+    destList = dbDest.map((d: { nama: string; namaEn: string | null }) => ({ nama: d.nama, namaEn: d.namaEn }))
 
     const dbPackages = await prisma.openTrip.findMany({
       where,
@@ -75,10 +77,10 @@ export default async function PaketPage({
   // Fallback for empty DB
   if (packages.length === 0) {
     packages = [
-      { id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', harga: 15000000, durasi: 5, destinasi: { nama: 'Prancis' }, fotoThumbnail: '/placeholder.webp', label: 'Terlaris' },
-      { id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', harga: 22000000, durasi: 7, destinasi: { nama: 'Swiss' }, fotoThumbnail: '/placeholder.webp', label: null },
-      { id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', harga: 18500000, durasi: 8, destinasi: { nama: 'Italia' }, fotoThumbnail: '/placeholder.webp', label: 'Populer' },
-      { id: 4, slug: 'london-scotland-10d', nama: 'London & Scotland 10D', harga: 28000000, durasi: 10, destinasi: { nama: 'UK' }, fotoThumbnail: '/placeholder.webp', label: null },
+      { id: 1, slug: 'romantic-paris-5d', nama: 'Romantic Paris 5 Days', namaEn: 'Romantic Paris 5 Days', harga: 15000000, durasi: 5, destinasi: { nama: 'Prancis', namaEn: 'France' }, fotoThumbnail: '/placeholder.webp', label: 'Terlaris' },
+      { id: 2, slug: 'swiss-alps-7d', nama: 'Swiss Alps Adventure 7D', namaEn: 'Swiss Alps Adventure 7D', harga: 22000000, durasi: 7, destinasi: { nama: 'Swiss', namaEn: 'Switzerland' }, fotoThumbnail: '/placeholder.webp', label: null },
+      { id: 3, slug: 'classic-italy-8d', nama: 'Classic Italy 8 Days', namaEn: 'Classic Italy 8 Days', harga: 18500000, durasi: 8, destinasi: { nama: 'Italia', namaEn: 'Italy' }, fotoThumbnail: '/placeholder.webp', label: 'Populer' },
+      { id: 4, slug: 'london-scotland-10d', nama: 'London & Scotland 10D', namaEn: 'London & Scotland 10D', harga: 28000000, durasi: 10, destinasi: { nama: 'UK', namaEn: 'UK' }, fotoThumbnail: '/placeholder.webp', label: null },
     ]
   }
 

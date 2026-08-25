@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users, Info, Image as ImageIcon, Shield, ScrollText, Tags, History } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users, UsersRound, Gem, Info, Home, Newspaper, Shield, ScrollText, Tags, History, PanelBottom } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/reui/badge"
 import PlugConnectedIcon from "@/components/ui/plug-connected-icon"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { hasPermission, type PermissionSubject } from "@/lib/permissions"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -21,12 +22,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
   const [siteLogo, setSiteLogo] = useState("/agendain.jpeg")
   const [siteName, setSiteName] = useState("Agendain")
+  // Permission efektif dari server. Wajib diambil dari API: role di JWT hanya
+  // ditulis saat sign-in, dan matriks permissions[] hanya ada di roles_config.
+  const [me, setMe] = useState<(PermissionSubject & { roleName: string }) | null>(null)
+  const [meLoaded, setMeLoaded] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     'BLOG': false,
     'PENGATURAN': false,
-    'KONTEN & DESAIN': false
+    'HALAMAN': false,
+    'TAMPILAN SITUS': false
   })
 
   useEffect(() => {
@@ -50,6 +56,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [])
 
   useEffect(() => {
+    if (status !== "authenticated") return
+    fetch('/api/admin/me')
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => {
+        if (data?.role) setMe({ role: data.role, roleName: data.roleName, permissions: data.permissions || [] })
+      })
+      .catch(console.error)
+      .finally(() => setMeLoaded(true))
+  }, [status])
+
+  useEffect(() => {
     setIsMobileMenuOpen(false)
   }, [pathname])
 
@@ -57,7 +74,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return <>{children}</>
   }
 
-  if (status === "loading") {
+  if (status === "loading" || (status === "authenticated" && !meLoaded)) {
     return (
       <div className="flex flex-col h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-muted-foreground gap-4">
         <AirplaneLoader size={48} />
@@ -70,67 +87,79 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const userRole = (session.user as any)?.role || 'editor'
 
-  const ROLE_HIERARCHY: Record<string, number> = {
-    super_admin: 3,
-    admin: 2,
-    editor: 1,
-  }
+  // Bila /api/admin/me gagal, jangan kunci seluruh panel: pakai role dari sesi
+  // tanpa permission apa pun, sehingga menu self-service tetap terlihat.
+  const subject: PermissionSubject & { roleName: string } =
+    me ?? { role: userRole, roleName: userRole, permissions: [] }
 
-  type MenuItem = { name: string; href: string; icon: React.ReactNode; minRole: string; badge?: string }
+  // Permission yang dibutuhkan tiap menu; array kosong = cukup login sebagai
+  // admin (mis. Overview & Akun/Profil). Semantiknya OR — lihat lib/permissions.
+  const BLOG_ANY = ['blog_view', 'blog_create', 'blog_edit', 'blog_delete']
+
+  type MenuItem = { name: string; href: string; icon: React.ReactNode; perm: string[]; badge?: string }
   type MenuGroup = { heading: string; collapsible?: boolean; items: MenuItem[] }
 
   const menuGroups: MenuGroup[] = [
     {
       heading: 'MAIN MENU',
       items: [
-        { name: 'Overview', href: '/admin', icon: <LayoutDashboard size={18} />, minRole: 'editor' },
-        { name: 'Paket Wisata', href: '/admin/open-trip', icon: <Package size={18} />, minRole: 'editor' },
-        { name: 'Destinasi', href: '/admin/destinasi', icon: <Map size={18} />, minRole: 'editor' },
-        { name: 'Pesanan', href: '/admin/booking', icon: <CalendarDays size={18} />, minRole: 'admin' },
-        { name: 'Permintaan Trip', href: '/admin/inquiries', icon: <MessageSquare size={18} />, minRole: 'admin' },
+        { name: 'Overview', href: '/admin', icon: <LayoutDashboard size={18} />, perm: [] },
+        { name: 'Paket Wisata', href: '/admin/open-trip', icon: <Package size={18} />, perm: ['paket_view'] },
+        { name: 'Destinasi', href: '/admin/destinasi', icon: <Map size={18} />, perm: ['destinasi_view'] },
+        { name: 'Pesanan', href: '/admin/booking', icon: <CalendarDays size={18} />, perm: ['booking_view'] },
+        { name: 'Permintaan Trip', href: '/admin/inquiries', icon: <MessageSquare size={18} />, perm: ['inquiry_view'] },
       ]
     },
     {
       heading: 'BLOG',
       collapsible: true,
       items: [
-        { name: 'Artikel', href: '/admin/blog', icon: <ScrollText size={18} />, minRole: 'super_admin' },
-        { name: 'Kategori', href: '/admin/blog/kategori', icon: <Tags size={18} />, minRole: 'super_admin' },
+        { name: 'Artikel', href: '/admin/blog', icon: <ScrollText size={18} />, perm: BLOG_ANY },
+        { name: 'Kategori', href: '/admin/blog/kategori', icon: <Tags size={18} />, perm: BLOG_ANY },
       ]
     },
     {
       heading: 'PENGATURAN',
       collapsible: true,
       items: [
-        { name: 'Pengaturan Sistem', href: '/admin/settings', icon: <Settings size={18} />, minRole: 'super_admin' },
-        { name: 'Kelola User', href: '/admin/settings/users', icon: <Users size={18} />, minRole: 'super_admin' },
-        { name: 'Audit Log', href: '/admin/settings/audit-log', icon: <History size={18} />, minRole: 'super_admin' },
-        { name: 'Roles & Permissions', href: '/admin/settings/roles', icon: <PlugConnectedIcon size={18} />, minRole: 'super_admin' },
-        { name: 'Akun & Profil', href: '/admin/settings/profile', icon: <UserCog size={18} />, minRole: 'editor' },
+        { name: 'Pengaturan Sistem', href: '/admin/settings', icon: <Settings size={18} />, perm: ['settings_manage'] },
+        { name: 'Kelola User', href: '/admin/settings/users', icon: <Users size={18} />, perm: ['users_manage'] },
+        { name: 'Audit Log', href: '/admin/settings/audit-log', icon: <History size={18} />, perm: ['users_manage'] },
+        { name: 'Roles & Permissions', href: '/admin/settings/roles', icon: <PlugConnectedIcon size={18} />, perm: ['users_manage'] },
+        { name: 'Akun & Profil', href: '/admin/settings/profile', icon: <UserCog size={18} />, perm: [] },
       ]
     },
     {
-      heading: 'KONTEN & DESAIN',
+      // Dipecah dari satu grup "KONTEN & DESAIN" yang sudah memuat 8 item.
+      // Nama item TIDAK diberi prefix "Halaman" — grupnya sudah menyatakan itu.
+      // Yang membedakannya dari MAIN MENU → Paket Wisata / Destinasi: di sini
+      // yang diatur TAMPILAN halamannya, di sana DATA-nya.
+      heading: 'HALAMAN',
       collapsible: true,
       items: [
-        { name: 'Halaman Beranda', href: '/admin/cms/home', icon: <LayoutDashboard size={18} />, minRole: 'admin' },
-        { name: 'Tentang Kami', href: '/admin/cms/about', icon: <Info size={18} />, minRole: 'admin' },
-        { name: 'Open Trip', href: '/admin/cms/open-trip', icon: <ImageIcon size={18} />, minRole: 'admin' },
-        { name: 'Private Trip', href: '/admin/cms/private-trip', icon: <ImageIcon size={18} />, minRole: 'admin' },
-        { name: 'Kebijakan Privasi', href: '/admin/cms/privacy', icon: <Shield size={18} />, minRole: 'admin' },
-        { name: 'Tema & Tampilan', href: '/admin/settings/design', icon: <Palette size={18} />, minRole: 'super_admin' },
+        { name: 'Beranda', href: '/admin/cms/home', icon: <Home size={18} />, perm: ['cms_manage'] },
+        { name: 'Tentang Kami', href: '/admin/cms/about', icon: <Info size={18} />, perm: ['cms_manage'] },
+        // Ikon dibedakan per halaman: rombongan (open trip) vs eksklusif
+        // (private trip). Sebelumnya keduanya memakai ikon gambar yang sama.
+        { name: 'Open Trip', href: '/admin/cms/open-trip', icon: <UsersRound size={18} />, perm: ['cms_manage'] },
+        { name: 'Private Trip', href: '/admin/cms/private-trip', icon: <Gem size={18} />, perm: ['cms_manage'] },
+        { name: 'Blog', href: '/admin/cms/blog', icon: <Newspaper size={18} />, perm: ['cms_manage'] },
+        { name: 'Kebijakan Privasi', href: '/admin/cms/privacy', icon: <Shield size={18} />, perm: ['cms_manage'] },
+      ]
+    },
+    {
+      // Elemen yang tampil di SELURUH halaman, bukan milik satu halaman.
+      heading: 'TAMPILAN SITUS',
+      collapsible: true,
+      items: [
+        { name: 'Footer', href: '/admin/cms/footer', icon: <PanelBottom size={18} />, perm: ['cms_manage'] },
+        { name: 'Tema & Tampilan', href: '/admin/settings/design', icon: <Palette size={18} />, perm: ['settings_manage'] },
       ]
     }
   ]
 
   const toggleGroup = (heading: string) => {
     setExpandedGroups(prev => ({ ...prev, [heading]: !prev[heading] }))
-  }
-
-  const formatRole = (role: string) => {
-    if (role === 'super_admin') return 'Super Admin'
-    if (role === 'admin') return 'Administrator'
-    return 'Editor'
   }
 
   const allItems = menuGroups.flatMap(g => g.items)
@@ -142,6 +171,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, null as any)
 
   const pageTitle = activeItem ? activeItem.name : "Dashboard"
+
+  // Gerbang per-halaman. Menu yang ter-filter dari sidebar tetap bisa dibuka
+  // lewat URL langsung; dulu proxy.ts yang menjaganya, tapi dengan hierarki
+  // role sehingga role custom terkunci total. Sekarang penjagaannya memakai
+  // permission yang sama dengan filter sidebar — satu sumber aturan.
+  //
+  // Bila /api/admin/me gagal (me === null) halaman TIDAK dikunci: permission
+  // yang sebenarnya tidak diketahui, dan API tetap menolak aksi yang tidak
+  // diizinkan. Lebih baik tampil lalu ditolak per aksi daripada panel mati.
+  const pageAllowed = !me || !activeItem || hasPermission(subject, ...activeItem.perm)
 
   const SidebarContent = ({ collapsed = false }: { collapsed?: boolean }) => (
     <div className="flex flex-col h-full bg-sidebar/95 backdrop-blur-xl border-r border-border/60 text-sidebar-foreground shadow-sm overflow-hidden">
@@ -159,7 +198,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       
       <nav className={`flex-1 overflow-y-auto py-6 space-y-8 scrollbar-thin ${collapsed ? 'px-2' : 'px-4'}`}>
         {menuGroups.map((group) => {
-          const filteredItems = group.items.filter(item => ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[item.minRole])
+          const filteredItems = group.items.filter(item => hasPermission(subject, ...item.perm))
           if (filteredItems.length === 0) return null
           const isExpanded = group.collapsible ? expandedGroups[group.heading] : true
 
@@ -228,7 +267,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {!collapsed && (
                 <div className="flex flex-col items-start ml-3 overflow-hidden text-left flex-1">
                   <span className="text-sm font-bold truncate w-full text-foreground group-hover:text-primary transition-colors">{session.user?.name}</span>
-                  <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mt-0.5">{formatRole(userRole)}</span>
+                  <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mt-0.5">{subject.roleName}</span>
                 </div>
               )}
             </Button>
@@ -311,7 +350,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         
         <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-zinc-50/50 dark:bg-zinc-950/50">
           <div className="mx-auto max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
-            {children}
+            {pageAllowed ? children : (
+              <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-border/60 bg-background p-10 text-center">
+                <Shield className="h-10 w-10 text-muted-foreground/40" />
+                <h2 className="text-lg font-bold">Akses ditolak</h2>
+                <p className="max-w-md text-sm text-muted-foreground">
+                  Role <strong>{subject.roleName}</strong> tidak memiliki izin untuk membuka halaman ini.
+                  Hubungi Super Admin bila Anda seharusnya punya akses.
+                </p>
+                <Button variant="outline" asChild className="mt-2 rounded-full">
+                  <Link href="/admin">Kembali ke Overview</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </main>
       </div>

@@ -5,6 +5,7 @@ import FadeIn from '@/components/Motion/FadeIn'
 import { ArrowDown } from 'lucide-react'
 import styles from '../HomeContent.module.css'
 import { WhatsAppIcon, renderHighlightedTitle } from '../shared'
+import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
 
 const getFaqItems = (t: any) => [
   {
@@ -32,8 +33,7 @@ const getFaqItems = (t: any) => [
 export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs: any, t: any, locale: string, homeSettings: any, waLink: string }) {
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   
-  const rawFaq = homeSettings?.[locale === 'en' ? 'faqItems_en' : 'faqItems'] || homeSettings?.faqItems;
-  const faqItems = Array.isArray(rawFaq) ? rawFaq : getFaqItems(t);
+  const faqItems = localizeRepeater(homeSettings, 'faqItems', locale, HOME_REPEATERS.faqItems) ?? getFaqItems(t);
 
   return (
     <section key="faq" className={styles.faqSection}>

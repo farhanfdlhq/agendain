@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { DEFAULT_BODY_FONT, DEFAULT_HEADING_FONT, FONT_CHOICES } from "@/lib/fonts"
 
 export default function DesignSystemPage() {
   const [theme, setTheme] = useState({
@@ -26,19 +27,19 @@ export default function DesignSystemPage() {
     navbarHover: '#FFC704',
     footerBackground: '#054569',
     footerText: '#ffffff',
-    headingFont: 'Montserrat',
-    bodyFont: 'Montserrat',
+    headingFont: DEFAULT_HEADING_FONT as string,
+    bodyFont: DEFAULT_BODY_FONT as string,
     borderRadius: '0.5rem',
   })
-  
+
   const [activeTab, setActiveTab] = useState('brand')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
 
-  const fonts = [
-    'Montserrat', 'Inter', 'Outfit', 'Poppins', 'Playfair Display',
-    'Plus Jakarta Sans', 'Roboto', 'DM Sans', 'Lora'
-  ]
+  // Satu sumber daftar font: lib/fonts.ts. Loader next/font di app/layout.tsx
+  // dan validasi di POST /api/settings/theme memakai daftar yang sama, jadi
+  // pilihan di sini tidak bisa lagi menyimpan nama yang tidak ter-load.
+  const fonts = FONT_CHOICES
 
   const radii = [
     { label: 'None (0px)', value: '0px' },

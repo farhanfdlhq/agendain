@@ -11,6 +11,7 @@ import HeroHeader from '@/components/HeroHeader/HeroHeader'
 import AirplaneLoader from '@/components/ui/airplane-loader'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { parseGoldText } from '@/lib/utils/textFormatting'
 
 type BlogCategory = { id: number; nama: string; namaEn: string | null; slug: string }
 type BlogPost = {
@@ -28,7 +29,7 @@ type BlogPost = {
   contentEn: string | null
 }
 
-export default function BlogContent() {
+export default function BlogContent({ blogSettings = {} }: { blogSettings?: any }) {
   const { t, locale: language } = useTranslation()
   const [categories, setCategories] = useState<BlogCategory[]>([])
   const [posts, setPosts] = useState<BlogPost[]>([])
@@ -93,19 +94,33 @@ export default function BlogContent() {
   }
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString(language === 'en' ? 'en-GB' : 'id-ID', { 
-      day: 'numeric', month: 'short', year: 'numeric' 
+    return new Date(dateStr).toLocaleDateString(language === 'en' ? 'en-GB' : 'id-ID', {
+      day: 'numeric', month: 'short', year: 'numeric'
     })
   }
 
+  // Header dari blog_settings (CMS). Nilai lama yang sebelumnya di-hardcode
+  // sekarang menjadi fallback, jadi tampilan tidak berubah selama key-nya
+  // belum pernah disimpan. Gambar tidak per-bahasa, jadi dibaca langsung.
+  const getSetting = (key: string) =>
+    (language === 'en' ? (blogSettings[`${key}_en`] || blogSettings[key]) : blogSettings[key]) || ''
+
+  const heroImage = blogSettings.heroImage || '/dest-italy.webp'
+  const heroTitle = getSetting('heroTitle')
+  const heroSubtitle = getSetting('heroSubtitle')
+
   return (
     <div className={styles.page}>
-      <HeroHeader 
-        backgroundImage="/dest-italy.webp"
-        title={<>{language === 'en' ? 'Agendain' : 'Jurnal'} <span className={styles.textGold}>{language === 'en' ? 'Journal' : 'Agendain'}</span></>}
-        subtitle={language === 'en' 
-          ? "Discover your dream vacation inspiration, practical travel tips, and exciting stories from around Europe."
-          : "Temukan inspirasi liburan impianmu, tips perjalanan praktis, dan cerita seru dari berbagai sudut Eropa."}
+      <HeroHeader
+        backgroundImage={heroImage}
+        title={heroTitle
+          ? parseGoldText(heroTitle, styles, blogSettings.heroTitleWeight)
+          : <>{language === 'en' ? 'Agendain' : 'Jurnal'} <span className={styles.textGold}>{language === 'en' ? 'Journal' : 'Agendain'}</span></>}
+        subtitle={heroSubtitle
+          ? <span style={blogSettings.heroSubtitleWeight ? { fontWeight: Number(blogSettings.heroSubtitleWeight) } : undefined}>{heroSubtitle}</span>
+          : (language === 'en'
+            ? "Discover your dream vacation inspiration, practical travel tips, and exciting stories from around Europe."
+            : "Temukan inspirasi liburan impianmu, tips perjalanan praktis, dan cerita seru dari berbagai sudut Eropa.")}
       />
 
       <div className={styles.container}>

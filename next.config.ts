@@ -28,6 +28,11 @@ const csp = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
+    // Next 16 hanya melayani quality yang terdaftar; default-nya [75]. Hero
+    // beranda memakai quality={85} (gambar full-bleed, 75 masih terlihat
+    // lunak), jadi 85 harus disebut di sini — kalau tidak, Next menolaknya
+    // dan hanya menulis peringatan di log.
+    qualities: [75, 85],
     remotePatterns: [
       {
         protocol: "https",

@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { requirePermission } from '@/lib/rbac'
 import { DestinasiSchema, serverError } from '@/lib/security'
 
 export async function GET(
@@ -29,11 +28,8 @@ export async function PUT(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !['super_admin', 'admin', 'editor'].includes(role)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const gate = await requirePermission(request, 'PUT /api/destinasi/[slug]', 'destinasi_edit')
+    if (gate.denied) return gate.denied
 
     const { slug } = await params
     const result = DestinasiSchema.safeParse(await request.json())
@@ -50,8 +46,10 @@ export async function PUT(
       where: { slug },
       data: {
         nama: data.nama,
+        namaEn: data.namaEn || null,
         slug: data.slug,
         deskripsi: data.deskripsi,
+        deskripsiEn: data.deskripsiEn || null,
         foto: data.foto,
         negara: data.negara,
         bahasa: data.bahasa,
@@ -72,11 +70,8 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !['super_admin', 'admin'].includes(role)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const gate = await requirePermission(request, 'DELETE /api/destinasi/[slug]', 'destinasi_delete')
+    if (gate.denied) return gate.denied
 
     const { slug } = await params
     await prisma.destinasi.delete({

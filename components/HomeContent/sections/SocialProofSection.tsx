@@ -6,13 +6,15 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import FadeIn from '@/components/Motion/FadeIn'
 import styles from '../HomeContent.module.css'
 import { renderHighlightedTitle } from '../shared'
+import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
 
 export default function SocialProofSection({ gs, t, locale, homeSettings, testimonials }: { gs: any, t: any, locale: string, homeSettings: any, testimonials: any[] }) {
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [isSliderHovered, setIsSliderHovered] = useState(false)
 
-  const rawTesti = homeSettings?.[locale === 'en' ? 'testiItems_en' : 'testiItems'] || homeSettings?.testiItems;
-  const testiItems = Array.isArray(rawTesti) ? rawTesti : testimonials;
+  // Foto testimoni bahasa-netral: diambil dari baris yang sama, hanya nama &
+  // teksnya yang dilokalkan.
+  const testiItems = localizeRepeater(homeSettings, 'testiItems', locale, HOME_REPEATERS.testiItems) ?? testimonials;
 
   useEffect(() => {
     if (isSliderHovered) return

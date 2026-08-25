@@ -30,7 +30,11 @@ export default function SettingsPage() {
     logo_height: "42",
     global_informasi_penting: "Paspor minimal masa berlaku 6 bulan dari tanggal kepulangan.\nVisa Schengen diwajibkan bagi pemegang paspor Indonesia.\nJadwal perjalanan dan akomodasi dapat berubah sewaktu-waktu menyesuaikan kondisi cuaca.",
     global_kebijakan_pembatalan: "Pembatalan > 30 hari sebelum keberangkatan: Pengembalian 50% dari total.\nPembatalan 15-30 hari sebelum keberangkatan: Pengembalian 25% dari total.\nPembatalan < 14 hari sebelum keberangkatan: Tidak ada pengembalian dana (Non-refundable).\nJika visa ditolak, biaya visa tidak dapat dikembalikan.",
-    global_opsi_penjemputan: "Bandara Internasional Soekarno Hatta (Terminal 3).\nPenjemputan area Jakarta (sesuai konfirmasi).\nSilakan kumpul 4 jam sebelum keberangkatan."
+    global_opsi_penjemputan: "Bandara Internasional Soekarno Hatta (Terminal 3).\nPenjemputan area Jakarta (sesuai konfirmasi).\nSilakan kumpul 4 jam sebelum keberangkatan.",
+    // Versi Inggris (opsional) — dibaca detail page saat locale=en, kosong = jatuh ke versi ID.
+    global_informasi_penting_en: "",
+    global_kebijakan_pembatalan_en: "",
+    global_opsi_penjemputan_en: ""
   })
 
   // Cropper states for Favicon
@@ -328,8 +332,17 @@ export default function SettingsPage() {
                 rows={4}
                 placeholder="Tulis setiap poin di baris baru..."
               />
+              <Label htmlFor="global_informasi_penting_en" className="text-xs text-muted-foreground font-normal pt-1">🇬🇧 English (opsional — kosongkan untuk pakai versi Indonesia)</Label>
+              <Textarea
+                id="global_informasi_penting_en"
+                name="global_informasi_penting_en"
+                value={formData.global_informasi_penting_en}
+                onChange={handleChange}
+                rows={4}
+                placeholder={formData.global_informasi_penting || "Write each point on a new line..."}
+              />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="global_kebijakan_pembatalan">Kebijakan Pembatalan & Pengembalian Dana (Default)</Label>
               <Textarea
@@ -339,6 +352,15 @@ export default function SettingsPage() {
                 onChange={handleChange}
                 rows={4}
                 placeholder="Tulis setiap poin di baris baru..."
+              />
+              <Label htmlFor="global_kebijakan_pembatalan_en" className="text-xs text-muted-foreground font-normal pt-1">🇬🇧 English (opsional — kosongkan untuk pakai versi Indonesia)</Label>
+              <Textarea
+                id="global_kebijakan_pembatalan_en"
+                name="global_kebijakan_pembatalan_en"
+                value={formData.global_kebijakan_pembatalan_en}
+                onChange={handleChange}
+                rows={4}
+                placeholder={formData.global_kebijakan_pembatalan || "Write each point on a new line..."}
               />
             </div>
 
@@ -351,6 +373,15 @@ export default function SettingsPage() {
                 onChange={handleChange}
                 rows={4}
                 placeholder="Tulis setiap poin di baris baru..."
+              />
+              <Label htmlFor="global_opsi_penjemputan_en" className="text-xs text-muted-foreground font-normal pt-1">🇬🇧 English (opsional — kosongkan untuk pakai versi Indonesia)</Label>
+              <Textarea
+                id="global_opsi_penjemputan_en"
+                name="global_opsi_penjemputan_en"
+                value={formData.global_opsi_penjemputan_en}
+                onChange={handleChange}
+                rows={4}
+                placeholder={formData.global_opsi_penjemputan || "Write each point on a new line..."}
               />
             </div>
           </CardContent>

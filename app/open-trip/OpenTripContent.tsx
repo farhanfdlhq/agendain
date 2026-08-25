@@ -1,7 +1,7 @@
 "use client";
 
 import PackageCard from "@/components/PackageCard/PackageCard";
-import OpenTripFilter from "@/components/OpenTripFilter/OpenTripFilter";
+import OpenTripFilter, { type DestOption } from "@/components/OpenTripFilter/OpenTripFilter";
 import HeroHeader from "@/components/HeroHeader/HeroHeader";
 import CallToActionBanner from "@/components/CallToActionBanner/CallToActionBanner";
 import Counter from "@/components/Motion/Counter";
@@ -11,7 +11,7 @@ import { parseGoldText } from "@/lib/utils/textFormatting";
 
 interface OpenTripContentProps {
   packages: any[];
-  destList: string[];
+  destList: DestOption[];
   opentripSettings?: any;
 }
 
@@ -27,10 +27,14 @@ export default function OpenTripContent({
     return val;
   }
 
+  // Hero Image dari CMS; fallback ke aset bawaan bila belum pernah diisi.
+  // Gambar tidak dipilih per bahasa, jadi baca langsung tanpa getSetting.
+  const heroImage = opentripSettings.heroImage || '/open_trip_hero.webp'
+
   return (
     <div className={styles.page}>
       <div className={styles.heroContainer}>
-        <div className={styles.heroWrapper}>
+        <div className={styles.heroWrapper} style={{ backgroundImage: `url("${heroImage}")` }}>
           <div className={styles.heroOverlay} />
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>

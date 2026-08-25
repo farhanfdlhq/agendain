@@ -1,118 +1,50 @@
 import { withAuth } from "next-auth/middleware"
-import type { NextRequestWithAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 
-const ROLE_HIERARCHY: Record<string, number> = {
-  super_admin: 3,
-  admin: 2,
-  editor: 1,
-}
-
-// Menolak akses API + mencatat auth.denied ke audit log. Proxy Next 16 default
-// runtime Node.js sehingga Prisma boleh dipakai; import DINAMIS wajib (proxy
-// jalan tiap request) & fire-and-forget agar tak menunda respons. Hanya dipakai
-// untuk penolakan API (bukan redirect /admin → login yang merupakan alur normal).
-function deny(req: NextRequestWithAuth, status: number, code: string) {
-  const token = req.nextauth?.token as
-    | { role?: string; email?: string }
-    | null
-    | undefined
-  void import("@/lib/error-log")
-    .then((m) => {
-      m.reportAuthDenied({
-        route: `${req.method} ${req.nextUrl.pathname}`,
-        status,
-        code,
-        req,
-        actorEmail: token?.email ?? null,
-        detail: { role: token?.role ?? null },
-      })
-    })
-    .catch(() => {})
-  return NextResponse.json(
-    { error: status === 401 ? "Unauthorized" : "Forbidden" },
-    { status },
-  )
-}
-
+/**
+ * Proxy (nama Next 16 untuk middleware) HANYA mengurus AUTENTIKASI.
+ *
+ * Otorisasi — siapa boleh melakukan apa — ditegakkan di satu tempat lain:
+ * `requirePermission()` (lib/rbac.ts) di dalam setiap route handler, plus
+ * gerbang per-halaman di app/admin/layout.tsx. Keduanya membaca matriks
+ * `permissions[]` dari `roles_config` dengan role diambil dari DB.
+ *
+ * Sebelumnya file ini punya mesin otorisasinya SENDIRI: ROLE_HIERARCHY
+ * { super_admin: 3, admin: 2, editor: 1 } yang dibaca dari role di **JWT**.
+ * Dua akibatnya fatal:
+ *   1. Role custom tidak ada di hierarki itu → levelnya 0 → seluruh /admin
+ *      di-redirect ke /admin/login dan setiap tulis ke /api/settings dijawab
+ *      403 walau permission-nya lengkap. Ini sebab "role tidak bisa upload /
+ *      tidak bisa menyimpan CMS" yang dilaporkan dari produksi.
+ *   2. Role di JWT hanya ditulis saat sign-in, jadi perubahan role baru
+ *      berlaku setelah user logout (bisa 30 hari).
+ *
+ * Jangan hidupkan lagi pengecekan role/permission di sini: satu mesin
+ * otorisasi saja, dan mesin itu butuh DB yang tak boleh dibaca tiap request.
+ */
 export default withAuth(
   function proxy(req) {
-    const role = (req.nextauth.token?.role as string) || ''
     const path = req.nextUrl.pathname
-    const method = req.method
 
-    const userLevel = ROLE_HIERARCHY[role] !== undefined ? ROLE_HIERARCHY[role] : 0
-
-    // ==========================================
-    // 1. FRONTEND PROTECTIONS (/admin)
-    // ==========================================
-
-    // Redirect unauthenticated users
-    if (path.startsWith('/admin') && path !== '/admin/login') {
-      if (userLevel < 1) return NextResponse.redirect(new URL('/admin/login', req.url))
-    }
-
-    // Super Admin Only Pages
-    if (path.startsWith('/admin/settings/users') || path.startsWith('/admin/settings/design')) {
-      if (userLevel < 3) return NextResponse.redirect(new URL('/admin', req.url))
-    }
-
-    // Admin Only Pages
-    if (path.startsWith('/admin/booking') || path.startsWith('/admin/inquiries') || path.startsWith('/admin/cms')) {
-      if (userLevel < 2) return NextResponse.redirect(new URL('/admin', req.url))
-    }
-
-    // ==========================================
-    // 2. API PROTECTIONS (/api)
-    // ==========================================
-
-    // API Admin (Users profile/management)
-    if (path.startsWith('/api/admin/users')) {
-      if (userLevel < 3) return deny(req, 403, 'insufficient_role')
-    }
-
-    // API Open Trip (dulunya paket)
-    if (path.startsWith('/api/open-trip')) {
-      if (method === 'GET') return NextResponse.next()
-      if (method === 'DELETE' && userLevel < 2) return deny(req, 403, 'insufficient_role')
-      if (method !== 'GET' && userLevel < 1) return deny(req, 401, 'no_session')
-    }
-
-    // API Destinasi
-    if (path.startsWith('/api/destinasi')) {
-      if (method === 'GET') return NextResponse.next()
-      if (userLevel < 1) return deny(req, 401, 'no_session')
-    }
-
-    // API Booking, Inquiries, Private Trip (Public POST, Protected GET/PUT/DELETE)
-    if (path.startsWith('/api/booking') || path.startsWith('/api/inquiries') || path.startsWith('/api/private-trip')) {
-      if (method === 'POST') return NextResponse.next()
-      if (userLevel < 2) return deny(req, 403, 'insufficient_role')
-    }
-
-    // API Settings
-    if (path.startsWith('/api/settings')) {
-      if (method === 'GET') return NextResponse.next() // allowed for frontend layout
-      if (userLevel < 3) return deny(req, 403, 'insufficient_role')
+    // Belum login → lempar ke halaman login. Halaman /admin adalah client
+    // component, jadi tanpa penjagaan di tepi ini shell-nya sempat tampil
+    // sebelum redirect di layout berjalan.
+    if (path.startsWith("/admin") && path !== "/admin/login" && !req.nextauth.token) {
+      return NextResponse.redirect(new URL("/admin/login", req.url))
     }
   },
   {
     callbacks: {
-      authorized: () => true // Allow middleware to process every matched route
-    }
-  }
+      authorized: () => true, // biarkan proxy di atas yang memutuskan
+    },
+  },
 )
 
+// Hanya halaman admin. Route API TIDAK dicantumkan lagi: masing-masing sudah
+// memanggil requirePermission() yang membalas 401 tanpa sesi dan 403 bila
+// permission-nya kurang, sekaligus mencatatnya sebagai auth.denied di audit
+// log. Mencantumkannya di sini berarti menyalin daftar "method mana yang
+// publik" ke tempat kedua — sumber bug sebelumnya.
 export const config = {
-  matcher: [
-    '/admin/:path*',
-    '/api/open-trip/:path*',
-    '/api/booking/:path*',
-    '/api/inquiries/:path*',
-    '/api/private-trip/:path*',
-    '/api/destinasi/:path*',
-    '/api/admin/:path*',
-    '/api/settings/:path*',
-    '/api/upload/:path*'
-  ]
+  matcher: ["/admin/:path*"],
 }

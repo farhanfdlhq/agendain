@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
-import { PrivateTripStatusUpdateSchema, isAllowedRole, serverError } from '@/lib/security'
+import { requirePermission } from '@/lib/rbac'
+import { PrivateTripStatusUpdateSchema, serverError } from '@/lib/security'
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const gate = await requirePermission(undefined, 'GET /api/inquiries', 'inquiry_view')
+    if (gate.denied) return gate.denied
 
     const privateTrips = await prisma.privateTrip.findMany({
       take: 100,
@@ -25,11 +21,8 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const gate = await requirePermission(request, 'PUT /api/inquiries', 'inquiry_edit')
+    if (gate.denied) return gate.denied
 
     const result = PrivateTripStatusUpdateSchema.safeParse(await request.json())
     if (!result.success) {

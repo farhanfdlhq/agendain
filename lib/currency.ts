@@ -7,6 +7,27 @@ export const formatIDR = (amount: number): string => {
   }).format(amount)
 }
 
+/**
+ * Harga ringkas untuk kartu paket: "18 Juta" / "28,5 Juta" / "18 Million".
+ *
+ * Nilai non-bulat tetap ringkas dengan satu angka desimal — bentuk inilah yang
+ * dipakai kartu beranda sejak awal. Membatasinya ke kelipatan satu juta saja
+ * membuat harga jatuh ke format panjang "Rp 28.500.000", yang melebarkan kolom
+ * grid sampai kartu keluar dari kontainernya. Di bawah 1 juta tetap pakai
+ * format rupiah penuh. Sebelumnya logika ini ditulis dua kali (PackageCard &
+ * DestinationsSection) dan keduanya hardcoded "Juta".
+ */
+export const formatPriceShort = (amount: number, locale: 'id' | 'en' = 'id'): string => {
+  if (amount >= 1000000) {
+    const juta = amount / 1000000
+    const opts = { maximumFractionDigits: 1 }
+    return locale === 'en'
+      ? `${juta.toLocaleString('en-US', opts)} Million`
+      : `${juta.toLocaleString('id-ID', opts)} Juta`
+  }
+  return formatIDR(amount)
+}
+
 export const formatUSD = (amount: number): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',

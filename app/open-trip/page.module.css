@@ -22,7 +22,9 @@
   min-height: 70dvh;
   display: flex;
   align-items: center;
-  background-image: url("/open_trip_hero.webp");
+  /* Gambarnya di-set inline dari opentrip_settings.heroImage (lihat
+     OpenTripContent.tsx). Sebelumnya di-hardcode di sini sehingga field
+     Hero Image di CMS tersimpan tapi tidak pernah tampil. */
   background-size: cover;
   background-position: center;
 }

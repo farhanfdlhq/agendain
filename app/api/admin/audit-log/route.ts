@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { requirePermission } from '@/lib/rbac'
 
 export async function GET(req: Request) {
-  const session = await getServerSession(authOptions)
-  const role = (session?.user as any)?.role
-  if (role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  const gate = await requirePermission(req, 'GET /api/admin/audit-log', 'users_manage')
+  if (gate.denied) return gate.denied
 
   const { searchParams } = new URL(req.url)
   const page = Math.max(1, Number(searchParams.get('page')) || 1)

@@ -2,13 +2,16 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslation } from '@/lib/i18n/useTranslation'
+import { pickLocalized } from '@/lib/i18n/localize'
 import styles from './OpenTripFilter.module.css'
 
-export default function OpenTripFilter({ destList = [] }: { destList?: string[] }) {
+export type DestOption = { nama: string; namaEn?: string | null }
+
+export default function OpenTripFilter({ destList = [] }: { destList?: DestOption[] }) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { t } = useTranslation()
-  
+  const { t, locale } = useTranslation()
+
   const destinasi = searchParams.get('destinasi') || ''
   const durasi = searchParams.get('durasi') || ''
   const urutkan = searchParams.get('urutkan') || 'terbaru'
@@ -23,20 +26,23 @@ export default function OpenTripFilter({ destList = [] }: { destList?: string[] 
     router.push(`/open-trip?${params.toString()}`)
   }
 
-  const destinasiOptions = destList.length > 0 ? destList : ['Italia', 'Swiss', 'Prancis', 'Inggris', 'Belanda']
+  const destinasiOptions: DestOption[] = destList.length > 0
+    ? destList
+    : [{ nama: 'Italia' }, { nama: 'Swiss' }, { nama: 'Prancis' }, { nama: 'Inggris' }, { nama: 'Belanda' }]
 
   return (
     <div className={styles.filterBar}>
       <div className={styles.filterItem}>
         <span className={styles.filterLabel}>{t('filter.dest')}</span>
-        <select 
-          className={styles.select} 
+        <select
+          className={styles.select}
           value={destinasi}
           onChange={(e) => handleFilterChange('destinasi', e.target.value)}
         >
           <option value="">{t('filter.allDest')}</option>
+          {/* Label ikut bahasa, tapi `value` wajib nama Indonesia agar query filter tetap cocok. */}
           {destinasiOptions.map(d => (
-            <option key={d} value={d}>{d}</option>
+            <option key={d.nama} value={d.nama}>{pickLocalized(d, 'nama', locale) || d.nama}</option>
           ))}
         </select>
       </div>

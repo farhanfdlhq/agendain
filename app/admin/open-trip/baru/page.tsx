@@ -22,23 +22,41 @@ export default function TambahPaketPage() {
 
   const [formData, setFormData] = useState({
     nama: "",
+    namaEn: "",
     slug: "",
     destinasiId: "",
     durasi: 1,
     hargaString: "",
     deskripsi: "",
+    deskripsiEn: "",
     fotoUrls: [] as string[],
     status: "draft",
     label: "",
     fasilitasText: "",
+    fasilitasTextEn: "",
     termasukText: "",
+    termasukTextEn: "",
     tidakTermasukText: "",
+    tidakTermasukTextEn: "",
     informasiPentingText: "",
+    informasiPentingTextEn: "",
     kebijakanPembatalanText: "",
+    kebijakanPembatalanTextEn: "",
     fileDokumenList: [] as { name: string, url: string }[],
     opsiPenjemputanText: "",
-    itinerary: [{ judul: "", deskripsi: "" }] as { judul: string, deskripsi: string }[]
+    opsiPenjemputanTextEn: "",
+    itinerary: [{ judul: "", deskripsi: "", judulEn: "", deskripsiEn: "" }] as { judul: string, deskripsi: string, judulEn?: string, deskripsiEn?: string }[]
   })
+
+  // Tab bahasa: field bahasa-netral (foto, harga, durasi, slug, dokumen, status)
+  // hanya muncul di tab ID karena nilainya dipakai bersama kedua bahasa.
+  const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
+  const tf = (name: string) => (activeTab === 'en' ? `${name}En` : name)
+  const fv = (name: string) => ((formData as any)[tf(name)] ?? '') as string
+  // Di tab EN, nilai Indonesia dipasang sebagai placeholder: itulah yang akan
+  // dipakai halaman publik bila field EN dibiarkan kosong.
+  const ph = (name: string, idPlaceholder: string) =>
+    activeTab === 'en' ? ((formData as any)[name] || idPlaceholder) : idPlaceholder
 
   useEffect(() => {
     fetchDestinations()
@@ -149,43 +167,67 @@ export default function TambahPaketPage() {
 
     try {
       const hargaNum = Number(formData.hargaString.replace(/\./g, ""));
-      const fasilitas = formData.fasilitasText.split('\n').filter(s => s.trim());
-      const termasuk = formData.termasukText.split('\n').filter(s => s.trim());
-      const tidakTermasuk = formData.tidakTermasukText.split('\n').filter(s => s.trim());
-      const informasiPenting = formData.informasiPentingText ? formData.informasiPentingText.split('\n').filter(s => s.trim()) : null;
-      const kebijakanPembatalan = formData.kebijakanPembatalanText ? formData.kebijakanPembatalanText.split('\n').filter(s => s.trim()) : null;
+      const lines = (s: string) => s.split('\n').filter(v => v.trim());
+      // Field EN kosong dikirim sebagai null agar halaman publik jatuh ke versi Indonesia.
+      const optionalLines = (s: string) => (s.trim() ? lines(s) : null);
+
+      const fasilitas = lines(formData.fasilitasText);
+      const termasuk = lines(formData.termasukText);
+      const tidakTermasuk = lines(formData.tidakTermasukText);
+      const informasiPenting = optionalLines(formData.informasiPentingText);
+      const kebijakanPembatalan = optionalLines(formData.kebijakanPembatalanText);
       const fileDokumen = formData.fileDokumenList.length > 0 ? formData.fileDokumenList : null;
-      const opsiPenjemputan = formData.opsiPenjemputanText ? formData.opsiPenjemputanText.split('\n').filter(s => s.trim()) : null;
-      
+      const opsiPenjemputan = optionalLines(formData.opsiPenjemputanText);
+
       const itinerary = formData.itinerary.map((it, idx) => ({
         hari: idx + 1,
         judul: it.judul || `Hari ${idx + 1}`,
         deskripsi: it.deskripsi
       }));
 
+      // Itinerary EN memakai jumlah baris yang sama dengan versi Indonesia
+      // (satu array di form), jadi kedua bahasa tidak bisa berbeda jumlah hari.
+      const hasItineraryEn = formData.itinerary.some(it => (it.judulEn || '').trim() || (it.deskripsiEn || '').trim())
+      const itineraryEn = hasItineraryEn
+        ? formData.itinerary.map((it, idx) => ({
+            hari: idx + 1,
+            judul: it.judulEn?.trim() || it.judul || `Day ${idx + 1}`,
+            deskripsi: it.deskripsiEn?.trim() || it.deskripsi
+          }))
+        : null;
+
       const payload = {
         nama: formData.nama,
+        namaEn: formData.namaEn || null,
         slug: formData.slug,
         destinasiId: formData.destinasiId,
         durasi: formData.durasi,
         harga: hargaNum,
         deskripsi: formData.deskripsi,
+        deskripsiEn: formData.deskripsiEn || null,
         status: formData.status,
         label: formData.label || null,
-        foto: { 
-          medium: formData.fotoUrls[0] || "", 
-          large: formData.fotoUrls[0] || "", 
+        foto: {
+          medium: formData.fotoUrls[0] || "",
+          large: formData.fotoUrls[0] || "",
           thumb: formData.fotoUrls[0] || "",
-          gallery: formData.fotoUrls 
+          gallery: formData.fotoUrls
         },
         itinerary,
+        itineraryEn,
         fasilitas,
+        fasilitasEn: optionalLines(formData.fasilitasTextEn),
         termasuk,
+        termasukEn: optionalLines(formData.termasukTextEn),
         tidakTermasuk,
+        tidakTermasukEn: optionalLines(formData.tidakTermasukTextEn),
         informasiPenting,
+        informasiPentingEn: optionalLines(formData.informasiPentingTextEn),
         kebijakanPembatalan,
+        kebijakanPembatalanEn: optionalLines(formData.kebijakanPembatalanTextEn),
         fileDokumen,
-        opsiPenjemputan
+        opsiPenjemputan,
+        opsiPenjemputanEn: optionalLines(formData.opsiPenjemputanTextEn)
       }
 
       const res = await fetch("/api/open-trip", {
@@ -230,6 +272,32 @@ export default function TambahPaketPage() {
         </Button>
       </div>
 
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant={activeTab === 'id' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('id')}
+          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
+        >
+          <img src="/flags/id.png" alt="ID" width={20} height={15} className="rounded-xs object-cover" />
+          Indonesia
+        </Button>
+        <Button
+          type="button"
+          variant={activeTab === 'en' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('en')}
+          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
+        >
+          <img src="/flags/en.png" alt="EN" width={20} height={15} className="rounded-xs object-cover" />
+          English
+        </Button>
+      </div>
+      {activeTab === 'en' && (
+        <p className="text-xs text-muted-foreground -mt-3">
+          Field yang dibiarkan kosong otomatis memakai teks Indonesia (ditampilkan sebagai placeholder). Gambar, harga, durasi, dan dokumen dipakai bersama kedua bahasa — atur di tab Indonesia.
+        </p>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <Card>
@@ -239,38 +307,40 @@ export default function TambahPaketPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="nama">Nama Paket</Label>
-                <Input 
+                <Input
                   id="nama"
-                  name="nama" 
-                  placeholder="Contoh: Romantic Paris 5 Days"
-                  value={formData.nama}
+                  name={tf('nama')}
+                  placeholder={ph('nama', 'Contoh: Romantic Paris 5 Days')}
+                  value={fv('nama')}
                   onChange={handleChange}
-                  required 
+                  required
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="slug">Slug (URL) <span className="text-muted-foreground font-normal ml-1">Opsional</span></Label>
-                <Input 
-                  id="slug"
-                  name="slug" 
-                  placeholder="romantic-paris-5-days"
-                  value={formData.slug}
-                  onChange={handleChange}
-                />
-                <p className="text-xs text-muted-foreground">Biarkan kosong untuk generate otomatis dari nama.</p>
-              </div>
+              {activeTab === 'id' && (
+                <div className="space-y-2">
+                  <Label htmlFor="slug">Slug (URL) <span className="text-muted-foreground font-normal ml-1">Opsional</span></Label>
+                  <Input
+                    id="slug"
+                    name="slug"
+                    placeholder="romantic-paris-5-days"
+                    value={formData.slug}
+                    onChange={handleChange}
+                  />
+                  <p className="text-xs text-muted-foreground">Biarkan kosong untuk generate otomatis dari nama.</p>
+                </div>
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="deskripsi">Deskripsi Paket</Label>
-                <Textarea 
+                <Textarea
                   id="deskripsi"
-                  name="deskripsi" 
-                  placeholder="Tuliskan deskripsi menarik tentang perjalanan ini..."
+                  name={tf('deskripsi')}
+                  placeholder={ph('deskripsi', 'Tuliskan deskripsi menarik tentang perjalanan ini...')}
                   rows={6}
-                  value={formData.deskripsi}
+                  value={fv('deskripsi')}
                   onChange={handleChange}
-                  required 
+                  required
                 />
               </div>
             </CardContent>
@@ -283,12 +353,12 @@ export default function TambahPaketPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="fasilitasText">Fasilitas Utama</Label>
-                <Textarea 
+                <Textarea
                   id="fasilitasText"
-                  name="fasilitasText" 
-                  placeholder="Hotel Bintang 4&#10;Transportasi Bus Private&#10;Guide Berbahasa Indonesia"
+                  name={tf('fasilitasText')}
+                  placeholder={ph('fasilitasText', 'Hotel Bintang 4\nTransportasi Bus Private\nGuide Berbahasa Indonesia')}
                   rows={4}
-                  value={formData.fasilitasText}
+                  value={fv('fasilitasText')}
                   onChange={handleChange}
                 />
                 <p className="text-xs text-muted-foreground">Tulis setiap fasilitas di baris baru (Enter).</p>
@@ -297,24 +367,24 @@ export default function TambahPaketPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="termasukText">Termasuk (Included)</Label>
-                  <Textarea 
+                  <Textarea
                     id="termasukText"
-                    name="termasukText" 
-                    placeholder="Tiket Pesawat PP&#10;Visa Schengen&#10;Makan 3x Sehari"
+                    name={tf('termasukText')}
+                    placeholder={ph('termasukText', 'Tiket Pesawat PP\nVisa Schengen\nMakan 3x Sehari')}
                     rows={4}
-                    value={formData.termasukText}
+                    value={fv('termasukText')}
                     onChange={handleChange}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="tidakTermasukText">Tidak Termasuk (Excluded)</Label>
-                  <Textarea 
+                  <Textarea
                     id="tidakTermasukText"
-                    name="tidakTermasukText" 
-                    placeholder="Asuransi Perjalanan&#10;Pengeluaran Pribadi&#10;Tipping"
+                    name={tf('tidakTermasukText')}
+                    placeholder={ph('tidakTermasukText', 'Asuransi Perjalanan\nPengeluaran Pribadi\nTipping')}
                     rows={4}
-                    value={formData.tidakTermasukText}
+                    value={fv('tidakTermasukText')}
                     onChange={handleChange}
                   />
                 </div>
@@ -332,9 +402,9 @@ export default function TambahPaketPage() {
                   <div className="flex justify-between items-center mb-4">
                     <h4 className="font-semibold text-sm">Hari {idx + 1}</h4>
                     {formData.itinerary.length > 1 && (
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setFormData(prev => ({ ...prev, itinerary: prev.itinerary.filter((_, i) => i !== idx) }))}
                         className="h-8 px-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
                       >
@@ -345,26 +415,26 @@ export default function TambahPaketPage() {
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <Label>Judul Tempat/Aktivitas</Label>
-                      <Input 
-                        type="text" 
-                        value={it.judul} 
-                        placeholder="Contoh: Sydney to Snowy Mountains" 
+                      <Input
+                        type="text"
+                        value={(activeTab === 'en' ? it.judulEn : it.judul) || ''}
+                        placeholder={activeTab === 'en' ? (it.judul || 'Contoh: Sydney to Snowy Mountains') : 'Contoh: Sydney to Snowy Mountains'}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           const newItinerary = [...formData.itinerary];
-                          newItinerary[idx].judul = e.target.value;
+                          newItinerary[idx] = { ...newItinerary[idx], [activeTab === 'en' ? 'judulEn' : 'judul']: e.target.value };
                           setFormData(prev => ({ ...prev, itinerary: newItinerary }));
-                        }} 
+                        }}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Deskripsi</Label>
-                      <Textarea 
-                        rows={3} 
-                        value={it.deskripsi} 
-                        placeholder="Deskripsi perjalanan..." 
+                      <Textarea
+                        rows={3}
+                        value={(activeTab === 'en' ? it.deskripsiEn : it.deskripsi) || ''}
+                        placeholder={activeTab === 'en' ? (it.deskripsi || 'Deskripsi perjalanan...') : 'Deskripsi perjalanan...'}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                           const newItinerary = [...formData.itinerary];
-                          newItinerary[idx].deskripsi = e.target.value;
+                          newItinerary[idx] = { ...newItinerary[idx], [activeTab === 'en' ? 'deskripsiEn' : 'deskripsi']: e.target.value };
                           setFormData(prev => ({ ...prev, itinerary: newItinerary }));
                         }}
                       />
@@ -372,10 +442,10 @@ export default function TambahPaketPage() {
                   </div>
                 </div>
               ))}
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full border-dashed"
-                onClick={() => setFormData(prev => ({ ...prev, itinerary: [...prev.itinerary, { judul: '', deskripsi: '' }] }))}
+                onClick={() => setFormData(prev => ({ ...prev, itinerary: [...prev.itinerary, { judul: '', deskripsi: '', judulEn: '', deskripsiEn: '' }] }))}
               >
                 <Plus className="mr-2 h-4 w-4" /> Tambah Hari
               </Button>
@@ -390,47 +460,48 @@ export default function TambahPaketPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="informasiPentingText">Informasi Penting</Label>
-                <Textarea 
+                <Textarea
                   id="informasiPentingText"
-                  name="informasiPentingText" 
-                  placeholder="Tulis poin-poin di baris baru..."
+                  name={tf('informasiPentingText')}
+                  placeholder={ph('informasiPentingText', 'Tulis poin-poin di baris baru...')}
                   rows={4}
-                  value={formData.informasiPentingText}
+                  value={fv('informasiPentingText')}
                   onChange={handleChange}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="kebijakanPembatalanText">Kebijakan Pembatalan</Label>
-                <Textarea 
+                <Textarea
                   id="kebijakanPembatalanText"
-                  name="kebijakanPembatalanText" 
-                  placeholder="Tulis poin-poin di baris baru..."
+                  name={tf('kebijakanPembatalanText')}
+                  placeholder={ph('kebijakanPembatalanText', 'Tulis poin-poin di baris baru...')}
                   rows={4}
-                  value={formData.kebijakanPembatalanText}
+                  value={fv('kebijakanPembatalanText')}
                   onChange={handleChange}
                 />
               </div>
 
+              {activeTab === 'id' && (
               <div className="space-y-2">
                 <Label>File & Dokumen</Label>
                 <p className="text-xs text-muted-foreground mb-2">Format didukung: PDF, DOC. Maks: 10MB. Maks jumlah: 3.</p>
                 <div className="space-y-2">
-                  <Input 
-                    type="file" 
+                  <Input
+                    type="file"
                     accept=".pdf,.doc,.docx"
                     multiple
                     onChange={handleDocUpload}
                     className="hidden"
                     id="upload-paket-doc"
                   />
-                  <Label 
-                    htmlFor="upload-paket-doc" 
+                  <Label
+                    htmlFor="upload-paket-doc"
                     className="flex items-center justify-center w-full py-4 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors"
                   >
                     {uploadingDoc ? 'Mengupload...' : '+ Klik untuk Upload Dokumen'}
                   </Label>
-                  
+
                   {formData.fileDokumenList.length > 0 && (
                     <div className="space-y-2 mt-4">
                       {formData.fileDokumenList.map((doc, idx) => (
@@ -445,36 +516,40 @@ export default function TambahPaketPage() {
                   )}
                 </div>
               </div>
+              )}
 
               <div className="space-y-2 mt-4">
                 <Label htmlFor="opsiPenjemputanText">Opsi Penjemputan</Label>
-                <Textarea 
+                <Textarea
                   id="opsiPenjemputanText"
-                  name="opsiPenjemputanText" 
-                  placeholder="Tulis poin-poin di baris baru..."
+                  name={tf('opsiPenjemputanText')}
+                  placeholder={ph('opsiPenjemputanText', 'Tulis poin-poin di baris baru...')}
                   rows={4}
-                  value={formData.opsiPenjemputanText}
+                  value={fv('opsiPenjemputanText')}
                   onChange={handleChange}
                 />
               </div>
             </CardContent>
           </Card>
 
+          {activeTab === 'id' && (
           <Card>
             <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Media & Gambar</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <MediaPickerMultiple 
+                <MediaPickerMultiple
                   values={formData.fotoUrls}
                   onChange={(urls) => setFormData(prev => ({ ...prev, fotoUrls: urls }))}
                 />
               </div>
             </CardContent>
           </Card>
+          )}
         </div>
 
+        {activeTab === 'id' && (
         <div className="space-y-6">
           <Card className="sticky top-24">
             <CardHeader className="border-b-2 border-border pb-5 mb-5">
@@ -563,6 +638,7 @@ export default function TambahPaketPage() {
             </CardContent>
           </Card>
         </div>
+        )}
       </div>
     </div>
   )

@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { requirePermission } from '@/lib/rbac'
 import { OpenTripPatchSchema, OpenTripSchema } from "@/lib/security"
+import { slugifyNama, toOpenTripData } from "@/lib/open-trip-fields"
 
 export async function GET(
   request: Request,
@@ -30,11 +30,8 @@ export async function PATCH(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !['super_admin', 'admin', 'editor'].includes(role)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const gate = await requirePermission(request, 'PATCH /api/open-trip/[slug]', 'paket_edit')
+    if (gate.denied) return gate.denied
 
     const { slug } = await params
     const result = OpenTripPatchSchema.safeParse(await request.json())
@@ -63,11 +60,8 @@ export async function PUT(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !['super_admin', 'admin', 'editor'].includes(role)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const gate = await requirePermission(request, 'PUT /api/open-trip/[slug]', 'paket_edit')
+    if (gate.denied) return gate.denied
 
     const { slug } = await params
     const result = OpenTripSchema.safeParse(await request.json())
@@ -75,28 +69,17 @@ export async function PUT(
       return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
     }
     const data = result.data
-    
+
     if (!data.slug && data.nama) {
-      data.slug = data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+      data.slug = slugifyNama(data.nama)
     }
 
     const updatedPackage = await prisma.openTrip.update({
       where: { slug },
       data: {
-        nama: data.nama,
+        ...toOpenTripData(data, 'update'),
         slug: data.slug,
-        deskripsi: data.deskripsi,
-        harga: Number(data.harga),
-        durasi: Number(data.durasi),
-        destinasiId: Number(data.destinasiId),
-        foto: data.foto,
-        itinerary: data.itinerary,
-        fasilitas: data.fasilitas,
-        termasuk: data.termasuk,
-        tidakTermasuk: data.tidakTermasuk,
-        status: data.status,
-        label: data.label,
-      }
+      } as any
     })
 
     return NextResponse.json(updatedPackage)
@@ -111,10 +94,8 @@ export async function DELETE(
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    const role = (session.user as any)?.role
-    if (role !== 'admin' && role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const gate = await requirePermission(request, 'DELETE /api/open-trip/[slug]', 'paket_delete')
+    if (gate.denied) return gate.denied
 
     const { slug } = await params
     await prisma.openTrip.delete({

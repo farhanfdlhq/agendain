@@ -1,16 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { isAllowedRole, serverError } from '@/lib/security'
+import { serverError } from '@/lib/security'
+import { requirePermission } from '@/lib/rbac'
+import { FONT_CHOICES, DEFAULT_HEADING_FONT, DEFAULT_BODY_FONT } from '@/lib/fonts'
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !isAllowedRole(role, ['super_admin'])) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const gate = await requirePermission(req, 'POST /api/settings/theme', 'settings_manage')
+    if (gate.denied) return gate.denied
 
     const data = await req.json()
     
@@ -30,8 +27,8 @@ export async function POST(req: Request) {
       navbarHover: data.navbarHover || '#FFC704',
       footerBackground: data.footerBackground || '#054569',
       footerText: data.footerText || '#ffffff',
-      headingFont: data.headingFont || 'Montserrat',
-      bodyFont: data.bodyFont || 'Montserrat',
+      headingFont: data.headingFont || DEFAULT_HEADING_FONT,
+      bodyFont: data.bodyFont || DEFAULT_BODY_FONT,
       borderRadius: data.borderRadius || '0.5rem',
     }
 
@@ -51,10 +48,14 @@ export async function POST(req: Request) {
       }
     }
 
-    // Validate Font Name (XSS Prevention)
-    const fontRegex = /^[a-zA-Z0-9\s]+$/
-    if (!fontRegex.test(theme.headingFont) || !fontRegex.test(theme.bodyFont)) {
-      return NextResponse.json({ error: 'Nama font tidak valid' }, { status: 400 })
+    // Font hanya boleh salah satu yang benar-benar dimuat app/layout.tsx.
+    // Selain mencegah XSS lewat tag <style>, ini juga menolak nama font yang
+    // tidak akan pernah tampil karena tidak ada loader-nya.
+    if (!FONT_CHOICES.includes(theme.headingFont) || !FONT_CHOICES.includes(theme.bodyFont)) {
+      return NextResponse.json(
+        { error: `Font tidak dikenal. Pilihan yang tersedia: ${FONT_CHOICES.join(', ')}` },
+        { status: 400 },
+      )
     }
 
     // Upsert to Setting table
@@ -94,8 +95,8 @@ export async function GET() {
         navbarHover: '#FFC704',
         footerBackground: '#054569',
         footerText: '#ffffff',
-        headingFont: 'Montserrat',
-        bodyFont: 'Montserrat',
+        headingFont: DEFAULT_HEADING_FONT,
+        bodyFont: DEFAULT_BODY_FONT,
         borderRadius: '0.5rem',
       })
     }

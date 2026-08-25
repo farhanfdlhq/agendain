@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { getRolesConfig, requirePermission } from "@/lib/rbac"
 import bcrypt from 'bcryptjs'
 import { AdminUserUpdateSchema, getClientIp, serverError } from "@/lib/security"
 import { logAudit } from "@/lib/audit"
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-  const role = (session?.user as any)?.role
-  if (role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  const gate = await requirePermission(req, 'PUT /api/admin/users/[id]', 'users_manage')
+  if (gate.denied) return gate.denied
 
   try {
     const { id } = await params
@@ -20,6 +18,13 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     const data = result.data
     const targetId = Number(id)
+
+    // Sama dengan POST: role custom boleh, id yang tidak ada di roles_config
+    // tidak — user tanpa entri role akan kehilangan seluruh permission.
+    const roles = await getRolesConfig()
+    if (!roles.some(r => r.id === data.role)) {
+      return NextResponse.json({ error: `Role "${data.role}" tidak terdaftar.` }, { status: 400 })
+    }
 
     // Super Admin dikunci: role-nya tidak boleh diturunkan lewat API
     // (selaras dengan penguncian hardcode di UI — lihat project/review.md).
@@ -58,8 +63,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     await logAudit({
       action: "user.update",
-      actorId: Number((session?.user as any)?.id),
-      actorEmail: (session?.user as any)?.email,
+      actorId: gate.actor.userId,
+      actorEmail: gate.actor.email,
       targetType: "AdminUser",
       targetId: targetId,
       detail: { roleFrom: target.role, roleTo: data.role, emailChanged: !!data.email },
@@ -74,15 +79,16 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await getServerSession(authOptions)
-  const role = (session?.user as any)?.role
-  if (role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  const gate = await requirePermission(req, 'DELETE /api/admin/users/[id]', 'users_manage')
+  if (gate.denied) return gate.denied
 
   try {
     const { id } = await params
 
-    // Cegah hapus diri sendiri
-    if ((session?.user as any)?.id === id) {
+    // Cegah hapus diri sendiri. Dibandingkan sebagai angka: id dari params
+    // selalu string, sedangkan id sesi bertipe angka — perbandingan `===`
+    // sebelumnya tidak pernah bernilai true sehingga penjagaan ini mati.
+    if (gate.actor.userId !== null && gate.actor.userId === Number(id)) {
       return NextResponse.json({ error: 'Tidak dapat menghapus akun sendiri' }, { status: 400 })
     }
 
@@ -102,8 +108,8 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
     await logAudit({
       action: "user.delete",
-      actorId: Number((session?.user as any)?.id),
-      actorEmail: (session?.user as any)?.email,
+      actorId: gate.actor.userId,
+      actorEmail: gate.actor.email,
       targetType: "AdminUser",
       targetId: id,
       detail: { role: target.role },

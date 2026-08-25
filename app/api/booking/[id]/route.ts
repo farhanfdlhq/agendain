@@ -1,19 +1,15 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
-import { BookingStatusSchema, isAllowedRole } from '@/lib/security'
+import { requirePermission } from '@/lib/rbac'
+import { BookingStatusSchema } from '@/lib/security'
 
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const gate = await requirePermission(request, 'PATCH /api/booking/[id]', 'booking_edit')
+    if (gate.denied) return gate.denied
 
     const { id } = await params
     const result = BookingStatusSchema.safeParse(await request.json())
@@ -46,11 +42,8 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const gate = await requirePermission(request, 'DELETE /api/booking/[id]', 'booking_delete')
+    if (gate.denied) return gate.denied
 
     const { id } = await params
     const bookingId = parseInt(id)

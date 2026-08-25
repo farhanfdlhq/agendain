@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { PageSizeSelect } from "@/components/ui/page-size-select"
 import { TablePagination } from "@/components/ui/table-pagination"
+import { hasPermission } from "@/lib/permissions"
 
 type AuditLog = {
   id: number
@@ -93,11 +94,26 @@ export default function AuditLogPage() {
   }, [])
 
   useEffect(() => {
-    if (session && (session.user as any)?.role !== 'super_admin') {
-      router.push('/admin')
-      return
-    }
-    if (session) fetchData(1, 10)
+    if (!session) return
+    let cancelled = false
+
+    // Berbasis permission, bukan id role — lihat lib/permissions.ts.
+    ;(async () => {
+      try {
+        const res = await fetch('/api/admin/me')
+        const me = res.ok ? await res.json() : null
+        if (cancelled) return
+        if (!hasPermission(me, 'users_manage')) {
+          router.push('/admin')
+          return
+        }
+        fetchData(1, 10)
+      } catch {
+        if (!cancelled) router.push('/admin')
+      }
+    })()
+
+    return () => { cancelled = true }
   }, [session, router, fetchData])
 
   const formatDateTime = (dateString: string) => {

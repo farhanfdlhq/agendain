@@ -13,6 +13,7 @@ import AirplaneLoader from "@/components/ui/airplane-loader";
 import { MediaPicker } from "@/components/ui/media-picker";
 import { FontWeightPicker } from "@/components/ui/font-weight-picker";
 import DynamicIcon, { AVAILABLE_ICONS } from "@/components/DynamicIcon/DynamicIcon";
+import { foldLegacyRepeaters, PRIVATE_TRIP_REPEATERS } from "@/lib/i18n/localize";
 
 function BadgeInput({
   tags,
@@ -126,13 +127,11 @@ export default function PrivateTripCMSPage() {
     whySubtitle_en: "",
     whySubtitleWeight: "500",
     whyItems: [],
-    whyItems_en: [],
     workflowTitle: "",
     workflowTitle_en: "",
     workflowSubtitle: "",
     workflowSubtitle_en: "",
     workflowSteps: [],
-    workflowSteps_en: [],
     formTitle: "",
     formTitle_en: "",
     formSubtitle: "",
@@ -162,6 +161,10 @@ export default function PrivateTripCMSPage() {
       .then((res) => res.json())
       .then((res) => {
         if (!res.error) {
+          // Data lama menyimpan whyItems_en / workflowSteps_en sebagai array
+          // terpisah. Teksnya dilipat ke array utama lalu array _en dibuang,
+          // sehingga simpanan berikutnya memakai bentuk baru (migrasi lazy).
+          foldLegacyRepeaters(res, PRIVATE_TRIP_REPEATERS);
           setData((prev: any) => ({ ...prev, ...res }));
         }
         setFetching(false);
@@ -368,30 +371,38 @@ export default function PrivateTripCMSPage() {
     template: any,
     fields: { key: string; label: string; isTextArea?: boolean; isIconPicker?: boolean }[],
   ) => {
-    const activeFieldName = activeTab === "en" ? `${fieldKey}_en` : fieldKey;
-    const items = data[activeFieldName] || [];
+    // Satu array untuk kedua bahasa. Ikon dan field bahasa-netral lain hidup di
+    // kunci polos; hanya teks yang punya sibling `_en`. Lihat lib/i18n/localize.
+    const items = data[fieldKey] || [];
+    const textKey = (name: string) => (activeTab === "en" ? `${name}_en` : name);
 
     const handleAdd = () => {
       setData((prev: any) => ({
         ...prev,
-        [activeFieldName]: [...items, { ...template }],
+        [fieldKey]: [...items, { ...template }],
       }));
     };
 
     const handleRemove = (index: number) => {
       const newItems = [...items];
       newItems.splice(index, 1);
-      setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
+      setData((prev: any) => ({ ...prev, [fieldKey]: newItems }));
     };
 
     const handleChange = (index: number, key: string, val: string) => {
       const newItems = [...items];
       newItems[index] = { ...newItems[index], [key]: val };
-      setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
+      setData((prev: any) => ({ ...prev, [fieldKey]: newItems }));
     };
 
     return (
       <div className="space-y-4">
+        {activeTab === "en" && (
+          <p className="text-[11px] text-muted-foreground italic">
+            Ikon dipakai bersama oleh kedua bahasa. Teks yang dibiarkan kosong
+            otomatis memakai versi Indonesia.
+          </p>
+        )}
         {items.length === 0 && (
           <div className="text-sm text-muted-foreground italic p-4 text-center border border-dashed rounded-xl">
             Belum ada item.
@@ -445,18 +456,20 @@ export default function PrivateTripCMSPage() {
                       </div>
                     ) : f.isTextArea ? (
                       <Textarea
-                        value={item[f.key] || ""}
+                        value={item[textKey(f.key)] || ""}
                         onChange={(e) =>
-                          handleChange(index, f.key, e.target.value)
+                          handleChange(index, textKey(f.key), e.target.value)
                         }
+                        placeholder={activeTab === "en" ? item[f.key] || "" : undefined}
                         rows={3}
                       />
                     ) : (
                       <Input
-                        value={item[f.key] || ""}
+                        value={item[textKey(f.key)] || ""}
                         onChange={(e) =>
-                          handleChange(index, f.key, e.target.value)
+                          handleChange(index, textKey(f.key), e.target.value)
                         }
+                        placeholder={activeTab === "en" ? item[f.key] || "" : undefined}
                       />
                     )}
                   </div>

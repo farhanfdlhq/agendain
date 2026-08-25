@@ -22,11 +22,25 @@ export const PasswordSchema = z
   .regex(/[0-9]/, "Password harus memiliki angka")
   .regex(/[^a-zA-Z0-9]/, "Password harus memiliki simbol");
 
+/**
+ * Id role pada payload user. Sengaja BUKAN enum tiga id bawaan: role custom
+ * yang dibuat di halaman Roles & Permissions harus bisa ditetapkan ke user,
+ * dan skema ini tidak bisa menyentuh DB. Bentuknya divalidasi di sini, lalu
+ * keberadaan id-nya diperiksa terhadap roles_config di dalam route
+ * (app/api/admin/users/**) — sama dengan aturan id di POST /api/admin/roles.
+ */
+export const RoleIdSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(50)
+  .regex(/^[a-z0-9_]+$/, "Id role hanya boleh huruf kecil, angka, dan underscore");
+
 export const AdminUserSchema = z.object({
   nama: z.string().min(2).max(100).trim(),
   email: z.string().email().max(190).trim().toLowerCase(),
   password: PasswordSchema,
-  role: z.enum(ADMIN_ROLES),
+  role: RoleIdSchema,
 });
 
 export const AdminUserUpdateSchema = AdminUserSchema.extend({
@@ -48,8 +62,10 @@ export const ProfileUpdateSchema = z
 
 export const OpenTripSchema = z.object({
   nama: z.string().min(1, "Nama paket harus diisi").max(160),
+  namaEn: z.string().max(160).nullable().optional(),
   slug: z.string().max(180).optional(),
   deskripsi: z.string().min(1, "Deskripsi harus diisi").max(20000),
+  deskripsiEn: z.string().max(20000).nullable().optional(),
   harga: z.coerce.number().positive("Harga harus lebih dari 0"),
   durasi: z.coerce.number().positive("Durasi harus lebih dari 0"),
   destinasiId: z.coerce.number().positive(),
@@ -60,6 +76,20 @@ export const OpenTripSchema = z.object({
   fasilitas: z.any().optional(),
   termasuk: z.any().optional(),
   tidakTermasuk: z.any().optional(),
+  // Empat field ini sebelumnya tidak pernah divalidasi maupun ditulis ke DB
+  // walau form admin sudah mengirimkannya.
+  informasiPenting: z.any().optional(),
+  kebijakanPembatalan: z.any().optional(),
+  fileDokumen: z.any().optional(),
+  opsiPenjemputan: z.any().optional(),
+  // Versi Inggris; dikosongkan berarti jatuh ke versi Indonesia saat dirender.
+  itineraryEn: z.any().optional(),
+  fasilitasEn: z.any().optional(),
+  termasukEn: z.any().optional(),
+  tidakTermasukEn: z.any().optional(),
+  informasiPentingEn: z.any().optional(),
+  kebijakanPembatalanEn: z.any().optional(),
+  opsiPenjemputanEn: z.any().optional(),
   status: z.enum(["draft", "published", "archived"]).optional().default("draft"),
   label: z.string().max(80).nullable().optional(),
 });
@@ -71,9 +101,11 @@ export const OpenTripPatchSchema = z.object({
 
 export const DestinasiSchema = z.object({
   nama: z.string().min(1, "Nama destinasi harus diisi").max(160),
+  namaEn: z.string().max(160).nullable().optional(),
   slug: z.string().max(180).optional(),
   negara: z.string().min(1, "Negara harus diisi").max(120),
   deskripsi: z.string().min(1, "Deskripsi harus diisi").max(20000),
+  deskripsiEn: z.string().max(20000).nullable().optional(),
   foto: z.string().min(1, "Foto harus diisi").max(500),
   bahasa: z.string().max(200).optional().nullable(),
   matauang: z.string().max(80).optional().nullable(),

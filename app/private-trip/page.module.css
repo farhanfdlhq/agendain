@@ -11,7 +11,7 @@
   justify-content: center;
   text-align: center;
   padding: var(--space-xl) var(--space-lg);
-  margin-top: -72px;
+  margin-top: calc(-1 * var(--navbar-offset, 80px));
 }
 
 .heroImage {
@@ -31,7 +31,8 @@
   z-index: 2;
   color: white;
   max-width: 800px;
-  margin-top: 72px;
+  /* Mengembalikan isi ke bawah navbar setelah .hero ditarik naik. */
+  margin-top: var(--navbar-offset, 80px);
 }
 
 .title {
@@ -230,4 +231,11 @@
 
 .resetBtn:hover {
   background: var(--color-surface-soft);
+}
+
+/* Konvensi *teks* pada judul dari CMS (lihat lib/utils/textFormatting.tsx).
+   Tanpa kelas ini parseGoldText() tetap membungkus teksnya tapi warnanya
+   diam-diam jatuh ke warna judul biasa. */
+.textGold {
+  color: var(--color-dominant);
 }

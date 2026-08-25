@@ -3,6 +3,7 @@ import Image from 'next/image'
 import FadeIn from '@/components/Motion/FadeIn'
 import styles from '../HomeContent.module.css'
 import { renderHighlightedTitle } from '../shared'
+import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
 
 const getWhyCards = (t: any) => [
   {
@@ -32,8 +33,10 @@ const getWhyCards = (t: any) => [
 ]
 
 export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t: any, locale: string, homeSettings: any }) {
-  const rawWhy = homeSettings?.[locale === 'en' ? 'whyItems_en' : 'whyItems'] || homeSettings?.whyItems;
-  const whyItems = Array.isArray(rawWhy) ? rawWhy : getWhyCards(t);
+  // Satu array untuk kedua bahasa: gambar & bobot huruf ikut dari baris yang
+  // sama, hanya teksnya yang dilokalkan. Dulu array EN diambil bulat-bulat
+  // sehingga gambar versi Inggris membeku pada nilai lama.
+  const whyItems = localizeRepeater(homeSettings, 'whyItems', locale, HOME_REPEATERS.whyItems) ?? getWhyCards(t);
 
   return (
     <section key="why" className={styles.whySection}>

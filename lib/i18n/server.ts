@@ -1,6 +1,10 @@
 import { cookies } from 'next/headers'
+import idDict from './locales/id'
+import enDict from './locales/en'
 
 export type Locale = 'id' | 'en'
+
+const dictionaries: Record<Locale, Record<string, string>> = { id: idDict, en: enDict }
 
 /**
  * Mendapatkan locale saat ini dari cookie.
@@ -13,6 +17,21 @@ export async function getServerLocale(): Promise<Locale> {
     return lang as Locale
   }
   return 'id' // Default
+}
+
+/**
+ * Padanan `t` dari `useTranslation()` untuk Server Component.
+ *
+ * Semantiknya sengaja dibuat identik dengan versi client
+ * (`LanguageContext.tsx`): locale aktif → kamus Indonesia → kunci itu sendiri.
+ * Karena kamusnya sama, kunci yang sama bisa dipakai di kedua sisi.
+ *
+ * Memanggil ini membuat halaman dinamis (baca cookie). Itu bukan regresi:
+ * root layout sudah memanggil `getServerLocale()` untuk seluruh halaman.
+ */
+export async function getServerT(): Promise<(key: string) => string> {
+  const locale = await getServerLocale()
+  return (key: string) => dictionaries[locale][key] || dictionaries.id[key] || key
 }
 
 /**

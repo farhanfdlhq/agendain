@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { requirePermission } from '@/lib/rbac'
 import { z } from "zod"
-import { rateLimit, checkCSRF, isAllowedRole, getClientIp } from '@/lib/security'
+import { rateLimit, checkCSRF, getClientIp } from '@/lib/security'
 
 const BookingSchema = z.object({
   nama: z.string().min(1, "Nama harus diisi").max(100),
@@ -17,11 +16,8 @@ const BookingSchema = z.object({
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const gate = await requirePermission(undefined, 'GET /api/booking', 'booking_view')
+    if (gate.denied) return gate.denied
 
     const bookings = await prisma.booking.findMany({
       take: 100,

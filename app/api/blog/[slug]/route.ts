@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
+import { requirePermission } from '@/lib/rbac'
 import { checkCSRF, BlogPostSchema, serverError } from '@/lib/security'
 
 export async function GET(request: Request, context: { params: Promise<{ slug: string }> }) {
@@ -37,11 +38,8 @@ export async function PUT(request: Request, context: { params: Promise<{ slug: s
     return NextResponse.json({ error: 'CSRF Token Invalid' }, { status: 403 })
   }
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || role !== 'super_admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-    }
+    const gate = await requirePermission(request, 'PUT /api/blog/[slug]', 'blog_edit')
+    if (gate.denied) return gate.denied
 
     const { slug } = await context.params
     const existing = await prisma.blogPost.findUnique({ where: { slug } })
@@ -75,11 +73,8 @@ export async function DELETE(request: Request, context: { params: Promise<{ slug
     return NextResponse.json({ error: 'CSRF Token Invalid' }, { status: 403 })
   }
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || role !== 'super_admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-    }
+    const gate = await requirePermission(request, 'DELETE /api/blog/[slug]', 'blog_delete')
+    if (gate.denied) return gate.denied
 
     const { slug } = await context.params
     await prisma.blogPost.delete({ where: { slug } })

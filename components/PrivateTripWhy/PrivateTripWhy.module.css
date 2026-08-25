@@ -134,3 +134,11 @@
     aspect-ratio: 1/1;
   }
 }
+
+
+/* Konvensi *teks* pada judul dari CMS (lihat lib/utils/textFormatting.tsx).
+   Tanpa kelas ini parseGoldText() tetap membungkus teksnya tapi warnanya
+   diam-diam jatuh ke warna judul biasa. */
+.textGold {
+  color: var(--color-dominant);
+}

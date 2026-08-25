@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { requirePermission } from '@/lib/rbac'
 import { checkCSRF, BlogCategorySchema, serverError } from '@/lib/security'
 
 export async function GET() {
@@ -21,11 +20,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'CSRF Token Invalid' }, { status: 403 })
   }
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || role !== 'super_admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-    }
+    const gate = await requirePermission(request, 'POST /api/blog/categories', 'blog_create')
+    if (gate.denied) return gate.denied
 
     const body = await request.json()
     const result = BlogCategorySchema.safeParse(body)

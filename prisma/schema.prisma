@@ -10,9 +10,11 @@ datasource db {
 model Destinasi {
   id           Int     @id @default(autoincrement())
   nama         String
+  namaEn       String?
   slug         String  @unique
   negara       String
   deskripsi    String  @db.Text
+  deskripsiEn  String? @db.Text
   foto         String
   bahasa       String?
   matauang     String?
@@ -24,21 +26,30 @@ model Destinasi {
 model OpenTrip {
   id            Int       @id @default(autoincrement())
   nama          String
+  namaEn        String?
   slug          String    @unique
   deskripsi     String    @db.Text
+  deskripsiEn   String?   @db.Text
   harga         Decimal   @db.Decimal(15, 2)
   durasi        Int
   destinasiId   Int
   destinasi     Destinasi @relation(fields: [destinasiId], references: [id])
   foto          Json
   itinerary     Json
+  itineraryEn         Json?
   fasilitas           Json
+  fasilitasEn         Json?
   termasuk            Json
+  termasukEn          Json?
   tidakTermasuk       Json
+  tidakTermasukEn     Json?
   informasiPenting    Json?
+  informasiPentingEn  Json?
   kebijakanPembatalan Json?
+  kebijakanPembatalanEn Json?
   fileDokumen         Json?
   opsiPenjemputan     Json?
+  opsiPenjemputanEn   Json?
   status              String    @default("draft")
   label               String?
   bookings            Booking[]

@@ -10,11 +10,12 @@ const id: Record<string, string> = {
   "nav.privacy": "Privacy Policy",
   "nav.contact": "Hubungi Kami",
   "footer.mainMenu": "Menu Utama",
+  "footer.contact": "Hubungi",
   "footer.help": "Bantuan",
   "footer.tagline": "Mau Jalan tapi Wacana Doang? Agendain aja!",
   "footer.desc":
     "Travel agency digital terpercaya untuk perjalanan Anda dari Indonesia ke Eropa.",
-  "footer.copyright": "All rights reserved.",
+  "footer.copyright": "Semua hak dilindungi.",
   "home.featuredPackages": "Open Trip Unggulan",
   "home.viewAll": "Lihat Semua Open Trip →",
   "home.popularDest": "Destinasi Favorit",
@@ -289,5 +290,59 @@ const id: Record<string, string> = {
     "Gak perlu bingung, gak perlu ribet. Tim Agendain siap bantuin dari pemilihan paket, pengurusan visa, sampai kamu mendarat dengan selamat di Eropa.",
   "openTrip.cta.btnPrimary": "Chat WhatsApp Sekarang",
   "openTrip.cta.btnSecondary": "Lihat Jadwal Trip",
+
+  // Open Trip — kartu paket
+  "openTrip.card.days": "Hari",
+  "openTrip.card.nights": "Malam",
+  "openTrip.card.viewDetail": "Lihat Detail",
+  "openTrip.card.ariaDetail": "Lihat detail paket",
+  // Tiga baris musim ini sama untuk semua paket (belum dari DB), tapi tetap
+  // lewat kamus supaya bulannya ikut berganti di halaman English.
+  "openTrip.card.seasonSpring": "Spring 11 April | 23 Mei",
+  "openTrip.card.seasonSummer": "Summer 6 Juni - 19 Sept",
+  "openTrip.card.seasonAutumn": "Autumn 17 Okt - 28 Nov",
+
+  // Open Trip — halaman detail
+  "openTrip.detail.duration": "Durasi",
+  "openTrip.detail.days": "Hari",
+  "openTrip.detail.destination": "Destinasi",
+  "openTrip.detail.category": "Kategori",
+  "openTrip.detail.departure": "Keberangkatan",
+  "openTrip.detail.departureValue": "Fleksibel / Sesuai Jadwal",
+  "openTrip.detail.summary": "Ringkasan",
+  "openTrip.detail.highlights": "Highlight Perjalanan",
+  "openTrip.detail.incExc": "Termasuk & Tidak Termasuk",
+  "openTrip.detail.included": "Termasuk",
+  "openTrip.detail.excluded": "Tidak Termasuk",
+  "openTrip.detail.itinerary": "Itinerary",
+  "openTrip.detail.day": "Hari",
+  "openTrip.detail.files": "File & Dokumen",
+  "openTrip.detail.pickup": "Opsi Penjemputan",
+  "openTrip.detail.cancellation": "Kebijakan Pembatalan & Pengembalian Dana",
+  "openTrip.detail.important": "Informasi Penting",
+  "openTrip.detail.perPax": "/ pax",
+  "openTrip.detail.waPrompt": "Atau konsultasi via WhatsApp",
+  "openTrip.detail.waBtn": "Chat WhatsApp",
+  "openTrip.detail.waText": "Halo Agendain, saya tertarik dengan open trip",
+  "openTrip.detail.fallbackInfo1":
+    "Paspor minimal masa berlaku 6 bulan dari tanggal kepulangan.",
+  "openTrip.detail.fallbackInfo2":
+    "Visa Schengen diwajibkan bagi pemegang paspor Indonesia.",
+  "openTrip.detail.fallbackInfo3":
+    "Jadwal perjalanan dan akomodasi dapat berubah sewaktu-waktu menyesuaikan kondisi cuaca.",
+  "openTrip.detail.fallbackPolicy1":
+    "Pembatalan > 30 hari sebelum keberangkatan: Pengembalian 50% dari total.",
+  "openTrip.detail.fallbackPolicy2":
+    "Pembatalan 15-30 hari sebelum keberangkatan: Pengembalian 25% dari total.",
+  "openTrip.detail.fallbackPolicy3":
+    "Pembatalan < 14 hari sebelum keberangkatan: Tidak ada pengembalian dana (Non-refundable).",
+  "openTrip.detail.fallbackPolicy4":
+    "Jika visa ditolak, biaya visa tidak dapat dikembalikan.",
+  "openTrip.detail.fallbackPickup1":
+    "Bandara Internasional Soekarno Hatta (Terminal 3).",
+  "openTrip.detail.fallbackPickup2":
+    "Penjemputan area Jakarta (sesuai konfirmasi).",
+  "openTrip.detail.fallbackPickup3":
+    "Silakan kumpul 4 jam sebelum keberangkatan.",
 };
 export default id;

@@ -7,6 +7,7 @@ import { ArrowRight, ArrowDown } from 'lucide-react'
 import FadeIn from '@/components/Motion/FadeIn'
 import styles from '../HomeContent.module.css'
 import { renderHighlightedTitle } from '../shared'
+import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
 
 const getAccordionItems = (t: any) => [
   {
@@ -29,8 +30,7 @@ const getAccordionItems = (t: any) => [
 
 export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: any, t: any, locale: string, homeSettings: any }) {
   const [activeAccordion, setActiveAccordion] = useState(0)
-  const rawAcc = homeSettings?.[locale === 'en' ? 'accItems_en' : 'accItems'] || homeSettings?.accItems;
-  const accItems = Array.isArray(rawAcc) ? rawAcc : getAccordionItems(t);
+  const accItems = localizeRepeater(homeSettings, 'accItems', locale, HOME_REPEATERS.accItems) ?? getAccordionItems(t);
 
   return (
     <section key="accordion" className={styles.accordionSection}>

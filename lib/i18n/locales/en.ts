@@ -10,6 +10,7 @@ const en: Record<string, string> = {
   'nav.privacy': 'Privacy Policy',
   'nav.contact': 'Contact Us',
   'footer.mainMenu': 'Main Menu',
+  'footer.contact': 'Contact',
   'footer.help': 'Help',
   'footer.tagline': 'All Talk and No Travel? Let\'s Agendain!',
   'footer.desc': 'Trusted digital travel agency for your journey from Indonesia to Europe.',
@@ -215,8 +216,12 @@ const en: Record<string, string> = {
   'openTrip.stats.years': 'Years of',
   'openTrip.stats.experience': 'Experience',
   'openTrip.section.label': 'All Departure Schedules',
-  'openTrip.section.title1': 'Explore Europe With Exclusive',
-  'openTrip.section.title2': 'Tour Packages by Agendain!',
+  // Tiga baris, sama seperti versi Indonesia. Sebelumnya title3 tidak ada di
+  // kamus EN sehingga jatuh ke "Agendain!" berbahasa Indonesia dan judulnya
+  // dobel di halaman English.
+  'openTrip.section.title1': 'Explore Europe',
+  'openTrip.section.title2': 'With Exclusive Tour Packages',
+  'openTrip.section.title3': 'by Agendain!',
   'openTrip.cta.label': 'Ready To Go?',
   'openTrip.cta.title1': 'Book Now',
   'openTrip.cta.title2': 'Starting From Only',
@@ -224,5 +229,49 @@ const en: Record<string, string> = {
   'openTrip.cta.desc': 'No confusion, no hassle. The Agendain team is ready to help you from choosing a package, processing visas, until you land safely in Europe.',
   'openTrip.cta.btnPrimary': 'Chat WhatsApp Now',
   'openTrip.cta.btnSecondary': 'View Trip Schedules',
+
+  // Open Trip — package card
+  'openTrip.card.days': 'Days',
+  'openTrip.card.nights': 'Nights',
+  'openTrip.card.viewDetail': 'View Details',
+  'openTrip.card.ariaDetail': 'View package details',
+  // Tiga baris musim ini sama untuk semua paket (belum dari DB), tapi tetap
+  // diterjemahkan supaya kartunya tidak setengah Indonesia di halaman English.
+  'openTrip.card.seasonSpring': 'Spring 11 Apr | 23 May',
+  'openTrip.card.seasonSummer': 'Summer 6 Jun - 19 Sep',
+  'openTrip.card.seasonAutumn': 'Autumn 17 Oct - 28 Nov',
+
+  // Open Trip — detail page
+  'openTrip.detail.duration': 'Duration',
+  'openTrip.detail.days': 'Days',
+  'openTrip.detail.destination': 'Destination',
+  'openTrip.detail.category': 'Category',
+  'openTrip.detail.departure': 'Departure',
+  'openTrip.detail.departureValue': 'Flexible / As Scheduled',
+  'openTrip.detail.summary': 'Summary',
+  'openTrip.detail.highlights': 'Trip Highlights',
+  'openTrip.detail.incExc': 'Included & Excluded',
+  'openTrip.detail.included': 'Included',
+  'openTrip.detail.excluded': 'Excluded',
+  'openTrip.detail.itinerary': 'Itinerary',
+  'openTrip.detail.day': 'Day',
+  'openTrip.detail.files': 'Files & Documents',
+  'openTrip.detail.pickup': 'Pickup Options',
+  'openTrip.detail.cancellation': 'Cancellation & Refund Policy',
+  'openTrip.detail.important': 'Important Information',
+  'openTrip.detail.perPax': '/ pax',
+  'openTrip.detail.waPrompt': 'Or consult via WhatsApp',
+  'openTrip.detail.waBtn': 'Chat on WhatsApp',
+  'openTrip.detail.waText': 'Hello Agendain, I am interested in the open trip',
+  'openTrip.detail.fallbackInfo1': 'Passport must be valid for at least 6 months from the return date.',
+  'openTrip.detail.fallbackInfo2': 'A Schengen visa is required for Indonesian passport holders.',
+  'openTrip.detail.fallbackInfo3': 'Itinerary and accommodation may change at any time depending on weather conditions.',
+  'openTrip.detail.fallbackPolicy1': 'Cancellation more than 30 days before departure: 50% of the total refunded.',
+  'openTrip.detail.fallbackPolicy2': 'Cancellation 15-30 days before departure: 25% of the total refunded.',
+  'openTrip.detail.fallbackPolicy3': 'Cancellation less than 14 days before departure: no refund (non-refundable).',
+  'openTrip.detail.fallbackPolicy4': 'If the visa is rejected, the visa fee is non-refundable.',
+  'openTrip.detail.fallbackPickup1': 'Soekarno Hatta International Airport (Terminal 3).',
+  'openTrip.detail.fallbackPickup2': 'Pickup within the Jakarta area (subject to confirmation).',
+  'openTrip.detail.fallbackPickup3': 'Please gather 4 hours before departure.',
 }
 export default en

@@ -3,6 +3,7 @@ import FadeIn from "@/components/Motion/FadeIn";
 import styles from "./PrivateTripWorkflow.module.css";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { parseGoldText } from "@/lib/utils/textFormatting";
+import { localizeRepeater, PRIVATE_TRIP_REPEATERS } from "@/lib/i18n/localize";
 
 const getWorkflowSteps = (t: any) => [
   {
@@ -37,8 +38,8 @@ export default function PrivateTripWorkflow({ privatetripSettings }: { privatetr
     return fallbackText;
   };
 
-  const rawSteps = privatetripSettings?.[locale === 'en' ? 'workflowSteps_en' : 'workflowSteps'] || privatetripSettings?.workflowSteps;
-  const workflowSteps = (rawSteps && Array.isArray(rawSteps) && rawSteps.length > 0) ? rawSteps : getWorkflowSteps(t);
+  const localizedSteps = localizeRepeater(privatetripSettings, 'workflowSteps', locale, PRIVATE_TRIP_REPEATERS.workflowSteps);
+  const workflowSteps = localizedSteps && localizedSteps.length > 0 ? localizedSteps : getWorkflowSteps(t);
 
   return (
     <section className={styles.section}>

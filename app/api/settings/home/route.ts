@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { isAllowedRole, sanitizeSettingsPayload, serverError } from '@/lib/security'
+import { sanitizeSettingsPayload, serverError } from '@/lib/security'
+import { requirePermission } from '@/lib/rbac'
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !isAllowedRole(role, ['super_admin', 'admin'])) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const gate = await requirePermission(req, 'POST /api/settings/home', 'cms_manage')
+    if (gate.denied) return gate.denied
 
     const parsed = sanitizeSettingsPayload(await req.json())
     if (!parsed.ok) {

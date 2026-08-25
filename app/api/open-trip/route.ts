@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
+import { requirePermission } from '@/lib/rbac'
 import { OpenTripSchema, serverError } from "@/lib/security"
+import { slugifyNama, toOpenTripData } from "@/lib/open-trip-fields"
 
 export async function GET(request: Request) {
   try {
@@ -36,11 +38,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions)
-    const role = (session?.user as any)?.role
-    if (!session || !['super_admin', 'admin', 'editor'].includes(role)) {
-      return NextResponse.json({ error: 'Unauthorized - Role required' }, { status: 401 })
-    }
+    const gate = await requirePermission(request, 'POST /api/open-trip', 'paket_create')
+    if (gate.denied) return gate.denied
 
     const body = await request.json()
     
@@ -53,24 +52,13 @@ export async function POST(request: Request) {
     const data = result.data
 
     // Auto-generate slug from name if not provided
-    const generatedSlug = data.slug || data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+    const generatedSlug = data.slug || slugifyNama(data.nama)
 
     const newPackage = await prisma.openTrip.create({
       data: {
-        nama: data.nama,
+        ...toOpenTripData(data, 'create'),
         slug: generatedSlug,
-        deskripsi: data.deskripsi,
-        harga: Number(data.harga),
-        durasi: Number(data.durasi),
-        destinasiId: Number(data.destinasiId),
-        foto: data.foto || {},
-        itinerary: data.itinerary || [],
-        fasilitas: data.fasilitas || [],
-        termasuk: data.termasuk || [],
-        tidakTermasuk: data.tidakTermasuk || [],
-        status: data.status,
-        label: data.label || null,
-      }
+      } as any
     })
 
     return NextResponse.json(newPackage, { status: 201 })

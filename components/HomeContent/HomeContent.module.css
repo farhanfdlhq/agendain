@@ -11,6 +11,16 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  /* Navbar-nya position:fixed, jadi ruangnya harus disisakan di sini. Tanpa
+     ini isi hero di-center terhadap seluruh 100dvh dan di layar pendek
+     (mis. 320x568) judulnya naik ke belakang logo & tombol menu.
+     box-sizing: border-box (globals.css) menjaga tinggi total tetap 100dvh.
+     Jeda --space-xl di atas & bawah wajib: min-height (bukan height) membuat
+     hero tumbuh saat isinya lebih tinggi dari layar, tapi tanpa padding isi
+     itu menempel PAS di tepi — tombol "Agendain Sekarang" tampak terpotong
+     karena sudut & shadow-nya jatuh tepat di batas section. */
+  padding-top: calc(var(--navbar-height, 72px) + var(--space-xl));
+  padding-bottom: var(--space-xl);
 }
 
 .heroImageWrapper {
@@ -327,8 +337,12 @@
   flex: 1;
 }
 
+/* Pembungkus animasi Stagger. `min-width: 0` wajib: kolom `1fr` berarti
+   `minmax(auto, 1fr)`, jadi tanpa ini lebar min-content kartu (harga & tombol
+   yang nowrap) bisa melebihi bagiannya dan grid keluar dari .destWrapper. */
 .destGrid > div {
   height: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }

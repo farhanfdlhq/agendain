@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/lib/auth"
+import { getRolesConfig, requirePermission } from "@/lib/rbac"
 import bcrypt from 'bcryptjs'
 import { AdminUserSchema, getClientIp, serverError } from "@/lib/security"
 import { logAudit } from "@/lib/audit"
 
-export async function GET() {
-  const session = await getServerSession(authOptions)
-  const role = (session?.user as any)?.role
-  if (role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+export async function GET(req: Request) {
+  const gate = await requirePermission(req, 'GET /api/admin/users', 'users_manage')
+  if (gate.denied) return gate.denied
 
   const users = await prisma.adminUser.findMany({
     select: { id: true, nama: true, email: true, role: true, createdAt: true },
@@ -19,9 +17,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions)
-  const role = (session?.user as any)?.role
-  if (role !== 'super_admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  const gate = await requirePermission(req, 'POST /api/admin/users', 'users_manage')
+  if (gate.denied) return gate.denied
 
   try {
     const result = AdminUserSchema.safeParse(await req.json())
@@ -30,6 +27,15 @@ export async function POST(req: Request) {
     }
 
     const data = result.data
+
+    // Role divalidasi terhadap roles_config, bukan daftar id bawaan, supaya
+    // role custom bisa ditetapkan — tapi id yang tidak ada tetap ditolak
+    // (kalau lolos, usernya akan berakhir tanpa permission sama sekali).
+    const roles = await getRolesConfig()
+    if (!roles.some(r => r.id === data.role)) {
+      return NextResponse.json({ error: `Role "${data.role}" tidak terdaftar.` }, { status: 400 })
+    }
+
     const existing = await prisma.adminUser.findUnique({ where: { email: data.email } })
     if (existing) return NextResponse.json({ error: 'Email sudah terdaftar' }, { status: 400 })
 
@@ -46,8 +52,8 @@ export async function POST(req: Request) {
 
     await logAudit({
       action: "user.create",
-      actorId: Number((session?.user as any)?.id),
-      actorEmail: (session?.user as any)?.email,
+      actorId: gate.actor.userId,
+      actorEmail: gate.actor.email,
       targetType: "AdminUser",
       targetId: user.id,
       detail: { email: data.email, role: data.role },

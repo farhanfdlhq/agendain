@@ -1,13 +1,10 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { writeFile, readdir, stat, unlink } from "fs/promises";
 import path from "path";
 import fsSync from "fs";
-import { isAllowedRole, matchesFileSignature } from "@/lib/security";
+import { matchesFileSignature } from "@/lib/security";
+import { requirePermission } from "@/lib/rbac";
 import {
-  actorFrom,
-  reportAuthDenied,
   reportServerError,
   reportUploadFailed,
   reportUploadRejected,
@@ -15,17 +12,26 @@ import {
 
 const ICO_TYPES = ["image/x-icon", "image/vnd.microsoft.icon", "image/ico"];
 
+// Media library dipakai lintas modul, jadi siapa pun yang boleh menyunting
+// konten apa pun boleh mengunggah. Sebelumnya gerbangnya mencocokkan id role
+// yang di-hardcode, sehingga role custom selengkap apa pun selalu 401.
+const MEDIA_WRITE = [
+  "cms_manage",
+  "paket_create",
+  "paket_edit",
+  "destinasi_create",
+  "destinasi_edit",
+  "blog_create",
+  "blog_edit",
+] as const;
+
 // Nama file untuk detail audit: bersihkan & batasi panjang (tak menyimpan path).
 const safeName = (n: string) => n.replace(/[^\w.\- ]/g, "").slice(0, 120);
 
 export async function GET(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    const role = (session?.user as any)?.role;
-    if (!session || !isAllowedRole(role, ['super_admin', 'admin', 'editor'])) {
-      reportAuthDenied({ route: "GET /api/upload", status: 401, code: "no_session", req: request });
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const gate = await requirePermission(request, "GET /api/upload", ...MEDIA_WRITE);
+    if (gate.denied) return gate.denied;
 
     let files: { url: string; name: string; created_at: string }[] = [];
     const uploadDir = path.join(process.cwd(), "public/uploads");
@@ -70,14 +76,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    const role = (session?.user as any)?.role;
-    if (!session || !isAllowedRole(role, ['super_admin', 'admin', 'editor'])) {
-      reportAuthDenied({ route: "POST /api/upload", status: 401, code: "no_session", req: request });
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const gate = await requirePermission(request, "POST /api/upload", ...MEDIA_WRITE);
+    if (gate.denied) return gate.denied;
 
-    const { actorId, actorEmail } = actorFrom(session);
+    const { userId: actorId, email: actorEmail } = gate.actor;
 
     const data = await request.formData();
     const file: File | null = data.get("file") as unknown as File;
@@ -255,12 +257,8 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-    const role = (session?.user as any)?.role;
-    if (!session || !isAllowedRole(role, ['super_admin', 'admin', 'editor'])) {
-      reportAuthDenied({ route: "DELETE /api/upload", status: 401, code: "no_session", req: request });
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const gate = await requirePermission(request, "DELETE /api/upload", "cms_manage");
+    if (gate.denied) return gate.denied;
 
     const { url } = await request.json();
     if (!url || typeof url !== "string" || !url.startsWith("/uploads/")) {

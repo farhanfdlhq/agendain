@@ -18,15 +18,24 @@ export default function TambahDestinasiPage() {
 
   const [formData, setFormData] = useState({
     nama: "",
+    namaEn: "",
     slug: "",
     negara: "",
     deskripsi: "",
+    deskripsiEn: "",
     foto: "",
     bahasa: "",
     matauang: "",
     waktuTerbaik: "",
     infoVisa: ""
   })
+
+  // Hanya nama & deskripsi yang bilingual; field lain bahasa-netral (tab ID saja).
+  const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
+  const tf = (name: string) => (activeTab === 'en' ? `${name}En` : name)
+  const fv = (name: string) => ((formData as any)[tf(name)] ?? '') as string
+  const ph = (name: string, idPlaceholder: string) =>
+    activeTab === 'en' ? ((formData as any)[name] || idPlaceholder) : idPlaceholder
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -40,10 +49,15 @@ export default function TambahDestinasiPage() {
     setLoading(true)
 
     try {
+      const payload = {
+        ...formData,
+        namaEn: formData.namaEn || null,
+        deskripsiEn: formData.deskripsiEn || null,
+      }
       const res = await fetch("/api/destinasi", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       })
 
       if (res.ok) {
@@ -80,8 +94,34 @@ export default function TambahDestinasiPage() {
         </Button>
       </div>
 
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          variant={activeTab === 'id' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('id')}
+          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
+        >
+          <img src="/flags/id.png" alt="ID" width={20} height={15} className="rounded-xs object-cover" />
+          Indonesia
+        </Button>
+        <Button
+          type="button"
+          variant={activeTab === 'en' ? 'default' : 'outline'}
+          onClick={() => setActiveTab('en')}
+          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
+        >
+          <img src="/flags/en.png" alt="EN" width={20} height={15} className="rounded-xs object-cover" />
+          English
+        </Button>
+      </div>
+      {activeTab === 'en' && (
+        <p className="text-xs text-muted-foreground -mt-3">
+          Hanya nama & deskripsi yang punya versi Inggris. Field lain (negara, foto, info turis) dipakai bersama — atur di tab Indonesia.
+        </p>
+      )}
+
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         <div className="lg:col-span-2 flex flex-col gap-6">
           <Card>
             <CardHeader className="border-b-2 border-border pb-5 mb-5">
@@ -89,45 +129,50 @@ export default function TambahDestinasiPage() {
               <CardDescription>Detail inti tentang destinasi ini.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium">Nama Destinasi (Kota/Wilayah)</label>
-                <Input 
-                  name="nama"
-                  placeholder="Contoh: Paris, Swiss Alps, Cappadocia"
-                  value={formData.nama} onChange={handleChange} required 
+                <Input
+                  name={tf('nama')}
+                  placeholder={ph('nama', 'Contoh: Paris, Swiss Alps, Cappadocia')}
+                  value={fv('nama')} onChange={handleChange} required
                 />
               </div>
-              
+
+              {activeTab === 'id' && (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Negara</label>
-                <Input 
-                  name="negara" 
+                <Input
+                  name="negara"
                   placeholder="Contoh: Prancis, Swiss, Turki"
-                  value={formData.negara} onChange={handleChange} required 
+                  value={formData.negara} onChange={handleChange} required
                 />
               </div>
+              )}
 
               <div className="space-y-2">
                 <label className="text-sm font-medium">Deskripsi Singkat</label>
-                <Textarea 
-                  name="deskripsi" rows={4}
-                  placeholder="Deskripsikan pesona destinasi ini..."
-                  value={formData.deskripsi} onChange={handleChange} required 
+                <Textarea
+                  name={tf('deskripsi')} rows={4}
+                  placeholder={ph('deskripsi', 'Deskripsikan pesona destinasi ini...')}
+                  value={fv('deskripsi')} onChange={handleChange} required
                 />
               </div>
 
+              {activeTab === 'id' && (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Upload Foto Utama</label>
-                <MediaPicker 
-                  value={formData.foto} 
-                  onChange={(url) => setFormData(prev => ({ ...prev, foto: url }))} 
+                <MediaPicker
+                  value={formData.foto}
+                  onChange={(url) => setFormData(prev => ({ ...prev, foto: url }))}
                 />
               </div>
+              )}
             </CardContent>
           </Card>
         </div>
 
+        {activeTab === 'id' && (
         <div className="lg:col-span-1 flex flex-col gap-6">
           <Card>
             <CardHeader className="border-b-2 border-border pb-5 mb-5">
@@ -182,6 +227,7 @@ export default function TambahDestinasiPage() {
             </CardContent>
           </Card>
         </div>
+        )}
       </form>
     </div>
   )

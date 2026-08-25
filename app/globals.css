@@ -17,7 +17,10 @@
   }
 
   .non-home-main {
-    padding-top: 80px;
+    /* Ruang untuk navbar fixed. Ikut tinggi logo (lihat --navbar-offset di
+       app/layout.tsx); nilai lamanya di-hardcode 80px sehingga logo besar
+       menutupi awal halaman. */
+    padding-top: var(--navbar-offset, 80px);
     background-color: var(--color-canvas); /* Default */
     min-height: 100dvh;
   }
