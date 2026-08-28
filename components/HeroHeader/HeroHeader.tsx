@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 import styles from './HeroHeader.module.css'
 
 interface HeroHeaderProps {
@@ -21,14 +22,20 @@ export default function HeroHeader({
   textAlign = 'center'
 }: HeroHeaderProps) {
   return (
-    <div 
-      className={styles.hero} 
-      style={{ 
-        backgroundImage: `url('${backgroundImage}')`,
+    <div
+      className={styles.hero}
+      style={{
         minHeight,
-        paddingBottom 
+        paddingBottom
       }}
     >
+      {/* Sengaja next/image, bukan CSS background-image: hero ini full-bleed,
+          jadi background biasa memaksa browser merentangkan satu file apa
+          adanya tanpa srcset/DPR. Pola & angkanya disamakan dengan hero
+          beranda (components/HomeContent/sections/HeroSection.tsx). */}
+      <div className={styles.heroImageWrapper}>
+        <Image src={backgroundImage} alt="" fill priority className={styles.heroImage} quality={85} sizes="100vw" />
+      </div>
       <div className={styles.heroOverlay} />
       <div className={styles.heroContent} style={{ textAlign, alignItems: textAlign === 'left' ? 'flex-start' : textAlign === 'right' ? 'flex-end' : 'center' }}>
         <h1 className={styles.heroTitle}>{title}</h1>

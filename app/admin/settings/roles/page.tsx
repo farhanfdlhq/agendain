@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useDeferredValue } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
+import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { Shield, Plus, MoreVertical } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -87,6 +88,7 @@ const PERMISSIONS_GROUPS = [
 ]
 
 export default function RolesPermissionsPage() {
+  const { confirm } = useConfirm()
   const { data: session } = useSession()
   const router = useRouter()
   const [roles, setRoles] = useState<Role[]>([])
@@ -228,7 +230,12 @@ export default function RolesPermissionsPage() {
       toast.error("Role Super Admin adalah role sistem utama dan tidak dapat dihapus")
       return
     }
-    if (!confirm("Hapus role ini? User dengan role ini mungkin kehilangan akses.")) return
+    const ok = await confirm({
+      title: "Hapus role",
+      message: "Role ini akan dihapus permanen. User yang memakainya bisa kehilangan akses.",
+      confirmText: "Ya, hapus",
+    })
+    if (!ok) return
     
     try {
       const newRoles = roles.filter(r => r.id !== id)

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'react-hot-toast'
+import { useConfirm } from '@/components/Providers/ConfirmProvider'
 
 interface TiptapEditorProps {
   value: string
@@ -25,6 +26,7 @@ interface TiptapEditorProps {
 
 export function TiptapEditor({ value, onChange, placeholder = 'Mulai menulis...' }: TiptapEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { prompt } = useConfirm()
 
   const editor = useEditor({
     extensions: [
@@ -99,8 +101,14 @@ export function TiptapEditor({ value, onChange, placeholder = 'Mulai menulis...'
         <ToolBtn active={editor.isActive({ textAlign: 'right' })} onClick={() => editor.chain().focus().setTextAlign('right').run()} title="Align Right"><AlignRight size={16} /></ToolBtn>
         <ToolBtn active={editor.isActive({ textAlign: 'justify' })} onClick={() => editor.chain().focus().setTextAlign('justify').run()} title="Justify"><AlignJustify size={16} /></ToolBtn>
         <span className="w-px h-6 bg-border self-center mx-1" />
-        <ToolBtn active={editor.isActive('link')} onClick={() => {
-          const url = window.prompt('URL:', editor.getAttributes('link').href || '')
+        <ToolBtn active={editor.isActive('link')} onClick={async () => {
+          const url = await prompt({
+            title: 'Sisipkan tautan',
+            message: 'Alamat lengkap, termasuk https://',
+            defaultValue: editor.getAttributes('link').href || '',
+            placeholder: 'https://contoh.com',
+            confirmText: 'Sisipkan',
+          })
           if (url) editor.chain().focus().setLink({ href: url }).run()
         }} title="Insert Link"><LinkIcon size={16} /></ToolBtn>
         <ToolBtn active={false} onClick={() => editor.chain().focus().unsetLink().run()} title="Remove Link"><Unlink size={16} /></ToolBtn>

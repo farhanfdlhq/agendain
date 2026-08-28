@@ -28,15 +28,6 @@ export const formatPriceShort = (amount: number, locale: 'id' | 'en' = 'id'): st
   return formatIDR(amount)
 }
 
-export const formatUSD = (amount: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount)
-}
-
 export const formatEUR = (amount: number): string => {
   return new Intl.NumberFormat('de-DE', {
     style: 'currency',
@@ -46,28 +37,58 @@ export const formatEUR = (amount: number): string => {
   }).format(amount)
 }
 
-let ratesCache: any = null;
+export type ExchangeRates = {
+  /** Pengali IDR → EUR. */
+  EUR: number;
+  /** Kurs tengah 1 EUR dalam rupiah, untuk ditampilkan apa adanya. */
+  eurIdr: number;
+  /** `wise` bila kurs live berhasil diambil, `fallback` bila memakai angka cadangan. */
+  source: "wise" | "fallback";
+};
+
+// 1 EUR dalam rupiah. Hanya dipakai bila Wise tidak bisa dihubungi; angkanya
+// sengaja konservatif dan wajib ditandai `source: "fallback"` agar halaman
+// tidak mengklaim kurs itu live.
+const FALLBACK_EUR_IDR = 17250;
+
+let ratesCache: ExchangeRates | null = null;
 let lastFetchTime = 0;
 
-export const fetchExchangeRates = async () => {
+/**
+ * Kurs tengah EUR/IDR dari Wise.
+ *
+ * `wise.com/rates/live` adalah endpoint yang dipakai widget di situs Wise
+ * sendiri; tidak butuh API key dan mengembalikan kurs tengah yang sama dengan
+ * yang tampil di halaman depan mereka. Sebelumnya di sini dipakai
+ * exchangerate-api.com, yang angkanya berbeda tipis dari Wise.
+ *
+ * Hasilnya di-cache satu jam. Kegagalan TIDAK ikut di-cache, jadi gangguan
+ * sesaat tidak mengunci situs ke kurs cadangan selama sejam.
+ */
+export const fetchExchangeRates = async (): Promise<ExchangeRates> => {
   const now = Date.now();
-  // Cache rates for 1 hour to prevent API limits
-  if (ratesCache && (now - lastFetchTime) < 3600000) {
+  if (ratesCache && now - lastFetchTime < 3600000) {
     return ratesCache;
   }
 
   try {
-    const response = await fetch('https://api.exchangerate-api.com/v4/latest/IDR');
-    const data = await response.json();
-    ratesCache = data.rates;
+    const res = await fetch("https://wise.com/rates/live?source=EUR&target=IDR", {
+      headers: { Accept: "application/json" },
+      // Timeout: tanpa ini permintaan yang menggantung ikut menahan render
+      // halaman paket sampai batas waktu default Node.
+      signal: AbortSignal.timeout(6000),
+    });
+    if (!res.ok) throw new Error(`Wise HTTP ${res.status}`);
+
+    const data = await res.json();
+    const eurIdr = Number(data?.value);
+    if (!Number.isFinite(eurIdr) || eurIdr <= 0) throw new Error("Nilai kurs Wise tidak valid");
+
+    ratesCache = { EUR: 1 / eurIdr, eurIdr, source: "wise" };
     lastFetchTime = now;
     return ratesCache;
   } catch (error) {
-    console.error('Failed to fetch exchange rates:', error);
-    // Fallback static rates
-    return {
-      USD: 0.000063, // 1 IDR = 0.000063 USD approx
-      EUR: 0.000058, // 1 IDR = 0.000058 EUR approx
-    };
+    console.error("Gagal mengambil kurs Wise:", error);
+    return { EUR: 1 / FALLBACK_EUR_IDR, eurIdr: FALLBACK_EUR_IDR, source: "fallback" };
   }
-}
+};

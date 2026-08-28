@@ -5,10 +5,12 @@ import { prisma } from '@/lib/prisma'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
-import { validateUploadedFile, matchesFileSignature, getClientIp } from '@/lib/security'
+import { validateUploadedFile, matchesFileSignature, getClientIp, csrfBlocked } from '@/lib/security'
 import { logAudit } from '@/lib/audit'
 
 export async function POST(req: NextRequest) {
+  if (csrfBlocked(req)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 

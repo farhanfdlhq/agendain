@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { MediaPickerMultiple } from "@/components/ui/media-picker-multiple"
+import { parseAkomodasi, parsePenerbangan } from "@/lib/open-trip-fields"
 
 export default function TambahPaketPage() {
   const router = useRouter()
@@ -43,8 +44,13 @@ export default function TambahPaketPage() {
     kebijakanPembatalanText: "",
     kebijakanPembatalanTextEn: "",
     fileDokumenList: [] as { name: string, url: string }[],
-    opsiPenjemputanText: "",
-    opsiPenjemputanTextEn: "",
+    tanggalKeberangkatan: "",
+    kuota: "",
+    kursiTerisi: "",
+    akomodasiText: "",
+    akomodasiTextEn: "",
+    penerbanganText: "",
+    penerbanganTextEn: "",
     itinerary: [{ judul: "", deskripsi: "", judulEn: "", deskripsiEn: "" }] as { judul: string, deskripsi: string, judulEn?: string, deskripsiEn?: string }[]
   })
 
@@ -162,6 +168,14 @@ export default function TambahPaketPage() {
       toast.error("Mohon lengkapi data wajib (Nama, Destinasi, Harga)")
       return
     }
+    if (!formData.tanggalKeberangkatan) {
+      toast.error("Tanggal keberangkatan wajib diisi.")
+      return
+    }
+    if (formData.kuota === "" || Number(formData.kuota) < 1) {
+      toast.error("Kuota peserta wajib diisi (minimal 1).")
+      return
+    }
 
     setLoading(true)
 
@@ -177,7 +191,8 @@ export default function TambahPaketPage() {
       const informasiPenting = optionalLines(formData.informasiPentingText);
       const kebijakanPembatalan = optionalLines(formData.kebijakanPembatalanText);
       const fileDokumen = formData.fileDokumenList.length > 0 ? formData.fileDokumenList : null;
-      const opsiPenjemputan = optionalLines(formData.opsiPenjemputanText);
+      const akomodasi = parseAkomodasi(formData.akomodasiText);
+      const penerbangan = parsePenerbangan(formData.penerbanganText);
 
       const itinerary = formData.itinerary.map((it, idx) => ({
         hari: idx + 1,
@@ -226,8 +241,13 @@ export default function TambahPaketPage() {
         kebijakanPembatalan,
         kebijakanPembatalanEn: optionalLines(formData.kebijakanPembatalanTextEn),
         fileDokumen,
-        opsiPenjemputan,
-        opsiPenjemputanEn: optionalLines(formData.opsiPenjemputanTextEn)
+        tanggalKeberangkatan: formData.tanggalKeberangkatan || null,
+        kuota: formData.kuota === "" ? null : Number(formData.kuota),
+        kursiTerisi: formData.kursiTerisi === "" ? 0 : Number(formData.kursiTerisi),
+        akomodasi,
+        akomodasiEn: parseAkomodasi(formData.akomodasiTextEn),
+        penerbangan,
+        penerbanganEn: parsePenerbangan(formData.penerbanganTextEn)
       }
 
       const res = await fetch("/api/open-trip", {
@@ -300,6 +320,27 @@ export default function TambahPaketPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
+          {activeTab === 'id' && (
+          <Card>
+            <CardHeader className="border-b-2 border-border pb-5 mb-5">
+              <CardTitle>Media & Gambar</CardTitle>
+              <CardDescription>
+                Foto pertama otomatis jadi thumbnail. Rekomendasi: rasio lanskap 3:2,
+                mis. <strong>1600×1067px</strong> (min. 1200×800px), format JPG/PNG/WEBP, maks 10MB/file.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <MediaPickerMultiple
+                  values={formData.fotoUrls}
+                  onChange={(urls) => setFormData(prev => ({ ...prev, fotoUrls: urls }))}
+                  description="Rasio lanskap 3:2 · JPG/PNG/WEBP · Maks 10MB/file"
+                />
+              </div>
+            </CardContent>
+          </Card>
+          )}
+
           <Card>
             <CardHeader className="border-b-2 border-border pb-5 mb-5">
               <CardTitle>Informasi Dasar</CardTitle>
@@ -518,35 +559,39 @@ export default function TambahPaketPage() {
               </div>
               )}
 
-              <div className="space-y-2 mt-4">
-                <Label htmlFor="opsiPenjemputanText">Opsi Penjemputan</Label>
-                <Textarea
-                  id="opsiPenjemputanText"
-                  name={tf('opsiPenjemputanText')}
-                  placeholder={ph('opsiPenjemputanText', 'Tulis poin-poin di baris baru...')}
-                  rows={4}
-                  value={fv('opsiPenjemputanText')}
-                  onChange={handleChange}
-                />
+              <div className="grid gap-4 sm:grid-cols-2 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="akomodasiText">Akomodasi</Label>
+                  <Textarea
+                    id="akomodasiText"
+                    name={tf('akomodasiText')}
+                    placeholder={ph('akomodasiText', 'Satu hotel per baris:\nOsaka | Nishikasai Flower Hotel')}
+                    rows={5}
+                    value={fv('akomodasiText')}
+                    onChange={handleChange}
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Format: <code>Kota | Nama Hotel</code>. Tanpa <code>|</code> juga boleh.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="penerbanganText">Penerbangan</Label>
+                  <Textarea
+                    id="penerbanganText"
+                    name={tf('penerbanganText')}
+                    placeholder={ph('penerbanganText', 'Satu rute per baris:\nJakarta → Osaka | MH720 CGK-KUL 15:40 | Malaysia Airlines')}
+                    rows={5}
+                    value={fv('penerbanganText')}
+                    onChange={handleChange}
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Format: <code>Rute | Detail | Maskapai</code>.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          {activeTab === 'id' && (
-          <Card>
-            <CardHeader className="border-b-2 border-border pb-5 mb-5">
-              <CardTitle>Media & Gambar</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <MediaPickerMultiple
-                  values={formData.fotoUrls}
-                  onChange={(urls) => setFormData(prev => ({ ...prev, fotoUrls: urls }))}
-                />
-              </div>
-            </CardContent>
-          </Card>
-          )}
         </div>
 
         {activeTab === 'id' && (
@@ -608,15 +653,66 @@ export default function TambahPaketPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="durasi">Durasi (Hari)</Label>
-                <Input 
-                  type="number" 
+                <Input
+                  type="number"
                   id="durasi"
-                  name="durasi" 
+                  name="durasi"
                   min="1"
                   value={formData.durasi}
                   onChange={handleChange}
-                  required 
+                  required
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="tanggalKeberangkatan">Tanggal Keberangkatan</Label>
+                <Input
+                  type="date"
+                  id="tanggalKeberangkatan"
+                  name="tanggalKeberangkatan"
+                  value={formData.tanggalKeberangkatan}
+                  onChange={handleChange}
+                  required
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Wajib diisi. Setiap open trip kini punya tanggal keberangkatan tetap.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="kuota">Kuota Peserta</Label>
+                <Input
+                  type="number"
+                  id="kuota"
+                  name="kuota"
+                  min="1"
+                  placeholder="20"
+                  value={formData.kuota}
+                  onChange={handleChange}
+                  required
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Wajib diisi. Menentukan info &quot;sisa kursi&quot; yang tampil di halaman paket.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="kursiTerisi">Kursi Terisi Manual</Label>
+                <Input
+                  type="number"
+                  id="kursiTerisi"
+                  name="kursiTerisi"
+                  min="0"
+                  placeholder="0"
+                  value={formData.kursiTerisi}
+                  onChange={handleChange}
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Untuk peserta di luar website (booking WhatsApp/offline). Booking
+                  website berstatus <strong>Lunas</strong> sudah dihitung otomatis,
+                  jadi tidak perlu ditambahkan di sini. Sisa = kuota &minus; terisi
+                  manual &minus; booking Lunas.
+                </p>
               </div>
 
               <div className="space-y-2">

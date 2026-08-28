@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
+import { resolveActor, hasPermission } from "@/lib/rbac"
 import { Package, Users, MessageSquare, Plus, ArrowRight, Activity, Map, CalendarClock, CreditCard, ShoppingCart, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -11,23 +12,30 @@ import { Suspense } from 'react'
 import AirplaneLoader from '@/components/ui/airplane-loader'
 
 async function AdminDashboardDataFetcher({ session }: { session: any }) {
-  const [openTripCount, destinasiCount, privateTripNewCount, recentPrivateTrips, bookingPendingCount, paidBookings, recentBookings] = await Promise.all([
+  // Gerbang SERVER-SIDE. Halaman ini server component, jadi tanpa cek di sini
+  // datanya sudah ter-render & terkirim SEBELUM redirect klien di layout.tsx
+  // jalan — omset + PII pelanggan bisa bocor ke role rendah (mis. editor).
+  // Data finansial/booking hanya diambil bila punya `booking_view`, permintaan
+  // trip hanya bila `inquiry_view`. Yang tak berizin tak pernah dikirim.
+  const actor = await resolveActor(session)
+  const canBooking = hasPermission(actor, 'booking_view')
+  const canInquiry = hasPermission(actor, 'inquiry_view')
+
+  const [openTripCount, privateTripNewCount, recentPrivateTrips, bookingPendingCount, paidBookings, recentBookings] = await Promise.all([
     prisma.openTrip.count(),
-    prisma.destinasi.count(),
     // "Baru" = belum ditindaklanjuti. Nilai legacy "replied" tidak ikut
     // terhitung karena sudah berarti dihubungi.
-    prisma.privateTrip.count({ where: { status: 'new' } }),
-    prisma.privateTrip.findMany({
-      take: 5,
-      orderBy: { createdAt: 'desc' }
-    }),
-    prisma.booking.count({ where: { status: 'pending' } }),
-    prisma.booking.aggregate({ where: { status: 'paid' }, _sum: { total: true } }),
-    prisma.booking.findMany({
-      take: 4,
-      orderBy: { createdAt: 'desc' },
-      include: { openTrip: true }
-    })
+    canInquiry ? prisma.privateTrip.count({ where: { status: 'new' } }) : Promise.resolve(0),
+    canInquiry
+      ? prisma.privateTrip.findMany({ take: 5, orderBy: { createdAt: 'desc' } })
+      : Promise.resolve([] as any[]),
+    canBooking ? prisma.booking.count({ where: { status: 'pending' } }) : Promise.resolve(0),
+    canBooking
+      ? prisma.booking.aggregate({ where: { status: 'paid' }, _sum: { total: true } })
+      : Promise.resolve({ _sum: { total: 0 } } as any),
+    canBooking
+      ? prisma.booking.findMany({ take: 4, orderBy: { createdAt: 'desc' }, include: { openTrip: true } })
+      : Promise.resolve([] as any[]),
   ])
 
   const totalOmset = Number(paidBookings._sum?.total || 0)
@@ -51,6 +59,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
 
       {/* Stats Bento Grid - Flat Design */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        {canBooking && (
         <Card className="relative overflow-hidden group hover:border-primary/50 hover:bg-muted/30 transition-all duration-300 border-border bg-background rounded-xl shadow-none">
           <Link href="/admin/booking" className="absolute inset-0 z-10" />
           <CardHeader className="relative z-20 pb-2 flex flex-row items-center justify-between">
@@ -63,7 +72,9 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
             <div className="text-4xl font-black tracking-tight text-foreground">{bookingPendingCount}</div>
           </CardContent>
         </Card>
+        )}
 
+        {canBooking && (
         <Card className="relative overflow-hidden group hover:border-primary/50 hover:bg-muted/30 transition-all duration-300 border-border bg-background rounded-xl shadow-none">
           <Link href="/admin/booking" className="absolute inset-0 z-10" />
           <CardHeader className="relative z-20 pb-2 flex flex-row items-center justify-between">
@@ -81,6 +92,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
             </p>
           </CardContent>
         </Card>
+        )}
 
         <Card className="relative overflow-hidden group hover:border-primary/50 hover:bg-muted/30 transition-all duration-300 border-border bg-background rounded-xl shadow-none">
           <Link href="/admin/open-trip" className="absolute inset-0 z-10" />
@@ -95,6 +107,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
           </CardContent>
         </Card>
 
+        {canInquiry && (
         <Card className="relative overflow-hidden group hover:border-primary/50 hover:bg-muted/30 transition-all duration-300 border-border bg-background rounded-xl shadow-none">
           <Link href="/admin/inquiries" className="absolute inset-0 z-10" />
           <CardHeader className="relative z-20 pb-2 flex flex-row items-center justify-between">
@@ -107,6 +120,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
             <div className="text-4xl font-black tracking-tight text-foreground">{privateTripNewCount}</div>
           </CardContent>
         </Card>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

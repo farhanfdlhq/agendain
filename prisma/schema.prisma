@@ -48,8 +48,21 @@ model OpenTrip {
   kebijakanPembatalan Json?
   kebijakanPembatalanEn Json?
   fileDokumen         Json?
+  // Digantikan akomodasi + penerbangan di UI. Kolomnya sengaja DIPERTAHANKAN
+  // agar isi lama paket yang sudah terbit tidak hilang.
   opsiPenjemputan     Json?
   opsiPenjemputanEn   Json?
+  // Tanggal mulai trip. Nullable: paket lama & paket "jadwal fleksibel"
+  // tidak punya tanggal pasti, dan halaman depan jatuh ke teks fleksibel.
+  tanggalKeberangkatan DateTime?
+  // Kuota kursi. `kursiTerisi` diisi manual admin supaya booking lewat
+  // WhatsApp/offline ikut terhitung, bukan hanya yang masuk tabel Booking.
+  kuota               Int?
+  kursiTerisi         Int       @default(0)
+  akomodasi           Json?
+  akomodasiEn         Json?
+  penerbangan         Json?
+  penerbanganEn       Json?
   status              String    @default("draft")
   label               String?
   bookings            Booking[]

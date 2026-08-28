@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { AdminHeader } from "@/components/reui/admin-header"
 import { Plus, Edit2, Trash2, Tag } from "lucide-react"
 import { toast } from "react-hot-toast"
+import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -23,6 +24,7 @@ type BlogCategory = {
 }
 
 export default function AdminBlogKategoriPage() {
+  const { confirm } = useConfirm()
   const [categories, setCategories] = useState<BlogCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -80,7 +82,12 @@ export default function AdminBlogKategoriPage() {
   }
 
   const handleDelete = async (cat: BlogCategory) => {
-    if (!confirm(`Hapus kategori "${cat.nama}"?`)) return
+    const ok = await confirm({
+      title: "Hapus kategori",
+      message: `Kategori "${cat.nama}" akan dihapus permanen. Artikel yang memakainya bisa kehilangan kategori.`,
+      confirmText: "Ya, hapus",
+    })
+    if (!ok) return
     try {
       const res = await fetch(`/api/blog/categories/${cat.id}`, { method: "DELETE" })
       if (!res.ok) {

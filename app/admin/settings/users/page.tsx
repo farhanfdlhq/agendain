@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useDeferredValue } from "react"
 import { useSession } from "next-auth/react"
 import { toast } from "react-hot-toast"
+import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { Plus, Users, Shield, MoreVertical, Search, Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -36,6 +37,7 @@ type AdminUser = {
 }
 
 export default function UserManagementPage() {
+  const { confirm } = useConfirm()
   const { data: session } = useSession()
   const router = useRouter()
   const [users, setUsers] = useState<AdminUser[]>([])
@@ -143,7 +145,12 @@ export default function UserManagementPage() {
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus pengguna ini?")) return;
+    const ok = await confirm({
+      title: "Hapus pengguna",
+      message: "Pengguna ini akan dihapus permanen dan langsung kehilangan akses ke admin.",
+      confirmText: "Ya, hapus",
+    })
+    if (!ok) return;
     try {
       const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
       const data = await res.json()

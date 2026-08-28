@@ -22,11 +22,15 @@
   min-height: 70dvh;
   display: flex;
   align-items: center;
-  /* Gambarnya di-set inline dari opentrip_settings.heroImage (lihat
-     OpenTripContent.tsx). Sebelumnya di-hardcode di sini sehingga field
-     Hero Image di CMS tersimpan tapi tidak pernah tampil. */
-  background-size: cover;
-  background-position: center;
+  /* Gambarnya dirender sebagai <Image fill> dari opentrip_settings.heroImage
+     (lihat OpenTripContent.tsx). Sebelumnya di-hardcode di sini sehingga field
+     Hero Image di CMS tersimpan tapi tidak pernah tampil; lalu sempat jadi
+     background inline, yang membuatnya lolos dari optimizer Next. */
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: center;
 }
 
 .heroOverlay {

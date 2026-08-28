@@ -4,8 +4,16 @@
 @layer base {
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html, body { overflow-x: hidden; }
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  /* Pengaman luapan horizontal SENGAJA hanya di <html>, tidak di <body>.
+     Menurut spesifikasi, bila satu sumbu bukan `visible`, sumbu lainnya yang
+     `visible` ikut dihitung menjadi `auto`. Jadi `body { overflow-x: hidden }`
+     diam-diam membuat overflow-y body menjadi `auto` — body berubah jadi
+     kontainer scroll, dan itu MENETRALKAN `position: sticky` di seluruh
+     keturunannya. Diukur langsung: kartu reservasi open trip bergerak 1:1
+     dengan scroll (top 1029 → 29 → −971) alih-alih menempel; setelah body
+     dilepas, ia terkunci tepat di 88px. `overflow-x: clip` TIDAK menolong —
+     sumbu y-nya tetap dihitung `auto`. */
+  html { overflow-x: hidden; scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
   body {
     font-family: var(--font-body);

@@ -9,9 +9,18 @@
   /* Naik ke bawah navbar transparan. Angkanya HARUS sama dengan padding-top
      .non-home-main di globals.css, dan keduanya ikut tinggi logo. */
   margin-top: calc(-1 * var(--navbar-offset, 80px));
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.heroImageWrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: center;
 }
 
 .heroOverlay {

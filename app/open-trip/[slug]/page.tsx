@@ -5,25 +5,29 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import BookingForm from '@/components/BookingForm/BookingForm'
 import GalleryLightbox from '@/components/GalleryLightbox/GalleryLightbox'
-import { Clock, MapPin, Tag, CalendarClock, Info, AlertCircle, CheckCircle2, FileText, Car } from 'lucide-react'
-import { formatIDR, formatUSD, formatEUR, fetchExchangeRates } from '@/lib/currency'
+import { Clock, MapPin, Tag, CalendarClock, Info, AlertCircle, CheckCircle2, FileText, Car, Users, BedDouble, Plane } from 'lucide-react'
+import { formatIDR, formatEUR, fetchExchangeRates } from '@/lib/currency'
 import { getServerLocale, getServerT } from '@/lib/i18n/server'
 import { pickLocalized } from '@/lib/i18n/localize'
+import { safeHref } from '@/lib/footer-settings'
 
 export const revalidate = 3600 // Cache for 1 hour
 
 export default async function PaketDetail(props: { params: Promise<{ slug: string }> }) {
   const { slug } = await props.params
 
-  const [pkg, settingsArr, rates, locale, t] = await Promise.all([
+  const [pkg, settingsArr, rates, locale, t, privatePackages] = await Promise.all([
     prisma.openTrip.findUnique({
       where: { slug },
       include: { destinasi: true }
     }),
     prisma.$queryRaw`SELECT * FROM Setting`.catch(() => [] as any[]),
-    fetchExchangeRates().catch(() => ({ USD: 0.000063, EUR: 0.000058 })),
+    fetchExchangeRates(),
     getServerLocale(),
-    getServerT()
+    getServerT(),
+    // Rekomendasi di bawah halaman. Gagal di sini tidak boleh menjatuhkan
+    // seluruh halaman paket, jadi errornya ditelan jadi daftar kosong.
+    prisma.privateTripPackage.findMany({ take: 3 }).catch(() => [] as any[])
   ])
 
   let settingsObj = (settingsArr as any[]).reduce((acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }), {})
@@ -31,6 +35,15 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
   if (!pkg) {
     notFound()
   }
+
+  // Booking yang sudah RESMI (status `paid` / Lunas) ikut memakan kuota secara
+  // otomatis. Pending belum resmi, cancelled jelas tidak dihitung. Query ini
+  // butuh pkg.id sehingga tidak bisa ikut Promise.all di atas. Gagal di sini
+  // tidak menjatuhkan halaman — dianggap 0 booking otomatis.
+  const paidAgg = await prisma.booking
+    .aggregate({ where: { openTripId: pkg.id, status: 'paid' }, _sum: { jumlahPax: true } })
+    .catch(() => ({ _sum: { jumlahPax: 0 } }))
+  const kursiTerisiOtomatis = paidAgg._sum.jumlahPax ?? 0
 
   // Setting global versi bahasa aktif; `_en` kosong jatuh ke versi Indonesia.
   const gset = (key: string): string | undefined =>
@@ -75,18 +88,41 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
     finalFileDokumen = pkg.fileDokumen
   }
 
-  let finalOpsiPenjemputan = []
-  const opsiPenjemputan = pickLocalized<any[]>(pkg, 'opsiPenjemputan', locale)
-  if (Array.isArray(opsiPenjemputan) && opsiPenjemputan.length > 0) {
-    finalOpsiPenjemputan = opsiPenjemputan
-  } else if (gset('global_opsi_penjemputan')) {
-    finalOpsiPenjemputan = gset('global_opsi_penjemputan')!.split('\n').filter((s: string) => s.trim())
-  } else {
-    finalOpsiPenjemputan = [
-      t('openTrip.detail.fallbackPickup1'),
-      t('openTrip.detail.fallbackPickup2'),
-      t('openTrip.detail.fallbackPickup3')
-    ]
+  // Akomodasi & Penerbangan menggantikan Opsi Penjemputan. Keduanya opsional:
+  // bagiannya tidak dirender sama sekali bila admin belum mengisi, supaya
+  // paket lama tidak menampilkan kotak kosong.
+  const akomodasi = (pickLocalized<any[]>(pkg, 'akomodasi', locale) || []).filter(Boolean)
+  const penerbangan = (pickLocalized<any[]>(pkg, 'penerbangan', locale) || []).filter(Boolean)
+
+  // Sisa kursi = kuota − terisi manual − booking Lunas otomatis. Hibrida:
+  // `kursiTerisi` diisi admin (mis. peserta yang bayar via WhatsApp/offline),
+  // sementara booking berstatus `paid` dari website dihitung otomatis. Keduanya
+  // sama-sama mengurangi kuota, jadi admin tidak perlu mencatat ulang booking
+  // website ke `kursiTerisi`.
+  const kuota = pkg.kuota ?? null
+  const kursiTerpakai = (pkg.kursiTerisi ?? 0) + kursiTerisiOtomatis
+  const sisaKursi = kuota === null ? null : Math.max(0, kuota - kursiTerpakai)
+
+  // Tanggal keberangkatan kini selalu ditetapkan (opsi "Fleksibel / Sesuai
+  // Jadwal" sudah dihapus). "—" hanyalah jaring pengaman bila ada paket lama
+  // yang tanggalnya belum diisi admin.
+  const tanggalBerangkat = pkg.tanggalKeberangkatan
+    ? new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'id-ID', {
+        day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+      }).format(pkg.tanggalKeberangkatan)
+    : '—'
+
+  // "Trip Berakhir" otomatis: dibandingkan per TANGGAL (bukan jam), keduanya di
+  // UTC agar konsisten dengan cara tanggal disimpan & ditampilkan. Trip
+  // dianggap berakhir hanya bila hari keberangkatan sudah benar-benar LEWAT —
+  // pada hari-H sendiri belum. Revalidate 1 jam sudah cukup untuk transisi ini.
+  let tripBerakhir = false
+  if (pkg.tanggalKeberangkatan) {
+    const now = new Date()
+    const todayUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+    const dep = pkg.tanggalKeberangkatan
+    const depUTC = Date.UTC(dep.getUTCFullYear(), dep.getUTCMonth(), dep.getUTCDate())
+    tripBerakhir = depUTC < todayUTC
   }
 
   let mainImage = '/placeholder.webp'
@@ -107,15 +143,19 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
     }
   }
 
+  // Galeri kini adaptif ke jumlah foto (lihat GalleryLightbox), jadi tidak lagi
+  // diduplikasi jadi 5. Satu placeholder saja bila paket belum berfoto.
   if (gallery.length === 0) {
-    gallery = [mainImage, mainImage, mainImage, mainImage, mainImage]
+    gallery = [mainImage]
   }
 
 
   const hargaIDRNum = Number(pkg?.harga || 0)
   const formattedHarga = formatIDR(hargaIDRNum)
-  const formattedUSD = formatUSD(hargaIDRNum * (rates.USD || 0.000063))
-  const formattedEUR = formatEUR(hargaIDRNum * (rates.EUR || 0.000058))
+  const formattedEUR = formatEUR(hargaIDRNum * rates.EUR)
+  // Kurs yang dipakai ditampilkan apa adanya supaya angka konversinya bisa
+  // ditelusuri pembaca, bukan muncul entah dari mana.
+  const kursEurIdr = formatIDR(Math.round(rates.eurIdr))
 
   const itinerary = pickLocalized<any[]>(pkg, 'itinerary', locale) || []
   const fasilitas = pickLocalized<string[]>(pkg, 'fasilitas', locale) || []
@@ -139,36 +179,61 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
         {/* Photo Gallery with Lightbox */}
         <GalleryLightbox images={gallery} title={nama} />
 
-        {/* Quick Info Cards */}
-        <div className={styles.quickInfoGrid}>
-          <div className={styles.quickInfoCard}>
-            <Clock className={styles.quickIcon} />
+        {/* Panel info cepat. Susunannya meniru referensi: tanggal keberangkatan
+            dinaikkan jadi baris penuh yang ditonjolkan, sisanya grid dua kolom,
+            lalu sisa kursi menutup di baris penuh. */}
+        <div className={styles.quickPanel}>
+          <div className={`${styles.departureRow} ${tripBerakhir ? styles.departureEnded : ''}`}>
+            <CalendarClock className={styles.departureIcon} />
             <div className={styles.quickText}>
-              <span className={styles.quickLabel}>{t('openTrip.detail.duration')}</span>
-              <span className={styles.quickValue}>{pkg.durasi} {t('openTrip.detail.days')}</span>
+              <span className={styles.departureLabel}>{t('openTrip.detail.departure')}</span>
+              <span className={styles.departureValue}>{tanggalBerangkat}</span>
+            </div>
+            {tripBerakhir && (
+              <span className={styles.endedBadge}>{t('openTrip.detail.tripEnded')}</span>
+            )}
+          </div>
+
+          <div className={styles.quickInfoGrid}>
+            <div className={styles.quickInfoCard}>
+              <Clock className={styles.quickIcon} />
+              <div className={styles.quickText}>
+                <span className={styles.quickLabel}>{t('openTrip.detail.duration')}</span>
+                <span className={styles.quickValue}>{pkg.durasi} {t('openTrip.detail.days')}</span>
+              </div>
+            </div>
+            <div className={styles.quickInfoCard}>
+              <MapPin className={styles.quickIcon} />
+              <div className={styles.quickText}>
+                <span className={styles.quickLabel}>{t('openTrip.detail.destination')}</span>
+                <span className={styles.quickValue}>{destinasiNama}</span>
+              </div>
+            </div>
+            <div className={styles.quickInfoCard}>
+              <Tag className={styles.quickIcon} />
+              <div className={styles.quickText}>
+                <span className={styles.quickLabel}>{t('openTrip.detail.category')}</span>
+                <span className={styles.quickValue}>{pkg.label || 'Open Trip'}</span>
+              </div>
             </div>
           </div>
-          <div className={styles.quickInfoCard}>
-            <MapPin className={styles.quickIcon} />
-            <div className={styles.quickText}>
-              <span className={styles.quickLabel}>{t('openTrip.detail.destination')}</span>
-              <span className={styles.quickValue}>{destinasiNama}</span>
+
+          {kuota !== null && (
+            <div className={styles.participantRow}>
+              <Users className={styles.quickIcon} />
+              <div className={styles.quickText}>
+                <span className={styles.quickLabel}>{t('openTrip.detail.participants')}</span>
+                {/* Setelah trip berakhir, sisa kursi tidak relevan lagi. */}
+                <span className={`${styles.quickValue} ${tripBerakhir ? styles.seatsFull : sisaKursi === 0 ? styles.seatsFull : styles.seatsLeft}`}>
+                  {tripBerakhir
+                    ? t('openTrip.detail.tripEnded')
+                    : sisaKursi === 0
+                      ? t('openTrip.detail.seatsFull')
+                      : `${sisaKursi} ${t('openTrip.detail.seatsLeft')}`}
+                </span>
+              </div>
             </div>
-          </div>
-          <div className={styles.quickInfoCard}>
-            <Tag className={styles.quickIcon} />
-            <div className={styles.quickText}>
-              <span className={styles.quickLabel}>{t('openTrip.detail.category')}</span>
-              <span className={styles.quickValue}>{pkg.label || 'Open Trip'}</span>
-            </div>
-          </div>
-          <div className={styles.quickInfoCard}>
-            <CalendarClock className={styles.quickIcon} />
-            <div className={styles.quickText}>
-              <span className={styles.quickLabel}>{t('openTrip.detail.departure')}</span>
-              <span className={styles.quickValue}>{t('openTrip.detail.departureValue')}</span>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Content Layout */}
@@ -223,6 +288,9 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
             {/* Itinerary */}
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>{t('openTrip.detail.itinerary')}</h2>
+              {/* Discroll sendiri agar itinerary panjang (7+ hari) tidak
+                  mendorong Akomodasi/Penerbangan jauh ke bawah layar. */}
+              <div className={styles.itineraryScroll}>
               <div className={styles.itineraryContainer}>
                 {itinerary.map((it, i) => {
                   // Mencegah judul dobel jika user mengetik "Hari 1"/"Day 1" di field judul
@@ -250,6 +318,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
                   )
                 })}
               </div>
+              </div>
             </section>
 
             <div className={styles.divider} />
@@ -261,7 +330,7 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
                   {finalFileDokumen.map((doc: any, idx: number) => {
                     if (typeof doc === 'object' && doc !== null && doc.name) {
                       return (
-                        <a key={idx} href={doc.url} target="_blank" rel="noreferrer" className={styles.docBadge} style={{ textDecoration: 'none' }}>
+                        <a key={idx} href={safeHref(doc.url)} target="_blank" rel="noreferrer" className={styles.docBadge} style={{ textDecoration: 'none' }}>
                           <FileText size={16} className={styles.docBadgeIcon} />
                           <span>{doc.name}</span>
                         </a>
@@ -279,12 +348,52 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
               </div>
             )}
 
-            <div className={styles.plainSection}>
-              <h3 className={styles.plainSectionTitle}>{t('openTrip.detail.pickup')}</h3>
-              <p className={styles.pickupText}>
-                {finalOpsiPenjemputan.join(', ')}
-              </p>
-            </div>
+            {(akomodasi.length > 0 || penerbangan.length > 0) && (
+              <div className={styles.logisticsGrid}>
+                {akomodasi.length > 0 && (
+                  <div className={styles.plainSection}>
+                    <h3 className={styles.plainSectionTitle}>
+                      <BedDouble size={18} className={styles.logisticsIcon} />
+                      {t('openTrip.detail.accommodation')}
+                    </h3>
+                    <ul className={styles.logisticsList}>
+                      {akomodasi.map((item: any, idx: number) => (
+                        <li key={idx}>
+                          {typeof item === 'string' ? item : (
+                            <>
+                              {item.kota && <span className={styles.logisticsLabel}>{item.kota}</span>}
+                              <span>{item.nama || item.hotel || ''}</span>
+                            </>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {penerbangan.length > 0 && (
+                  <div className={styles.plainSection}>
+                    <h3 className={styles.plainSectionTitle}>
+                      <Plane size={18} className={styles.logisticsIcon} />
+                      {t('openTrip.detail.flight')}
+                    </h3>
+                    <ul className={styles.logisticsList}>
+                      {penerbangan.map((item: any, idx: number) => (
+                        <li key={idx}>
+                          {typeof item === 'string' ? item : (
+                            <>
+                              {item.rute && <span className={styles.logisticsLabel}>{item.rute}</span>}
+                              {item.detail && <span className={styles.flightDetail}>{item.detail}</span>}
+                              {item.maskapai && <span className={styles.flightAirline}>{item.maskapai}</span>}
+                            </>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className={styles.divider} style={{ margin: '2rem 0' }} />
 
@@ -324,8 +433,14 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
                 <span className={styles.priceAmount}>{formattedHarga}</span>
                 <span className={styles.priceUnit}>{t('openTrip.detail.perPax')}</span>
               </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--color-muted)', marginBottom: '16px', display: 'flex', gap: '8px' }}>
-                <span>≈ {formattedUSD}</span> • <span>{formattedEUR}</span>
+              <div className={styles.rateBox}>
+                <div className={styles.rateConverted}>≈ {formattedEUR}</div>
+                <div className={styles.rateNote}>
+                  {t('openTrip.detail.rateBasis')} 1 € = {kursEurIdr}
+                  {rates.source === 'wise'
+                    ? <> · <span className={styles.rateLive}>{t('openTrip.detail.rateLive')}</span></>
+                    : <> · <span className={styles.rateStale}>{t('openTrip.detail.rateFallback')}</span></>}
+                </div>
               </div>
 
               <BookingForm
@@ -333,6 +448,10 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
                 paketNama={nama}
                 hargaString={formattedHarga}
                 whatsappNumber={settingsObj.whatsapp_number || "6281234567890"}
+                fixedDeparture={pkg.tanggalKeberangkatan ? pkg.tanggalKeberangkatan.toISOString().slice(0, 10) : null}
+                fixedDepartureLabel={pkg.tanggalKeberangkatan ? tanggalBerangkat : undefined}
+                sisaKursi={sisaKursi}
+                tripEnded={tripBerakhir}
               />
 
               <div className={styles.waOption}>
@@ -345,6 +464,37 @@ export default async function PaketDetail(props: { params: Promise<{ slug: strin
             </div>
           </div>
         </div>
+
+        {/* Rekomendasi Private Trip — hanya muncul bila ada paketnya. */}
+        {privatePackages.length > 0 && (
+          <section className={styles.recommendSection}>
+            <h2 className={styles.sectionTitle}>{t('openTrip.detail.privateRecommendation')}</h2>
+            <p className={styles.recommendDesc}>{t('openTrip.detail.privateRecommendationDesc')}</p>
+            <div className={styles.recommendGrid}>
+              {privatePackages.map((tier: any) => (
+                <Link key={tier.id} href="/private-trip" className={styles.recommendCard}>
+                  <div className={styles.recommendImageWrapper}>
+                    <Image
+                      src={tier.image || '/placeholder.webp'}
+                      alt={tier.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className={styles.recommendImage}
+                    />
+                    {tier.locationTab && (
+                      <span className={styles.recommendBadge}>{tier.locationTab}</span>
+                    )}
+                  </div>
+                  <div className={styles.recommendBody}>
+                    <span className={styles.recommendSubtitle}>{tier.subtitle}</span>
+                    <h3 className={styles.recommendTitle}>{tier.title}</h3>
+                    <span className={styles.recommendLink}>{t('openTrip.detail.seeDetail')} →</span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   )

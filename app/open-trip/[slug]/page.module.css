@@ -33,11 +33,81 @@
 }
 
 /* Quick Info Grid */
+/* Panel pembungkus: tanggal keberangkatan di baris penuh, lalu grid, lalu
+   sisa kursi. Mengikuti susunan referensi tourguidein. */
+.quickPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-xxl);
+}
+
+.departureRow,
+.participantRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-hairline);
+  background: var(--color-surface-soft);
+}
+
+/* Tanggal ditonjolkan memakai warna brand — ini informasi yang paling dicari
+   pengunjung open trip berjadwal. */
+.departureRow {
+  background: color-mix(in srgb, var(--color-dominant) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-dominant) 35%, transparent);
+}
+
+/* Trip yang sudah berakhir: baris tanggal jadi netral/redup, dan badge merah
+   "Trip Berakhir" dipasang di kanan. */
+.departureEnded {
+  background: color-mix(in srgb, var(--color-error) 8%, transparent);
+  border-color: color-mix(in srgb, var(--color-error) 30%, transparent);
+}
+
+.endedBadge {
+  margin-left: auto;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: var(--color-error);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.departureIcon {
+  width: 26px;
+  height: 26px;
+  color: var(--color-dominant-600, var(--color-primary));
+  flex-shrink: 0;
+}
+
+.departureLabel {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-dominant-700, var(--color-primary));
+}
+
+.departureValue {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-ink);
+}
+
 .quickInfoGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-md);
-  margin-bottom: var(--space-xxl);
 }
 
 .quickInfoCard {
@@ -365,6 +435,52 @@
   border-radius: var(--radius-lg);
   padding: var(--space-xl);
   box-shadow: var(--shadow-card);
+  /* Ikut menggulir bersama halaman. Sticky ini pernah dilepas (commit 99a5fa0)
+     karena kartunya lebih tinggi dari layar sehingga tombol CTA di bawah tidak
+     pernah bisa dijangkau. Dipasang lagi DENGAN pengaman: tingginya dibatasi
+     setinggi viewport dan isinya discroll sendiri bila melebihi — jadi seluruh
+     isi kartu tetap terjangkau berapa pun tinggi layarnya. */
+  position: sticky;
+  top: calc(var(--navbar-height, 72px) + 16px);
+  max-height: calc(100dvh - var(--navbar-height, 72px) - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.resCard::-webkit-scrollbar {
+  width: 6px;
+}
+
+.resCard::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+/* ---------- Konversi mata uang ---------- */
+.rateBox {
+  margin-bottom: 16px;
+}
+
+.rateConverted {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.rateNote {
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+.rateLive {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.rateStale {
+  color: var(--color-warning);
+  font-weight: 600;
 }
 
 .resPrice {
@@ -439,7 +555,12 @@
   }
   
   .resCard {
+    /* Di mobile kartunya sudah di bawah konten, jadi sticky tidak ada gunanya.
+       max-height & overflow ikut dilepas agar kartunya tidak punya scrollbar
+       sendiri di dalam halaman yang juga discroll. */
     position: static;
+    max-height: none;
+    overflow-y: visible;
     padding: var(--space-lg);
     box-shadow: var(--shadow-card);
     margin-top: var(--space-xl);
@@ -450,6 +571,214 @@
 
 @media (max-width: 480px) {
   .quickInfoGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Itinerary scroll view ---------- */
+/* Itinerary panjang (7+ hari) tidak lagi mendorong Akomodasi & Penerbangan
+   jauh ke bawah layar; daftarnya discroll di dalam kotaknya sendiri. */
+.itineraryScroll {
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: 12px;
+  /* Petunjuk visual bahwa masih ada isi di bawah. */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent 100%);
+}
+
+.itineraryScroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.itineraryScroll::-webkit-scrollbar-track {
+  background: var(--color-surface-soft);
+  border-radius: 999px;
+}
+
+.itineraryScroll::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+
+.itineraryScroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+/* Isi terakhir tidak tertutup gradien mask. */
+.itineraryScroll .itineraryContainer {
+  padding-bottom: 36px;
+}
+
+@media (max-width: 768px) {
+  .itineraryScroll {
+    max-height: 440px;
+  }
+}
+
+/* ---------- Akomodasi & Penerbangan ---------- */
+.logisticsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.logisticsGrid .plainSection {
+  border-bottom: none;
+}
+
+.logisticsIcon {
+  color: var(--color-primary);
+  vertical-align: -3px;
+  margin-right: 8px;
+}
+
+.logisticsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logisticsList li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.925rem;
+  color: var(--color-body);
+  line-height: 1.55;
+  padding-left: 14px;
+  border-left: 2px solid var(--color-hairline);
+}
+
+.logisticsLabel {
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.flightDetail {
+  font-size: 0.85rem;
+  color: var(--color-body);
+}
+
+.flightAirline {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .logisticsGrid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+/* ---------- Sisa kursi ---------- */
+.seatsLeft {
+  color: var(--color-success);
+}
+
+.seatsFull {
+  color: var(--color-error);
+}
+
+/* ---------- Rekomendasi Private Trip ---------- */
+.recommendSection {
+  margin-top: 3.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--color-hairline);
+}
+
+.recommendDesc {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  margin: -0.5rem 0 1.75rem;
+}
+
+.recommendGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.recommendCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--color-surface);
+  text-decoration: none;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.recommendCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+}
+
+.recommendImageWrapper {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.recommendImage {
+  object-fit: cover;
+}
+
+.recommendBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.62);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.recommendBody {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 1.1rem 1.25rem 1.35rem;
+}
+
+.recommendSubtitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-primary);
+}
+
+.recommendTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.recommendLink {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+@media (max-width: 900px) {
+  .recommendGrid {
     grid-template-columns: 1fr;
   }
 }

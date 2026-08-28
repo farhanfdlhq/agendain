@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import PackageCard from "@/components/PackageCard/PackageCard";
 import OpenTripFilter, { type DestOption } from "@/components/OpenTripFilter/OpenTripFilter";
 import HeroHeader from "@/components/HeroHeader/HeroHeader";
@@ -34,7 +35,19 @@ export default function OpenTripContent({
   return (
     <div className={styles.page}>
       <div className={styles.heroContainer}>
-        <div className={styles.heroWrapper} style={{ backgroundImage: `url("${heroImage}")` }}>
+        <div className={styles.heroWrapper}>
+          {/* next/image, bukan CSS background-image: background biasa memaksa
+              browser memakai satu file yang sama untuk semua lebar layar & DPR.
+              Hero ini dibatasi .heroContainer (max 1320px - 2x --space-lg). */}
+          <Image
+            src={heroImage}
+            alt=""
+            fill
+            priority
+            className={styles.heroImage}
+            quality={85}
+            sizes="(min-width: 1320px) 1272px, 100vw"
+          />
           <div className={styles.heroOverlay} />
           <div className={styles.heroContent}>
             <h1 className={styles.heroTitle}>

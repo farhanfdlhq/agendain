@@ -72,15 +72,26 @@ import { prisma } from "@/lib/prisma"
 
 import { unstable_cache } from "next/cache"
 
-const getSettings = unstable_cache(async () => {
+const fetchSettings = unstable_cache(async () => {
+  const settingsArr = await prisma.setting.findMany()
+  return settingsArr.reduce((acc: any, curr: { key: string, value: string }) => ({ ...acc, [curr.key]: curr.value }), {})
+}, ['global-settings'], { tags: ['settings'], revalidate: 3600 })
+
+// try/catch WAJIB di luar unstable_cache. Kalau di dalam, objek kosong hasil
+// fallback ikut tersimpan sebagai hasil yang sah di data cache Next — cache itu
+// persisten di .next/cache sehingga lolos restart server. Akibatnya satu kedipan
+// DB membuat situs menyajikan setting kosong (logo & favicon jatuh ke aset
+// bawaan, bukan yang dari CMS) sampai sejam ke depan walau DB sudah pulih.
+// Dengan dilempar keluar, kegagalan tidak pernah masuk cache dan request
+// berikutnya langsung mencoba lagi.
+async function getSettings(): Promise<any> {
   try {
-    const settingsArr = await prisma.setting.findMany()
-    return settingsArr.reduce((acc: any, curr: { key: string, value: string }) => ({ ...acc, [curr.key]: curr.value }), {})
+    return await fetchSettings()
   } catch (e) {
     console.error("Failed to fetch settings for layout", e)
     return {}
   }
-}, ['global-settings'], { tags: ['settings'], revalidate: 3600 })
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const settingsObj = await getSettings()
@@ -187,7 +198,19 @@ export default async function RootLayout({
             --color-warning: ${theme.colorWarning} !important;
             --color-error: ${theme.colorError} !important;
             --color-info: ${theme.colorInfo} !important;
-            
+
+            /* Token shadcn yang dipetakan @theme inline di app/admin/admin.css
+               menjadi utility bg-info / text-success / border-warning, dipakai
+               varian Alert & Badge di components/reui. Tanpa tiga baris ini
+               utility itu terkunci ke nilai bawaan admin.css (info = violet),
+               sehingga tab Semantic di Tema & Tampilan tidak berpengaruh apa
+               pun pada alert. Sengaja nilai hex langsung, bukan
+               var(--color-info): admin.css mendefinisikan --color-info sebagai
+               var(--info), jadi saling menunjuk akan jadi lingkaran. */
+            --info: ${theme.colorInfo} !important;
+            --success: ${theme.colorSuccess} !important;
+            --warning: ${theme.colorWarning} !important;
+
             --color-on-primary: #ffffff !important;
             --color-on-dominant: #1c1c1c !important;
             

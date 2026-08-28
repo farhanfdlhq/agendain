@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { reportAuthDenied, reportServerError } from "@/lib/error-log";
+import { csrfBlocked } from "@/lib/security";
 import {
   DEFAULT_ROLES,
   SUPER_ADMIN_ROLE,
@@ -10,6 +11,11 @@ import {
   type PermissionSubject,
   type RoleDef,
 } from "@/lib/permissions";
+
+// Method yang mengubah state → wajib lolos verifikasi CSRF. GET/HEAD/OPTIONS
+// bersifat aman/idempoten dan sebagian dipanggil dari konteks SSR tanpa header
+// Origin, jadi tidak ikut diperiksa.
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 // ---------------------------------------------------------------------------
 // Mesin otorisasi berbasis permission (sisi server).
@@ -147,6 +153,19 @@ export async function requirePermission(
   route: string,
   ...required: string[]
 ): Promise<Guard> {
+  // CSRF diperiksa lebih dulu & terpusat: setiap route admin lewat gerbang ini,
+  // jadi seluruh mutasi terlindungi seragam tanpa menaruh cek di tiap handler.
+  // `csrfBlocked` menolak hanya request browser lintas-origin; klien server
+  // (Hermes Agent di production) tanpa sinyal browser diloloskan — bukan vektor
+  // CSRF, dan tetap dijaga oleh otentikasi di bawah ini.
+  if (request && MUTATING_METHODS.has(request.method) && csrfBlocked(request)) {
+    reportAuthDenied({ route, status: 403, code: "csrf_failed", req: request });
+    return {
+      denied: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
+      actor: null,
+    };
+  }
+
   const session = await getServerSession(authOptions);
   const actor = await resolveActor(session);
 

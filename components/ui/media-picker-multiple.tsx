@@ -25,7 +25,7 @@ interface MediaPickerMultipleProps {
   description?: string
 }
 
-export function MediaPickerMultiple({ values, onChange, label = "Klik untuk memilih banyak gambar", description = "Maks 2MB/file" }: MediaPickerMultipleProps) {
+export function MediaPickerMultiple({ values, onChange, label = "Klik untuk memilih banyak gambar", description = "Maks 10MB/file" }: MediaPickerMultipleProps) {
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState("upload")
   const [uploading, setUploading] = useState(false)

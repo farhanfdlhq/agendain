@@ -21,6 +21,8 @@ export default function PrivateTripHero({ privatetripSettings = {} }: { privatet
         fill
         className={styles.heroBg}
         priority
+        quality={85}
+        sizes="100vw"
       />
       <div className={styles.heroOverlay} />
 

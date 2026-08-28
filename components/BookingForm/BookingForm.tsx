@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, CheckCircle, Loader2 } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 import { formatWhatsAppNumber } from '@/lib/utils'
 import styles from './BookingForm.module.css'
 
@@ -11,19 +12,37 @@ type BookingFormProps = {
   paketNama: string
   hargaString: string
   whatsappNumber: string
+  /**
+   * Tanggal keberangkatan tetap (ISO `YYYY-MM-DD`). Setiap open trip kini
+   * berjadwal, jadi tanggal ini dipakai otomatis dan pemilih tanggal
+   * disembunyikan — pengunjung tidak boleh memesan tanggal berbeda dari jadwal
+   * trip. `null` hanya untuk paket lama yang tanggalnya belum diisi admin; di
+   * situ pemilih tanggal masih muncul sebagai jaring pengaman.
+   */
+  fixedDeparture?: string | null
+  /** Versi tampil dari `fixedDeparture` (mis. "15 November 2026"). */
+  fixedDepartureLabel?: string
+  /**
+   * Batas pax = sisa kursi. `null` bila kuota tidak ditetapkan (tidak dibatasi).
+   * `0` berarti kuota penuh — form dinonaktifkan.
+   */
+  sisaKursi?: number | null
+  /** Trip sudah lewat tanggal keberangkatan; booking dimatikan. */
+  tripEnded?: boolean
 }
 
-export default function BookingForm({ openTripId, paketNama, hargaString, whatsappNumber }: BookingFormProps) {
+export default function BookingForm({ openTripId, paketNama, hargaString, whatsappNumber, fixedDeparture, fixedDepartureLabel, sisaKursi, tripEnded }: BookingFormProps) {
   const router = useRouter()
-  
+
   // Step 0: Inline form, Step 1: Modal details, Step 2: Success
   const [step, setStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Form Data
+  // Form Data. `tanggal` di-seed dengan tanggal tetap bila trip berjadwal,
+  // sehingga booking membawa tanggal yang benar tanpa perlu diisi pengunjung.
   const [formData, setFormData] = useState({
-    tanggal: '',
+    tanggal: fixedDeparture || '',
     jumlahPax: 2,
     nama: '',
     email: '',
@@ -35,10 +54,28 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
+  // Batas atas pax mengikuti sisa kursi bila kuota ditetapkan.
+  const seatLimit = typeof sisaKursi === 'number' ? sisaKursi : null
+  // Booking dimatikan bila kuota penuh ATAU trip sudah berakhir.
+  const disabledBooking = seatLimit === 0 || !!tripEnded
+
   const handleInitialSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.tanggal || formData.jumlahPax < 1) {
-      alert("Mohon isi tanggal dan jumlah pax dengan benar.")
+    if (tripEnded) {
+      toast.error("Trip ini sudah berakhir.")
+      return
+    }
+    // Trip berjadwal: tanggal sudah pasti, hanya pax yang divalidasi.
+    if (!fixedDeparture && !formData.tanggal) {
+      toast.error("Mohon pilih tanggal keberangkatan.")
+      return
+    }
+    if (formData.jumlahPax < 1) {
+      toast.error("Jumlah peserta minimal 1.")
+      return
+    }
+    if (seatLimit !== null && formData.jumlahPax > seatLimit) {
+      toast.error(`Sisa kursi tinggal ${seatLimit}. Kurangi jumlah peserta.`)
       return
     }
     setStep(1) // Open Modal
@@ -84,34 +121,52 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
     setStep(0)
   }
 
+  // Tanggal untuk ditampilkan: label rapi bila trip berjadwal, kalau tidak
+  // pakai apa yang dipilih pengunjung.
+  const tanggalTampil = fixedDeparture ? (fixedDepartureLabel || fixedDeparture) : formData.tanggal
+
   return (
     <>
       {/* The inline form shown in the sidebar */}
       <form className={styles.inlineForm} onSubmit={handleInitialSubmit}>
-        <div className={styles.inputGroup}>
-          <label>Tanggal Keberangkatan</label>
-          <input 
-            type="date" 
-            name="tanggal"
-            className={styles.input} 
-            value={formData.tanggal}
-            onChange={handleChange}
-            required 
-          />
-        </div>
+        {/* Untuk trip berjadwal (semua trip sekarang), tanggalnya sudah tampil
+            menonjol di panel info atas, jadi kartu ini cukup menanyakan jumlah
+            pax. Pemilih tanggal hanya muncul untuk paket lama yang tanggalnya
+            belum diisi admin. */}
+        {!fixedDeparture && (
+          <div className={styles.inputGroup}>
+            <label>Tanggal Keberangkatan</label>
+            <input
+              type="date"
+              name="tanggal"
+              className={styles.input}
+              value={formData.tanggal}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        )}
         <div className={styles.inputGroup}>
           <label>Jumlah Peserta (Pax)</label>
-          <input 
-            type="number" 
+          <input
+            type="number"
             name="jumlahPax"
-            min="1" 
-            className={styles.input} 
+            min="1"
+            // Batas atas = sisa kursi. Bila kuota tak ditetapkan, tanpa batas.
+            max={seatLimit !== null ? seatLimit : undefined}
+            className={styles.input}
             value={formData.jumlahPax}
             onChange={handleChange}
-            required 
+            required
+            disabled={disabledBooking}
           />
+          {seatLimit !== null && !disabledBooking && (
+            <p className={styles.seatHint}>Maksimal {seatLimit} pax (sisa kursi).</p>
+          )}
         </div>
-        <button type="submit" className={styles.reserveBtn}>Pesan Sekarang</button>
+        <button type="submit" className={styles.reserveBtn} disabled={disabledBooking}>
+          {tripEnded ? 'Trip Berakhir' : seatLimit === 0 ? 'Kuota Penuh' : 'Pesan Sekarang'}
+        </button>
       </form>
 
       {/* The Modal */}
@@ -140,7 +195,7 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
               {step === 1 && (
                 <div className={styles.modalBody}>
                   <h2>Lengkapi Data Pemesanan</h2>
-                  <p className={styles.subtitle}>Open Trip: <strong>{paketNama}</strong> <br/> Keberangkatan: <strong>{formData.tanggal}</strong> untuk <strong>{formData.jumlahPax} Pax</strong></p>
+                  <p className={styles.subtitle}>Open Trip: <strong>{paketNama}</strong> <br/> Keberangkatan: <strong>{tanggalTampil}</strong> untuk <strong>{formData.jumlahPax} Pax</strong></p>
                   
                   {error && <div className={styles.errorAlert}>{error}</div>}
 
@@ -191,7 +246,7 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
                   
                   <div className={styles.successActions}>
                     <a 
-                      href={`https://wa.me/${formatWhatsAppNumber(whatsappNumber)}?text=${encodeURIComponent(`Halo Agendain, saya ${formData.nama} telah melakukan booking untuk open trip ${paketNama} pada ${formData.tanggal} sebanyak ${formData.jumlahPax} Pax. Saya ingin melanjutkan proses pembayaran.`)}`}
+                      href={`https://wa.me/${formatWhatsAppNumber(whatsappNumber)}?text=${encodeURIComponent(`Halo Agendain, saya ${formData.nama} telah melakukan booking untuk open trip ${paketNama} pada ${tanggalTampil} sebanyak ${formData.jumlahPax} Pax. Saya ingin melanjutkan proses pembayaran.`)}`}
                       target="_blank" 
                       rel="noreferrer" 
                       className={styles.btnSubmit}

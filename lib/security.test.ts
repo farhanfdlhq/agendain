@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import {
   AdminUserSchema,
   checkCSRF,
+  csrfBlocked,
   getClientIp,
   getClientIpFromHeaders,
   isAllowedRole,
   matchesFileSignature,
+  OpenTripSchema,
   rateLimit,
   sanitizeHtml,
   sanitizeSettingsPayload,
@@ -141,6 +143,18 @@ describe("security helpers", () => {
     ).toBe(false);
   });
 
+  it("csrfBlocked: tolak browser lintas-origin, loloskan klien non-browser (Hermes)", () => {
+    // Serangan browser lintas-origin → diblokir.
+    expect(csrfBlocked(reqWith({ host: "site.com", origin: "http://evil.com" }))).toBe(true);
+    expect(csrfBlocked(reqWith({ host: "site.com", "sec-fetch-site": "cross-site" }))).toBe(true);
+    // Browser same-origin → lolos.
+    expect(csrfBlocked(reqWith({ host: "site.com", origin: "http://site.com" }))).toBe(false);
+    expect(csrfBlocked(reqWith({ host: "site.com", "sec-fetch-site": "same-origin" }))).toBe(false);
+    // Klien server-to-server tanpa sinyal browser → lolos (bukan vektor CSRF).
+    expect(csrfBlocked(reqWith({ host: "site.com" }))).toBe(false);
+    expect(csrfBlocked(reqWith({}))).toBe(false);
+  });
+
   it("bounds settings payloads and strips prototype pollution", () => {
     const ok = sanitizeSettingsPayload({ a: "1", nested: { b: [1, 2] } });
     expect(ok.ok).toBe(true);
@@ -163,5 +177,70 @@ describe("security helpers", () => {
     expect(rateLimit(ip, 2, 60000).success).toBe(true);
     expect(rateLimit(ip, 2, 60000).success).toBe(true);
     expect(rateLimit(ip, 2, 60000).success).toBe(false);
+  });
+});
+
+describe("OpenTripSchema", () => {
+  const base = {
+    nama: "Halal Tour Turki",
+    deskripsi: "Deskripsi paket.",
+    harga: 18900000,
+    durasi: 7,
+    destinasiId: 3,
+  };
+
+  it("accepts the real stored shapes (foto object, akomodasi/penerbangan/itinerary)", () => {
+    const r = OpenTripSchema.safeParse({
+      ...base,
+      foto: { medium: "/uploads/a.webp", thumb: "/uploads/a.webp", gallery: ["/uploads/a.webp"] },
+      itinerary: [{ hari: 1, judul: "Tiba", deskripsi: "Mendarat" }],
+      fasilitas: ["Hotel", "Bus"],
+      akomodasi: [{ kota: "Istanbul", nama: "Grand Hotel" }, "Free text row"],
+      penerbangan: [{ rute: "Jakarta → Istanbul", detail: "TK57", maskapai: "Turkish" }],
+      tanggalKeberangkatan: "2026-11-15",
+      kuota: 20,
+      kursiTerisi: 14,
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("rejects javascript: URLs in foto (stored XSS vector)", () => {
+    const r = OpenTripSchema.safeParse({
+      ...base,
+      foto: [{ full: "javascript:alert(1)" }],
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("rejects data: URLs in file dokumen", () => {
+    const r = OpenTripSchema.safeParse({
+      ...base,
+      fileDokumen: [{ name: "x", url: "data:text/html,<script>alert(1)</script>" }],
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("strips prototype-pollution keys instead of storing them", () => {
+    const r = OpenTripSchema.safeParse({
+      ...base,
+      itinerary: [{ hari: 1, judul: "ok", __proto__: { polluted: true } } as any],
+    });
+    expect(r.success).toBe(true);
+    if (r.success) {
+      const item = (r.data.itinerary as any[])[0];
+      expect(Object.prototype.hasOwnProperty.call(item, "polluted")).toBe(false);
+      expect(({} as any).polluted).toBeUndefined();
+    }
+  });
+
+  it("caps oversized arrays (DoS guard)", () => {
+    const huge = Array.from({ length: 5000 }, (_, i) => `item ${i}`);
+    const r = OpenTripSchema.safeParse({ ...base, fasilitas: huge });
+    expect(r.success).toBe(false);
+  });
+
+  it("rejects out-of-range numeric fields", () => {
+    expect(OpenTripSchema.safeParse({ ...base, durasi: 9999 }).success).toBe(false);
+    expect(OpenTripSchema.safeParse({ ...base, harga: -1 }).success).toBe(false);
   });
 });

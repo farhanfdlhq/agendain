@@ -32,14 +32,21 @@ export default function Navbar({ settings }: { settings?: any }) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Prevent scrolling when mobile menu is open
+  // Kunci scroll saat menu mobile terbuka.
+  //
+  // Saat menutup, inline style-nya DIHAPUS, bukan diisi 'auto'. Mengisi 'auto'
+  // meninggalkan `style="overflow: auto"` permanen di <body> pada SETIAP
+  // pemuatan halaman — dan itu menjadikan body kontainer scroll, yang
+  // menetralkan `position: sticky` di seluruh situs (kartu reservasi open trip
+  // tidak mau menempel). Inline style juga mengalahkan stylesheet, jadi bug ini
+  // tidak bisa diperbaiki dari CSS mana pun.
   useEffect(() => {
     if (open) {
       document.body.style.overflow = 'hidden'
     } else {
-      document.body.style.overflow = 'auto'
+      document.body.style.removeProperty('overflow')
     }
-    return () => { document.body.style.overflow = 'auto' }
+    return () => { document.body.style.removeProperty('overflow') }
   }, [open])
 
   const siteName = settings?.site_name || "agendain"

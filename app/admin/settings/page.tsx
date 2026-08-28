@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { Alert, AlertTitle, AlertDescription } from "@/components/reui/alert"
 import { MediaPicker } from "@/components/ui/media-picker"
 import { formatWhatsAppNumber } from "@/lib/utils"
 import Cropper from "react-easy-crop"
@@ -212,21 +213,18 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 shadow-xs">
-                <div className="flex items-start gap-3.5">
-                  <div className="text-primary mt-0.5 shrink-0">
-                    <Info className="h-5 w-5" />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm font-bold leading-none tracking-tight text-foreground">
-                      TIP: Saran Praktik Terbaik
-                    </p>
-                    <p className="text-xs text-muted-foreground leading-relaxed pt-1">
-                      Gunakan format <span className="font-semibold text-foreground">PNG</span> (mendukung transparansi) atau <span className="font-semibold text-foreground">ICO</span>, sebaiknya berwujud <span className="font-semibold text-foreground">Bujur Sangkar (contoh: 512×512 piksel)</span>, maksimal <span className="font-semibold text-foreground">10MB</span>. File PNG disimpan tetap PNG (tidak dikonversi ke WebP), dan file ICO diunggah apa adanya agar langsung termuat di tab semua perangkat.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              {/* Alert custom (components/reui/alert.tsx), bukan kotak buatan
+                  tangan: varian `info` inilah yang memakai warna Info dari
+                  Tema & Tampilan. */}
+              <Alert variant="info" className="shadow-xs">
+                <Info className="h-5 w-5" />
+                <AlertTitle>TIP: Saran Praktik Terbaik</AlertTitle>
+                <AlertDescription className="text-xs leading-relaxed">
+                  <p>
+                    Gunakan format <span className="font-semibold text-foreground">PNG</span> (mendukung transparansi) atau <span className="font-semibold text-foreground">ICO</span>, sebaiknya berwujud <span className="font-semibold text-foreground">Bujur Sangkar (contoh: 512×512 piksel)</span>, maksimal <span className="font-semibold text-foreground">10MB</span>. File PNG disimpan tetap PNG (tidak dikonversi ke WebP), dan file ICO diunggah apa adanya agar langsung termuat di tab semua perangkat.
+                  </p>
+                </AlertDescription>
+              </Alert>
             </div>
             
             <div className="space-y-2 sm:col-span-2">

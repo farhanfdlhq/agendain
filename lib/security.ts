@@ -60,36 +60,125 @@ export const ProfileUpdateSchema = z
     path: ["currentPassword"],
   });
 
+// === Bahan validasi field JSON paket (item keamanan) ===
+// Field-field ini dulu `z.any()` — apa pun lolos. Sekarang tiap bentuk
+// divalidasi: URL dibatasi skema aman (menutup XSS tersimpan lewat
+// `javascript:`/`data:`), panjang string & jumlah elemen dibatasi (menahan
+// payload raksasa), dan key tak dikenal di-strip (menutup prototype pollution).
+// `z` object memang strip key tak dikenal secara default, jadi __proto__ dsb
+// tidak pernah ikut tersimpan.
+
+// URL untuk disimpan lalu dirender sebagai src/href. Hanya path relatif
+// ("/uploads/...") atau http(s). Skema berbahaya ditolak tegas.
+const StoredUrl = z
+  .string()
+  .max(2000)
+  .refine((s) => {
+    const t = s.trim();
+    if (!t) return false;
+    if (/^\s*(javascript|data|vbscript):/i.test(t)) return false;
+    return t.startsWith("/") || /^https?:\/\//i.test(t);
+  }, "URL tidak valid atau skema tidak diizinkan");
+
+// Daftar teks bebas (fasilitas, termasuk, informasi penting, dst).
+const TextList = z.array(z.string().max(2000)).max(200);
+
+const ItineraryItem = z.object({
+  hari: z.coerce.number().int().min(0).max(1000).optional(),
+  judul: z.string().max(500).optional(),
+  judulEn: z.string().max(500).optional(),
+  deskripsi: z.string().max(5000).optional(),
+  deskripsiEn: z.string().max(5000).optional(),
+  desc: z.string().max(5000).optional(),
+});
+const ItineraryList = z.array(ItineraryItem).max(200);
+
+// Akomodasi & Penerbangan: baris bisa string mentah atau objek terstruktur.
+const AkomodasiList = z
+  .array(
+    z.union([
+      z.string().max(1000),
+      z.object({ kota: z.string().max(200).optional(), nama: z.string().max(1000).optional() }),
+    ]),
+  )
+  .max(100);
+const PenerbanganList = z
+  .array(
+    z.union([
+      z.string().max(1000),
+      z.object({
+        rute: z.string().max(400).optional(),
+        detail: z.string().max(1000).optional(),
+        maskapai: z.string().max(300).optional(),
+      }),
+    ]),
+  )
+  .max(100);
+
+// File dokumen: {name, url} atau string URL.
+const FileDokumenList = z
+  .array(z.union([StoredUrl, z.object({ name: z.string().max(400).optional(), url: StoredUrl })]))
+  .max(20);
+
+// Foto: dua bentuk historis — array objek gambar, atau objek ber-`gallery`.
+const FotoImageObject = z.object({
+  thumb: StoredUrl.optional(),
+  medium: StoredUrl.optional(),
+  large: StoredUrl.optional(),
+  full: StoredUrl.optional(),
+});
+const FotoSchema = z.union([
+  z.array(z.union([StoredUrl, FotoImageObject])).max(30),
+  z.object({
+    thumb: StoredUrl.optional(),
+    medium: StoredUrl.optional(),
+    large: StoredUrl.optional(),
+    full: StoredUrl.optional(),
+    gallery: z.array(StoredUrl).max(30).optional(),
+  }),
+]);
+
 export const OpenTripSchema = z.object({
   nama: z.string().min(1, "Nama paket harus diisi").max(160),
   namaEn: z.string().max(160).nullable().optional(),
   slug: z.string().max(180).optional(),
   deskripsi: z.string().min(1, "Deskripsi harus diisi").max(20000),
   deskripsiEn: z.string().max(20000).nullable().optional(),
-  harga: z.coerce.number().positive("Harga harus lebih dari 0"),
-  durasi: z.coerce.number().positive("Durasi harus lebih dari 0"),
-  destinasiId: z.coerce.number().positive(),
-  // JSON passthrough: z.any() (bukan z.unknown()) agar hasilnya assignable ke
-  // tipe Prisma InputJsonValue. Validasi runtime tetap sama (opsional, bebas).
-  foto: z.any().optional(),
-  itinerary: z.any().optional(),
-  fasilitas: z.any().optional(),
-  termasuk: z.any().optional(),
-  tidakTermasuk: z.any().optional(),
-  // Empat field ini sebelumnya tidak pernah divalidasi maupun ditulis ke DB
-  // walau form admin sudah mengirimkannya.
-  informasiPenting: z.any().optional(),
-  kebijakanPembatalan: z.any().optional(),
-  fileDokumen: z.any().optional(),
-  opsiPenjemputan: z.any().optional(),
+  harga: z.coerce.number().positive("Harga harus lebih dari 0").max(1_000_000_000_000),
+  durasi: z.coerce.number().int().positive("Durasi harus lebih dari 0").max(365),
+  destinasiId: z.coerce.number().int().positive(),
+  foto: FotoSchema.nullable().optional(),
+  itinerary: ItineraryList.nullable().optional(),
+  fasilitas: TextList.nullable().optional(),
+  termasuk: TextList.nullable().optional(),
+  tidakTermasuk: TextList.nullable().optional(),
+  informasiPenting: TextList.nullable().optional(),
+  kebijakanPembatalan: TextList.nullable().optional(),
+  fileDokumen: FileDokumenList.nullable().optional(),
+  opsiPenjemputan: TextList.nullable().optional(),
   // Versi Inggris; dikosongkan berarti jatuh ke versi Indonesia saat dirender.
-  itineraryEn: z.any().optional(),
-  fasilitasEn: z.any().optional(),
-  termasukEn: z.any().optional(),
-  tidakTermasukEn: z.any().optional(),
-  informasiPentingEn: z.any().optional(),
-  kebijakanPembatalanEn: z.any().optional(),
-  opsiPenjemputanEn: z.any().optional(),
+  itineraryEn: ItineraryList.nullable().optional(),
+  fasilitasEn: TextList.nullable().optional(),
+  termasukEn: TextList.nullable().optional(),
+  tidakTermasukEn: TextList.nullable().optional(),
+  informasiPentingEn: TextList.nullable().optional(),
+  kebijakanPembatalanEn: TextList.nullable().optional(),
+  opsiPenjemputanEn: TextList.nullable().optional(),
+  // Kosong dari form dikirim sebagai "" — diubah jadi null, bukan Invalid Date.
+  tanggalKeberangkatan: z
+    .union([z.string(), z.date(), z.null()])
+    .optional()
+    .transform((v) => {
+      if (v === null || v === undefined || v === "") return null;
+      const d = v instanceof Date ? v : new Date(v);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }),
+  kuota: z.coerce.number().int().min(0).max(10000).nullable().optional(),
+  kursiTerisi: z.coerce.number().int().min(0).max(10000).optional().default(0),
+  akomodasi: AkomodasiList.nullable().optional(),
+  akomodasiEn: AkomodasiList.nullable().optional(),
+  penerbangan: PenerbanganList.nullable().optional(),
+  penerbanganEn: PenerbanganList.nullable().optional(),
   status: z.enum(["draft", "published", "archived"]).optional().default("draft"),
   label: z.string().max(80).nullable().optional(),
 });
@@ -155,7 +244,7 @@ const allowedUploadTypes: Record<string, string> = {
   "image/webp": "webp",
 };
 
-export function validateUploadedFile(file: File, maxSize = 5 * 1024 * 1024) {
+export function validateUploadedFile(file: File, maxSize = 10 * 1024 * 1024) {
   if (file.size > maxSize) {
     return { ok: false as const, error: "Ukuran file terlalu besar." };
   }
@@ -294,6 +383,28 @@ export function checkCSRF(req: Request) {
   }
 
   return false;
+}
+
+/**
+ * Apakah request WAJIB ditolak karena gagal CSRF — varian ramah klien
+ * non-browser (mis. Hermes Agent server-to-server di production).
+ *
+ * Serangan CSRF hanya bisa terjadi lewat BROWSER korban, dan browser SELALU
+ * menyertakan `Sec-Fetch-Site` (browser modern) atau `Origin` (pada request
+ * non-GET) — keduanya header terlarang yang tidak bisa dihapus/dipalsukan oleh
+ * JavaScript penyerang. Maka:
+ *   - Ada sinyal browser + lintas-origin  → tolak (inilah serangan CSRF).
+ *   - Ada sinyal browser + same-origin     → lolos.
+ *   - TANPA sinyal browser (klien server)  → lolos di sini; bukan vektor CSRF.
+ *     Otentikasi/otorisasi tetap menjaganya.
+ *
+ * `checkCSRF` yang lebih ketat sengaja DIPERTAHANKAN untuk route publik
+ * (form booking/inquiry) yang pemanggilnya pasti browser.
+ */
+export function csrfBlocked(req: Request): boolean {
+  const looksLikeBrowser =
+    req.headers.get("sec-fetch-site") !== null || req.headers.get("origin") !== null;
+  return looksLikeBrowser && !checkCSRF(req);
 }
 
 const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);

@@ -20,6 +20,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useConfirm } from "@/components/Providers/ConfirmProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -55,6 +56,7 @@ import AirplaneLoader from "@/components/ui/airplane-loader";
 import { PageSizeSelect } from "@/components/ui/page-size-select";
 
 export default function AdminBookingPage() {
+  const { confirm } = useConfirm();
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -126,7 +128,12 @@ export default function AdminBookingPage() {
 
   const handleDelete = useCallback(
     async (id: number) => {
-      if (!confirm("Apakah Anda yakin ingin menghapus pemesanan ini?")) return;
+      const ok = await confirm({
+        title: "Hapus pemesanan",
+        message: "Data pemesanan ini akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.",
+        confirmText: "Ya, hapus",
+      });
+      if (!ok) return;
 
       try {
         const res = await fetch(`/api/booking/${id}`, {
@@ -144,7 +151,7 @@ export default function AdminBookingPage() {
         toast.error("Terjadi kesalahan pada server");
       }
     },
-    [fetchBookings],
+    [fetchBookings, confirm],
   );
 
   const formatPrice = (price: any) => {

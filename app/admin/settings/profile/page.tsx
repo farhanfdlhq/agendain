@@ -143,8 +143,8 @@ export default function ProfilePage() {
     const file = e.target.files?.[0]
     if (!file) return
 
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Ukuran file maksimal 2MB")
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Ukuran file maksimal 10MB")
       if (fileInputRef.current) fileInputRef.current.value = ""
       return
     }
@@ -282,7 +282,7 @@ export default function ProfilePage() {
                   <strong>Informasi Foto:</strong><br/>
                   Rekomendasi rasio 1:1 (min. 500x500px).<br/>
                   Format file: JPG, PNG, atau WEBP.<br/>
-                  Ukuran maksimal: 2MB.
+                  Ukuran maksimal: 10MB.
                 </p>
               </div>
             </CardContent>

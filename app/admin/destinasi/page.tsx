@@ -16,6 +16,7 @@ import {
   Map,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useConfirm } from "@/components/Providers/ConfirmProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,6 +35,7 @@ import { TablePagination } from "@/components/ui/table-pagination";
 import { useTablePagination } from "@/lib/use-table-pagination";
 
 export default function AdminDestinasiPage() {
+  const { confirm } = useConfirm();
   const [destinasi, setDestinasi] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -80,24 +82,26 @@ export default function AdminDestinasiPage() {
   };
 
   const handleDelete = async (slug: string) => {
-    if (
-      confirm(
-        "Hapus destinasi ini? Semua paket yang terkait mungkin akan kehilangan relasinya.",
-      )
-    ) {
-      try {
-        const res = await fetch(`/api/destinasi/${slug}`, {
-          method: "DELETE",
-        });
-        if (res.ok) {
-          toast.success("Destinasi berhasil dihapus");
-          fetchDestinasi();
-        } else {
-          toast.error("Gagal menghapus destinasi");
-        }
-      } catch (e) {
-        toast.error("Terjadi kesalahan server");
+    const ok = await confirm({
+      title: "Hapus destinasi",
+      message:
+        "Destinasi ini akan dihapus permanen. Semua paket yang terkait mungkin kehilangan relasinya.",
+      confirmText: "Ya, hapus",
+    });
+    if (!ok) return;
+
+    try {
+      const res = await fetch(`/api/destinasi/${slug}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        toast.success("Destinasi berhasil dihapus");
+        fetchDestinasi();
+      } else {
+        toast.error("Gagal menghapus destinasi");
       }
+    } catch (e) {
+      toast.error("Terjadi kesalahan server");
     }
   };
 

@@ -7,6 +7,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Plus, Edit2, Trash2, Search, FileText, RefreshCw, Eye } from "lucide-react"
 import { toast } from "react-hot-toast"
+import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -30,6 +31,7 @@ type BlogPost = {
 }
 
 export default function AdminBlogPage() {
+  const { confirm } = useConfirm()
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [categories, setCategories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -81,7 +83,12 @@ export default function AdminBlogPage() {
   const { page, pageSize, setPage, setPageSize, pageCount, startIndex, pageItems: paginatedPosts, from, to, total } = useTablePagination(filtered)
 
   const handleDelete = async (slug: string, title: string) => {
-    if (!confirm(`Hapus artikel "${title}"?`)) return
+    const ok = await confirm({
+      title: "Hapus artikel",
+      message: `Artikel "${title}" akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.`,
+      confirmText: "Ya, hapus",
+    })
+    if (!ok) return
     try {
       const res = await fetch(`/api/blog/${slug}`, { method: "DELETE" })
       if (!res.ok) throw new Error("Gagal menghapus")

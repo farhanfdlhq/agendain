@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { CheckCircle } from "lucide-react";
+import { toast } from "react-hot-toast";
 import FadeIn from "@/components/Motion/FadeIn";
 import { parseGoldText } from "@/lib/utils/textFormatting";
 import styles from "./PrivateTripForm.module.css";
@@ -64,10 +65,10 @@ export default function PrivateTripForm({ privatetripSettings }: { privatetripSe
       if (res.ok) {
         setSuccess(true);
       } else {
-        alert(t("pt.errSubmit"));
+        toast.error(t("pt.errSubmit"));
       }
     } catch (err) {
-      alert(t("pt.errNetwork"));
+      toast.error(t("pt.errNetwork"));
     } finally {
       setLoading(false);
     }

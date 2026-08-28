@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
-import { ProfileUpdateSchema, getClientIp } from '@/lib/security'
+import { ProfileUpdateSchema, getClientIp, csrfBlocked } from '@/lib/security'
 import { logAudit } from '@/lib/audit'
 
 export async function GET() {
@@ -18,12 +18,17 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  if (csrfBlocked(req)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const result = ProfileUpdateSchema.safeParse(await req.json())
   if (!result.success) {
-    return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+    // Jangan bocorkan struktur skema (result.error.format()) ke klien. Detail
+    // dicatat di server; klien cukup tahu validasi gagal.
+    console.error('Profile PUT validation failed:', result.error.flatten())
+    return NextResponse.json({ error: 'Validasi gagal. Periksa kembali isian Anda.' }, { status: 400 })
   }
 
   const body = result.data

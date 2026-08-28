@@ -46,9 +46,70 @@ export function toOpenTripData(data: OpenTripInput, mode: "create" | "update") {
     informasiPentingEn: j(data.informasiPentingEn),
     kebijakanPembatalanEn: j(data.kebijakanPembatalanEn),
     opsiPenjemputanEn: j(data.opsiPenjemputanEn),
+    tanggalKeberangkatan: data.tanggalKeberangkatan ?? null,
+    kuota: data.kuota ?? null,
+    kursiTerisi: data.kursiTerisi ?? 0,
+    akomodasi: j(data.akomodasi),
+    akomodasiEn: j(data.akomodasiEn),
+    penerbangan: j(data.penerbangan),
+    penerbanganEn: j(data.penerbanganEn),
     status: data.status,
     label: data.label || null,
   };
+}
+
+/**
+ * Akomodasi & Penerbangan diketik satu baris per entri di form admin, dengan
+ * kolom dipisah `|`. Dipakai bersama form "baru" dan "edit" supaya keduanya
+ * tidak menulis parser sendiri-sendiri dan melenceng seperti dulu.
+ *
+ *   Akomodasi   : `Osaka | Nishikasai Flower Hotel`
+ *   Penerbangan : `Jakarta → Osaka | MH720 CGK-KUL 15:40 | Malaysia Airlines`
+ *
+ * Baris tanpa `|` tetap sah — disimpan apa adanya sebagai string, dan halaman
+ * depan sudah bisa merender kedua bentuk itu.
+ */
+export function parseAkomodasi(text: string) {
+  const rows = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [kota, ...rest] = line.split("|").map((s) => s.trim());
+      if (rest.length === 0) return line;
+      return { kota, nama: rest.join(" | ") };
+    });
+  return rows.length ? rows : null;
+}
+
+export function parsePenerbangan(text: string) {
+  const rows = text
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split("|").map((s) => s.trim());
+      if (parts.length === 1) return line;
+      return { rute: parts[0], detail: parts[1] || "", maskapai: parts[2] || "" };
+    });
+  return rows.length ? rows : null;
+}
+
+/** Kebalikan parse di atas, untuk mengisi ulang textarea di form edit. */
+export function stringifyAkomodasi(value: unknown): string {
+  if (!Array.isArray(value)) return "";
+  return value
+    .map((v: any) => (typeof v === "string" ? v : [v?.kota, v?.nama].filter(Boolean).join(" | ")))
+    .join("\n");
+}
+
+export function stringifyPenerbangan(value: unknown): string {
+  if (!Array.isArray(value)) return "";
+  return value
+    .map((v: any) =>
+      typeof v === "string" ? v : [v?.rute, v?.detail, v?.maskapai].filter(Boolean).join(" | "),
+    )
+    .join("\n");
 }
 
 /** Slug dari nama paket bila admin tidak mengisinya sendiri. */

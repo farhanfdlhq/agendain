@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { formatIDR } from "@/lib/currency";
 import { toast } from "react-hot-toast";
+import { useConfirm } from "@/components/Providers/ConfirmProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,7 +42,18 @@ import { PageSizeSelect } from "@/components/ui/page-size-select";
 import { TablePagination } from "@/components/ui/table-pagination";
 import { useTablePagination } from "@/lib/use-table-pagination";
 
+// Dipetakan per status, bukan ternary "published atau bukan". Dengan ternary,
+// status apa pun selain `published` — termasuk `archived` dan nilai kosong —
+// sama-sama tampil amber seolah Draft.
+const STATUS_TRIGGER_CLASS: Record<string, string> = {
+  published: "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20",
+  draft: "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20",
+  archived: "bg-zinc-100 text-zinc-600 border-zinc-200 hover:bg-zinc-200 dark:bg-zinc-500/10 dark:text-zinc-400 dark:border-zinc-500/20",
+  unknown: "bg-zinc-100 text-zinc-500 border-zinc-200 dark:bg-zinc-500/10 dark:text-zinc-400 dark:border-zinc-500/20",
+};
+
 export default function AdminPaketPage() {
+  const { confirm } = useConfirm();
   const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -108,7 +120,12 @@ export default function AdminPaketPage() {
   };
 
   const handleDelete = async (slug: string) => {
-    if (!confirm("Apakah Anda yakin ingin menghapus paket ini?")) return;
+    const ok = await confirm({
+      title: "Hapus paket",
+      message: "Paket ini akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.",
+      confirmText: "Ya, hapus",
+    });
+    if (!ok) return;
 
     try {
       const res = await fetch(`/api/open-trip/${slug}`, {
@@ -270,6 +287,9 @@ export default function AdminPaketPage() {
                   <SelectItem value="all">Semua Status</SelectItem>
                   <SelectItem value="published">Published</SelectItem>
                   <SelectItem value="draft">Draft</SelectItem>
+                  {/* Tanpa opsi ini, paket archived tidak bisa ditemukan
+                      lewat filter mana pun selain "Semua Status". */}
+                  <SelectItem value="archived">Archived</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -340,9 +360,12 @@ export default function AdminPaketPage() {
                           }
                         >
                           <SelectTrigger
-                            className={`h-8 w-[110px] text-xs font-medium border ${pkg.status === "published" ? "bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20" : "bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20"}`}
+                            className={`h-8 w-[110px] text-xs font-medium border ${STATUS_TRIGGER_CLASS[pkg.status] ?? STATUS_TRIGGER_CLASS.unknown}`}
                           >
-                            <SelectValue />
+                            {/* placeholder wajib: tanpa ini, status yang tidak
+                                punya SelectItem yang cocok membuat trigger
+                                tampil KOSONG tanpa petunjuk apa pun. */}
+                            <SelectValue placeholder="—" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem
@@ -356,6 +379,15 @@ export default function AdminPaketPage() {
                               className="text-amber-600 dark:text-amber-400 font-medium"
                             >
                               Draft
+                            </SelectItem>
+                            {/* `archived` diterima OpenTripSchema & API. Tanpa
+                                item ini, paket berstatus archived membuat
+                                Radix merender trigger kosong. */}
+                            <SelectItem
+                              value="archived"
+                              className="text-zinc-500 dark:text-zinc-400 font-medium"
+                            >
+                              Archived
                             </SelectItem>
                           </SelectContent>
                         </Select>

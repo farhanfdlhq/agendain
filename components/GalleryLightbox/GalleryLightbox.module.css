@@ -1,182 +1,297 @@
-.galleryContainer {
+/* ============================================================
+   Galeri open trip — desain terkendali (antislop-ui / -layoutmobile)
+   - Aspect-ratio 16:9 dijaga agar poster/foto tidak terpotong.
+   - Radius & shadow dipakai sebagai penanda, bukan dekorasi menyeluruh.
+   - Motion: zoom halus saat hover saja, tanpa loop.
+   ============================================================ */
+
+.gallery {
+  position: relative;
+  margin: 0 0 var(--space-xl);
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  grid-template-rows: repeat(2, 220px);
-  gap: 12px;
+  gap: 8px;
+  /* Frame galeri konsisten. Bukan tinggi tetap 452px (yang memotong 16:9). */
+  aspect-ratio: 16 / 9;
+  max-height: 540px;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  margin-bottom: var(--space-xl);
+  background: var(--color-surface-soft);
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.mainTile,
+.subTile {
+  position: relative;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
   background: var(--color-surface-soft);
 }
 
-.mainPhoto {
+.mainTile {
   grid-column: 1;
   grid-row: 1 / 3;
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
 }
 
-.subPhotos {
+.subGrid {
   display: contents;
-}
-
-.photoWrap {
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
 }
 
 .img {
   object-fit: cover;
-  transition: transform 0.4s ease;
+  /* Transisi hanya untuk transform (hover); tidak ada animasi lain. */
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.mainPhoto:hover .img,
-.photoWrap:hover .img {
-  transform: scale(1.05);
+.mainTile:hover .img,
+.subTile:hover .img {
+  transform: scale(1.04);
 }
 
+/* Fokus keyboard yang terlihat (aksesibilitas). */
+.mainTile:focus-visible,
+.subTile:focus-visible,
+.viewAllBtn:focus-visible,
+.filmThumb:focus-visible,
+.navBtn:focus-visible,
+.iconBtn:focus-visible {
+  outline: 3px solid var(--color-dominant, #ffc704);
+  outline-offset: -3px;
+}
+
+/* Overlay "+N" pada tile terakhir. */
 .moreOverlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: white;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.55);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Tombol "Lihat semua" — satu kontrol yang selalu jelas (bukan hover-only),
+   sehingga bisa disentuh di mobile. */
+.viewAllBtn {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
+  min-height: 40px;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #0f172a;
+  font-size: 0.85rem;
   font-weight: 600;
-  transition: background 0.3s;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transition: background 0.2s, transform 0.2s;
 }
 
-.photoWrap:hover .moreOverlay {
-  background: rgba(0, 0, 0, 0.6);
+.viewAllBtn:hover {
+  background: #fff;
+  transform: translateY(-1px);
 }
 
-/* Lightbox Styles */
-.lightboxOverlay {
+/* ---------- Tata letak adaptif per jumlah foto ---------- */
+.gallery[data-count='1'] {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+.gallery[data-count='1'] .mainTile {
+  grid-row: 1;
+}
+
+.gallery[data-count='2'] {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+}
+.gallery[data-count='2'] .mainTile {
+  grid-row: 1;
+}
+
+.gallery[data-count='3'] {
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.gallery[data-count='4'] {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+.gallery[data-count='4'] .mainTile {
+  grid-row: 1;
+}
+
+/* ============================================================
+   Lightbox
+   ============================================================ */
+.lightbox {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.9);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background: rgba(9, 12, 20, 0.94);
+  backdrop-filter: blur(6px);
+}
+
+.lightboxBar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(5px);
-}
-
-.closeBtn {
-  position: absolute;
-  top: 24px;
-  right: 24px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s;
-  z-index: 10000;
-}
-
-.closeBtn:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.navBtnLeft,
-.navBtnRight {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s;
-  z-index: 10000;
-}
-
-.navBtnLeft {
-  left: 24px;
-}
-
-.navBtnRight {
-  right: 24px;
-}
-
-.navBtnLeft:hover,
-.navBtnRight:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.lightboxContent {
-  position: relative;
-  width: 90vw;
-  height: 85dvh;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.lightboxImgWrap {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.lightboxImg {
-  object-fit: contain;
+  justify-content: space-between;
+  padding: 14px 18px;
 }
 
 .counter {
-  position: absolute;
-  bottom: -40px;
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.counterSep {
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 2px;
 }
 
+.iconBtn,
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.2s;
+}
+.iconBtn:hover,
+.navBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Target sentuh ≥44px. */
+.iconBtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 0 clamp(12px, 6vw, 88px);
+}
+
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  z-index: 2;
+}
+.navPrev {
+  left: clamp(10px, 3vw, 28px);
+}
+.navNext {
+  right: clamp(10px, 3vw, 28px);
+}
+
+.stageImgWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+}
+/* contain → seluruh foto/poster terlihat utuh, tidak terpotong. */
+.stageImg {
+  object-fit: contain;
+}
+
+/* Filmstrip: navigasi langsung + konteks posisi. */
+.filmstrip {
+  display: flex;
+  gap: 8px;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px));
+  overflow-x: auto;
+  justify-content: safe center;
+  scrollbar-width: thin;
+}
+.filmstrip::-webkit-scrollbar {
+  height: 6px;
+}
+.filmstrip::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+}
+
+.filmThumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 84px;
+  height: 56px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+.filmThumb:hover {
+  opacity: 0.85;
+}
+.filmThumb[data-active='true'] {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--color-dominant, #ffc704);
+}
+
+/* ============================================================
+   Mobile — state tersendiri, bukan desktop yang dikecilkan
+   ============================================================ */
 @media (max-width: 768px) {
-  .galleryContainer {
-    grid-template-columns: 1fr;
-    grid-template-rows: 250px;
+  .gallery {
+    /* Sedikit lebih tinggi agar foto tunggal tetap dominan di layar sempit. */
+    aspect-ratio: 4 / 3;
+    max-height: 60vh;
     margin-left: calc(-1 * var(--space-lg));
     margin-right: calc(-1 * var(--space-lg));
     border-radius: 0;
+    /* Semua jumlah foto → satu foto utama; sisanya lewat "Lihat semua". */
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr !important;
   }
-  
-  .subPhotos {
+  .gallery .mainTile {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+  .subGrid {
     display: none;
   }
-  
-  .navBtnLeft,
-  .navBtnRight {
-    width: 40px;
-    height: 40px;
+
+  .navBtn {
+    width: 44px;
+    height: 44px;
   }
-  
-  .navBtnLeft { left: 16px; }
-  .navBtnRight { right: 16px; }
-  
-  .closeBtn {
-    top: 16px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
+  .filmThumb {
+    width: 72px;
+    height: 48px;
   }
 }
