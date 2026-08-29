@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { sanitizeSettingsPayload, serverError } from '@/lib/security'
 import { requirePermission } from '@/lib/rbac'
@@ -19,6 +20,12 @@ export async function POST(req: Request) {
       update: { value: jsonValue },
       create: { key: 'privacy_settings', value: jsonValue },
     })
+
+    // Tanpa ini, getSettings() di app/layout.tsx (unstable_cache tag 'settings',
+    // TTL 1 jam) menyajikan konten lama sampai sejam. revalidatePath layout
+    // menyegarkan halaman publik yang memakai setting ini.
+    revalidateTag('settings', { expire: 0 })
+    revalidatePath('/', 'layout')
 
     return NextResponse.json({ success: true, message: 'Kebijakan Privasi berhasil diperbarui' })
   } catch (error: any) {

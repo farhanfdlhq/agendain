@@ -46,6 +46,12 @@ else
 fi
 
 echo "==> [5/6] build"
+# Bersihkan .next dulu. Tanpa ini, `next build` me-reuse chunk lama dari
+# `.next/cache` (mis. CSS), sehingga perbaikan yang sudah ter-push tetap
+# menyajikan file basi — lalu Cloudflare men-cache-nya. Ini biang "sticky &
+# font tak berubah di production" (29 Agustus 2026). Purge Cloudflare tetap
+# perlu dijalankan terpisah bila tampilan statis belum berganti.
+rm -rf .next
 npm run build
 
 echo "==> [6/6] restart pm2"
