@@ -42,6 +42,28 @@ export const authOptions: NextAuthOptions = {
         }
 
         const email = credentials.email.toLowerCase().trim();
+
+        // Rate limit per-IP, di samping per-email di bawah. Per-email saja bisa
+        // ditembus credential spraying: banyak email berbeda dari satu IP, tiap
+        // email tetap di bawah 8. Batas per-IP membendung total percobaan dari
+        // satu sumber. Angkanya lebih longgar (20) agar kantor ber-NAT dengan
+        // beberapa admin tidak ikut terblokir. Dilewati bila IP gagal ditangkap
+        // (jangan kunci user sah karena header hilang); cf-connecting-ip dari
+        // Cloudflare tidak bisa dipalsukan end-user.
+        if (ip) {
+          const ipLimit = rateLimit(`login-ip:${ip}`, 20, 5 * 60 * 1000);
+          if (!ipLimit.success) {
+            await logAudit({
+              action: "login.failed",
+              actorEmail: email,
+              detail: { reason: "rate_limited_ip" },
+              ip,
+              userAgent,
+            });
+            throw new Error("Terlalu banyak percobaan login. Coba lagi nanti.");
+          }
+        }
+
         const loginLimit = rateLimit(`login:${email}`, 8, 5 * 60 * 1000);
         if (!loginLimit.success) {
           await logAudit({
