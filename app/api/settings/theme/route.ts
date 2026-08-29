@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { serverError } from '@/lib/security'
 import { requirePermission } from '@/lib/rbac'
+import { purgeCloudflareCache } from '@/lib/cloudflare'
 import { FONT_CHOICES, DEFAULT_HEADING_FONT, DEFAULT_BODY_FONT } from '@/lib/fonts'
 
 export async function POST(req: Request) {
@@ -65,6 +67,13 @@ export async function POST(req: Request) {
       update: { value: jsonValue },
       create: { key: 'theme_settings', value: jsonValue },
     })
+
+    // WAJIB: tanpa ini, getSettings() di app/layout.tsx (unstable_cache tag
+    // 'settings', TTL 1 jam) tetap menyajikan tema LAMA sampai sejam, dan
+    // Cloudflare menyajikan HTML lama — sebab perubahan font/warna tak muncul.
+    revalidateTag('settings', { expire: 0 })
+    revalidatePath('/', 'layout')
+    await purgeCloudflareCache()
 
     return NextResponse.json({ success: true, message: 'Tema berhasil diperbarui' })
   } catch (error: any) {
