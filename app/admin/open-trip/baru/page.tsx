@@ -180,6 +180,11 @@ export default function TambahPaketPage() {
       tanggalKeberangkatan: !formData.tanggalKeberangkatan,
       kuota: formData.kuota === "" || Number(formData.kuota) < 1,
     }
+    // Tiap hari itinerary wajib punya deskripsi (ID). Judul opsional — jatuh ke
+    // "Hari N" bila kosong. Versi EN opsional (jatuh ke ID).
+    formData.itinerary.forEach((it, idx) => {
+      fieldErrors[`itinerary-${idx}-deskripsi`] = !(it.deskripsi || '').trim()
+    })
     if (Object.values(fieldErrors).some(Boolean)) {
       setErrors(fieldErrors)
       toast.error("Ada field wajib yang belum benar. Cek bagian bertanda merah.")
@@ -485,10 +490,12 @@ export default function TambahPaketPage() {
                         rows={3}
                         value={(activeTab === 'en' ? it.deskripsiEn : it.deskripsi) || ''}
                         placeholder={activeTab === 'en' ? (it.deskripsi || 'Deskripsi perjalanan...') : 'Deskripsi perjalanan...'}
+                        aria-invalid={!!errors[`itinerary-${idx}-deskripsi`]}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
                           const newItinerary = [...formData.itinerary];
                           newItinerary[idx] = { ...newItinerary[idx], [activeTab === 'en' ? 'deskripsiEn' : 'deskripsi']: e.target.value };
                           setFormData(prev => ({ ...prev, itinerary: newItinerary }));
+                          if (activeTab !== 'en') clearError(`itinerary-${idx}-deskripsi`);
                         }}
                       />
                     </div>

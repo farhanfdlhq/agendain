@@ -75,13 +75,34 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
 
   // handleImageUpload is now handled internally by MediaPicker.
 
+  const [errors, setErrors] = useState<Record<string, boolean>>({})
+  const clearError = (name: string) =>
+    setErrors(prev => (prev[name] ? { ...prev, [name]: false } : prev))
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    clearError(name)
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    // Field wajib per DestinasiSchema. Tombol simpan di luar <form> (onClick),
+    // jadi `required` native tak jalan — divalidasi manual di sini. Negara & foto
+    // hanya ada di tab ID, jadi pindah ke tab ID agar border merahnya terlihat.
+    const fieldErrors: Record<string, boolean> = {
+      nama: !formData.nama.trim(),
+      negara: !formData.negara.trim(),
+      deskripsi: !formData.deskripsi.trim(),
+      foto: !formData.fotoUrl.trim(),
+    }
+    if (Object.values(fieldErrors).some(Boolean)) {
+      setErrors(fieldErrors)
+      setActiveTab('id')
+      toast.error("Ada field wajib yang belum benar. Cek bagian bertanda merah.")
+      return
+    }
+    setErrors({})
     setLoading(true)
 
     try {
@@ -190,6 +211,7 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
                   name={tf('nama')}
                   placeholder={ph('nama', 'Contoh: Paris, Swiss Alps, Cappadocia')}
                   value={fv('nama')} onChange={handleChange} required
+                  aria-invalid={!!errors.nama}
                 />
               </div>
 
@@ -200,6 +222,7 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
                   name="negara"
                   placeholder="Contoh: Prancis, Swiss, Turki"
                   value={formData.negara} onChange={handleChange} required
+                  aria-invalid={!!errors.negara}
                 />
               </div>
               )}
@@ -223,16 +246,20 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
                   name={tf('deskripsi')} rows={4}
                   placeholder={ph('deskripsi', 'Deskripsikan pesona destinasi ini...')}
                   value={fv('deskripsi')} onChange={handleChange} required
+                  aria-invalid={!!errors.deskripsi}
                 />
               </div>
 
               {activeTab === 'id' && (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Upload Foto Utama</label>
-                <MediaPicker
-                  value={formData.fotoUrl}
-                  onChange={(url) => setFormData(prev => ({ ...prev, fotoUrl: url }))}
-                />
+                <div className={errors.foto ? "rounded-xl ring-2 ring-destructive" : ""}>
+                  <MediaPicker
+                    value={formData.fotoUrl}
+                    onChange={(url) => { clearError('foto'); setFormData(prev => ({ ...prev, fotoUrl: url })) }}
+                  />
+                </div>
+                {errors.foto && <p className="text-xs text-destructive">Foto utama harus dipilih.</p>}
               </div>
               )}
             </CardContent>

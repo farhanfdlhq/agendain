@@ -98,12 +98,26 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
 
   const removeTag = (tag: string) => setTags(tags.filter(t => t !== tag))
 
+  const [errors, setErrors] = useState<Record<string, boolean>>({})
+  const clearError = (name: string) =>
+    setErrors(prev => (prev[name] ? { ...prev, [name]: false } : prev))
+
   const handleSave = async () => {
-    if (!title.trim()) { toast.error("Judul harus diisi"); return }
-    if (!excerpt.trim()) { toast.error("Ringkasan harus diisi"); return }
-    if (!content.trim()) { toast.error("Konten harus diisi"); return }
-    if (!thumbnail) { toast.error("Thumbnail harus dipilih"); return }
-    if (!categoryId) { toast.error("Kategori harus dipilih"); return }
+    // Field wajib. Tombol simpan `<Button onClick>` (bukan submit di dalam
+    // <form>), jadi divalidasi manual + border merah, bukan `required` native.
+    const fieldErrors: Record<string, boolean> = {
+      title: !title.trim(),
+      excerpt: !excerpt.trim(),
+      content: !content.trim(),
+      thumbnail: !thumbnail,
+      category: !categoryId,
+    }
+    if (Object.values(fieldErrors).some(Boolean)) {
+      setErrors(fieldErrors)
+      toast.error("Ada field wajib yang belum benar. Cek bagian bertanda merah.")
+      return
+    }
+    setErrors({})
 
     setSaving(true)
     try {
@@ -180,7 +194,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
             <TabsContent value="id" className="space-y-4 mt-4">
               <div className="space-y-2">
                 <Label>Judul</Label>
-                <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Judul artikel..." />
+                <Input value={title} onChange={(e) => { setTitle(e.target.value); clearError('title') }} placeholder="Judul artikel..." aria-invalid={!!errors.title} />
               </div>
               <div className="space-y-2">
                 <Label>Slug</Label>
@@ -188,11 +202,14 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
               </div>
               <div className="space-y-2">
                 <Label>Ringkasan</Label>
-                <Textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Ringkasan singkat artikel..." rows={3} />
+                <Textarea value={excerpt} onChange={(e) => { setExcerpt(e.target.value); clearError('excerpt') }} placeholder="Ringkasan singkat artikel..." rows={3} aria-invalid={!!errors.excerpt} />
               </div>
               <div className="space-y-2">
                 <Label>Konten</Label>
-                <TiptapEditor value={content} onChange={setContent} placeholder="Tulis konten artikel di sini..." />
+                <div className={errors.content ? "rounded-xl ring-2 ring-destructive" : ""}>
+                  <TiptapEditor value={content} onChange={(v) => { setContent(v); clearError('content') }} placeholder="Tulis konten artikel di sini..." />
+                </div>
+                {errors.content && <p className="text-xs text-destructive">Konten harus diisi.</p>}
               </div>
             </TabsContent>
 
@@ -219,7 +236,10 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
           <Card>
             <CardHeader className="pb-3"><CardTitle className="text-sm">Thumbnail</CardTitle></CardHeader>
             <CardContent>
-              <MediaPicker value={thumbnail} onChange={setThumbnail} label="Pilih cover image" />
+              <div className={errors.thumbnail ? "rounded-xl ring-2 ring-destructive" : ""}>
+                <MediaPicker value={thumbnail} onChange={(url) => { setThumbnail(url); clearError('thumbnail') }} label="Pilih cover image" />
+              </div>
+              {errors.thumbnail && <p className="text-xs text-destructive mt-2">Thumbnail harus dipilih.</p>}
             </CardContent>
           </Card>
 
@@ -227,8 +247,8 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
           <Card>
             <CardHeader className="pb-3"><CardTitle className="text-sm">Kategori</CardTitle></CardHeader>
             <CardContent>
-              <Select value={categoryId} onValueChange={setCategoryId}>
-                <SelectTrigger><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
+              <Select value={categoryId} onValueChange={(v) => { setCategoryId(v); clearError('category') }}>
+                <SelectTrigger aria-invalid={!!errors.category}><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
                 <SelectContent>
                   {categories.map(c => (
                     <SelectItem key={c.id} value={String(c.id)}>{c.nama}</SelectItem>
