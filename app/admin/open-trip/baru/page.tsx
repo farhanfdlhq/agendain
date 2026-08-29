@@ -137,8 +137,13 @@ export default function TambahPaketPage() {
     }))
   }
 
+  const [errors, setErrors] = useState<Record<string, boolean>>({})
+  const clearError = (name: string) =>
+    setErrors(prev => (prev[name] ? { ...prev, [name]: false } : prev))
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    clearError(name)
     setFormData(prev => ({
       ...prev,
       [name]: name === 'durasi' ? Number(value) : value
@@ -146,6 +151,7 @@ export default function TambahPaketPage() {
   }
 
   const handleSelectChange = (name: string, value: string) => {
+    clearError(name)
     setFormData(prev => ({
       ...prev,
       [name]: name === 'destinasiId' ? Number(value) : value
@@ -153,6 +159,7 @@ export default function TambahPaketPage() {
   }
 
   const handleHargaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    clearError('hargaString')
     const rawValue = e.target.value.replace(/\D/g, "");
     if (!rawValue) {
       setFormData(prev => ({ ...prev, hargaString: "" }));
@@ -164,18 +171,21 @@ export default function TambahPaketPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.nama || !formData.destinasiId || !formData.hargaString) {
-      toast.error("Mohon lengkapi data wajib (Nama, Destinasi, Harga)")
+    const fieldErrors: Record<string, boolean> = {
+      nama: !formData.nama.trim(),
+      deskripsi: !formData.deskripsi.trim(),
+      destinasiId: !formData.destinasiId,
+      hargaString: !formData.hargaString.trim(),
+      durasi: !formData.durasi || Number(formData.durasi) < 1,
+      tanggalKeberangkatan: !formData.tanggalKeberangkatan,
+      kuota: formData.kuota === "" || Number(formData.kuota) < 1,
+    }
+    if (Object.values(fieldErrors).some(Boolean)) {
+      setErrors(fieldErrors)
+      toast.error("Ada field wajib yang belum benar. Cek bagian bertanda merah.")
       return
     }
-    if (!formData.tanggalKeberangkatan) {
-      toast.error("Tanggal keberangkatan wajib diisi.")
-      return
-    }
-    if (formData.kuota === "" || Number(formData.kuota) < 1) {
-      toast.error("Kuota peserta wajib diisi (minimal 1).")
-      return
-    }
+    setErrors({})
 
     setLoading(true)
 
@@ -354,6 +364,7 @@ export default function TambahPaketPage() {
                   placeholder={ph('nama', 'Contoh: Romantic Paris 5 Days')}
                   value={fv('nama')}
                   onChange={handleChange}
+                  aria-invalid={!!errors.nama}
                   required
                 />
               </div>
@@ -381,6 +392,7 @@ export default function TambahPaketPage() {
                   rows={6}
                   value={fv('deskripsi')}
                   onChange={handleChange}
+                  aria-invalid={!!errors.deskripsi}
                   required
                 />
               </div>
@@ -618,7 +630,7 @@ export default function TambahPaketPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="kuota">Kuota Peserta</Label>
-                  <Input type="number" id="kuota" name="kuota" min="1" placeholder="20" value={formData.kuota} onChange={handleChange} required />
+                  <Input type="number" id="kuota" name="kuota" min="1" placeholder="20" value={formData.kuota} onChange={handleChange} aria-invalid={!!errors.kuota} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kursiTerisi">Kursi Terisi</Label>
@@ -651,7 +663,7 @@ export default function TambahPaketPage() {
                   value={formData.destinasiId ? String(formData.destinasiId) : undefined} 
                   onValueChange={(val: string) => handleSelectChange('destinasiId', val)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-invalid={!!errors.destinasiId} className={errors.destinasiId ? 'border-destructive ring-destructive/20' : ''}>
                     <SelectValue placeholder="-- Pilih Destinasi --" />
                   </SelectTrigger>
                   <SelectContent>
@@ -675,6 +687,7 @@ export default function TambahPaketPage() {
                   min="1"
                   value={formData.durasi}
                   onChange={handleChange}
+                  aria-invalid={!!errors.durasi}
                   required
                 />
               </div>
@@ -687,6 +700,7 @@ export default function TambahPaketPage() {
                   name="tanggalKeberangkatan"
                   value={formData.tanggalKeberangkatan}
                   onChange={handleChange}
+                  aria-invalid={!!errors.tanggalKeberangkatan}
                   required
                 />
                 <p className="text-[11px] text-muted-foreground">
@@ -707,7 +721,8 @@ export default function TambahPaketPage() {
                     className="pl-9"
                     value={formData.hargaString}
                     onChange={handleHargaChange}
-                    required 
+                    aria-invalid={!!errors.hargaString}
+                    required
                   />
                 </div>
               </div>

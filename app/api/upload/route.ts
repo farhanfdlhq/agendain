@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { writeFile, readdir, stat, unlink } from "fs/promises";
 import path from "path";
 import fsSync from "fs";
-import { matchesFileSignature } from "@/lib/security";
+import { matchesFileSignature, detectImageType } from "@/lib/security";
 import { requirePermission } from "@/lib/rbac";
 import {
   reportServerError,
@@ -143,19 +143,29 @@ export async function POST(request: Request) {
 
     // Verifikasi konten nyata (magic bytes), bukan hanya file.type yang
     // dikirim client. Mencegah unggahan berbahaya yang menyamar sebagai PDF/DOCX.
-    if (!matchesFileSignature(new Uint8Array(bytes.slice(0, 16)), declaredType)) {
-      const sigHex = Array.from(new Uint8Array(bytes.slice(0, 8)))
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join(" ");
-      reportUploadRejected({
-        route: "POST /api/upload", status: 400, code: "signature_mismatch", req: request,
-        actorId, actorEmail,
-        detail: { fileName: safeName(file.name), mimeType: declaredType, size: file.size, uploadType: type || null, signatureHex: sigHex },
-      });
-      return NextResponse.json(
-        { error: "Isi file tidak cocok dengan formatnya." },
-        { status: 400 },
-      );
+    const sig16 = new Uint8Array(bytes.slice(0, 16));
+    if (!matchesFileSignature(sig16, declaredType)) {
+      // Toleransi umum: gambar dengan ekstensi/MIME salah (mis. JPEG bernama
+      // .png). Bila isinya benar-benar gambar tipe yang diizinkan, terima &
+      // pakai tipe ASLI untuk pemrosesan. Non-gambar (PDF/DOCX/ICO) tetap wajib
+      // cocok — dokumen tak boleh menyamar.
+      const detected = declaredType.startsWith("image/") ? detectImageType(sig16) : null;
+      if (detected) {
+        declaredType = detected;
+      } else {
+        const sigHex = Array.from(new Uint8Array(bytes.slice(0, 8)))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join(" ");
+        reportUploadRejected({
+          route: "POST /api/upload", status: 400, code: "signature_mismatch", req: request,
+          actorId, actorEmail,
+          detail: { fileName: safeName(file.name), mimeType: declaredType, size: file.size, uploadType: type || null, signatureHex: sigHex },
+        });
+        return NextResponse.json(
+          { error: "Isi file tidak cocok dengan formatnya." },
+          { status: 400 },
+        );
+      }
     }
 
     const isIco = ICO_TYPES.includes(declaredType);

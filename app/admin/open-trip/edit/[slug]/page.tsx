@@ -221,8 +221,14 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
     }))
   }
 
+  // Field wajib yang bordernya memerah bila kosong/salah saat disimpan.
+  const [errors, setErrors] = useState<Record<string, boolean>>({})
+  const clearError = (name: string) =>
+    setErrors(prev => (prev[name] ? { ...prev, [name]: false } : prev))
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
+    clearError(name)
     setFormData(prev => ({
       ...prev,
       [name]: name === 'durasi' ? Number(value) : value
@@ -230,6 +236,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
   }
 
   const handleSelectChange = (name: string, value: string) => {
+    clearError(name)
     setFormData(prev => ({
       ...prev,
       [name]: name === 'destinasiId' ? Number(value) : value
@@ -237,6 +244,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
   }
 
   const handleHargaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    clearError('hargaString')
     const rawValue = e.target.value.replace(/\D/g, "");
     if (!rawValue) {
       setFormData(prev => ({ ...prev, hargaString: "" }));
@@ -248,18 +256,22 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.nama || !formData.destinasiId || !formData.hargaString) {
-      toast.error("Mohon lengkapi data wajib (Nama, Destinasi, Harga)")
+    // Kumpulkan SEMUA field wajib yang bermasalah sekaligus → border merah.
+    const fieldErrors: Record<string, boolean> = {
+      nama: !formData.nama.trim(),
+      deskripsi: !formData.deskripsi.trim(),
+      destinasiId: !formData.destinasiId,
+      hargaString: !formData.hargaString.trim(),
+      durasi: !formData.durasi || Number(formData.durasi) < 1,
+      tanggalKeberangkatan: !formData.tanggalKeberangkatan,
+      kuota: formData.kuota === "" || Number(formData.kuota) < 1,
+    }
+    if (Object.values(fieldErrors).some(Boolean)) {
+      setErrors(fieldErrors)
+      toast.error("Ada field wajib yang belum benar. Cek bagian bertanda merah.")
       return
     }
-    if (!formData.tanggalKeberangkatan) {
-      toast.error("Tanggal keberangkatan wajib diisi.")
-      return
-    }
-    if (formData.kuota === "" || Number(formData.kuota) < 1) {
-      toast.error("Kuota peserta wajib diisi (minimal 1).")
-      return
-    }
+    setErrors({})
 
     setLoading(true)
 
@@ -446,6 +458,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                   placeholder={ph('nama', 'Contoh: Romantic Paris 5 Days')}
                   value={fv('nama')}
                   onChange={handleChange}
+                  aria-invalid={!!errors.nama}
                   required
                 />
               </div>
@@ -473,6 +486,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                   rows={6}
                   value={fv('deskripsi')}
                   onChange={handleChange}
+                  aria-invalid={!!errors.deskripsi}
                   required
                 />
               </div>
@@ -719,6 +733,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                     placeholder="20"
                     value={formData.kuota}
                     onChange={handleChange}
+                    aria-invalid={!!errors.kuota}
                     required
                   />
                 </div>
@@ -762,7 +777,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                   value={formData.destinasiId ? String(formData.destinasiId) : undefined} 
                   onValueChange={(val) => handleSelectChange('destinasiId', val)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger aria-invalid={!!errors.destinasiId} className={errors.destinasiId ? 'border-destructive ring-destructive/20' : ''}>
                     <SelectValue placeholder="-- Pilih Destinasi --" />
                   </SelectTrigger>
                   <SelectContent>
@@ -786,6 +801,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                   min="1"
                   value={formData.durasi}
                   onChange={handleChange}
+                  aria-invalid={!!errors.durasi}
                   required
                 />
               </div>
@@ -798,6 +814,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                   name="tanggalKeberangkatan"
                   value={formData.tanggalKeberangkatan}
                   onChange={handleChange}
+                  aria-invalid={!!errors.tanggalKeberangkatan}
                   required
                 />
                 <p className="text-[11px] text-muted-foreground">
@@ -809,15 +826,16 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                 <Label htmlFor="harga">Harga Dasar (Rp)</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">Rp</span>
-                  <Input 
-                    type="text" 
+                  <Input
+                    type="text"
                     id="harga"
-                    name="harga" 
+                    name="harga"
                     placeholder="15.000.000"
                     className="pl-9"
                     value={formData.hargaString}
                     onChange={handleHargaChange}
-                    required 
+                    aria-invalid={!!errors.hargaString}
+                    required
                   />
                 </div>
               </div>

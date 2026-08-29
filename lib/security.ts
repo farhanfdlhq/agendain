@@ -268,6 +268,17 @@ export function validateUploadedFile(file: File, maxSize = 10 * 1024 * 1024) {
 // Verifikasi "magic bytes" agar file.type (yang dikirim client dan bisa
 // dipalsukan) tidak menjadi satu-satunya penjaga. Mengembalikan true jika
 // konten nyata cocok dengan salah satu tipe yang diklaim.
+// Deteksi tipe gambar SEBENARNYA dari magic bytes (bukan MIME yang diklaim).
+// Dipakai upload route: jika file diberi ekstensi/MIME yang salah (mis. JPEG
+// bernama .png), tetap diterima selama isinya gambar tipe yang diizinkan —
+// keduanya aman & di-re-encode sharp. Mengembalikan MIME asli atau null.
+export function detectImageType(bytes: Uint8Array): string | null {
+  if (matchesFileSignature(bytes, "image/jpeg")) return "image/jpeg";
+  if (matchesFileSignature(bytes, "image/png")) return "image/png";
+  if (matchesFileSignature(bytes, "image/webp")) return "image/webp";
+  return null;
+}
+
 export function matchesFileSignature(bytes: Uint8Array, mime: string) {
   const starts = (sig: number[]) =>
     sig.every((b, i) => bytes[i] === b);
