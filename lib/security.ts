@@ -80,6 +80,13 @@ const StoredUrl = z
     return t.startsWith("/") || /^https?:\/\//i.test(t);
   }, "URL tidak valid atau skema tidak diizinkan");
 
+// Varian yang MEMBOLEHKAN string kosong. Form admin mengirim slot foto kosong
+// sebagai "" (mis. `foto.medium = fotoUrls[0] || ""` saat paket belum berfoto
+// atau `foto` lama berbentuk array sehingga hidrasi menghasilkan fotoUrls
+// kosong). Tanpa ini, menyimpan paket seperti itu ditolak 400 — regresi nyata.
+// Skema berbahaya tetap ditolak; hanya "" yang ditoleransi (dianggap "tak diisi").
+const OptionalStoredUrl = z.literal("").or(StoredUrl);
+
 // Daftar teks bebas (fasilitas, termasuk, informasi penting, dst).
 const TextList = z.array(z.string().max(2000)).max(200);
 
@@ -122,19 +129,20 @@ const FileDokumenList = z
 
 // Foto: dua bentuk historis — array objek gambar, atau objek ber-`gallery`.
 const FotoImageObject = z.object({
-  thumb: StoredUrl.optional(),
-  medium: StoredUrl.optional(),
-  large: StoredUrl.optional(),
-  full: StoredUrl.optional(),
+  thumb: OptionalStoredUrl.optional(),
+  medium: OptionalStoredUrl.optional(),
+  large: OptionalStoredUrl.optional(),
+  full: OptionalStoredUrl.optional(),
 });
 const FotoSchema = z.union([
   z.array(z.union([StoredUrl, FotoImageObject])).max(30),
   z.object({
-    thumb: StoredUrl.optional(),
-    medium: StoredUrl.optional(),
-    large: StoredUrl.optional(),
-    full: StoredUrl.optional(),
-    gallery: z.array(StoredUrl).max(30).optional(),
+    thumb: OptionalStoredUrl.optional(),
+    medium: OptionalStoredUrl.optional(),
+    large: OptionalStoredUrl.optional(),
+    full: OptionalStoredUrl.optional(),
+    // Slot kosong "" disaring agar gallery tetap berisi URL sah saja.
+    gallery: z.array(OptionalStoredUrl).max(30).optional(),
   }),
 ]);
 

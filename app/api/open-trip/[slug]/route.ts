@@ -66,7 +66,10 @@ export async function PUT(
     const { slug } = await params
     const result = OpenTripSchema.safeParse(await request.json())
     if (!result.success) {
-      return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+      // Dicatat server-side agar kegagalan validasi bisa didiagnosis dari log
+      // (audit log hanya mencatat event auth, bukan validasi paket).
+      console.error('PUT /api/open-trip validasi gagal:', slug, JSON.stringify(result.error.flatten().fieldErrors))
+      return NextResponse.json({ error: 'Validasi gagal', details: result.error.flatten().fieldErrors }, { status: 400 })
     }
     const data = result.data
 

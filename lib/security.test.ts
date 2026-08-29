@@ -220,6 +220,15 @@ describe("OpenTripSchema", () => {
     expect(r.success).toBe(false);
   });
 
+  it("accepts empty-string photo slots (edit form sends foto.medium='')", () => {
+    // Regresi: form admin mengirim slot foto kosong sebagai ""; harus lolos.
+    const r = OpenTripSchema.safeParse({
+      ...base,
+      foto: { medium: "", large: "", thumb: "", gallery: [] },
+    });
+    expect(r.success).toBe(true);
+  });
+
   it("strips prototype-pollution keys instead of storing them", () => {
     const r = OpenTripSchema.safeParse({
       ...base,

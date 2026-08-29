@@ -706,6 +706,40 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                 </Select>
               </div>
 
+              {/* Kuota & Kursi Terisi dinaikkan ke atas: paling sering disunting
+                  (update sisa kursi saat ada booking), jadi tak perlu scroll. */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="kuota">Kuota Peserta</Label>
+                  <Input
+                    type="number"
+                    id="kuota"
+                    name="kuota"
+                    min="1"
+                    placeholder="20"
+                    value={formData.kuota}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="kursiTerisi">Kursi Terisi</Label>
+                  <Input
+                    type="number"
+                    id="kursiTerisi"
+                    name="kursiTerisi"
+                    min="0"
+                    placeholder="0"
+                    value={formData.kursiTerisi}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              <p className="text-[11px] text-muted-foreground -mt-2">
+                Kuota wajib. Kursi Terisi = peserta luar website (WhatsApp/offline); booking
+                website <strong>Lunas</strong> dihitung otomatis. Sisa = kuota &minus; terisi &minus; Lunas.
+              </p>
+
               <div className="space-y-2">
                 <Label>Label <span className="text-muted-foreground font-normal ml-1">Opsional</span></Label>
                 <Select value={formData.label || "none"} onValueChange={(val) => handleSelectChange('label', val === "none" ? "" : val)}>
@@ -768,42 +802,6 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                 />
                 <p className="text-[11px] text-muted-foreground">
                   Wajib diisi. Setiap open trip kini punya tanggal keberangkatan tetap.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="kuota">Kuota Peserta</Label>
-                <Input
-                  type="number"
-                  id="kuota"
-                  name="kuota"
-                  min="1"
-                  placeholder="20"
-                  value={formData.kuota}
-                  onChange={handleChange}
-                  required
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Wajib diisi. Menentukan info &quot;sisa kursi&quot; yang tampil di halaman paket.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="kursiTerisi">Kursi Terisi Manual</Label>
-                <Input
-                  type="number"
-                  id="kursiTerisi"
-                  name="kursiTerisi"
-                  min="0"
-                  placeholder="0"
-                  value={formData.kursiTerisi}
-                  onChange={handleChange}
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Untuk peserta di luar website (booking WhatsApp/offline). Booking
-                  website berstatus <strong>Lunas</strong> sudah dihitung otomatis,
-                  jadi tidak perlu ditambahkan di sini. Sisa = kuota &minus; terisi
-                  manual &minus; booking Lunas.
                 </p>
               </div>
 

@@ -174,7 +174,7 @@ export function MediaPickerMultiple({ values, onChange, label = "Klik untuk memi
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden bg-background">
+        <DialogContent className="sm:max-w-[700px] max-h-[92dvh] p-0 overflow-hidden bg-background">
           <DialogHeader className="px-6 py-4 border-b border-border bg-muted/20">
             <DialogTitle className="text-xl">Bank Media</DialogTitle>
             <DialogDescription>
@@ -182,7 +182,10 @@ export function MediaPickerMultiple({ values, onChange, label = "Klik untuk memi
             </DialogDescription>
           </DialogHeader>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-[500px] flex flex-col">
+          {/* Tinggi mengikuti viewport di mobile (dvh) agar isi tidak terpotong
+              & footer "Selesai Memilih" tidak menutupi grid; dibatasi 500px di
+              layar besar. Header dialog ikut diperhitungkan lewat max-h di atas. */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-[68dvh] max-h-[500px] flex flex-col">
             <div className="px-6 pt-4 border-b border-border">
               <TabsList className="w-full grid grid-cols-2">
                 <TabsTrigger value="upload" className="font-medium">Upload Baru</TabsTrigger>

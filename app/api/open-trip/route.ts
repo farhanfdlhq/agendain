@@ -46,7 +46,8 @@ export async function POST(request: Request) {
     // Validate with Zod
     const result = OpenTripSchema.safeParse(body)
     if (!result.success) {
-      return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+      console.error('POST /api/open-trip validasi gagal:', JSON.stringify(result.error.flatten().fieldErrors))
+      return NextResponse.json({ error: 'Validasi gagal', details: result.error.flatten().fieldErrors }, { status: 400 })
     }
     
     const data = result.data
