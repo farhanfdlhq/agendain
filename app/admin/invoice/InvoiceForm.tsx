@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { hitungInvoice, formatUang, type MataUang } from "@/lib/invoice"
+import { formatMoneyInput, parseMoneyInput } from "@/lib/currency"
 
 type Item = { deskripsi: string; qty: number | string; harga: number | string }
 type Akun = { id: number; label: string; bank: string; aktif: boolean; isDefault: boolean }
@@ -258,8 +259,8 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
                   </div>
                   <div className="col-span-5 sm:col-span-3 space-y-1">
                     <Label className="text-xs sm:hidden">Harga</Label>
-                    <Input type="number" min="0" step="any" value={it.harga}
-                      onChange={e => ubahItem(i, "harga", e.target.value)} />
+                    <Input type="text" inputMode="decimal" value={formatMoneyInput(it.harga)}
+                      onChange={e => ubahItem(i, "harga", parseMoneyInput(e.target.value))} />
                   </div>
                   <div className="col-span-3 sm:col-span-2 flex items-center justify-end gap-1 pt-1">
                     <span className="text-sm font-medium tabular-nums truncate">

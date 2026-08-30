@@ -114,3 +114,32 @@ export const fetchExchangeRates = async (): Promise<ExchangeRates> => {
     return { EUR: 1 / FALLBACK_EUR_IDR, eurIdr: FALLBACK_EUR_IDR, source: "fallback" };
   }
 };
+
+/**
+ * Format & parse untuk FIELD INPUT uang (bukan tampilan akhir).
+ *
+ * `type="number"` tidak bisa menampilkan pemisah ribuan sama sekali — browser
+ * menolak karakter selain angka. Jadi field harga memakai `type="text"`:
+ * nilai MENTAH (dot-desimal, mis. "15000000" atau "2500.5") disimpan di state,
+ * dan hanya DITAMPILKAN ber-pemisah ribuan gaya id-ID. Desimal tetap didukung
+ * (koma) supaya harga EUR bersen tidak rusak.
+ */
+export const formatMoneyInput = (raw: string | number): string => {
+  const s = String(raw ?? "").trim();
+  if (s === "") return "";
+  const [intPart, decPart] = s.split(".");
+  const intFmt = intPart ? Number(intPart).toLocaleString("id-ID") : "0";
+  // `decPart !== undefined` menjaga koma yang baru diketik (mis. "2.500,")
+  // tetap tampil, tanpa dibuang saat reformat per ketikan.
+  return decPart !== undefined ? `${intFmt},${decPart}` : intFmt;
+};
+
+/** Kebalikan formatMoneyInput: teks ber-titik-ribuan/koma → nilai mentah dot-desimal. */
+export const parseMoneyInput = (display: string): string => {
+  const cleaned = String(display)
+    .replace(/\./g, "") // buang titik ribuan
+    .replace(",", ".") // koma desimal → titik
+    .replace(/[^\d.]/g, ""); // sisakan digit & titik
+  const [i, ...rest] = cleaned.split(".");
+  return rest.length ? `${i}.${rest.join("")}` : i;
+};

@@ -159,3 +159,61 @@ export async function DELETE(req: Request, ctx: Ctx) {
     return serverError("invoice/[id]", error);
   }
 }
+
+// Ubah HANYA status — dipakai dropdown status di daftar invoice, yang tak
+// memuat items/klien sehingga tak bisa mengirim payload PUT lengkap. Logika
+// pembekuan kurs & lunasAt disamakan dengan PUT agar konsisten.
+export async function PATCH(req: Request, ctx: Ctx) {
+  try {
+    const gate = await requirePermission(req, "PATCH /api/invoice/[id]", "invoice_edit");
+    if (gate.denied) return gate.denied;
+
+    const id = await idDari(ctx);
+    if (!id) return NextResponse.json({ error: "Id tidak valid." }, { status: 400 });
+
+    const body = await req.json().catch(() => ({}));
+    const status = body?.status;
+    if (!["draft", "terkirim", "lunas", "batal"].includes(status)) {
+      return NextResponse.json({ error: "Status tidak valid." }, { status: 400 });
+    }
+
+    const lama = await prisma.invoice.findUnique({ where: { id } });
+    if (!lama) return NextResponse.json({ error: "Invoice tidak ditemukan." }, { status: 404 });
+
+    // Bekukan kurs sekali saat invoice pertama meninggalkan draft.
+    let kurs = lama.kurs as unknown as number | null;
+    let totalPadanan = lama.totalPadanan as unknown as number | null;
+    if (status !== "draft" && !kurs) {
+      const beku = await bekukanKurs(lama.mataUang, Number(lama.total));
+      kurs = beku.kurs;
+      totalPadanan = beku.totalPadanan;
+    }
+
+    const updated = await prisma.invoice.update({
+      where: { id },
+      data: {
+        status,
+        kurs,
+        totalPadanan,
+        lunasAt: status === "lunas" ? (lama.lunasAt ?? new Date()) : null,
+      },
+    });
+
+    if (lama.status !== updated.status) {
+      await logAudit({
+        action: "invoice.status_change",
+        actorId: gate.actor.userId,
+        actorEmail: gate.actor.email,
+        targetType: "Invoice",
+        targetId: id,
+        detail: { nomor: updated.nomor, dari: lama.status, ke: updated.status },
+        ip: getClientIp(req),
+        userAgent: req.headers.get("user-agent"),
+      });
+    }
+
+    return NextResponse.json({ id: updated.id, status: updated.status, token: updated.token });
+  } catch (error) {
+    return serverError("invoice/[id]", error);
+  }
+}

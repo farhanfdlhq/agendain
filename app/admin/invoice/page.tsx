@@ -7,7 +7,7 @@ import { Plus, Receipt, MoreVertical, Search, ExternalLink } from "lucide-react"
 import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -86,6 +86,28 @@ export default function AdminInvoicePage() {
       else toast.error(data.error || "Gagal menghapus")
     } catch {
       toast.error("Kesalahan jaringan")
+    }
+  }
+
+  // Ubah status langsung dari daftar (PATCH ringan). Optimistic: badge langsung
+  // berubah, dikembalikan bila server menolak.
+  const handleStatusChange = async (inv: Invoice, status: string) => {
+    if (status === inv.status) return
+    setInvoices(prev => prev.map(i => (i.id === inv.id ? { ...i, status } : i)))
+    try {
+      const res = await fetch(`/api/invoice/${inv.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        throw new Error(d.error || "Gagal mengubah status")
+      }
+      toast.success(`Status → ${LABEL_STATUS[status] ?? status}`)
+    } catch (e) {
+      setInvoices(prev => prev.map(i => (i.id === inv.id ? { ...i, status: inv.status } : i)))
+      toast.error(e instanceof Error ? e.message : "Gagal mengubah status")
     }
   }
 
@@ -177,9 +199,20 @@ export default function AdminInvoicePage() {
                         {formatUang(Number(inv.total), (inv.mataUang as MataUang) ?? "IDR")}
                       </TableCell>
                       <TableCell className="text-center">
-                        <Badge variant="outline" className={`rounded-full ${GAYA_STATUS[inv.status] ?? ""}`}>
-                          {terlewat ? "Jatuh Tempo" : LABEL_STATUS[inv.status] ?? inv.status}
-                        </Badge>
+                        <div className="flex flex-col items-center gap-1">
+                          <Select value={inv.status} onValueChange={(v) => handleStatusChange(inv, v)}>
+                            <SelectTrigger className={`h-7 w-32 justify-center rounded-full text-xs font-medium ${GAYA_STATUS[inv.status] ?? ""}`}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="draft">Draft</SelectItem>
+                              <SelectItem value="terkirim">Terkirim</SelectItem>
+                              <SelectItem value="lunas">Lunas</SelectItem>
+                              <SelectItem value="batal">Batal</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {terlewat && <span className="text-[10px] font-semibold text-destructive">Jatuh tempo</span>}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>

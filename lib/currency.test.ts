@@ -1,34 +1,36 @@
-import { describe, it, expect } from 'vitest'
-import { formatPriceShort, formatIDR } from './currency'
+import { describe, expect, it } from "vitest";
+import { formatMoneyInput, parseMoneyInput } from "./currency";
 
-describe('formatPriceShort', () => {
-  it('meringkas kelipatan bulat satu juta', () => {
-    expect(formatPriceShort(35000000, 'id')).toBe('35 Juta')
-    expect(formatPriceShort(18000000, 'id')).toBe('18 Juta')
-    expect(formatPriceShort(1000000, 'id')).toBe('1 Juta')
-  })
+describe("formatMoneyInput", () => {
+  it("menyisipkan titik ribuan gaya id-ID", () => {
+    expect(formatMoneyInput("15000000")).toBe("15.000.000");
+    expect(formatMoneyInput(1000000)).toBe("1.000.000");
+    expect(formatMoneyInput("0")).toBe("0");
+  });
 
-  // Regresi: nilai non-bulat pernah jatuh ke "Rp 28.500.000" sehingga kolom
-  // grid kartu beranda melebar dan keluar dari kontainer.
-  it('tetap ringkas untuk nilai non-bulat, satu angka desimal', () => {
-    expect(formatPriceShort(28500000, 'id')).toBe('28,5 Juta')
-    expect(formatPriceShort(18900000, 'id')).toBe('18,9 Juta')
-  })
+  it("string kosong tetap kosong (bukan '0')", () => {
+    expect(formatMoneyInput("")).toBe("");
+  });
 
-  it('membulatkan pecahan panjang ke satu desimal', () => {
-    expect(formatPriceShort(28543210, 'id')).toBe('28,5 Juta')
-  })
+  it("mempertahankan bagian desimal & koma yang baru diketik", () => {
+    expect(formatMoneyInput("2500.5")).toBe("2.500,5");
+    expect(formatMoneyInput("2500.")).toBe("2.500,");
+  });
+});
 
-  it('memakai titik desimal dan "Million" pada locale en', () => {
-    expect(formatPriceShort(28500000, 'en')).toBe('28.5 Million')
-    expect(formatPriceShort(35000000, 'en')).toBe('35 Million')
-  })
+describe("parseMoneyInput", () => {
+  it("membuang titik ribuan, koma → titik desimal", () => {
+    expect(parseMoneyInput("15.000.000")).toBe("15000000");
+    expect(parseMoneyInput("2.500,5")).toBe("2500.5");
+  });
 
-  it('jatuh ke format rupiah penuh di bawah satu juta', () => {
-    expect(formatPriceShort(500000, 'id')).toBe(formatIDR(500000))
-  })
+  it("mengabaikan karakter non-angka", () => {
+    expect(parseMoneyInput("Rp 1.250x")).toBe("1250");
+  });
 
-  it('default locale adalah id', () => {
-    expect(formatPriceShort(28500000)).toBe('28,5 Juta')
-  })
-})
+  it("round-trip: parse(format(x)) === x untuk nilai bulat", () => {
+    for (const v of ["15000000", "999", "0", "1234567"]) {
+      expect(parseMoneyInput(formatMoneyInput(v))).toBe(v);
+    }
+  });
+});
