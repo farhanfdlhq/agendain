@@ -9,8 +9,12 @@ import { LanguageProvider } from "@/lib/i18n/LanguageContext"
 export default function FrontLayout({ children, settings, initialLocale = 'id' }: { children: React.ReactNode, settings?: any, initialLocale?: 'id' | 'en' }) {
   const pathname = usePathname()
   
-  // Hide global Navbar and Footer on admin routes
-  if (pathname.startsWith('/admin')) {
+  // Hide global Navbar and Footer on admin routes.
+  //
+  // `/invoice/<token>` ikut dikecualikan: itu dokumen tagihan yang dibuka klien
+  // dari tautan langsung dan dicetak ke PDF — navbar, footer, dan tombol
+  // WhatsApp mengambang tidak punya tempat di sana.
+  if (pathname.startsWith('/admin') || pathname.startsWith('/invoice')) {
     return <main>{children}</main>
   }
 
