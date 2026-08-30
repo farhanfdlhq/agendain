@@ -20,7 +20,14 @@ export async function GET() {
     const settingsObj = settings.reduce(
       (acc: any, curr: { key: string; value: string }) => {
         // Jangan ekspos info rezeki/pembayaran atau rahasia lainnya jika bukan administrator yang terotentikasi
-        const sensitiveKey = /payment|secret|token|password|credential/i.test(curr.key);
+        // `invoice_settings` memuat identitas legal, NPWP, dan gambar tanda
+        // tangan — tidak boleh terbuka ke pemanggil publik endpoint ini (dipakai
+        // juga oleh form Private Trip). Namanya tidak tertangkap pola di atas,
+        // jadi disebut eksplisit. Halaman invoice publik tidak terpengaruh:
+        // ia server component yang membaca prisma langsung.
+        const sensitiveKey =
+          /payment|secret|token|password|credential/i.test(curr.key) ||
+          curr.key === "invoice_settings";
         if (!canSeeSensitive && sensitiveKey) {
           return acc;
         }
