@@ -57,6 +57,18 @@ const PERMISSIONS_GROUPS = [
     ]
   },
   {
+    // id `invoice_*` sudah terdaftar di PERMISSION_IDS (lib/permissions.ts),
+    // jadi server sudah menerimanya. Katalog UI ini yang tertinggal saat fitur
+    // invoice dibangun — itu sebabnya menu invoice tak muncul di layar Roles.
+    category: 'INVOICE',
+    items: [
+      { id: 'invoice_view', label: 'View Invoice' },
+      { id: 'invoice_create', label: 'Create Invoice' },
+      { id: 'invoice_edit', label: 'Edit Invoice' },
+      { id: 'invoice_delete', label: 'Delete Invoice' },
+    ]
+  },
+  {
     // Label saja yang diperbarui; id-nya tetap `inquiry_*` karena sudah
     // tersimpan di kolom rolesConfig milik user dan divalidasi di
     // app/api/admin/roles/route.ts — mengganti id akan membatalkan izin
