@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { MediaPicker } from "@/components/ui/media-picker"
+import { ImageCropUploader } from "@/components/ui/image-crop-uploader"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 
 // Bentuknya sengaja cermin InvoiceSettingsSchema di lib/security.ts — kalau
@@ -151,7 +152,9 @@ export default function PengaturanInvoicePage() {
           <CardContent className="grid gap-6 sm:grid-cols-2">
             <div className="space-y-2">
               <Label>Logo Invoice</Label>
-              <MediaPicker value={form.logo} onChange={url => set("logo", url)} label="Pilih logo" />
+              {/* Cropper geser/zoom (rasio mengikuti gambar asli agar logo tak
+                  terdistorsi). Sama seperti penyesuaian foto profil. */}
+              <ImageCropUploader value={form.logo} onChange={url => set("logo", url)} label="Upload logo" />
               <p className="text-xs text-muted-foreground">
                 Dikosongkan → nama perusahaan tampil sebagai teks. Logo situs sengaja
                 tidak dipakai di sini karena versinya putih dan akan hilang di kertas.
