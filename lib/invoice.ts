@@ -83,6 +83,32 @@ const httpUrl = (u: string): string => {
   return `https://${t}`;
 };
 
+/**
+ * Kop dokumen — invoice DAN itinerary sama-sama memakainya, dibaca dari key
+ * `invoice_settings`. Nama jatuh ke pengaturan situs bila kosong; logo SENGAJA
+ * tidak jatuh ke `site_logo` (versi putih → tak terlihat di kertas). Semua href
+ * kontak aman (skema non-http ditolak).
+ */
+export function buildDocumentKop(
+  settings?: Record<string, unknown>,
+  siteSettings?: Record<string, unknown>,
+) {
+  const s = settings ?? {};
+  const site = siteSettings ?? {};
+  return {
+    nama: teks(s.namaLegal).trim() || teks(site.site_name).trim() || "Dokumen",
+    alamat: teks(s.alamat),
+    telepon: teks(s.telepon),
+    email: teks(s.email),
+    website: teks(s.website),
+    npwp: teks(s.npwp),
+    logo: teks(s.logo),
+    websiteHref: httpUrl(teks(s.website)),
+    emailHref: teks(s.email) ? `mailto:${teks(s.email)}` : "",
+    teleponHref: teks(s.telepon) ? `tel:${teks(s.telepon).replace(/[^\d+]/g, "")}` : "",
+  };
+}
+
 type InvoiceInput = {
   nomor: string; bahasa: string; mataUang: string;
   klienNama: string; klienEmail?: string | null; klienTelepon?: string | null; klienAlamat?: string | null;
@@ -111,7 +137,6 @@ export function buildInvoiceView({
   sekarang?: Date;
 }) {
   const s = settings ?? {};
-  const site = siteSettings ?? {};
   const bahasa = invoice.bahasa === "en" ? "en" : "id";
   const label = LABEL[bahasa];
   const mataUang: MataUang = invoice.mataUang === "EUR" ? "EUR" : "IDR";
@@ -135,24 +160,8 @@ export function buildInvoiceView({
     label,
     bahasa,
     mataUang,
-    kop: {
-      nama: teks(s.namaLegal).trim() || teks(site.site_name).trim() || "Invoice",
-      alamat: teks(s.alamat),
-      telepon: teks(s.telepon),
-      email: teks(s.email),
-      website: teks(s.website),
-      npwp: teks(s.npwp),
-      // SENGAJA tidak jatuh ke `site_logo`. Logo situs di proyek ini adalah
-      // versi PUTIH (dipakai footer & navbar berlatar navy); dipasang di
-      // dokumen berlatar kertas putih ia jadi gambar tak kasatmata yang tetap
-      // memakan ruang. Bila logo invoice belum diatur, nama perusahaan tampil
-      // sebagai teks — selalu terbaca.
-      logo: teks(s.logo),
-      // href kontak untuk halaman HTML (di PDF tetap teks biasa).
-      websiteHref: httpUrl(teks(s.website)),
-      emailHref: teks(s.email) ? `mailto:${teks(s.email)}` : "",
-      teleponHref: teks(s.telepon) ? `tel:${teks(s.telepon).replace(/[^\d+]/g, "")}` : "",
-    },
+    // Kop dipakai bersama dengan itinerary — lihat buildDocumentKop.
+    kop: buildDocumentKop(settings, siteSettings),
     klien: {
       nama: invoice.klienNama,
       email: invoice.klienEmail || "",

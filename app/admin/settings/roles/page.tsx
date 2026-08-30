@@ -69,6 +69,15 @@ const PERMISSIONS_GROUPS = [
     ]
   },
   {
+    category: 'ITINERARY',
+    items: [
+      { id: 'itinerary_view', label: 'View Itinerary' },
+      { id: 'itinerary_create', label: 'Create Itinerary' },
+      { id: 'itinerary_edit', label: 'Edit Itinerary' },
+      { id: 'itinerary_delete', label: 'Delete Itinerary' },
+    ]
+  },
+  {
     // Label saja yang diperbarui; id-nya tetap `inquiry_*` karena sudah
     // tersimpan di kolom rolesConfig milik user dan divalidasi di
     // app/api/admin/roles/route.ts — mengganti id akan membatalkan izin

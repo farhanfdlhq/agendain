@@ -14,7 +14,7 @@ export default function FrontLayout({ children, settings, initialLocale = 'id' }
   // `/invoice/<token>` ikut dikecualikan: itu dokumen tagihan yang dibuka klien
   // dari tautan langsung dan dicetak ke PDF — navbar, footer, dan tombol
   // WhatsApp mengambang tidak punya tempat di sana.
-  if (pathname.startsWith('/admin') || pathname.startsWith('/invoice')) {
+  if (pathname.startsWith('/admin') || pathname.startsWith('/invoice') || pathname.startsWith('/itinerary')) {
     return <main>{children}</main>
   }
 

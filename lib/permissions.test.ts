@@ -28,3 +28,23 @@ describe("permission invoice", () => {
     expect(hasPermission({ role: "super_admin", permissions: [] }, "invoice_view")).toBe(true);
   });
 });
+
+describe("permission itinerary", () => {
+  it("keempat id itinerary terdaftar di vokabuler", () => {
+    for (const id of ["itinerary_view", "itinerary_create", "itinerary_edit", "itinerary_delete"]) {
+      expect(PERMISSION_IDS).toContain(id);
+    }
+  });
+
+  it("role admin mendapat keempat permission itinerary", () => {
+    const admin = DEFAULT_ROLES.find((r) => r.id === "admin")!;
+    expect(admin.permissions).toEqual(
+      expect.arrayContaining(["itinerary_view", "itinerary_create", "itinerary_edit", "itinerary_delete"]),
+    );
+  });
+
+  it("role editor TIDAK mendapat akses itinerary", () => {
+    const editor = DEFAULT_ROLES.find((r) => r.id === "editor")!;
+    expect(hasPermission({ role: editor.id, permissions: editor.permissions }, "itinerary_view")).toBe(false);
+  });
+});

@@ -1,0 +1,41 @@
+/*
+ * Gaya cetak halaman itinerary publik — setara jalur "Unduh PDF" bila klien
+ * menekan Ctrl+P alih-alih tombolnya. CSS biasa (bukan varian print: Tailwind)
+ * karena `@page` tak punya padanan utility.
+ */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  /* Tombol Lihat/Unduh PDF tidak ikut tercetak. */
+  .itinerary-aksi {
+    display: none !important;
+  }
+
+  .itinerary-shell {
+    min-height: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .itinerary-doc {
+    max-width: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Satu hari tidak dipenggal di tengah, dan blok catatan tetap utuh. */
+  .itinerary-hari,
+  .itinerary-catatan {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

@@ -303,6 +303,37 @@ export const InvoiceSchema = z.object({
   status: z.enum(["draft", "terkirim", "lunas", "batal"]).optional(),
 });
 
+// === Itinerary (dokumen jadwal per-klien) ===
+// Beda dari `ItineraryItem` (template paket open-trip di atas): ini dokumen
+// standalone per-klien dengan slot jam mulai–selesai per aktivitas.
+const JamHHMM = z.literal("").or(
+  z.string().trim().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Format jam harus HH:MM"),
+);
+const ItineraryAktivitas = z.object({
+  mulai: JamHHMM.optional(),
+  selesai: JamHHMM.optional(),
+  lokasi: z.string().trim().max(500).optional(),
+  catatan: z.string().trim().max(1000).optional(),
+  gambar: OptionalStoredUrl.optional(),
+});
+const ItineraryHari = z.object({
+  // "YYYY-MM-DD" atau kosong (hari tanpa tanggal spesifik).
+  tanggal: z.string().trim().max(40).optional(),
+  items: z.array(ItineraryAktivitas).max(50), // anti-DoS per hari
+});
+export const ItineraryDocSchema = z.object({
+  judul: z.string().trim().min(1, "Judul harus diisi").max(200),
+  klienNama: z.string().trim().min(1, "Nama klien harus diisi").max(160),
+  klienNegara: z.string().trim().max(100).nullable().optional(),
+  klienTelepon: z.string().trim().max(40).nullable().optional(),
+  klienEmail: z.string().trim().max(190).nullable().optional(),
+  tanggalDok: z.string().trim().min(1, "Tanggal dokumen harus diisi").max(40),
+  bahasa: z.enum(["id", "en"]).optional(),
+  hari: z.array(ItineraryHari).min(1, "Minimal satu hari").max(60),
+  catatan: z.string().trim().max(2000).nullable().optional(),
+  status: z.enum(["draft", "published", "archived"]).optional(),
+});
+
 // === Blog Schemas ===
 export const BlogCategorySchema = z.object({
   nama: z.string().min(1).max(100),

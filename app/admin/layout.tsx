@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users, UsersRound, Gem, Info, Home, Newspaper, Shield, ScrollText, Tags, History, PanelBottom, Receipt, CreditCard, SlidersHorizontal } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users, UsersRound, Gem, Info, Home, Newspaper, Shield, ScrollText, Tags, History, PanelBottom, Receipt, CreditCard, SlidersHorizontal, Route } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
@@ -116,14 +116,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       ]
     },
     {
-      heading: 'INVOICE',
+      // Invoice & Itinerary = dokumen klien ber-kop sama. Digabung dalam satu
+      // grup DOKUMEN; kop/identitas perusahaan dipakai bersama dari Pengaturan.
+      heading: 'DOKUMEN',
       items: [
         { name: 'Daftar Invoice', href: '/admin/invoice', icon: <Receipt size={18} />, perm: ['invoice_view'] },
+        { name: 'Daftar Itinerary', href: '/admin/itinerary', icon: <Route size={18} />, perm: ['itinerary_view'] },
         // Akun Pembayaran & Pengaturan digerbangi `settings_manage`, BUKAN
         // `invoice_edit`: mengganti nomor rekening adalah vektor penipuan
         // (nomor ditukar, uang klien mengalir ke penipu).
         { name: 'Akun Pembayaran', href: '/admin/invoice/akun-pembayaran', icon: <CreditCard size={18} />, perm: ['settings_manage'] },
-        { name: 'Pengaturan Invoice', href: '/admin/invoice/pengaturan', icon: <SlidersHorizontal size={18} />, perm: ['settings_manage'] },
+        { name: 'Pengaturan', href: '/admin/invoice/pengaturan', icon: <SlidersHorizontal size={18} />, perm: ['settings_manage'] },
       ]
     },
     {

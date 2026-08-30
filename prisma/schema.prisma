@@ -245,3 +245,24 @@ model Invoice {
   @@index([status])
   @@index([createdAt])
 }
+
+model Itinerary {
+  id           Int      @id @default(autoincrement())
+  token        String   @unique          // tautan publik acak (randomBytes base64url)
+  bahasa       String   @default("id")   // id | en — hanya label dokumen yang beralih
+  judul        String                    // "Itinerary Keluarga Jhonson"
+  klienNama    String
+  klienNegara  String?
+  klienTelepon String?
+  klienEmail   String?
+  tanggalDok   DateTime                  // "Date:" di kop dokumen
+  // [{ tanggal, items:[{ mulai, selesai, lokasi, catatan, gambar }] }]
+  hari         Json
+  catatan      String?  @db.Text
+  status       String   @default("draft") // draft | published | archived
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}

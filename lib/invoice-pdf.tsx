@@ -6,23 +6,9 @@
  * yang SAMA dari `buildInvoiceView`. Jadi walau markup-nya berbeda, angka dan
  * teksnya mustahil berbeda.
  */
-import { existsSync } from "fs";
-import path from "path";
 import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer";
 import type { InvoiceView } from "./invoice";
-
-/**
- * @react-pdf tidak mengerti URL root-relative seperti `/uploads/x.png`.
- * Diubah ke path berkas nyata; bila berkasnya tidak ada, gambar DILEWATI —
- * satu gambar hilang jauh lebih baik daripada seluruh PDF gagal dirender.
- */
-function sumberGambar(url: string): string | null {
-  if (!url) return null;
-  if (/^https?:\/\//i.test(url)) return url;
-  if (!url.startsWith("/")) return null;
-  const berkas = path.join(process.cwd(), "public", decodeURIComponent(url));
-  return existsSync(berkas) ? berkas : null;
-}
+import { sumberGambar } from "./pdf-utils";
 
 const s = StyleSheet.create({
   page: { paddingVertical: 40, paddingHorizontal: 44, fontSize: 9, color: "#3f3f46", lineHeight: 1.5 },
