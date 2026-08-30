@@ -65,6 +65,28 @@ let lastFetchTime = 0;
  * Hasilnya di-cache satu jam. Kegagalan TIDAK ikut di-cache, jadi gangguan
  * sesaat tidak mengunci situs ke kurs cadangan selama sejam.
  */
+/**
+ * Kurs yang DIBEKUKAN ke dalam satu invoice saat ia terbit.
+ *
+ * Tanpa pembekuan, satu invoice yang sama menampilkan padanan berbeda tiap kali
+ * klien membukanya — karena kurs Wise berubah tiap jam. Kegagalan mengambil
+ * kurs sengaja tidak melempar: penerbitan invoice tidak boleh gagal hanya
+ * karena layanan kurs sedang tak bisa dihubungi.
+ */
+export const bekukanKurs = async (
+  mataUang: string,
+  total: number,
+): Promise<{ kurs: number | null; totalPadanan: number | null }> => {
+  try {
+    const { eurIdr } = await fetchExchangeRates();
+    if (!eurIdr || eurIdr <= 0) return { kurs: null, totalPadanan: null };
+    const padanan = mataUang === "EUR" ? total * eurIdr : total / eurIdr;
+    return { kurs: eurIdr, totalPadanan: Math.round(padanan * 100) / 100 };
+  } catch {
+    return { kurs: null, totalPadanan: null };
+  }
+};
+
 export const fetchExchangeRates = async (): Promise<ExchangeRates> => {
   const now = Date.now();
   if (ratesCache && now - lastFetchTime < 3600000) {
