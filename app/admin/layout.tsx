@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users, UsersRound, Gem, Info, Home, Newspaper, Shield, ScrollText, Tags, History, PanelBottom } from "lucide-react"
+import { LayoutDashboard, Package, Map, MessageSquare, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, MoreHorizontal, Users, UsersRound, Gem, Info, Home, Newspaper, Shield, ScrollText, Tags, History, PanelBottom, Receipt, CreditCard, SlidersHorizontal } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
@@ -22,6 +22,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
   const [siteLogo, setSiteLogo] = useState("/agendain.jpeg")
   const [siteName, setSiteName] = useState("Agendain")
+  // Dipakai saat sidebar menyempit — logo penuh terlalu lebar di lebar kolaps.
+  const [siteFavicon, setSiteFavicon] = useState("/favicon.ico")
   // Permission efektif dari server. Wajib diambil dari API: role di JWT hanya
   // ditulis saat sign-in, dan matriks permissions[] hanya ada di roles_config.
   const [me, setMe] = useState<(PermissionSubject & { roleName: string }) | null>(null)
@@ -50,6 +52,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         }
         if (data.site_name) {
           setSiteName(data.site_name)
+        }
+        if (data.site_favicon) {
+          setSiteFavicon(data.site_favicon)
         }
       })
       .catch(console.error)
@@ -108,6 +113,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Destinasi', href: '/admin/destinasi', icon: <Map size={18} />, perm: ['destinasi_view'] },
         { name: 'Pesanan', href: '/admin/booking', icon: <CalendarDays size={18} />, perm: ['booking_view'] },
         { name: 'Permintaan Trip', href: '/admin/inquiries', icon: <MessageSquare size={18} />, perm: ['inquiry_view'] },
+      ]
+    },
+    {
+      heading: 'INVOICE',
+      items: [
+        { name: 'Daftar Invoice', href: '/admin/invoice', icon: <Receipt size={18} />, perm: ['invoice_view'] },
+        // Akun Pembayaran & Pengaturan digerbangi `settings_manage`, BUKAN
+        // `invoice_edit`: mengganti nomor rekening adalah vektor penipuan
+        // (nomor ditukar, uang klien mengalir ke penipu).
+        { name: 'Akun Pembayaran', href: '/admin/invoice/akun-pembayaran', icon: <CreditCard size={18} />, perm: ['settings_manage'] },
+        { name: 'Pengaturan Invoice', href: '/admin/invoice/pengaturan', icon: <SlidersHorizontal size={18} />, perm: ['settings_manage'] },
       ]
     },
     {
@@ -184,16 +200,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const SidebarContent = ({ collapsed = false }: { collapsed?: boolean }) => (
     <div className="flex flex-col h-full bg-sidebar/95 backdrop-blur-xl border-r border-border/60 text-sidebar-foreground shadow-sm overflow-hidden">
-      <div className={`p-6 pb-2 flex items-center ${collapsed ? 'justify-center p-4' : 'gap-3'}`}>
-        <div className="bg-primary/10 p-2 rounded-xl border border-primary/20 shrink-0">
-          <Map className="text-primary w-6 h-6" />
-        </div>
-        {!collapsed && (
-          <div className="overflow-hidden whitespace-nowrap">
-            <h2 className="text-xl font-bold tracking-tight bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent truncate w-32">{siteName}</h2>
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Workspace</p>
-          </div>
-        )}
+      {/* Branding: logo situs saat sidebar terbuka, favicon saat menyempit.
+          Tanpa teks — logo sudah memuat wordmark, dan "Workspace" hanya
+          menambah bising. `alt` tetap diisi nama situs untuk pembaca layar. */}
+      <div className={`p-6 pb-2 flex items-center ${collapsed ? 'justify-center p-4' : ''}`}>
+        <Link href="/admin" className="block overflow-hidden" aria-label={siteName}>
+          {collapsed ? (
+            <img src={siteFavicon} alt={siteName} className="h-9 w-9 rounded-lg object-contain" />
+          ) : (
+            // `site_logo` adalah logo versi PUTIH — dipakai footer & navbar
+            // publik yang berlatar navy. Sidebar admin berlatar terang, jadi
+            // logo diberi alas warna brand agar tetap terbaca.
+            <span className="flex items-center rounded-xl bg-primary px-3 py-2">
+              <img src={siteLogo} alt={siteName} className="h-7 w-auto max-w-[148px] object-contain" />
+            </span>
+          )}
+        </Link>
       </div>
       
       <nav className={`flex-1 overflow-y-auto py-6 space-y-8 scrollbar-thin ${collapsed ? 'px-2' : 'px-4'}`}>

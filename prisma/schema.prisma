@@ -184,3 +184,64 @@ model BlogPost {
   @@index([categoryId])
   @@index([slug])
 }
+
+model PaymentAccount {
+  id        Int       @id @default(autoincrement())
+  label     String    // "WISE EUR", "BCA IDR" — yang dibaca admin di dropdown
+  bank      String    // "WISE", "BCA", "Mandiri"
+  atasNama  String?
+  nomor     String?
+  bicSwift  String?
+  iban      String?
+  isDefault Boolean   @default(false)
+  // Hapus = nonaktifkan, JANGAN hapus baris: invoice lama merujuk ke sini.
+  aktif     Boolean   @default(true)
+  invoices  Invoice[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([aktif])
+}
+
+model Invoice {
+  id           Int      @id @default(autoincrement())
+  nomor        String   @unique // INV/2026/08/0001
+  token        String   @unique // tautan publik, acak
+  bahasa       String   @default("id") // id | en
+  mataUang     String   @default("IDR") // IDR | EUR
+
+  klienNama    String
+  klienEmail   String?
+  klienTelepon String?
+  klienAlamat  String?  @db.Text
+
+  judul        String?
+  tanggal      DateTime
+  jatuhTempo   DateTime?
+
+  items        Json // [{ deskripsi, qty, harga }]
+
+  // Angka DIBEKUKAN saat terbit — invoice lama tidak boleh ikut berubah bila
+  // persen pajak di Pengaturan diubah kemudian.
+  subtotal     Decimal  @db.Decimal(15, 2)
+  pajakLabel   String?
+  pajakPersen  Decimal  @default(0) @db.Decimal(5, 2)
+  pajakNominal Decimal  @default(0) @db.Decimal(15, 2)
+  total        Decimal  @db.Decimal(15, 2)
+
+  kurs         Decimal? @db.Decimal(15, 2)
+  totalPadanan Decimal? @db.Decimal(15, 2)
+
+  catatan      String?  @db.Text
+  status       String   @default("draft") // draft | terkirim | lunas | batal
+  lunasAt      DateTime?
+
+  paymentAccountId Int?
+  paymentAccount   PaymentAccount? @relation(fields: [paymentAccountId], references: [id])
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}

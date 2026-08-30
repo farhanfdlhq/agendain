@@ -5,9 +5,12 @@ import {
   csrfBlocked,
   getClientIp,
   getClientIpFromHeaders,
+  InvoiceSchema,
+  InvoiceSettingsSchema,
   isAllowedRole,
   matchesFileSignature,
   OpenTripSchema,
+  PaymentAccountSchema,
   rateLimit,
   sanitizeHtml,
   sanitizeSettingsPayload,
@@ -251,5 +254,162 @@ describe("OpenTripSchema", () => {
   it("rejects out-of-range numeric fields", () => {
     expect(OpenTripSchema.safeParse({ ...base, durasi: 9999 }).success).toBe(false);
     expect(OpenTripSchema.safeParse({ ...base, harga: -1 }).success).toBe(false);
+  });
+});
+
+describe("PaymentAccountSchema", () => {
+  it("menerima isian minimal (label + bank)", () => {
+    const r = PaymentAccountSchema.safeParse({ label: "BCA IDR", bank: "BCA" });
+    expect(r.success).toBe(true);
+  });
+
+  it("menerima isian lengkap gaya Eropa", () => {
+    const r = PaymentAccountSchema.safeParse({
+      label: "WISE EUR",
+      bank: "WISE",
+      atasNama: "Agendain",
+      bicSwift: "TRWIBEBIXXX",
+      iban: "BE00 0000 0000 0000",
+      isDefault: true,
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("menolak label kosong", () => {
+    const r = PaymentAccountSchema.safeParse({ label: "   ", bank: "BCA" });
+    expect(r.success).toBe(false);
+  });
+
+  it("menolak bank kosong", () => {
+    const r = PaymentAccountSchema.safeParse({ label: "BCA IDR", bank: "" });
+    expect(r.success).toBe(false);
+  });
+
+  it("menolak label kebablasan panjang", () => {
+    const r = PaymentAccountSchema.safeParse({ label: "x".repeat(200), bank: "BCA" });
+    expect(r.success).toBe(false);
+  });
+
+  it("membuang key tak dikenal (anti prototype-pollution)", () => {
+    const r = PaymentAccountSchema.safeParse({
+      label: "BCA IDR",
+      bank: "BCA",
+      sembarang: 1,
+    } as any);
+    expect(r.success).toBe(true);
+    expect(Object.keys(r.success ? r.data : {})).not.toContain("sembarang");
+  });
+});
+
+describe("InvoiceSettingsSchema", () => {
+  it("menerima objek kosong (semua field opsional)", () => {
+    expect(InvoiceSettingsSchema.safeParse({}).success).toBe(true);
+  });
+
+  it("menerima isian lengkap yang wajar", () => {
+    const r = InvoiceSettingsSchema.safeParse({
+      namaLegal: "PT Agendain Wisata Indonesia",
+      alamat: "Jl. Contoh No. 1, Jakarta",
+      telepon: "+62 812 3456 7890",
+      email: "billing@agendain.com",
+      website: "https://agendain.com",
+      npwp: "01.234.567.8-901.000",
+      logo: "/uploads/logo.png",
+      tandaTangan: "/uploads/ttd.png",
+      penandaTanganNama: "Dinda",
+      penandaTanganJabatan: "Finance",
+      prefixNomor: "INV",
+      pajakLabel: "PPN 11%",
+      pajakPersen: 11,
+      terminHari: 7,
+      catatanDefault: "Pembayaran paling lambat 7 hari.",
+      tampilkanPadanan: true,
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it("menerima logo kosong (belum dipilih)", () => {
+    expect(InvoiceSettingsSchema.safeParse({ logo: "" }).success).toBe(true);
+  });
+
+  it("menolak logo berskema javascript: (XSS tersimpan)", () => {
+    expect(InvoiceSettingsSchema.safeParse({ logo: "javascript:alert(1)" }).success).toBe(false);
+  });
+
+  it("membatasi persen pajak pada 0-100", () => {
+    expect(InvoiceSettingsSchema.safeParse({ pajakPersen: 101 }).success).toBe(false);
+    expect(InvoiceSettingsSchema.safeParse({ pajakPersen: -1 }).success).toBe(false);
+    expect(InvoiceSettingsSchema.safeParse({ pajakPersen: 11 }).success).toBe(true);
+  });
+
+  it("membatasi termin bayar pada 0-365 hari bulat", () => {
+    expect(InvoiceSettingsSchema.safeParse({ terminHari: 400 }).success).toBe(false);
+    expect(InvoiceSettingsSchema.safeParse({ terminHari: -3 }).success).toBe(false);
+    expect(InvoiceSettingsSchema.safeParse({ terminHari: 1.5 }).success).toBe(false);
+  });
+
+  it("menolak prefix nomor dengan karakter aneh", () => {
+    expect(InvoiceSettingsSchema.safeParse({ prefixNomor: "INV/2026" }).success).toBe(false);
+    expect(InvoiceSettingsSchema.safeParse({ prefixNomor: "INV-A" }).success).toBe(true);
+  });
+
+  it("membuang key tak dikenal", () => {
+    const r = InvoiceSettingsSchema.safeParse({ namaLegal: "PT X", sembarang: 1 } as any);
+    expect(r.success).toBe(true);
+    expect(Object.keys(r.success ? r.data : {})).not.toContain("sembarang");
+  });
+});
+
+describe("InvoiceSchema", () => {
+  const valid = {
+    klienNama: "Budi Santoso",
+    tanggal: "2026-08-30",
+    items: [{ deskripsi: "Paket Eropa Barat", qty: 2, harga: 25000000 }],
+  };
+
+  it("menerima invoice minimal", () => {
+    expect(InvoiceSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("menolak invoice tanpa item sama sekali", () => {
+    expect(InvoiceSchema.safeParse({ ...valid, items: [] }).success).toBe(false);
+  });
+
+  it("menolak item tanpa deskripsi", () => {
+    const r = InvoiceSchema.safeParse({ ...valid, items: [{ deskripsi: "  ", qty: 1, harga: 100 }] });
+    expect(r.success).toBe(false);
+  });
+
+  it("menolak harga negatif dan qty nol", () => {
+    expect(InvoiceSchema.safeParse({ ...valid, items: [{ deskripsi: "x", qty: 1, harga: -5 }] }).success).toBe(false);
+    expect(InvoiceSchema.safeParse({ ...valid, items: [{ deskripsi: "x", qty: 0, harga: 5 }] }).success).toBe(false);
+  });
+
+  it("membatasi jumlah baris item (anti-DoS)", () => {
+    const banyak = Array.from({ length: 101 }, () => ({ deskripsi: "x", qty: 1, harga: 1 }));
+    expect(InvoiceSchema.safeParse({ ...valid, items: banyak }).success).toBe(false);
+  });
+
+  it("menolak nama klien kosong", () => {
+    expect(InvoiceSchema.safeParse({ ...valid, klienNama: "   " }).success).toBe(false);
+  });
+
+  it("hanya menerima status, mata uang, dan bahasa yang dikenal", () => {
+    expect(InvoiceSchema.safeParse({ ...valid, status: "dibayar" }).success).toBe(false);
+    expect(InvoiceSchema.safeParse({ ...valid, mataUang: "USD" }).success).toBe(false);
+    expect(InvoiceSchema.safeParse({ ...valid, bahasa: "de" }).success).toBe(false);
+    expect(InvoiceSchema.safeParse({ ...valid, status: "lunas", mataUang: "EUR", bahasa: "en" }).success).toBe(true);
+  });
+
+  it("membatasi persen pajak pada 0-100", () => {
+    expect(InvoiceSchema.safeParse({ ...valid, pajakPersen: 120 }).success).toBe(false);
+    expect(InvoiceSchema.safeParse({ ...valid, pajakPersen: 11 }).success).toBe(true);
+  });
+
+  it("membuang key tak dikenal", () => {
+    const r = InvoiceSchema.safeParse({ ...valid, total: 999999999, sembarang: 1 } as any);
+    expect(r.success).toBe(true);
+    // `total` TIDAK boleh ikut: angka uang selalu dihitung ulang di server.
+    expect(Object.keys(r.success ? r.data : {})).not.toContain("total");
   });
 });

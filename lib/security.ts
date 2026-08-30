@@ -222,6 +222,87 @@ export const PrivateTripStatusUpdateSchema = z.object({
   status: z.enum(PRIVATE_TRIP_STATUSES),
 });
 
+// Akun pembayaran yang tercetak di invoice. SATU bentuk menampung rekening
+// lokal (nomor) maupun internasional (IBAN/BIC) — admin membedakannya lewat
+// `label` bergaya "WISE EUR" / "BCA IDR", bukan lewat tipe terpisah. Key tak
+// dikenal di-strip zod secara bawaan (anti prototype-pollution).
+export const PaymentAccountSchema = z.object({
+  label: z.string().trim().min(1, "Nama label harus diisi").max(60),
+  bank: z.string().trim().min(1, "Bank/Layanan harus diisi").max(60),
+  atasNama: z.string().trim().max(120).nullable().optional(),
+  nomor: z.string().trim().max(40).nullable().optional(),
+  bicSwift: z.string().trim().max(20).nullable().optional(),
+  iban: z.string().trim().max(40).nullable().optional(),
+  isDefault: z.boolean().optional(),
+  aktif: z.boolean().optional(),
+});
+
+// Pengaturan invoice (key `invoice_settings`): identitas perusahaan untuk kop
+// dokumen + nilai bawaan yang mengisi otomatis form invoice baru. SEMUA field
+// opsional supaya halaman pengaturan bisa disimpan sebagian demi sebagian.
+// Batas angka penting: persen pajak & termin ikut menghitung tagihan, jadi
+// nilai liar harus ditolak di sini, bukan ditemukan saat invoice tercetak.
+export const InvoiceSettingsSchema = z.object({
+  namaLegal: z.string().trim().max(160).optional(),
+  alamat: z.string().trim().max(500).optional(),
+  telepon: z.string().trim().max(40).optional(),
+  email: z.string().trim().max(190).optional(),
+  website: z.string().trim().max(190).optional(),
+  npwp: z.string().trim().max(40).optional(),
+  logo: OptionalStoredUrl.optional(),
+  tandaTangan: OptionalStoredUrl.optional(),
+  penandaTanganNama: z.string().trim().max(120).optional(),
+  penandaTanganJabatan: z.string().trim().max(120).optional(),
+  // Ikut menyusun nomor invoice (INV/2026/08/0001), jadi karakternya dibatasi
+  // agar nomor tidak bisa disisipi garis miring atau spasi.
+  prefixNomor: z
+    .string()
+    .trim()
+    .max(10)
+    .regex(/^[A-Za-z0-9-]*$/, "Prefix hanya boleh huruf, angka, dan tanda hubung")
+    .optional(),
+  pajakLabel: z.string().trim().max(40).optional(),
+  pajakPersen: z.coerce.number().min(0).max(100).optional(),
+  terminHari: z.coerce.number().int().min(0).max(365).optional(),
+  catatanDefault: z.string().trim().max(2000).optional(),
+  tampilkanPadanan: z.boolean().optional(),
+});
+
+// Satu baris tagihan. Batas atasnya bukan hiasan: `items` adalah Json bebas,
+// jadi tanpa pagar ini satu request bisa menitipkan ribuan baris raksasa.
+const InvoiceItemSchema = z.object({
+  deskripsi: z.string().trim().min(1, "Deskripsi item harus diisi").max(500),
+  qty: z.coerce.number().min(0.01, "Qty minimal 0.01").max(100_000),
+  harga: z.coerce.number().min(0, "Harga tidak boleh negatif").max(1_000_000_000_000),
+});
+
+/**
+ * Payload invoice dari form admin.
+ *
+ * Perhatikan yang TIDAK ada di sini: `subtotal`, `pajakNominal`, `total`,
+ * `nomor`, `token`, `kurs`. Semuanya dihitung/dibuat di server — bila ikut
+ * diterima dari klien, siapa pun yang bisa membuat invoice juga bisa menentukan
+ * sendiri angka tagihannya. Zod membuang key tak dikenal, jadi kiriman
+ * `total: 1` sekalipun akan diabaikan diam-diam.
+ */
+export const InvoiceSchema = z.object({
+  klienNama: z.string().trim().min(1, "Nama klien harus diisi").max(160),
+  klienEmail: z.string().trim().max(190).nullable().optional(),
+  klienTelepon: z.string().trim().max(40).nullable().optional(),
+  klienAlamat: z.string().trim().max(500).nullable().optional(),
+  judul: z.string().trim().max(200).nullable().optional(),
+  tanggal: z.string().trim().min(1, "Tanggal invoice harus diisi").max(40),
+  jatuhTempo: z.string().trim().max(40).nullable().optional(),
+  bahasa: z.enum(["id", "en"]).optional(),
+  mataUang: z.enum(["IDR", "EUR"]).optional(),
+  items: z.array(InvoiceItemSchema).min(1, "Minimal satu item").max(100, "Maksimal 100 item"),
+  pajakLabel: z.string().trim().max(40).nullable().optional(),
+  pajakPersen: z.coerce.number().min(0).max(100).optional(),
+  catatan: z.string().trim().max(2000).nullable().optional(),
+  paymentAccountId: z.coerce.number().int().positive().nullable().optional(),
+  status: z.enum(["draft", "terkirim", "lunas", "batal"]).optional(),
+});
+
 // === Blog Schemas ===
 export const BlogCategorySchema = z.object({
   nama: z.string().min(1).max(100),
