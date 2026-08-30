@@ -71,6 +71,18 @@ const awalHari = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(
  */
 const teks = (v: unknown): string => (v === null || v === undefined ? "" : String(v));
 
+/**
+ * URL untuk href: sudah ber-skema http(s) diloloskan; tanpa skema diberi
+ * https://; skema lain (mis. javascript:) ditolak jadi "" agar aman dirender.
+ */
+const httpUrl = (u: string): string => {
+  const t = u.trim();
+  if (!t) return "";
+  if (/^https?:\/\//i.test(t)) return t;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(t)) return "";
+  return `https://${t}`;
+};
+
 type InvoiceInput = {
   nomor: string; bahasa: string; mataUang: string;
   klienNama: string; klienEmail?: string | null; klienTelepon?: string | null; klienAlamat?: string | null;
@@ -136,6 +148,10 @@ export function buildInvoiceView({
       // memakan ruang. Bila logo invoice belum diatur, nama perusahaan tampil
       // sebagai teks — selalu terbaca.
       logo: teks(s.logo),
+      // href kontak untuk halaman HTML (di PDF tetap teks biasa).
+      websiteHref: httpUrl(teks(s.website)),
+      emailHref: teks(s.email) ? `mailto:${teks(s.email)}` : "",
+      teleponHref: teks(s.telepon) ? `tel:${teks(s.telepon).replace(/[^\d+]/g, "")}` : "",
     },
     klien: {
       nama: invoice.klienNama,

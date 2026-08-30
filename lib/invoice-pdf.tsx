@@ -33,8 +33,8 @@ const s = StyleSheet.create({
   logo: { height: 34, marginBottom: 8, objectFit: "contain" },
   namaPerusahaan: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#18181b" },
   kecil: { fontSize: 8, color: "#71717a" },
-  judulInvoice: { fontSize: 20, fontFamily: "Helvetica-Bold", letterSpacing: 2, color: "#18181b" },
-  nomor: { fontSize: 9, color: "#52525b", marginTop: 2 },
+  judulInvoice: { fontSize: 20, fontFamily: "Helvetica-Bold", letterSpacing: 2, color: "#18181b", lineHeight: 1.2 },
+  nomor: { fontSize: 9, color: "#52525b", marginTop: 4 },
   cap: { marginTop: 8, borderWidth: 1, borderRadius: 10, paddingVertical: 3, paddingHorizontal: 10, fontSize: 8, fontFamily: "Helvetica-Bold" },
   capLunas: { borderColor: "#6ee7b7", color: "#047857", backgroundColor: "#ecfdf5" },
   capTempo: { borderColor: "#fca5a5", color: "#b91c1c", backgroundColor: "#fef2f2" },
@@ -142,7 +142,11 @@ export function InvoicePdf({ v }: { v: InvoiceView }) {
           </View>
           {v.ringkasan.padananFmt ? (
             <View style={[s.barisRingkas, { marginTop: 3 }]}>
-              <Text style={[s.kecil, { color: "#a1a1aa" }]}>≈ {v.ringkasan.padananFmt}</Text>
+              {/* Prefix tilde, bukan simbol "kira-kira" U+2248 — yang tidak ada
+                  di Helvetica bawaan @react-pdf sehingga dirender jadi glyph
+                  salah ("H"). Tilde U+007E glyph Latin dasar, aman di semua font.
+                  Halaman HTML tetap memakai simbol kira-kira karena browser bisa. */}
+              <Text style={[s.kecil, { color: "#a1a1aa" }]}>~ {v.ringkasan.padananFmt}</Text>
               <Text style={[s.kecil, { color: "#a1a1aa" }]}>{v.ringkasan.kursFmt}</Text>
             </View>
           ) : null}

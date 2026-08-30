@@ -3,11 +3,30 @@ import type { Metadata } from "next"
 import { Download, FileText } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 import { buildInvoiceView } from "@/lib/invoice"
+import "./print.css"
 
-// Invoice tidak boleh terindeks mesin pencari — tautannya rahasia per klien.
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-  title: "Invoice",
+// Judul tab dibuat dinamis: memuat nomor invoice + nama situs, alih-alih "Invoice"
+// generik. Favicon TIDAK diset di sini — sengaja diwarisi dari generateMetadata
+// root layout (app/layout.tsx) yang sudah memakai site_favicon dari CMS.
+// Invoice tetap noindex — tautannya rahasia per klien.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ token: string }>
+}): Promise<Metadata> {
+  const { token } = await params
+  const inv = await prisma.invoice.findUnique({
+    where: { token },
+    select: { nomor: true, status: true },
+  })
+  const site = await prisma.setting.findUnique({ where: { key: "site_name" } })
+  const siteName = site?.value || "Agendain"
+  // Draft & batal tak pernah "ada" secara publik — jangan bocorkan nomornya di judul.
+  const tampilNomor = inv && inv.status !== "draft" && inv.status !== "batal" ? inv.nomor : null
+  return {
+    robots: { index: false, follow: false },
+    title: tampilNomor ? `Invoice ${tampilNomor} — ${siteName}` : "Invoice",
+  }
 }
 
 /** Ambil hanya key yang dibutuhkan kop dokumen. */
@@ -48,9 +67,9 @@ export default async function InvoicePublikPage({
   const v = buildInvoiceView({ invoice, akun: invoice.paymentAccount, settings, siteSettings })
 
   return (
-    <main className="min-h-dvh bg-zinc-100 py-6 px-4 print:bg-white print:p-0">
-      {/* Aksi — disembunyikan saat dicetak. */}
-      <div className="mx-auto mb-4 flex max-w-[820px] flex-wrap justify-end gap-2 print:hidden">
+    <main className="invoice-shell min-h-dvh bg-zinc-100 py-6 px-4">
+      {/* Aksi — disembunyikan saat dicetak lewat `.invoice-aksi` di print.css. */}
+      <div className="invoice-aksi mx-auto mb-4 flex max-w-[820px] flex-wrap justify-end gap-2">
         <a
           href={`/api/invoice/pdf/${token}`}
           target="_blank"
@@ -67,7 +86,7 @@ export default async function InvoicePublikPage({
         </a>
       </div>
 
-      <article className="mx-auto max-w-[820px] rounded-2xl bg-white p-8 shadow-sm print:rounded-none print:shadow-none sm:p-12">
+      <article className="invoice-doc mx-auto max-w-[820px] rounded-2xl bg-white p-8 shadow-sm sm:p-12">
         {/* Kop */}
         <header className="flex flex-col gap-6 border-b border-zinc-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
@@ -87,9 +106,21 @@ export default async function InvoicePublikPage({
             )}
             {v.kop.alamat && <p className="mt-1 whitespace-pre-line text-xs leading-relaxed text-zinc-500">{v.kop.alamat}</p>}
             <div className="mt-1 space-y-0.5 text-xs text-zinc-500">
-              {v.kop.telepon && <p>{v.kop.telepon}</p>}
-              {v.kop.email && <p>{v.kop.email}</p>}
-              {v.kop.website && <p>{v.kop.website}</p>}
+              {v.kop.telepon && (
+                <p>{v.kop.teleponHref ? <a href={v.kop.teleponHref} className="hover:text-zinc-700 hover:underline">{v.kop.telepon}</a> : v.kop.telepon}</p>
+              )}
+              {v.kop.email && (
+                <p>{v.kop.emailHref ? <a href={v.kop.emailHref} className="hover:text-zinc-700 hover:underline">{v.kop.email}</a> : v.kop.email}</p>
+              )}
+              {v.kop.website && (
+                <p>
+                  {v.kop.websiteHref ? (
+                    <a href={v.kop.websiteHref} target="_blank" rel="noreferrer noopener" className="hover:text-zinc-700 hover:underline">{v.kop.website}</a>
+                  ) : (
+                    v.kop.website
+                  )}
+                </p>
+              )}
               {v.kop.npwp && <p>NPWP: {v.kop.npwp}</p>}
             </div>
           </div>
@@ -103,13 +134,15 @@ export default async function InvoicePublikPage({
                 <p><span className="text-zinc-400">{v.label.jatuhTempo}:</span> {v.meta.jatuhTempoFmt}</p>
               )}
             </div>
+            {/* `data-cetak-warna`: warna cap ini membawa makna, jadi dipaksa
+                ikut tercetak (browser membuang latar demi menghemat tinta). */}
             {v.meta.lunas && (
-              <span className="mt-3 inline-block rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-bold tracking-wider text-emerald-700">
+              <span data-cetak-warna className="mt-3 inline-block rounded-full border border-emerald-300 bg-emerald-50 px-3 py-1 text-xs font-bold tracking-wider text-emerald-700">
                 {v.label.lunas}
               </span>
             )}
             {v.meta.jatuhTempoTerlewat && (
-              <span className="mt-3 inline-block rounded-full border border-red-300 bg-red-50 px-3 py-1 text-xs font-bold tracking-wider text-red-700">
+              <span data-cetak-warna className="mt-3 inline-block rounded-full border border-red-300 bg-red-50 px-3 py-1 text-xs font-bold tracking-wider text-red-700">
                 {v.label.jatuhTempoTerlewat}
               </span>
             )}
@@ -156,7 +189,7 @@ export default async function InvoicePublikPage({
             </table>
           </div>
 
-          <div className="mt-6 flex justify-end">
+          <div className="invoice-ringkasan mt-6 flex justify-end">
             <dl className="w-full max-w-xs space-y-1.5 text-sm">
               <div className="flex justify-between">
                 <dt className="text-zinc-500">{v.label.subtotal}</dt>
@@ -184,7 +217,7 @@ export default async function InvoicePublikPage({
 
         {/* Rekening & catatan */}
         {(v.rekening || v.catatan) && (
-          <section className="grid gap-6 border-t border-zinc-200 pt-6 sm:grid-cols-2">
+          <section className="invoice-penutup grid gap-6 border-t border-zinc-200 pt-6 sm:grid-cols-2">
             {v.rekening && (
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">{v.label.rekening}</p>
@@ -208,7 +241,7 @@ export default async function InvoicePublikPage({
 
         {/* Tanda tangan */}
         {(v.tandaTangan.gambar || v.tandaTangan.nama) && (
-          <section className="mt-8 flex justify-end">
+          <section className="invoice-ttd mt-8 flex justify-end">
             <div className="text-center">
               {v.tandaTangan.gambar && (
                 // Alasan sama dengan logo di kop; `alt` kosong karena tanda

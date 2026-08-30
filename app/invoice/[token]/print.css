@@ -1,0 +1,84 @@
+/*
+ * Gaya cetak halaman invoice publik.
+ *
+ * Ini jalur KEDUA untuk mendapatkan dokumen: klien yang menekan Ctrl+P alih-alih
+ * tombol "Unduh PDF". Hasilnya harus setara dengan PDF server-side — bukan
+ * tangkapan layar halaman web lengkap dengan latar abu dan tombol.
+ *
+ * Ditulis sebagai CSS biasa, bukan varian `print:` Tailwind, karena `@page` dan
+ * `print-color-adjust` tidak punya padanan utility.
+ */
+
+@media print {
+  @page {
+    size: A4;
+    /* Kop dan tabel sudah rapat ke tepi kartu, jadi jarak amannya diserahkan
+       ke margin kertas. 14mm aman untuk area tak tercetak printer inkjet. */
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  /* Tombol Lihat/Unduh PDF tidak boleh ikut tercetak.
+     Dipakai kelas sendiri, bukan varian `print:hidden` Tailwind, semata agar
+     SELURUH perilaku cetak halaman ini terbaca di satu berkas — bukan sebagian
+     di sini dan sebagian sebagai utility di JSX. (Varian `print:` Tailwind
+     sendiri berfungsi normal di proyek ini; sudah diuji.) */
+  .invoice-aksi {
+    display: none !important;
+  }
+
+  /* Padding & tinggi minimum untuk tampilan layar. Di kertas keduanya hanya
+     menyisakan ruang kosong yang bisa memaksa lahirnya halaman kedua. */
+  .invoice-shell {
+    min-height: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .invoice-doc {
+    max-width: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Browser membuang warna latar saat mencetak demi menghemat tinta. Untuk
+     cap LUNAS / JATUH TEMPO warnanya justru membawa makna, jadi dipaksa ikut. */
+  [data-cetak-warna] {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Rincian panjang boleh pindah halaman, tapi satu baris item tidak boleh
+     terbelah, dan kepala tabel diulang di tiap halaman berikutnya. */
+  .invoice-doc thead {
+    display: table-header-group;
+  }
+
+  .invoice-doc tbody tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Blok penutup harus utuh dalam satu halaman — total yang terpisah dari
+     angkanya, atau tanda tangan sendirian di halaman baru, terlihat cacat. */
+  .invoice-ringkasan,
+  .invoice-penutup,
+  .invoice-ttd {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Di layar tabel bisa digulir mendatar; di kertas tak ada yang menggulir. */
+  .invoice-doc .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  .invoice-doc table {
+    min-width: 0 !important;
+  }
+}

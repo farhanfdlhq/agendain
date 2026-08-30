@@ -165,3 +165,27 @@ describe("buildInvoiceView", () => {
     expect(tanpa.rekening).toBeNull();
   });
 });
+
+describe("buildInvoiceView — href kontak kop", () => {
+  it("website tanpa skema diberi https://, dengan skema diloloskan", () => {
+    const a = buildInvoiceView({ invoice: invoiceDasar, settings: { website: "agendain.com" }, sekarang: new Date(2026, 7, 31) });
+    expect(a.kop.websiteHref).toBe("https://agendain.com");
+    const b = buildInvoiceView({ invoice: invoiceDasar, settings: { website: "https://agendain.com" }, sekarang: new Date(2026, 7, 31) });
+    expect(b.kop.websiteHref).toBe("https://agendain.com");
+  });
+
+  it("skema berbahaya (javascript:) ditolak jadi kosong", () => {
+    const v = buildInvoiceView({ invoice: invoiceDasar, settings: { website: "javascript:alert(1)" }, sekarang: new Date(2026, 7, 31) });
+    expect(v.kop.websiteHref).toBe("");
+  });
+
+  it("email & telepon jadi mailto:/tel:", () => {
+    const v = buildInvoiceView({
+      invoice: invoiceDasar,
+      settings: { email: "billing@agendain.com", telepon: "+62 812-3456-7890" },
+      sekarang: new Date(2026, 7, 31),
+    });
+    expect(v.kop.emailHref).toBe("mailto:billing@agendain.com");
+    expect(v.kop.teleponHref).toBe("tel:+6281234567890");
+  });
+});
