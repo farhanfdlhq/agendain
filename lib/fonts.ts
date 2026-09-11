@@ -15,6 +15,7 @@ export const FONT_CHOICES = [
   "Roboto",
   "DM Sans",
   "Lora",
+  "Cabin",
 ] as const;
 
 export type FontChoice = (typeof FONT_CHOICES)[number];
@@ -36,6 +37,7 @@ export const FONT_CSS_VARS = {
   Roboto: "--font-roboto",
   "DM Sans": "--font-dm-sans",
   Lora: "--font-lora",
+  Cabin: "--font-cabin",
 } as const satisfies Record<FontChoice, `--${string}`>;
 
 export const DEFAULT_HEADING_FONT: FontChoice = "Plus Jakarta Sans";

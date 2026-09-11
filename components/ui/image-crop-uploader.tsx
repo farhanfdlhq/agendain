@@ -47,6 +47,13 @@ export function ImageCropUploader({
   // Rasio efektif: prop `aspect` bila diberi, jika tidak rasio ASLI gambar.
   const [computedRatio, setComputedRatio] = useState(1)
   const ratio = aspect ?? computedRatio
+  // Kotak crop MENGIKUTI rasio gambar (contain di dalam batas maks), bukan tinggi
+  // tetap — supaya logo lebar/pendek tidak menyisakan pita abu-abu di container.
+  // Dibatasi 420x300 agar avatar/foto tegak tidak jadi kepanjangan & muat dialog.
+  const CROP_MAX_W = 420
+  const CROP_MAX_H = 300
+  const cropBoxW = ratio >= CROP_MAX_W / CROP_MAX_H ? CROP_MAX_W : Math.round(CROP_MAX_H * ratio)
+  const cropBoxH = ratio >= CROP_MAX_W / CROP_MAX_H ? Math.round(CROP_MAX_W / ratio) : CROP_MAX_H
   const fileRef = useRef<HTMLInputElement>(null)
 
   // Hitung rasio asli gambar saat mode bebas (aspect tak diberi). setState hanya
@@ -146,7 +153,7 @@ export function ImageCropUploader({
           </DialogHeader>
 
           {imageSrc && (
-            <div className="relative w-full h-[300px] mt-2 rounded-xl overflow-hidden bg-muted">
+            <div className="relative mx-auto mt-2 rounded-xl overflow-hidden bg-muted" style={{ width: cropBoxW, height: cropBoxH }}>
               <Cropper
                 image={imageSrc}
                 crop={crop}

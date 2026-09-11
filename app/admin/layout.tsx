@@ -31,6 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    'DOKUMEN': true, // mulai terbuka (dokumen sering dipakai), tapi kini bisa ditutup
     'BLOG': false,
     'PENGATURAN': false,
     'HALAMAN': false,
@@ -119,6 +120,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       // Invoice & Itinerary = dokumen klien ber-kop sama. Digabung dalam satu
       // grup DOKUMEN; kop/identitas perusahaan dipakai bersama dari Pengaturan.
       heading: 'DOKUMEN',
+      collapsible: true,
       items: [
         { name: 'Daftar Invoice', href: '/admin/invoice', icon: <Receipt size={18} />, perm: ['invoice_view'] },
         { name: 'Daftar Itinerary', href: '/admin/itinerary', icon: <Route size={18} />, perm: ['itinerary_view'] },
@@ -135,17 +137,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items: [
         { name: 'Artikel', href: '/admin/blog', icon: <ScrollText size={18} />, perm: BLOG_ANY },
         { name: 'Kategori', href: '/admin/blog/kategori', icon: <Tags size={18} />, perm: BLOG_ANY },
-      ]
-    },
-    {
-      heading: 'PENGATURAN',
-      collapsible: true,
-      items: [
-        { name: 'Pengaturan Sistem', href: '/admin/settings', icon: <Settings size={18} />, perm: ['settings_manage'] },
-        { name: 'Kelola User', href: '/admin/settings/users', icon: <Users size={18} />, perm: ['users_manage'] },
-        { name: 'Audit Log', href: '/admin/settings/audit-log', icon: <History size={18} />, perm: ['users_manage'] },
-        { name: 'Roles & Permissions', href: '/admin/settings/roles', icon: <PlugConnectedIcon size={18} />, perm: ['users_manage'] },
-        { name: 'Akun & Profil', href: '/admin/settings/profile', icon: <UserCog size={18} />, perm: [] },
       ]
     },
     {
@@ -173,6 +164,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items: [
         { name: 'Footer', href: '/admin/cms/footer', icon: <PanelBottom size={18} />, perm: ['cms_manage'] },
         { name: 'Tema & Tampilan', href: '/admin/settings/design', icon: <Palette size={18} />, perm: ['settings_manage'] },
+      ]
+    },
+    {
+      // PENGATURAN diletakkan PALING BAWAH: sistem, user, keamanan, profil —
+      // urusan konfigurasi yang jarang disentuh, tidak menyela menu harian.
+      heading: 'PENGATURAN',
+      collapsible: true,
+      items: [
+        { name: 'Pengaturan Sistem', href: '/admin/settings', icon: <Settings size={18} />, perm: ['settings_manage'] },
+        { name: 'Kelola User', href: '/admin/settings/users', icon: <Users size={18} />, perm: ['users_manage'] },
+        { name: 'Audit Log', href: '/admin/settings/audit-log', icon: <History size={18} />, perm: ['users_manage'] },
+        { name: 'Roles & Permissions', href: '/admin/settings/roles', icon: <PlugConnectedIcon size={18} />, perm: ['users_manage'] },
+        { name: 'Akun & Profil', href: '/admin/settings/profile', icon: <UserCog size={18} />, perm: [] },
       ]
     }
   ]

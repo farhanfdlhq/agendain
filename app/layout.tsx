@@ -10,6 +10,7 @@ import {
   Roboto,
   DM_Sans,
   Lora,
+  Cabin,
 } from "next/font/google";
 import "./globals.css";
 import {
@@ -41,6 +42,9 @@ const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-pl
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-roboto", display: 'swap', preload: false });
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: 'swap', preload: false });
 const lora = Lora({ subsets: ["latin"], variable: "--font-lora", display: 'swap', preload: false });
+// Cabin: humanist sans (garis keturunan Gill Sans) — substitusi "Humanist 521"
+// dari brand guide, karena Humanist 521 bukan Google Font.
+const cabin = Cabin({ subsets: ["latin"], variable: "--font-cabin", display: 'swap', preload: false });
 
 // Penjaga tipe: gagal compile bila nama var di atas dan di lib/fonts.ts beda.
 const _FONT_VAR_NAMES = {
@@ -53,6 +57,7 @@ const _FONT_VAR_NAMES = {
   Roboto: "--font-roboto",
   "DM Sans": "--font-dm-sans",
   Lora: "--font-lora",
+  Cabin: "--font-cabin",
 } as const satisfies typeof FONT_CSS_VARS;
 void _FONT_VAR_NAMES;
 
@@ -66,6 +71,7 @@ const FONT_CLASSES: Record<FontChoice, string> = {
   "Roboto": roboto.variable,
   "DM Sans": dmSans.variable,
   "Lora": lora.variable,
+  "Cabin": cabin.variable,
 };
 
 import { prisma } from "@/lib/prisma"
