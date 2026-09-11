@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import styles from "./CallToActionBanner.module.css";
 
 interface CallToActionBannerProps {
@@ -22,7 +22,7 @@ export default function CallToActionBanner({
   titleLine3,
   description,
   primaryBtnText,
-  primaryBtnLink = "https://wa.me/6281234567890",
+  primaryBtnLink = "https://wa.me/6281995264565",
   secondaryBtnText,
   secondaryBtnLink = "#jadwal",
 }: CallToActionBannerProps) {

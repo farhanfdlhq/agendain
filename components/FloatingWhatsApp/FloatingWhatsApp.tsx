@@ -8,7 +8,7 @@ interface FloatingWhatsAppProps {
 }
 
 export default function FloatingWhatsApp({ 
-  phoneNumber = "6285179836962", // Update to correct phone number if needed
+  phoneNumber = "6281995264565",
   message = "Halo Agendain! Saya mau tanya-tanya nih." 
 }: FloatingWhatsAppProps) {
   const waUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`

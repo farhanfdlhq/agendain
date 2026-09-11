@@ -125,7 +125,7 @@ export default function PengaturanInvoicePage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="telepon">Telepon</Label>
-              <Input id="telepon" placeholder="+62 812 3456 7890" value={form.telepon} onChange={e => set("telepon", e.target.value)} />
+              <Input id="telepon" placeholder="+62 819 9526 4565" value={form.telepon} onChange={e => set("telepon", e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
