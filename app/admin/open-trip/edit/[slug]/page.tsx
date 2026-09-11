@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, useRef, use } from "react"
+import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Save, Image as ImageIcon, X, Plus } from "lucide-react"
@@ -55,6 +56,11 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
     penerbanganTextEn: "",
     itinerary: [{ judul: "", deskripsi: "", judulEn: "", deskripsiEn: "" }] as { judul: string, deskripsi: string, judulEn?: string, deskripsiEn?: string }[]
   })
+
+  // Penjaga perubahan belum-disimpan (baseline ditetapkan setelah data termuat).
+  const formRef = useRef(formData)
+  formRef.current = formData
+  const { setBaseline } = useUnsavedGuardSnapshot(JSON.stringify(formData))
 
   // Tab bahasa: field bahasa-netral (foto, harga, durasi, slug, dokumen, status)
   // hanya muncul di tab ID karena nilainya dipakai bersama kedua bahasa.
@@ -122,7 +128,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
           initialItinerary = [{ judul: '', deskripsi: '', judulEn: '', deskripsiEn: '' }]
         }
 
-        setFormData({
+        const loaded = {
           nama: data.nama || "",
           namaEn: data.namaEn || "",
           slug: data.slug || "",
@@ -153,7 +159,9 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
           penerbanganText: stringifyPenerbangan(data.penerbangan),
           penerbanganTextEn: stringifyPenerbangan(data.penerbanganEn),
           itinerary: initialItinerary
-        })
+        }
+        setFormData(loaded)
+        setBaseline(JSON.stringify(loaded))
       } else {
         toast.error("Paket tidak ditemukan")
         router.push("/admin/open-trip")
@@ -359,6 +367,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
       })
 
       if (res.ok) {
+        setBaseline(JSON.stringify(formRef.current)); // tandai bersih sebelum pindah
         toast.success("Paket berhasil diperbarui!");
         router.push("/admin/open-trip")
         router.refresh()

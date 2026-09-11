@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useConfirm } from "@/components/Providers/ConfirmProvider"
 
@@ -85,4 +85,23 @@ export function useUnsavedGuard(isDirty: boolean) {
     document.addEventListener("click", onClick, true)
     return () => document.removeEventListener("click", onClick, true)
   }, [confirm, router])
+}
+
+/**
+ * Pembungkus praktis di atas `useUnsavedGuard` dengan deteksi "dirty" berbasis
+ * snapshot. Pemanggil cukup memberi snapshot JSON dari nilai form saat ini
+ * (mis. `JSON.stringify(form)`), lalu memanggil `setBaseline(...)`:
+ *   - setelah data awal termuat (edit) atau prefill selesai (create) → jadikan
+ *     acuan "belum berubah";
+ *   - setelah berhasil simpan → tandai bersih kembali.
+ * Selama baseline belum diset, form dianggap belum siap (tidak pernah dirty).
+ */
+export function useUnsavedGuardSnapshot(currentSnapshot: string) {
+  const baselineRef = useRef<string | null>(null)
+  const setBaseline = useCallback((snap: string) => {
+    baselineRef.current = snap
+  }, [])
+  const isDirty = baselineRef.current !== null && currentSnapshot !== baselineRef.current
+  useUnsavedGuard(isDirty)
+  return { setBaseline }
 }

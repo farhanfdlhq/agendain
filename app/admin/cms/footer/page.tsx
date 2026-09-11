@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
+import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
 import { Save, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
 import { Button } from "@/components/ui/button"
@@ -33,6 +34,13 @@ export default function FooterCMSPage() {
   const [fetching, setFetching] = useState(true)
   const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
   const [isScrolled, setIsScrolled] = useState(false)
+
+  // Penjaga perubahan belum-disimpan (data + sosial + badge pembayaran).
+  const snapshot = JSON.stringify({ data, socials, badges })
+  const snapRef = useRef(snapshot)
+  snapRef.current = snapshot
+  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
   const topHeaderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -80,6 +88,7 @@ export default function FooterCMSPage() {
         body: JSON.stringify(payload)
       })
       if (res.ok) {
+        setBaseline(snapRef.current) // tandai bersih setelah simpan
         toast.success('Footer berhasil diperbarui!')
       } else {
         const body = await res.json().catch(() => ({}))

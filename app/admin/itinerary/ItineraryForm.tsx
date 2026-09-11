@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { ArrowLeft, Save, Plus, Trash2, Clock, ImageIcon } from "lucide-react"
@@ -38,13 +39,23 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
   })
   const set = (k: string, v: unknown) => setForm(p => ({ ...p, [k]: v }))
 
+  // Penjaga perubahan belum-disimpan.
+  const formRef = useRef(form)
+  formRef.current = form
+  const { setBaseline } = useUnsavedGuardSnapshot(JSON.stringify(form))
+  useEffect(() => {
+    if (mode !== "create") return
+    const t = setTimeout(() => setBaseline(JSON.stringify(formRef.current)), 700)
+    return () => clearTimeout(t)
+  }, [mode, setBaseline])
+
   useEffect(() => {
     if (mode !== "edit" || !id) return
     fetch(`/api/itinerary/${id}`)
       .then(r => { if (!r.ok) throw new Error(); return r.json() })
       .then(it => {
         setToken(it.token)
-        setForm({
+        const loaded = {
           judul: it.judul ?? "", bahasa: it.bahasa ?? "id", status: it.status ?? "draft",
           tanggalDok: it.tanggalDok ? String(it.tanggalDok).slice(0, 10) : hariIni(),
           klienNama: it.klienNama ?? "", klienNegara: it.klienNegara ?? "",
@@ -58,7 +69,9 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
                   : [{ ...AKT_KOSONG }],
               }))
             : [hariKosong()],
-        })
+        }
+        setForm(loaded)
+        setBaseline(JSON.stringify(loaded))
         setLoading(false)
       })
       .catch(() => { toast.error("Gagal memuat itinerary"); router.push("/admin/itinerary") })
@@ -135,6 +148,7 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
       })
       const data = await res.json()
       if (res.ok) {
+        setBaseline(JSON.stringify(formRef.current)) // tandai bersih sebelum pindah
         toast.success(mode === "create" ? "Itinerary dibuat!" : "Itinerary diperbarui!")
         router.push("/admin/itinerary")
         router.refresh()

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, Save, Image as ImageIcon, X, Plus } from "lucide-react"
@@ -53,6 +54,15 @@ export default function TambahPaketPage() {
     penerbanganTextEn: "",
     itinerary: [{ judul: "", deskripsi: "", judulEn: "", deskripsiEn: "" }] as { judul: string, deskripsi: string, judulEn?: string, deskripsiEn?: string }[]
   })
+
+  // Penjaga perubahan belum-disimpan.
+  const formRef = useRef(formData)
+  formRef.current = formData
+  const { setBaseline } = useUnsavedGuardSnapshot(JSON.stringify(formData))
+  useEffect(() => {
+    const t = setTimeout(() => setBaseline(JSON.stringify(formRef.current)), 500)
+    return () => clearTimeout(t)
+  }, [setBaseline])
 
   // Tab bahasa: field bahasa-netral (foto, harga, durasi, slug, dokumen, status)
   // hanya muncul di tab ID karena nilainya dipakai bersama kedua bahasa.
@@ -274,6 +284,7 @@ export default function TambahPaketPage() {
       })
 
       if (res.ok) {
+        setBaseline(JSON.stringify(formRef.current)); // tandai bersih sebelum pindah
         toast.success("Paket berhasil ditambahkan!");
         router.push("/admin/open-trip")
         router.refresh()

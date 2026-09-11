@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import { toast } from "react-hot-toast"
 import { Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -39,6 +40,13 @@ export default function PengaturanInvoicePage() {
   const [fetching, setFetching] = useState(true)
   const [saving, setSaving] = useState(false)
 
+  // Penjaga perubahan belum-disimpan (baseline saat data awal termuat & setelah simpan).
+  const snapshot = JSON.stringify(form)
+  const snapRef = useRef(snapshot)
+  snapRef.current = snapshot
+  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
+
   useEffect(() => {
     fetch("/api/settings/invoice")
       .then(res => res.ok ? res.json() : Promise.reject())
@@ -66,7 +74,7 @@ export default function PengaturanInvoicePage() {
         }),
       })
       const data = await res.json()
-      if (res.ok) toast.success("Pengaturan invoice tersimpan")
+      if (res.ok) { setBaseline(snapRef.current); toast.success("Pengaturan invoice tersimpan") }
       else toast.error(data.error || "Gagal menyimpan")
     } catch {
       toast.error("Gagal terhubung ke server.")

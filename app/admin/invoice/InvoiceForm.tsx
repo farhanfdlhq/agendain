@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
 import { ArrowLeft, Save, Plus, Trash2, Lightbulb } from "lucide-react"
@@ -42,6 +43,17 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
   const [token, setToken] = useState<string | null>(null)
 
   const set = (k: string, v: unknown) => setForm(p => ({ ...p, [k]: v }))
+
+  // Penjaga perubahan belum-disimpan. Baseline ditetapkan setelah data awal
+  // termuat (edit) atau prefill sempat masuk (create), dan setelah simpan sukses.
+  const formRef = useRef(form)
+  formRef.current = form
+  const { setBaseline } = useUnsavedGuardSnapshot(JSON.stringify(form))
+  useEffect(() => {
+    if (mode !== "create") return
+    const t = setTimeout(() => setBaseline(JSON.stringify(formRef.current)), 700)
+    return () => clearTimeout(t)
+  }, [mode, setBaseline])
 
   // Akun pembayaran + nilai bawaan dari Pengaturan Invoice.
   useEffect(() => {
@@ -89,7 +101,7 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
       .then(inv => {
         setNomor(inv.nomor)
         setToken(inv.token)
-        setForm({
+        const loaded = {
           klienNama: inv.klienNama ?? "", klienEmail: inv.klienEmail ?? "",
           klienTelepon: inv.klienTelepon ?? "", klienAlamat: inv.klienAlamat ?? "",
           judul: inv.judul ?? "",
@@ -102,7 +114,9 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
           items: Array.isArray(inv.items) && inv.items.length
             ? inv.items.map((it: Partial<Item>) => ({ ...ITEM_KOSONG, ...it }))
             : [{ ...ITEM_KOSONG }],
-        })
+        }
+        setForm(loaded)
+        setBaseline(JSON.stringify(loaded))
         setLoading(false)
       })
       .catch(() => { toast.error("Gagal memuat invoice"); router.push("/admin/invoice") })
@@ -164,6 +178,7 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
       })
       const data = await res.json()
       if (res.ok) {
+        setBaseline(JSON.stringify(formRef.current)) // tandai bersih sebelum pindah
         toast.success(mode === "create" ? "Invoice dibuat!" : "Invoice diperbarui!")
         router.push("/admin/invoice")
         router.refresh()

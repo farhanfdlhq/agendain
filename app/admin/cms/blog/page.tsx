@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
+import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
 import { Save } from 'lucide-react'
 import { Button } from "@/components/ui/button"
@@ -22,6 +23,13 @@ export default function BlogCMSPage() {
   const [fetching, setFetching] = useState(true)
   const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
   const [isScrolled, setIsScrolled] = useState(false)
+
+  // Penjaga perubahan belum-disimpan (baseline saat data awal termuat & setelah simpan).
+  const snapshot = JSON.stringify(data)
+  const snapRef = useRef(snapshot)
+  snapRef.current = snapshot
+  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
   const topHeaderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -59,6 +67,7 @@ export default function BlogCMSPage() {
         body: JSON.stringify(data)
       })
       if (res.ok) {
+        setBaseline(snapRef.current) // tandai bersih setelah simpan
         toast.success('Header halaman Blog berhasil diperbarui!')
       } else {
         toast.error('Gagal menyimpan.')

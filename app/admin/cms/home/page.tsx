@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
+import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
 import { ArrowUp, ArrowDown, GripVertical, Save, Globe, Type, FolderOpen, Trash2, X, Plus } from 'lucide-react'
 import { Reorder } from 'framer-motion'
@@ -55,6 +56,13 @@ export default function HomeCMSPage() {
   const [fetching, setFetching] = useState(true)
   const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
   const [isScrolled, setIsScrolled] = useState(false)
+
+  // Penjaga perubahan belum-disimpan (baseline saat data awal termuat & setelah simpan).
+  const snapshot = JSON.stringify(data)
+  const snapRef = useRef(snapshot)
+  snapRef.current = snapshot
+  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
   const topHeaderRef = useRef<HTMLDivElement>(null)
 
   const { showConfirm } = useConfirm()
@@ -132,6 +140,7 @@ export default function HomeCMSPage() {
         body: JSON.stringify(data)
       })
       if (res.ok) {
+        setBaseline(snapRef.current) // tandai bersih setelah simpan
         toast.success('Konten berhasil diperbarui!')
       } else {
         toast.error('Gagal menyimpan.')

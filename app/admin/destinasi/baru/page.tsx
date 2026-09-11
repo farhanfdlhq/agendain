@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import Link from "next/link"
 import { ArrowLeft, Save, Image as ImageIcon } from "lucide-react"
 import { toast } from "react-hot-toast"
@@ -29,6 +30,15 @@ export default function TambahDestinasiPage() {
     waktuTerbaik: "",
     infoVisa: ""
   })
+
+  // Penjaga perubahan belum-disimpan.
+  const formRef = useRef(formData)
+  formRef.current = formData
+  const { setBaseline } = useUnsavedGuardSnapshot(JSON.stringify(formData))
+  useEffect(() => {
+    const t = setTimeout(() => setBaseline(JSON.stringify(formRef.current)), 500)
+    return () => clearTimeout(t)
+  }, [setBaseline])
 
   // Hanya nama & deskripsi yang bilingual; field lain bahasa-netral (tab ID saja).
   const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
@@ -82,6 +92,7 @@ export default function TambahDestinasiPage() {
       })
 
       if (res.ok) {
+        setBaseline(JSON.stringify(formRef.current)) // tandai bersih sebelum pindah
         toast.success("Destinasi berhasil ditambahkan!")
         router.push("/admin/destinasi")
         router.refresh()

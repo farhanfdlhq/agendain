@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useCallback } from "react"
+import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import Cropper from "react-easy-crop"
 import { getCroppedImg } from "@/lib/cropImage"
 
@@ -48,6 +49,16 @@ export default function ProfilePage() {
     confirm: false,
   })
 
+  // Penjaga perubahan belum-disimpan (identitas akun + isian kata sandi).
+  const snapshot = JSON.stringify({ accountData, passwordData })
+  const snapRef = useRef(snapshot)
+  snapRef.current = snapshot
+  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!loading) setBaseline(snapRef.current) }, [loading, setBaseline])
+  // Ditandai bersih setelah simpan; setTimeout agar snapshot terbaca sesudah
+  // state (mis. field kata sandi dikosongkan / avatar diperbarui) ter-render.
+  const tandaiBersih = () => setTimeout(() => setBaseline(snapRef.current), 0)
+
   useEffect(() => {
     fetchProfile()
   }, [])
@@ -91,6 +102,7 @@ export default function ProfilePage() {
       const event = new Event("visibilitychange")
       document.dispatchEvent(event)
       
+      tandaiBersih()
       toast.success("Profil berhasil diperbarui")
     } catch (error: any) {
       toast.error(error.message)
@@ -132,6 +144,7 @@ export default function ProfilePage() {
       
       toast.success("Kata sandi berhasil diperbarui")
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
+      tandaiBersih()
     } catch (error: any) {
       toast.error(error.message)
     } finally {
@@ -181,6 +194,7 @@ export default function ProfilePage() {
       if (!res.ok) throw new Error(data.error || "Gagal mengunggah foto")
       
       setAccountData(prev => ({ ...prev, avatar: data.avatar }))
+      tandaiBersih()
       await update({ avatar: data.avatar })
       
       const event = new Event("visibilitychange")

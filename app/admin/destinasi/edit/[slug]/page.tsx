@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect, use } from "react"
+import { useState, useEffect, useRef, use } from "react"
 import { useRouter } from "next/navigation"
+import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import Link from "next/link"
 import { ArrowLeft, Save, Image as ImageIcon } from "lucide-react"
 import { toast } from "react-hot-toast"
@@ -32,6 +33,11 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
     infoVisa: ""
   })
 
+  // Penjaga perubahan belum-disimpan (baseline ditetapkan setelah data termuat).
+  const formRef = useRef(formData)
+  formRef.current = formData
+  const { setBaseline } = useUnsavedGuardSnapshot(JSON.stringify(formData))
+
   // Hanya nama & deskripsi yang bilingual; field lain bahasa-netral (tab ID saja).
   const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
   const tf = (name: string) => (activeTab === 'en' ? `${name}En` : name)
@@ -48,7 +54,7 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
       const res = await fetch(`/api/destinasi/${params.slug}`)
       if (res.ok) {
         const data = await res.json()
-        setFormData({
+        const loaded = {
           nama: data.nama || "",
           namaEn: data.namaEn || "",
           slug: data.slug || "",
@@ -60,7 +66,9 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
           matauang: data.matauang || "",
           waktuTerbaik: data.waktuTerbaik || "",
           infoVisa: data.infoVisa || ""
-        })
+        }
+        setFormData(loaded)
+        setBaseline(JSON.stringify(loaded))
       } else {
         toast.error("Destinasi tidak ditemukan")
         router.push("/admin/destinasi")
@@ -127,6 +135,7 @@ export default function EditDestinasiPage(props: { params: Promise<{ slug: strin
       })
 
       if (res.ok) {
+        setBaseline(JSON.stringify(formRef.current)) // tandai bersih sebelum pindah
         toast.success("Destinasi berhasil diperbarui!")
         router.push("/admin/destinasi")
         router.refresh()

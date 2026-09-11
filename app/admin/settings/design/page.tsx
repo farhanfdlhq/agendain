@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
 import { CheckCircle2, AlertCircle, Palette, Type, AlertTriangle, Box, Save, LayoutTemplate } from 'lucide-react'
 import { Button } from "@/components/ui/button"
@@ -35,6 +36,13 @@ export default function DesignSystemPage() {
   const [activeTab, setActiveTab] = useState('brand')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
+
+  // Penjaga perubahan belum-disimpan (baseline saat tema termuat & setelah simpan).
+  const snapshot = JSON.stringify(theme)
+  const snapRef = useRef(snapshot)
+  snapRef.current = snapshot
+  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
 
   // Satu sumber daftar font: lib/fonts.ts. Loader next/font di app/layout.tsx
   // dan validasi di POST /api/settings/theme memakai daftar yang sama, jadi
@@ -76,6 +84,7 @@ export default function DesignSystemPage() {
       })
       const data = await res.json()
       if (res.ok) {
+        setBaseline(snapRef.current) // tandai bersih setelah simpan
         toast.success('Design System berhasil diperbarui! Skala otomatis dibuat.')
       } else {
         toast.error(data.error || 'Terjadi kesalahan saat menyimpan.')
