@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { toast } from "react-hot-toast"
-import { ArrowLeft, Save, Plus, Trash2 } from "lucide-react"
+import { ArrowLeft, Save, Plus, Trash2, Lightbulb } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -247,45 +247,80 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
               <CardDescription>Jumlah per baris dihitung otomatis dari Qty × Harga.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
+              {/* Contoh pengisian: banyak admin bingung field apa diisi apa. */}
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                  <Lightbulb className="h-3.5 w-3.5 text-primary" /> Contoh pengisian satu baris
+                </div>
+                <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                  <li><span className="font-medium text-foreground">Deskripsi</span>: Tiket masuk Colosseum &nbsp;·&nbsp; <span className="font-medium text-foreground">Qty</span>: 2 &nbsp;·&nbsp; <span className="font-medium text-foreground">Harga satuan</span>: 350.000 <span className="text-muted-foreground/70">(Jumlah terisi otomatis 700.000)</span></li>
+                  <li><span className="font-medium text-foreground">Detail tambahan (opsional)</span> — <span className="font-medium text-foreground">Kategori</span>: Tiket Wisata &nbsp;·&nbsp; <span className="font-medium text-foreground">Durasi/jarak</span>: 2 jam &nbsp;·&nbsp; <span className="font-medium text-foreground">Catatan</span>: sudah termasuk pemandu</li>
+                </ul>
+                <p className="mt-2 text-[11px] text-muted-foreground/80">Kategori dipakai untuk mengelompokkan item sejenis di invoice (mis. semua &ldquo;Ground Service&rdquo; jadi satu grup).</p>
+              </div>
+
+              {/* Header kolom — hanya desktop; di mobile tiap baris punya labelnya sendiri. */}
+              <div className="hidden sm:grid grid-cols-12 gap-2 px-3 pb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <div className="col-span-5">Deskripsi</div>
+                <div className="col-span-2">Qty</div>
+                <div className="col-span-3">Harga satuan</div>
+                <div className="col-span-2 text-right">Jumlah</div>
+              </div>
+
               {form.items.map((it, i) => (
                 <div key={i}
-                  className={`grid grid-cols-12 gap-2 items-start rounded-xl p-3 ${errors[`item-${i}`] ? "ring-2 ring-destructive" : "bg-muted/20"}`}>
-                  <div className="col-span-12 sm:col-span-5 space-y-1">
-                    <Label className="text-xs sm:hidden">Deskripsi</Label>
-                    <Input placeholder="Deskripsi item" value={it.deskripsi}
-                      onChange={e => ubahItem(i, "deskripsi", e.target.value)} />
-                  </div>
-                  <div className="col-span-3 sm:col-span-2 space-y-1">
-                    <Label className="text-xs sm:hidden">Qty</Label>
-                    <Input type="number" min="0.01" step="any" value={it.qty}
-                      onChange={e => ubahItem(i, "qty", e.target.value)} />
-                  </div>
-                  <div className="col-span-5 sm:col-span-3 space-y-1">
-                    <Label className="text-xs sm:hidden">Harga</Label>
-                    <Input type="text" inputMode="decimal" value={formatMoneyInput(it.harga)}
-                      onChange={e => ubahItem(i, "harga", parseMoneyInput(e.target.value))} />
-                  </div>
-                  <div className="col-span-3 sm:col-span-2 flex items-center justify-end gap-1 pt-1">
-                    <span className="text-sm font-medium tabular-nums truncate">
-                      {formatUang((Number(it.qty) || 0) * (Number(it.harga) || 0), form.mataUang)}
+                  className={`rounded-xl border p-3 space-y-3 ${errors[`item-${i}`] ? "border-destructive ring-1 ring-destructive" : "border-border bg-muted/30"}`}>
+                  {/* Kepala item: nomor + tombol hapus — pembatas jelas antar item. */}
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center rounded-md border bg-background px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+                      Item {i + 1}
                     </span>
                     {form.items.length > 1 && (
-                      <Button type="button" variant="ghost" size="icon"
-                        className="h-8 w-8 shrink-0 text-destructive hover:bg-destructive/10"
+                      <Button type="button" variant="ghost" size="sm"
+                        className="h-7 gap-1 px-2 text-xs text-destructive hover:bg-destructive/10"
                         aria-label={`Hapus item ${i + 1}`}
                         onClick={() => setForm(p => ({ ...p, items: p.items.filter((_, j) => j !== i) }))}>
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" /> Hapus
                       </Button>
                     )}
                   </div>
-                  {/* Baris kedua (opsional): kategori grup + durasi/jarak + catatan per item */}
-                  <div className="col-span-12 grid grid-cols-1 gap-2 sm:grid-cols-3">
-                    <Input placeholder="Kategori (mis. Ground Service)" value={it.kategori} className="text-sm"
-                      onChange={e => ubahItem(i, "kategori", e.target.value)} />
-                    <Input placeholder="Durasi/Jarak (opsional)" value={it.durasi} className="text-sm"
-                      onChange={e => ubahItem(i, "durasi", e.target.value)} />
-                    <Input placeholder="Catatan baris (opsional)" value={it.notes} className="text-sm"
-                      onChange={e => ubahItem(i, "notes", e.target.value)} />
+
+                  {/* Baris utama: yang wajib diisi. */}
+                  <div className="grid grid-cols-12 gap-2 items-end">
+                    <div className="col-span-12 sm:col-span-5 space-y-1">
+                      <Label className="text-xs text-muted-foreground sm:hidden">Deskripsi</Label>
+                      <Input placeholder="mis. Tiket masuk Colosseum" value={it.deskripsi}
+                        onChange={e => ubahItem(i, "deskripsi", e.target.value)} />
+                    </div>
+                    <div className="col-span-4 sm:col-span-2 space-y-1">
+                      <Label className="text-xs text-muted-foreground sm:hidden">Qty</Label>
+                      <Input type="number" min="0.01" step="any" value={it.qty}
+                        onChange={e => ubahItem(i, "qty", e.target.value)} />
+                    </div>
+                    <div className="col-span-8 sm:col-span-3 space-y-1">
+                      <Label className="text-xs text-muted-foreground sm:hidden">Harga satuan</Label>
+                      <Input type="text" inputMode="decimal" value={formatMoneyInput(it.harga)}
+                        onChange={e => ubahItem(i, "harga", parseMoneyInput(e.target.value))} />
+                    </div>
+                    <div className="col-span-12 sm:col-span-2 flex items-center justify-between gap-1 sm:justify-end sm:pb-1.5">
+                      <span className="text-xs text-muted-foreground sm:hidden">Jumlah</span>
+                      <span className="text-sm font-semibold tabular-nums">
+                        {formatUang((Number(it.qty) || 0) * (Number(it.harga) || 0), form.mataUang)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Detail opsional: dikelompokkan & dibedakan dari isian wajib di atas. */}
+                  <div className="border-t border-dashed pt-2.5">
+                    <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground/70">Detail tambahan (opsional)</p>
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                      <Input placeholder="Kategori (mis. Ground Service)" value={it.kategori} className="h-9 text-sm"
+                        onChange={e => ubahItem(i, "kategori", e.target.value)} />
+                      <Input placeholder="Durasi / jarak" value={it.durasi} className="h-9 text-sm"
+                        onChange={e => ubahItem(i, "durasi", e.target.value)} />
+                      <Input placeholder="Catatan baris" value={it.notes} className="h-9 text-sm"
+                        onChange={e => ubahItem(i, "notes", e.target.value)} />
+                    </div>
                   </div>
                 </div>
               ))}

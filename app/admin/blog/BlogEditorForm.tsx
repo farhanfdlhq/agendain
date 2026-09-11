@@ -272,7 +272,10 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
             <CardHeader className="pb-3"><CardTitle className="text-sm">Penulis</CardTitle></CardHeader>
             <CardContent>
               <Input placeholder="Nama penulis" value={author} onChange={(e) => setAuthor(e.target.value)} />
-              <p className="mt-1.5 text-xs text-muted-foreground">Default: nama akun Anda. Bisa diganti (mis. penulis tamu).</p>
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                Terisi dari nama akun Anda. Ganti di sini untuk penulis tamu, atau ubah nama tetap di{" "}
+                <Link href="/admin/settings/profile" className="font-medium text-primary hover:underline">Profil</Link>.
+              </p>
             </CardContent>
           </Card>
 

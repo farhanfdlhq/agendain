@@ -424,13 +424,15 @@ export default function ProfilePage() {
           </DialogHeader>
           
           {imageSrc && (
-            <div className="relative w-full h-[300px] mt-2 rounded-xl overflow-hidden bg-muted">
+            <div className="relative mx-auto mt-2 aspect-square w-full max-w-[320px] rounded-xl overflow-hidden bg-muted">
               <Cropper
                 image={imageSrc}
                 crop={crop}
                 zoom={zoom}
+                minZoom={0.4}
                 aspect={1}
                 cropShape="round"
+                restrictPosition={false}
                 showGrid={false}
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
@@ -443,7 +445,7 @@ export default function ProfilePage() {
             <span className="text-sm font-medium w-12">Zoom</span>
             <button 
               type="button" 
-              onClick={() => setZoom(Math.max(1, zoom - 0.1))} 
+              onClick={() => setZoom(Math.max(0.4, zoom - 0.1))}
               className="p-1.5 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground shrink-0"
             >
               <Minus className="h-4 w-4" />
@@ -451,7 +453,7 @@ export default function ProfilePage() {
             <Input
               type="range"
               value={zoom}
-              min={1}
+              min={0.4}
               max={3}
               step={0.1}
               onChange={(e) => setZoom(Number(e.target.value))}
