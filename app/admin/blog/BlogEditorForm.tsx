@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
+import { useUnsavedGuard } from "@/hooks/use-unsaved-guard"
 import { toast } from "react-hot-toast"
 import { Save, Eye, ArrowLeft, ChevronDown, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -23,6 +24,21 @@ interface BlogEditorFormProps {
   mode: "create" | "edit"
   slug?: string
 }
+
+// Nilai bawaan artikel baru. Dipakai sebagai basis "snapshot" untuk mendeteksi
+// perubahan yang belum disimpan (unsaved changes). Urutan key WAJIB sama dengan
+// snapshot() di dalam komponen agar hasil JSON.stringify bisa dibandingkan.
+type BlogValues = {
+  title: string; titleEn: string; formSlug: string; excerpt: string; excerptEn: string
+  content: string; contentEn: string; thumbnail: string; categoryId: string; tags: string[]
+  status: string; metaTitle: string; metaDescription: string; ogImage: string; author: string
+}
+const NILAI_KOSONG: BlogValues = {
+  title: "", titleEn: "", formSlug: "", excerpt: "", excerptEn: "",
+  content: "", contentEn: "", thumbnail: "", categoryId: "", tags: [],
+  status: "draft", metaTitle: "", metaDescription: "", ogImage: "", author: "",
+}
+const serialize = (v: BlogValues) => JSON.stringify(v)
 
 export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
   const router = useRouter()
@@ -49,10 +65,28 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
   const [ogImage, setOgImage] = useState("")
   const [author, setAuthor] = useState("")
 
+  // Deteksi perubahan belum-disimpan: bandingkan snapshot kini vs baseline yang
+  // ditetapkan setelah data awal termuat. `null` = baseline belum siap (jangan
+  // anggap dirty). Lihat NILAI_KOSONG untuk urutan key.
+  const baselineRef = useRef<string | null>(null)
+  const snapshot = () => serialize({
+    title, titleEn, formSlug, excerpt, excerptEn, content, contentEn,
+    thumbnail, categoryId, tags, status, metaTitle, metaDescription, ogImage, author,
+  })
+  const isDirty = baselineRef.current !== null && snapshot() !== baselineRef.current
+  useUnsavedGuard(isDirty)
+
   // Pre-fill penulis dengan nama admin yang login (hanya saat membuat baru).
   useEffect(() => {
     if (mode !== "create") return
-    fetch("/api/admin/me").then(r => r.json()).then(d => { if (d?.nama) setAuthor(d.nama) }).catch(() => {})
+    fetch("/api/admin/me")
+      .then(r => r.json())
+      .then(d => {
+        const nama = d?.nama || ""
+        if (nama) setAuthor(nama)
+        baselineRef.current = serialize({ ...NILAI_KOSONG, author: nama })
+      })
+      .catch(() => { baselineRef.current = serialize(NILAI_KOSONG) })
   }, [mode])
 
   useEffect(() => {
@@ -79,6 +113,16 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
           setMetaDescription(post.metaDescription || "")
           setOgImage(post.ogImage || "")
           setAuthor(post.author || "")
+          // Baseline = kondisi artikel saat baru dimuat (belum ada perubahan).
+          baselineRef.current = serialize({
+            title: post.title || "", titleEn: post.titleEn || "", formSlug: post.slug || "",
+            excerpt: post.excerpt || "", excerptEn: post.excerptEn || "",
+            content: post.content || "", contentEn: post.contentEn || "",
+            thumbnail: post.thumbnail || "", categoryId: String(post.categoryId || ""),
+            tags: Array.isArray(post.tags) ? post.tags : [], status: post.status || "draft",
+            metaTitle: post.metaTitle || "", metaDescription: post.metaDescription || "",
+            ogImage: post.ogImage || "", author: post.author || "",
+          })
           setLoading(false)
         })
         .catch(() => { toast.error("Gagal memuat artikel"); router.push("/admin/blog") })
@@ -156,6 +200,9 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
         throw new Error(err.error || "Gagal menyimpan")
       }
 
+      // Tandai bersih agar penjaga unsaved-changes tidak menghalangi navigasi
+      // pindah setelah berhasil simpan.
+      baselineRef.current = snapshot()
       toast.success(mode === "create" ? "Artikel berhasil dibuat!" : "Artikel berhasil diperbarui!")
       router.push("/admin/blog")
     } catch (e: any) {
