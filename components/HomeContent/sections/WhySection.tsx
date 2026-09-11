@@ -49,8 +49,11 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
         </FadeIn>
         {whyItems.map((card: any, i: number) => {
           const isReversed = i % 2 !== 0
+          // Arah reveal mengikuti sisi gambar kartu (selang-seling), bukan
+          // fade-up seragam: kartu normal masuk dari kiri, kartu reverse dari
+          // kanan — gerak mencerminkan komposisi, bukan template.
           return (
-            <FadeIn key={i} direction="up" delay={i * 0.1}>
+            <FadeIn key={i} direction={isReversed ? 'left' : 'right'} delay={i * 0.1}>
               <div 
                 className={isReversed ? styles.whyCardReverse : styles.whyCard}
                 style={{

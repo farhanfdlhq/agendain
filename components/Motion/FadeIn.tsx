@@ -1,5 +1,5 @@
 "use client";
-import { motion, useInView, Variants } from "framer-motion";
+import { motion, useInView, useReducedMotion, Variants } from "framer-motion";
 import { useRef } from "react";
 
 interface FadeInProps {
@@ -19,6 +19,17 @@ export default function FadeIn({
 }: FadeInProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-10%" });
+  const reduce = useReducedMotion();
+
+  // Hormati prefers-reduced-motion: tampilkan isi langsung tanpa gerak apa pun
+  // (bukan sekadar mempercepat). Konten tetap terlihat walau animasi dimatikan.
+  if (reduce) {
+    return (
+      <div ref={ref} className={className}>
+        {children}
+      </div>
+    );
+  }
 
   const getVariants = (): Variants => {
     switch (direction) {
