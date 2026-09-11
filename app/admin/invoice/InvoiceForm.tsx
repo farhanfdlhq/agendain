@@ -15,10 +15,10 @@ import AirplaneLoader from "@/components/ui/airplane-loader"
 import { hitungInvoice, formatUang, type MataUang } from "@/lib/invoice"
 import { formatMoneyInput, parseMoneyInput } from "@/lib/currency"
 
-type Item = { deskripsi: string; qty: number | string; harga: number | string }
+type Item = { deskripsi: string; qty: number | string; harga: number | string; kategori: string; durasi: string; notes: string }
 type Akun = { id: number; label: string; bank: string; aktif: boolean; isDefault: boolean }
 
-const ITEM_KOSONG: Item = { deskripsi: "", qty: 1, harga: 0 }
+const ITEM_KOSONG: Item = { deskripsi: "", qty: 1, harga: 0, kategori: "", durasi: "", notes: "" }
 
 const hariIni = () => new Date().toISOString().slice(0, 10)
 
@@ -99,7 +99,9 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
           pajakLabel: inv.pajakLabel ?? "", pajakPersen: Number(inv.pajakPersen ?? 0),
           catatan: inv.catatan ?? "", status: inv.status ?? "draft",
           paymentAccountId: inv.paymentAccountId ? String(inv.paymentAccountId) : "",
-          items: Array.isArray(inv.items) && inv.items.length ? inv.items : [{ ...ITEM_KOSONG }],
+          items: Array.isArray(inv.items) && inv.items.length
+            ? inv.items.map((it: Partial<Item>) => ({ ...ITEM_KOSONG, ...it }))
+            : [{ ...ITEM_KOSONG }],
         })
         setLoading(false)
       })
@@ -148,6 +150,7 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
         bahasa: form.bahasa, mataUang: form.mataUang,
         items: form.items.map(it => ({
           deskripsi: it.deskripsi, qty: Number(it.qty) || 0, harga: Number(it.harga) || 0,
+          kategori: it.kategori || "", durasi: it.durasi || "", notes: it.notes || "",
         })),
         pajakLabel: form.pajakLabel || null, pajakPersen: Number(form.pajakPersen) || 0,
         catatan: form.catatan || null, status: form.status,
@@ -274,6 +277,15 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     )}
+                  </div>
+                  {/* Baris kedua (opsional): kategori grup + durasi/jarak + catatan per item */}
+                  <div className="col-span-12 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                    <Input placeholder="Kategori (mis. Ground Service)" value={it.kategori} className="text-sm"
+                      onChange={e => ubahItem(i, "kategori", e.target.value)} />
+                    <Input placeholder="Durasi/Jarak (opsional)" value={it.durasi} className="text-sm"
+                      onChange={e => ubahItem(i, "durasi", e.target.value)} />
+                    <Input placeholder="Catatan baris (opsional)" value={it.notes} className="text-sm"
+                      onChange={e => ubahItem(i, "notes", e.target.value)} />
                   </div>
                 </div>
               ))}

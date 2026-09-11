@@ -98,32 +98,41 @@ export default async function ItineraryPublikPage({
           </div>
         </header>
 
-        {/* Judul dokumen */}
+        {/* Judul dokumen + rute */}
         <h2 className="mt-6 text-lg font-bold text-zinc-900">{v.meta.judul}</h2>
+        {v.meta.rute && <p className="mt-1 text-sm text-zinc-500">{v.meta.rute}</p>}
 
         {/* Hari-hari */}
         <div className="mt-4 space-y-8">
           {v.hari.map((h, i) => (
             <section key={i} className="itinerary-hari">
               <div className="flex items-center justify-between border-b border-zinc-300 pb-2">
-                <h3 className="text-sm font-bold text-zinc-900">{h.label}</h3>
+                <h3 className="text-sm font-bold text-zinc-900">
+                  {h.label}
+                  {h.kota && <span className="font-normal text-zinc-500"> — {h.kota}</span>}
+                </h3>
                 <span className="text-xs text-zinc-500">{v.label.totalDurasi}: {h.totalFmt}</span>
               </div>
               <div className="mt-2 divide-y divide-zinc-100">
                 {h.items.map((it) => (
                   <div key={it.no} className="flex flex-col gap-2 py-3 sm:flex-row sm:items-start">
-                    <div className="w-40 shrink-0">
+                    <div className="w-32 shrink-0">
                       {it.jamFmt && <p className="text-sm font-medium text-zinc-800">{it.jamFmt}</p>}
                       {it.durasiFmt && <p className="text-xs text-zinc-400">{it.durasiFmt}</p>}
                     </div>
                     <div className="min-w-0 flex-1">
-                      {it.lokasi && <p className="text-sm text-zinc-800">{it.lokasi}</p>}
+                      {it.aktivitas && <p className="text-sm font-semibold text-zinc-900">{it.aktivitas}</p>}
+                      {it.lokasi && <p className="text-sm text-zinc-700">{it.lokasi}</p>}
                       {it.catatan && <p className="text-xs italic text-zinc-500">{it.catatan}</p>}
+                      {it.gambar && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={it.gambar} alt="" className="mt-2 h-20 w-32 rounded-lg object-cover" />
+                      )}
                     </div>
-                    {it.gambar && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={it.gambar} alt="" className="h-16 w-24 shrink-0 rounded-lg object-cover" />
-                    )}
+                    <div className="w-28 shrink-0 text-xs text-zinc-600 sm:text-right">
+                      {it.transport && <p>{it.transport}</p>}
+                      {it.kota && <p className="text-zinc-400">{it.kota}</p>}
+                    </div>
                   </div>
                 ))}
                 {h.items.length === 0 && <p className="py-3 text-sm text-zinc-400">—</p>}

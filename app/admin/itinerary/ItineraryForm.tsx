@@ -15,10 +15,10 @@ import { MediaPicker } from "@/components/ui/media-picker"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { hitungDurasi, formatMenit, formatDurasiPanjang } from "@/lib/itinerary"
 
-type Aktivitas = { mulai: string; selesai: string; lokasi: string; catatan: string; gambar: string }
+type Aktivitas = { mulai: string; selesai: string; aktivitas: string; lokasi: string; transport: string; kota: string; catatan: string; gambar: string }
 type Hari = { tanggal: string; items: Aktivitas[] }
 
-const AKT_KOSONG: Aktivitas = { mulai: "", selesai: "", lokasi: "", catatan: "", gambar: "" }
+const AKT_KOSONG: Aktivitas = { mulai: "", selesai: "", aktivitas: "", lokasi: "", transport: "", kota: "", catatan: "", gambar: "" }
 const hariKosong = (): Hari => ({ tanggal: "", items: [{ ...AKT_KOSONG }] })
 const hariIni = () => new Date().toISOString().slice(0, 10)
 
@@ -121,7 +121,9 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
           tanggal: h.tanggal || "",
           items: h.items.map(a => ({
             mulai: a.mulai || "", selesai: a.selesai || "",
-            lokasi: a.lokasi || "", catatan: a.catatan || "", gambar: a.gambar || "",
+            aktivitas: a.aktivitas || "", lokasi: a.lokasi || "",
+            transport: a.transport || "", kota: a.kota || "",
+            catatan: a.catatan || "", gambar: a.gambar || "",
           })),
         })),
       }
@@ -269,8 +271,16 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
                             )}
                           </div>
                         </div>
-                        <Input placeholder="Lokasi / aktivitas (mis. Paris, kunjungi Louvre)" value={a.lokasi}
+                        <Input placeholder="Aktivitas (mis. Sarapan, Explore, Transfer)" value={a.aktivitas}
+                          onChange={e => ubahAkt(di, ai, "aktivitas", e.target.value)} />
+                        <Input placeholder="Lokasi / Venue (mis. La Sagrada Familia)" value={a.lokasi}
                           onChange={e => ubahAkt(di, ai, "lokasi", e.target.value)} />
+                        <div className="flex flex-wrap gap-2">
+                          <Input placeholder="Transportasi (mis. Kereta, Taksi)" value={a.transport} className="flex-1 min-w-[8rem]"
+                            onChange={e => ubahAkt(di, ai, "transport", e.target.value)} />
+                          <Input placeholder="Kota (mis. Barcelona (Spain))" value={a.kota} className="flex-1 min-w-[8rem]"
+                            onChange={e => ubahAkt(di, ai, "kota", e.target.value)} />
+                        </div>
                         <Input placeholder="Catatan (opsional)" value={a.catatan} className="text-sm"
                           onChange={e => ubahAkt(di, ai, "catatan", e.target.value)} />
                       </div>

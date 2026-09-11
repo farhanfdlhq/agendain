@@ -30,6 +30,8 @@ const s = StyleSheet.create({
   thBaris: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: "#a1a1aa", paddingBottom: 5, marginTop: 16 },
   th: { fontSize: 7, fontFamily: "Helvetica-Bold", letterSpacing: 0.6, color: "#71717a", textTransform: "uppercase" },
   tdBaris: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: "#f4f4f5", paddingVertical: 7 },
+  katHead: { fontSize: 8, fontFamily: "Helvetica-Bold", color: "#52525b", backgroundColor: "#f4f4f5", paddingVertical: 3, paddingHorizontal: 4, marginTop: 6, textTransform: "uppercase", letterSpacing: 0.5 },
+  subKecil: { fontSize: 7, color: "#a1a1aa", marginTop: 1 },
   cNo: { width: "6%" }, cDesk: { width: "48%", paddingRight: 8 },
   cQty: { width: "10%", textAlign: "right" }, cHarga: { width: "18%", textAlign: "right" },
   cJml: { width: "18%", textAlign: "right" },
@@ -101,15 +103,28 @@ export function InvoicePdf({ v }: { v: InvoiceView }) {
           <Text style={[s.th, s.cJml]}>{v.label.jumlah}</Text>
         </View>
 
-        {v.baris.map(b => (
-          <View key={b.no} style={s.tdBaris} wrap={false}>
-            <Text style={[s.cNo, { color: "#a1a1aa" }]}>{b.no}</Text>
-            <Text style={s.cDesk}>{b.deskripsi}</Text>
-            <Text style={s.cQty}>{b.qty}</Text>
-            <Text style={s.cHarga}>{b.hargaFmt}</Text>
-            <Text style={[s.cJml, { fontFamily: "Helvetica-Bold", color: "#18181b" }]}>{b.jumlahFmt}</Text>
-          </View>
-        ))}
+        {v.baris.map((b, idx) => {
+          // Sub-header kategori muncul saat kategori berganti (grup Ground Service / Tiket …).
+          const tampilKat = !!b.kategori && b.kategori !== (v.baris[idx - 1]?.kategori ?? "");
+          return (
+            <View key={b.no}>
+              {tampilKat ? (
+                <Text style={s.katHead}>{b.kategori}</Text>
+              ) : null}
+              <View style={s.tdBaris} wrap={false}>
+                <Text style={[s.cNo, { color: "#a1a1aa" }]}>{b.no}</Text>
+                <View style={s.cDesk}>
+                  <Text>{b.deskripsi}</Text>
+                  {b.durasi ? <Text style={s.subKecil}>{v.label.durasi}: {b.durasi}</Text> : null}
+                  {b.notes ? <Text style={[s.subKecil, { fontStyle: "italic" }]}>{b.notes}</Text> : null}
+                </View>
+                <Text style={s.cQty}>{b.qty}</Text>
+                <Text style={s.cHarga}>{b.hargaFmt}</Text>
+                <Text style={[s.cJml, { fontFamily: "Helvetica-Bold", color: "#18181b" }]}>{b.jumlahFmt}</Text>
+              </View>
+            </View>
+          );
+        })}
 
         <View style={s.ringkasan}>
           <View style={s.barisRingkas}>

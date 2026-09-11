@@ -1,3 +1,4 @@
+import { Fragment } from "react"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { Download, FileText } from "lucide-react"
@@ -176,15 +177,29 @@ export default async function InvoicePublikPage({
                 </tr>
               </thead>
               <tbody>
-                {v.baris.map(b => (
-                  <tr key={b.no} className="border-b border-zinc-100 align-top">
-                    <td className="py-3 text-zinc-400">{b.no}</td>
-                    <td className="py-3 pr-4 text-zinc-800">{b.deskripsi}</td>
-                    <td className="py-3 text-right tabular-nums text-zinc-600">{b.qty}</td>
-                    <td className="py-3 text-right tabular-nums text-zinc-600">{b.hargaFmt}</td>
-                    <td className="py-3 text-right font-medium tabular-nums text-zinc-900">{b.jumlahFmt}</td>
-                  </tr>
-                ))}
+                {v.baris.map((b, idx) => {
+                  const tampilKat = !!b.kategori && b.kategori !== (v.baris[idx - 1]?.kategori ?? "")
+                  return (
+                    <Fragment key={b.no}>
+                      {tampilKat && (
+                        <tr className="bg-zinc-50">
+                          <td colSpan={5} className="py-1.5 px-1 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{b.kategori}</td>
+                        </tr>
+                      )}
+                      <tr className="border-b border-zinc-100 align-top">
+                        <td className="py-3 text-zinc-400">{b.no}</td>
+                        <td className="py-3 pr-4 text-zinc-800">
+                          {b.deskripsi}
+                          {b.durasi && <span className="block text-xs text-zinc-400">{v.label.durasi}: {b.durasi}</span>}
+                          {b.notes && <span className="block text-xs italic text-zinc-400">{b.notes}</span>}
+                        </td>
+                        <td className="py-3 text-right tabular-nums text-zinc-600">{b.qty}</td>
+                        <td className="py-3 text-right tabular-nums text-zinc-600">{b.hargaFmt}</td>
+                        <td className="py-3 text-right font-medium tabular-nums text-zinc-900">{b.jumlahFmt}</td>
+                      </tr>
+                    </Fragment>
+                  )
+                })}
               </tbody>
             </table>
           </div>

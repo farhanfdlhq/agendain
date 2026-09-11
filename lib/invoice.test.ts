@@ -3,17 +3,23 @@ import { buildInvoiceView, formatNomorInvoice, hitungInvoice } from "./invoice";
 
 describe("hitungInvoice", () => {
   it("menjumlahkan qty x harga tiap baris", () => {
-    const r = hitungInvoice([
-      { deskripsi: "Paket Eropa Barat", qty: 2, harga: 25_000_000 },
-      { deskripsi: "Asuransi", qty: 2, harga: 500_000 },
-    ], 0);
+    const r = hitungInvoice(
+      [
+        { deskripsi: "Paket Eropa Barat", qty: 2, harga: 25_000_000 },
+        { deskripsi: "Asuransi", qty: 2, harga: 500_000 },
+      ],
+      0,
+    );
     expect(r.subtotal).toBe(51_000_000);
     expect(r.pajakNominal).toBe(0);
     expect(r.total).toBe(51_000_000);
   });
 
   it("menghitung pajak dari subtotal", () => {
-    const r = hitungInvoice([{ deskripsi: "Jasa", qty: 1, harga: 10_000_000 }], 11);
+    const r = hitungInvoice(
+      [{ deskripsi: "Jasa", qty: 1, harga: 10_000_000 }],
+      11,
+    );
     expect(r.subtotal).toBe(10_000_000);
     expect(r.pajakNominal).toBe(1_100_000);
     expect(r.total).toBe(11_100_000);
@@ -30,18 +36,28 @@ describe("hitungInvoice", () => {
   });
 
   it("daftar kosong menghasilkan nol, bukan NaN", () => {
-    expect(hitungInvoice([], 11)).toEqual({ subtotal: 0, pajakNominal: 0, total: 0 });
+    expect(hitungInvoice([], 11)).toEqual({
+      subtotal: 0,
+      pajakNominal: 0,
+      total: 0,
+    });
   });
 });
 
 describe("formatNomorInvoice", () => {
   it("memakai prefix, tahun, bulan 2 digit, dan urutan 4 digit", () => {
-    expect(formatNomorInvoice("INV", new Date(2026, 7, 30), 1)).toBe("INV/2026/08/0001");
-    expect(formatNomorInvoice("INV", new Date(2026, 11, 1), 137)).toBe("INV/2026/12/0137");
+    expect(formatNomorInvoice("INV", new Date(2026, 7, 30), 1)).toBe(
+      "INV/2026/08/0001",
+    );
+    expect(formatNomorInvoice("INV", new Date(2026, 11, 1), 137)).toBe(
+      "INV/2026/12/0137",
+    );
   });
 
   it("jatuh ke INV bila prefix kosong", () => {
-    expect(formatNomorInvoice("", new Date(2026, 0, 5), 2)).toBe("INV/2026/01/0002");
+    expect(formatNomorInvoice("", new Date(2026, 0, 5), 2)).toBe(
+      "INV/2026/01/0002",
+    );
   });
 });
 
@@ -70,7 +86,10 @@ const invoiceDasar = {
 
 describe("buildInvoiceView", () => {
   it("menomori baris dan memformat angka sesuai mata uang", () => {
-    const v = buildInvoiceView({ invoice: invoiceDasar, sekarang: new Date(2026, 7, 31) });
+    const v = buildInvoiceView({
+      invoice: invoiceDasar,
+      sekarang: new Date(2026, 7, 31),
+    });
     expect(v.baris).toHaveLength(1);
     expect(v.baris[0].no).toBe(1);
     expect(v.baris[0].jumlahFmt).toContain("50.000.000");
@@ -79,17 +98,28 @@ describe("buildInvoiceView", () => {
 
   it("menyembunyikan baris pajak bila persennya 0", () => {
     const v = buildInvoiceView({
-      invoice: { ...invoiceDasar, pajakPersen: 0, pajakNominal: 0, total: 50_000_000 },
+      invoice: {
+        ...invoiceDasar,
+        pajakPersen: 0,
+        pajakNominal: 0,
+        total: 50_000_000,
+      },
       sekarang: new Date(2026, 7, 31),
     });
     expect(v.ringkasan.adaPajak).toBe(false);
   });
 
   it("menandai jatuh tempo hanya bila terkirim dan tanggalnya lewat", () => {
-    const lewat = buildInvoiceView({ invoice: invoiceDasar, sekarang: new Date(2026, 8, 20) });
+    const lewat = buildInvoiceView({
+      invoice: invoiceDasar,
+      sekarang: new Date(2026, 8, 20),
+    });
     expect(lewat.meta.jatuhTempoTerlewat).toBe(true);
 
-    const belum = buildInvoiceView({ invoice: invoiceDasar, sekarang: new Date(2026, 8, 1) });
+    const belum = buildInvoiceView({
+      invoice: invoiceDasar,
+      sekarang: new Date(2026, 8, 1),
+    });
     expect(belum.meta.jatuhTempoTerlewat).toBe(false);
 
     const lunas = buildInvoiceView({
@@ -155,27 +185,49 @@ describe("buildInvoiceView", () => {
   it("menyertakan rekening tujuan bila akun dilampirkan", () => {
     const v = buildInvoiceView({
       invoice: invoiceDasar,
-      akun: { label: "BCA IDR", bank: "BCA", atasNama: "Agendain", nomor: "1234567890", bicSwift: null, iban: null },
+      akun: {
+        label: "BCA IDR",
+        bank: "BCA",
+        atasNama: "Agendain",
+        nomor: "1234567890",
+        bicSwift: null,
+        iban: null,
+      },
       sekarang: new Date(2026, 7, 31),
     });
     expect(v.rekening?.bank).toBe("BCA");
     expect(v.rekening?.nomor).toBe("1234567890");
 
-    const tanpa = buildInvoiceView({ invoice: invoiceDasar, sekarang: new Date(2026, 7, 31) });
+    const tanpa = buildInvoiceView({
+      invoice: invoiceDasar,
+      sekarang: new Date(2026, 7, 31),
+    });
     expect(tanpa.rekening).toBeNull();
   });
 });
 
 describe("buildInvoiceView — href kontak kop", () => {
   it("website tanpa skema diberi https://, dengan skema diloloskan", () => {
-    const a = buildInvoiceView({ invoice: invoiceDasar, settings: { website: "agendain.com" }, sekarang: new Date(2026, 7, 31) });
+    const a = buildInvoiceView({
+      invoice: invoiceDasar,
+      settings: { website: "agendain.com" },
+      sekarang: new Date(2026, 7, 31),
+    });
     expect(a.kop.websiteHref).toBe("https://agendain.com");
-    const b = buildInvoiceView({ invoice: invoiceDasar, settings: { website: "https://agendain.com" }, sekarang: new Date(2026, 7, 31) });
+    const b = buildInvoiceView({
+      invoice: invoiceDasar,
+      settings: { website: "https://agendain.com" },
+      sekarang: new Date(2026, 7, 31),
+    });
     expect(b.kop.websiteHref).toBe("https://agendain.com");
   });
 
   it("skema berbahaya (javascript:) ditolak jadi kosong", () => {
-    const v = buildInvoiceView({ invoice: invoiceDasar, settings: { website: "javascript:alert(1)" }, sekarang: new Date(2026, 7, 31) });
+    const v = buildInvoiceView({
+      invoice: invoiceDasar,
+      settings: { website: "javascript:alert(1)" },
+      sekarang: new Date(2026, 7, 31),
+    });
     expect(v.kop.websiteHref).toBe("");
   });
 

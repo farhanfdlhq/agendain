@@ -274,6 +274,9 @@ const InvoiceItemSchema = z.object({
   deskripsi: z.string().trim().min(1, "Deskripsi item harus diisi").max(500),
   qty: z.coerce.number().min(0.01, "Qty minimal 0.01").max(100_000),
   harga: z.coerce.number().min(0, "Harga tidak boleh negatif").max(1_000_000_000_000),
+  kategori: z.string().trim().max(120).optional(), // grup: Ground Service / Tiket Wisata …
+  durasi: z.string().trim().max(120).optional(),    // Durasi/Jarak (mis. "2,5 Jam")
+  notes: z.string().trim().max(500).optional(),     // catatan per baris
 });
 
 /**
@@ -312,7 +315,10 @@ const JamHHMM = z.literal("").or(
 const ItineraryAktivitas = z.object({
   mulai: JamHHMM.optional(),
   selesai: JamHHMM.optional(),
+  aktivitas: z.string().trim().max(500).optional(), // Activity: Breakfast, Explore, Transfer…
   lokasi: z.string().trim().max(500).optional(),
+  transport: z.string().trim().max(200).optional(), // Train, Public Transport, Private, Flight…
+  kota: z.string().trim().max(200).optional(),       // City (Country) per aktivitas
   catatan: z.string().trim().max(1000).optional(),
   gambar: OptionalStoredUrl.optional(),
 });
@@ -350,6 +356,7 @@ export const BlogPostSchema = z.object({
   content: z.string().min(1),
   contentEn: z.string().optional().nullable(),
   thumbnail: z.string().min(1),
+  author: z.string().max(120).optional().nullable(),
   categoryId: z.number().int().positive(),
   tags: z.array(z.string().max(50)).max(20).default([]),
   status: z.enum(["draft", "published"]).default("draft"),

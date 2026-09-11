@@ -9,7 +9,7 @@
 import { formatEUR, formatIDR } from "./currency";
 
 export type MataUang = "IDR" | "EUR";
-export type InvoiceItem = { deskripsi: string; qty: number; harga: number };
+export type InvoiceItem = { deskripsi: string; qty: number; harga: number; kategori?: string; durasi?: string; notes?: string };
 
 /** Kolom uang di DB adalah Decimal(15,2), jadi semua hasil dibulatkan ke 2 desimal. */
 const bulatkan = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
@@ -44,6 +44,7 @@ const LABEL = {
     qty: "Qty", harga: "Harga Satuan", jumlah: "Jumlah", subtotal: "Subtotal",
     total: "Total", rekening: "Transfer ke", catatan: "Catatan",
     jatuhTempoTerlewat: "JATUH TEMPO", lunas: "LUNAS", atasNama: "a.n.",
+    durasi: "Durasi/Jarak", ket: "Keterangan",
   },
   en: {
     invoice: "INVOICE", ditagihkanKepada: "Billed To", nomor: "Number",
@@ -51,6 +52,7 @@ const LABEL = {
     qty: "Qty", harga: "Unit Price", jumlah: "Amount", subtotal: "Subtotal",
     total: "Total", rekening: "Transfer to", catatan: "Notes",
     jatuhTempoTerlewat: "OVERDUE", lunas: "PAID", atasNama: "a/n",
+    durasi: "Duration/Distance", ket: "Notes",
   },
 } as const;
 
@@ -181,6 +183,9 @@ export function buildInvoiceView({
     baris: items.map((it, i) => ({
       no: i + 1,
       deskripsi: it.deskripsi,
+      kategori: typeof it.kategori === "string" ? it.kategori : "",
+      durasi: typeof it.durasi === "string" ? it.durasi : "",
+      notes: typeof it.notes === "string" ? it.notes : "",
       qty: Number(it.qty || 0),
       hargaFmt: formatUang(Number(it.harga || 0), mataUang),
       jumlahFmt: formatUang(bulatkan(Number(it.qty || 0) * Number(it.harga || 0)), mataUang),

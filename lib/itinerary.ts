@@ -15,11 +15,13 @@ const LABEL = {
     itinerary: "ITINERARY", madeFor: "Dibuat Untuk", tanggal: "Tanggal",
     waktu: "Waktu", lokasi: "Lokasi", gambar: "Gambar", hari: "Hari",
     totalDurasi: "Total Durasi", catatan: "Catatan",
+    aktivitas: "Aktivitas", transport: "Transportasi", kota: "Kota", rute: "Rute",
   },
   en: {
     itinerary: "ITINERARY", madeFor: "Made For", tanggal: "Date",
     waktu: "Time", lokasi: "Location", gambar: "Image", hari: "Day",
     totalDurasi: "Total Duration", catatan: "Notes",
+    aktivitas: "Activity", transport: "Transport", kota: "City", rute: "Route",
   },
 } as const;
 
@@ -107,19 +109,30 @@ export function buildItineraryView({
         no: i + 1,
         jamFmt: jamRange(item.mulai, item.selesai),
         durasiFmt: durasi !== null ? `(${formatMenit(durasi, bahasa)})` : "",
+        aktivitas: teks(item.aktivitas),
         lokasi: teks(item.lokasi),
+        transport: teks(item.transport),
+        kota: teks(item.kota),
         catatan: teks(item.catatan),
         gambar: teks(item.gambar),
       };
     });
     const tanggalFmt = formatTanggal(hh.tanggal as string, bahasa);
+    // Kota hari ini: kota pertama yang terisi di antara aktivitasnya (untuk header hari & rute).
+    const kotaHari = rows.map((r) => r.kota).find((k) => k) ?? "";
     return {
       label: `${label.hari} ${idx + 1}${tanggalFmt ? `, ${tanggalFmt}` : ""}`,
+      kota: kotaHari,
       totalFmt: formatDurasiPanjang(totalMenit, bahasa),
       totalMenit,
       items: rows,
     };
   });
+
+  // Rute = urutan kota unik lintas-hari (mis. "Madrid - Barcelona - Cologne"),
+  // diturunkan dari data; tak perlu field terpisah di skema.
+  const kotaUrut = hari.map((h) => h.kota).filter(Boolean);
+  const rute = kotaUrut.filter((k, i) => i === 0 || k !== kotaUrut[i - 1]).join(" - ");
 
   return {
     bahasa,
@@ -134,6 +147,7 @@ export function buildItineraryView({
     meta: {
       judul: itinerary.judul,
       tanggalFmt: formatTanggal(itinerary.tanggalDok, bahasa),
+      rute,
     },
     hari,
     catatan: teks(itinerary.catatan),
