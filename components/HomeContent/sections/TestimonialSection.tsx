@@ -17,7 +17,7 @@ export default function TestimonialSection({ gs, t, waLink }: { gs: any, t: any,
                 renderHighlightedTitle(gs('testiTitle'), '', styles.testimonialTitleHighlight)
               ) : (
                 <>
-                  &ldquo;{t('home.testi.quoteTitle1')} <span className={styles.testimonialTitleHighlight}>Italia</span> {t('home.testi.quoteTitle2')}&rdquo;
+                  &ldquo;{t('home.testi.quoteTitle1')} <span className={styles.testimonialTitleHighlight}>{t('home.testi.quoteCountry')}</span> {t('home.testi.quoteTitle2')}&rdquo;
                 </>
               )}
             </h2>

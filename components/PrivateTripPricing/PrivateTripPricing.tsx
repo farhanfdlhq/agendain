@@ -69,18 +69,30 @@ export default function PrivateTripPricing({
   packages,
   privatetripSettings = {},
 }: PrivateTripPricingProps) {
-  const displayPackages = (!packages || packages.length === 0) ? DEFAULT_PACKAGES : packages;
+  const displayPackages =
+    !packages || packages.length === 0 ? DEFAULT_PACKAGES : packages;
   const { locale } = useTranslation();
-  const isEn = locale === 'en';
+  const isEn = locale === "en";
   const getSetting = (key: string) => {
-    const val = isEn ? (privatetripSettings[`${key}_en`] || privatetripSettings[key]) : privatetripSettings[key];
+    const val = isEn
+      ? privatetripSettings[`${key}_en`] || privatetripSettings[key]
+      : privatetripSettings[key];
     return val;
   };
 
   const renderChipIcon = (index: number) => {
     if (index === 0) {
       return (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#64748b"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <circle cx="12" cy="12" r="10"></circle>
           <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
@@ -88,7 +100,16 @@ export default function PrivateTripPricing({
     }
     if (index === 1) {
       return (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#64748b"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
           <circle cx="9" cy="7" r="4"></circle>
           <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -97,7 +118,16 @@ export default function PrivateTripPricing({
       );
     }
     return (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#64748b"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
         <line x1="16" y1="2" x2="16" y2="6"></line>
         <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -109,14 +139,25 @@ export default function PrivateTripPricing({
   return (
     <section id="paket" className={styles.section}>
       <div className={styles.container}>
-        {getSetting('packagesTitle') && (
+        {getSetting("packagesTitle") && (
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>
-              {parseGoldText(getSetting('packagesTitle'), styles, getSetting('packagesTitleWeight'))}
+              {parseGoldText(
+                getSetting("packagesTitle"),
+                styles,
+                getSetting("packagesTitleWeight"),
+              )}
             </h2>
-            {getSetting('packagesSubtitle') && (
-              <p className={styles.sectionSubtitle} style={{ fontWeight: getSetting('packagesSubtitleWeight') ? Number(getSetting('packagesSubtitleWeight')) : undefined }}>
-                {getSetting('packagesSubtitle')}
+            {getSetting("packagesSubtitle") && (
+              <p
+                className={styles.sectionSubtitle}
+                style={{
+                  fontWeight: getSetting("packagesSubtitleWeight")
+                    ? Number(getSetting("packagesSubtitleWeight"))
+                    : undefined,
+                }}
+              >
+                {getSetting("packagesSubtitle")}
               </p>
             )}
           </div>
@@ -125,7 +166,6 @@ export default function PrivateTripPricing({
           {displayPackages.map((tier, idx) => (
             <FadeIn key={idx} direction="up" delay={0.1 * (idx + 1)}>
               <div className={styles.card}>
-                
                 {/* Inset Image Header with Rounded Corners */}
                 <div className={styles.imageContainer}>
                   <Image
@@ -137,7 +177,17 @@ export default function PrivateTripPricing({
                   />
                   {tier.locationTab && (
                     <div className={styles.locationBadge}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        style={{ color: "var(--color-dominant)" }}
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                         <circle cx="12" cy="10" r="3"></circle>
                       </svg>
@@ -166,7 +216,11 @@ export default function PrivateTripPricing({
                         return (
                           <span key={cIdx} className={styles.chip}>
                             {iconName ? (
-                              <DynamicIcon name={iconName} size={13} className={styles.chipIcon} />
+                              <DynamicIcon
+                                name={iconName}
+                                size={13}
+                                className={styles.chipIcon}
+                              />
                             ) : (
                               renderChipIcon(cIdx)
                             )}
@@ -190,7 +244,7 @@ export default function PrivateTripPricing({
                   {/* WhatsApp Action Button */}
                   <div className={styles.actionRow}>
                     <a
-                      href="https://wa.me/6281234567890"
+                      href="https://wa.me/6281995264565"
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.btnPrimary}
@@ -202,7 +256,6 @@ export default function PrivateTripPricing({
                     </a>
                   </div>
                 </div>
-
               </div>
             </FadeIn>
           ))}

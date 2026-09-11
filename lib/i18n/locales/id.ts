@@ -200,6 +200,7 @@ const id: Record<string, string> = {
   "home.dest.startFrom": "Mulai dari",
   "home.testi.badge": "Sudut Pandang",
   "home.testi.quoteTitle1": "Satu Hari di ",
+  "home.testi.quoteCountry": "Italia",
   "home.testi.quoteTitle2": ", dan Gue Langsung Jatuh Cinta!",
   "home.testi.highlight1": "Jalan-jalan di kota tua yang penuh sejarah",
   "home.testi.highlight2": "Kulineran makanan otentik Italia yang bikin nagih",

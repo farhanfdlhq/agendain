@@ -8,18 +8,25 @@ import FadeIn from "@/components/Motion/FadeIn";
 import { parseGoldText } from "@/lib/utils/textFormatting";
 import styles from "./PrivateTripForm.module.css";
 
-export default function PrivateTripForm({ privatetripSettings }: { privatetripSettings?: any }) {
+export default function PrivateTripForm({
+  privatetripSettings,
+}: {
+  privatetripSettings?: any;
+}) {
   const { t, locale } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [whatsappNumber, setWhatsappNumber] = useState("6281234567890");
+  const [whatsappNumber, setWhatsappNumber] = useState("6281995264565");
 
   const gs = (key: string, fallbackText: string) => {
-    const dataKey = locale === 'en' ? `${key}_en` : key;
-    if (privatetripSettings?.[dataKey] && privatetripSettings[dataKey].trim() !== '') {
+    const dataKey = locale === "en" ? `${key}_en` : key;
+    if (
+      privatetripSettings?.[dataKey] &&
+      privatetripSettings[dataKey].trim() !== ""
+    ) {
       return privatetripSettings[dataKey];
     }
-    if (privatetripSettings?.[key] && privatetripSettings[key].trim() !== '') {
+    if (privatetripSettings?.[key] && privatetripSettings[key].trim() !== "") {
       return privatetripSettings[key];
     }
     return fallbackText;
@@ -79,8 +86,16 @@ export default function PrivateTripForm({ privatetripSettings }: { privatetripSe
       <div className={styles.container}>
         <FadeIn direction="up" delay={0.2} className={styles.formContainer}>
           <div className={styles.header}>
-            <h2 className={styles.title}>{parseGoldText(gs('formTitle', t("pt.formTitle")), styles, privatetripSettings?.formTitleWeight)}</h2>
-            <p className={styles.subtitle}>{gs('formSubtitle', t("pt.formDesc"))}</p>
+            <h2 className={styles.title}>
+              {parseGoldText(
+                gs("formTitle", t("pt.formTitle")),
+                styles,
+                privatetripSettings?.formTitleWeight,
+              )}
+            </h2>
+            <p className={styles.subtitle}>
+              {gs("formSubtitle", t("pt.formDesc"))}
+            </p>
           </div>
         </FadeIn>
 

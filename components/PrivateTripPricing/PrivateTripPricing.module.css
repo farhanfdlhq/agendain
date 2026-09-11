@@ -28,7 +28,7 @@
 }
 
 .textGold {
-  color: #fbbf24;
+  color: var(--color-dominant);
 }
 
 .grid {

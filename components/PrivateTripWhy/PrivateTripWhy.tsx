@@ -24,27 +24,40 @@ const whyItems = [
     icon: "📸",
     title: "Fotografer Pro Siap Beraksi",
     desc: "Gak usah pusing mikirin angle atau pasrah sama hasil foto temen yang blur. Berbekal kamera pro dan insting visual yang tajam, guide kamu siap mengabadikan tiap momen sinematikmu.",
-  }
+  },
 ];
 
-export default function PrivateTripWhy({ privatetripSettings }: { privatetripSettings?: any }) {
+export default function PrivateTripWhy({
+  privatetripSettings,
+}: {
+  privatetripSettings?: any;
+}) {
   const { t, locale } = useTranslation();
-  
+
   const gs = (key: string, fallbackText: string) => {
-    const dataKey = locale === 'en' ? `${key}_en` : key;
-    if (privatetripSettings?.[dataKey] && privatetripSettings[dataKey].trim() !== '') {
+    const dataKey = locale === "en" ? `${key}_en` : key;
+    if (
+      privatetripSettings?.[dataKey] &&
+      privatetripSettings[dataKey].trim() !== ""
+    ) {
       return privatetripSettings[dataKey];
     }
-    if (privatetripSettings?.[key] && privatetripSettings[key].trim() !== '') {
+    if (privatetripSettings?.[key] && privatetripSettings[key].trim() !== "") {
       return privatetripSettings[key];
     }
     return fallbackText;
-  }
+  };
 
   // Ikon bahasa-netral: satu array untuk kedua bahasa, hanya teks yang punya
   // versi EN. Sebelumnya array EN diambil utuh sehingga ikonnya bisa beda.
-  const localizedWhy = localizeRepeater(privatetripSettings, 'whyItems', locale, PRIVATE_TRIP_REPEATERS.whyItems);
-  const items = localizedWhy && localizedWhy.length > 0 ? localizedWhy : whyItems;
+  const localizedWhy = localizeRepeater(
+    privatetripSettings,
+    "whyItems",
+    locale,
+    PRIVATE_TRIP_REPEATERS.whyItems,
+  );
+  const items =
+    localizedWhy && localizedWhy.length > 0 ? localizedWhy : whyItems;
 
   return (
     <section className={styles.section}>
@@ -52,12 +65,24 @@ export default function PrivateTripWhy({ privatetripSettings }: { privatetripSet
         <div className={styles.grid}>
           <div className={styles.leftColumn}>
             <FadeIn direction="up">
-              <p className={styles.eyebrow}>{gs('whyEyebrow', 'Kenapa Harus Agendain?')}</p>
+              <p className={styles.eyebrow}>
+                {gs("whyEyebrow", "Kenapa Harus Agendain?")}
+              </p>
               <h2 className={styles.title}>
-                {parseGoldText(gs('whyTitle', 'Eksplorasi Eropa bareng ahlinya, *semua sudut aman terkendali*'), styles, privatetripSettings?.whyTitleWeight || '800')}
+                {parseGoldText(
+                  gs(
+                    "whyTitle",
+                    "Eksplorasi Eropa bareng ahlinya, *semua sudut aman terkendali*",
+                  ),
+                  styles,
+                  privatetripSettings?.whyTitleWeight || "800",
+                )}
               </h2>
               <p className={styles.description}>
-                {gs('whySubtitle', 'Mencari teman perjalanan ke Eropa itu mudah, tapi menemukan yang benar-benar paham luar-dalam sekaligus bisa mengabadikan momen estetikmu itu langka. Di Agendain, trip kamu dikurasi dan dipandu langsung oleh Lead Guide sekaligus Founder kami yang siap menjamin liburanmu bebas dari kata zonk.')}
+                {gs(
+                  "whySubtitle",
+                  "Mencari teman perjalanan ke Eropa itu mudah, tapi menemukan yang benar-benar paham luar-dalam sekaligus bisa mengabadikan momen estetikmu itu langka. Di Agendain, trip kamu dikurasi dan dipandu langsung oleh Lead Guide sekaligus Founder kami yang siap menjamin liburanmu bebas dari kata zonk.",
+                )}
               </p>
             </FadeIn>
 
@@ -95,13 +120,13 @@ export default function PrivateTripWhy({ privatetripSettings }: { privatetripSet
 
             <FadeIn direction="up" delay={0.4} className={styles.ctaWrapper}>
               <a
-                href="https://wa.me/6281234567890"
+                href="https://wa.me/6281995264565"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.btnPrimary}
               >
                 <WhatsAppIcon size={20} />
-                {gs('whyBtnText', 'Chat Whatsapp Sekarang')}
+                {gs("whyBtnText", "Chat Whatsapp Sekarang")}
               </a>
             </FadeIn>
           </div>
