@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { Calendar, Clock, ChevronRight, Share2, ArrowLeft } from 'lucide-react'
+import { Calendar, Clock, ChevronRight, Share2, ArrowLeft, User, RefreshCw } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import FadeIn from '@/components/Motion/FadeIn'
 import Stagger from '@/components/Motion/Stagger'
@@ -22,8 +22,10 @@ type BlogPost = {
   content: string
   contentEn: string | null
   thumbnail: string
+  author: string | null
   publishedAt: Date | string | null
   createdAt: Date | string
+  updatedAt: Date | string
   tags: any
   category: BlogCategory
 }
@@ -50,6 +52,11 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
     })
   }
 
+  // Tampilkan "Diperbarui" hanya bila update terakhir cukup jauh (>1 menit)
+  // setelah publish/dibuat — supaya artikel yang belum pernah diedit tak berisik.
+  const publishedRef = post.publishedAt || post.createdAt
+  const showUpdated = new Date(post.updatedAt).getTime() - new Date(publishedRef).getTime() > 60_000
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href)
     toast.success(language === 'en' ? 'Link copied!' : 'Link disalin!')
@@ -73,8 +80,14 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-6">{title}</h1>
           
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8 text-muted-foreground border-b pb-6">
-            <div className="flex items-center gap-4 text-sm">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+              <div className="flex items-center gap-1.5"><User size={16} /> {post.author || (language === 'en' ? 'Agendain Team' : 'Tim Agendain')}</div>
               <div className="flex items-center gap-1.5"><Calendar size={16} /> {formatDate(post.publishedAt || post.createdAt)}</div>
+              {showUpdated && (
+                <div className="flex items-center gap-1.5" title={language === 'en' ? 'Last updated' : 'Terakhir diperbarui'}>
+                  <RefreshCw size={14} /> {language === 'en' ? 'Updated' : 'Diperbarui'} {formatDate(post.updatedAt)}
+                </div>
+              )}
               <div className="flex items-center gap-1.5"><Clock size={16} /> {getReadTime(cleanHtml)} min read</div>
             </div>
             

@@ -53,6 +53,17 @@ const ALLOWED_ATTR = [
   "style",
 ];
 
+// Semua tautan konten dibuka di TAB BARU dengan rel aman — perilaku blog umum,
+// dan menutup celah reverse-tabnabbing (`noopener`). Berlaku untuk tautan LAMA
+// maupun baru karena ditegakkan saat render, bukan bergantung markup tersimpan.
+// Hook didaftarkan sekali di level modul (bukan tiap panggilan) agar tak menumpuk.
+DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+  if (node.tagName === "A" && node.getAttribute("href")) {
+    node.setAttribute("target", "_blank");
+    node.setAttribute("rel", "noopener noreferrer nofollow");
+  }
+});
+
 export function sanitizeRichText(value: unknown): string {
   if (typeof value !== "string" || !value) return "";
   return DOMPurify.sanitize(value, { ALLOWED_TAGS, ALLOWED_ATTR });

@@ -47,6 +47,13 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
   const [metaTitle, setMetaTitle] = useState("")
   const [metaDescription, setMetaDescription] = useState("")
   const [ogImage, setOgImage] = useState("")
+  const [author, setAuthor] = useState("")
+
+  // Pre-fill penulis dengan nama admin yang login (hanya saat membuat baru).
+  useEffect(() => {
+    if (mode !== "create") return
+    fetch("/api/admin/me").then(r => r.json()).then(d => { if (d?.nama) setAuthor(d.nama) }).catch(() => {})
+  }, [mode])
 
   useEffect(() => {
     fetch("/api/blog/categories").then(r => r.json()).then(setCategories).catch(() => {})
@@ -71,6 +78,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
           setMetaTitle(post.metaTitle || "")
           setMetaDescription(post.metaDescription || "")
           setOgImage(post.ogImage || "")
+          setAuthor(post.author || "")
           setLoading(false)
         })
         .catch(() => { toast.error("Gagal memuat artikel"); router.push("/admin/blog") })
@@ -136,6 +144,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
         metaTitle: metaTitle.trim() || null,
         metaDescription: metaDescription.trim() || null,
         ogImage: ogImage || null,
+        author: author.trim() || null,
       }
 
       const url = mode === "create" ? "/api/blog" : `/api/blog/${slug}`
@@ -255,6 +264,15 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
                   ))}
                 </SelectContent>
               </Select>
+            </CardContent>
+          </Card>
+
+          {/* Penulis */}
+          <Card>
+            <CardHeader className="pb-3"><CardTitle className="text-sm">Penulis</CardTitle></CardHeader>
+            <CardContent>
+              <Input placeholder="Nama penulis" value={author} onChange={(e) => setAuthor(e.target.value)} />
+              <p className="mt-1.5 text-xs text-muted-foreground">Default: nama akun Anda. Bisa diganti (mis. penulis tamu).</p>
             </CardContent>
           </Card>
 

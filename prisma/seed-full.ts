@@ -692,6 +692,7 @@ async function main() {
       content: '<p>Roma bukan hanya tentang Colosseum dan Vatikan. Jika Anda ingin melihat sisi lain dari kota abadi ini, berikut adalah daftar tempat rahasia yang patut dikunjungi.</p><p>Sangat cocok untuk perjalanan fotografi Anda.</p>',
       contentEn: '<p>Rome is not just about the Colosseum and Vatican. If you want to see the other side of this eternal city, here is a list of secret spots worth visiting.</p><p>Perfect for your photography trip.</p>',
       thumbnail: '/dest-italy.webp',
+      author: 'Super Admin',
       categoryId: catDestinasi.id,
       tags: ['roma', 'italia', 'hidden-gems'],
       status: 'published',

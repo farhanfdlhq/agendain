@@ -73,6 +73,14 @@ export async function POST(request: Request) {
       data.slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
     }
 
+    // Penulis default = nama admin yang membuat (bukan teks generik) bila kosong.
+    if (!data.author || !data.author.trim()) {
+      const penulis = gate.actor?.userId != null
+        ? await prisma.adminUser.findUnique({ where: { id: gate.actor.userId }, select: { nama: true } })
+        : null
+      data.author = penulis?.nama || 'Tim Agendain'
+    }
+
     const post = await prisma.blogPost.create({
       data: {
         ...data,

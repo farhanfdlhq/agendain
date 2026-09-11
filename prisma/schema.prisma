@@ -169,6 +169,7 @@ model BlogPost {
   content         String        @db.LongText
   contentEn       String?       @db.LongText
   thumbnail       String
+  author          String?       // nama penulis artikel (mis. "Tim Agendain")
   categoryId      Int
   category        BlogCategory  @relation(fields: [categoryId], references: [id])
   tags            Json          // array string ["travel","eropa"]
