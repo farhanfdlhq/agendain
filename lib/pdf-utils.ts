@@ -31,5 +31,8 @@ export function sumberGambar(url: string): string | null {
   // Containment: hanya berkas di dalam public/ (cegah "/../.." keluar root).
   if (berkas !== root && !berkas.startsWith(root + path.sep)) return null;
 
-  return existsSync(berkas) ? berkas : null;
+  // `turbopackIgnore`: `berkas` dinamis, tapi sudah dibatasi ke dalam public/ di
+  // atas. Tanpa ini Turbopack menelusuri SELURUH proyek ke output server (bundle
+  // membengkak). Aman karena bukan import modul, hanya cek keberadaan berkas.
+  return existsSync(/*turbopackIgnore: true*/ berkas) ? berkas : null;
 }
