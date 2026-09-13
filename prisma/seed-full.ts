@@ -300,8 +300,8 @@ async function main() {
     testiBadge: 'Sudut Pandang',
     testiBadge_en: 'Perspective',
     testiBadgeWeight: '500',
-    testiTitle: '"Satu Hari di *Italia* , dan Gue Langsung Jatuh Cinta!"',
-    testiTitle_en: '"One Day in *Italy* , and I Immediately Fell in Love!"',
+    testiTitle: '"Satu Hari di *Italia*, dan Gue Langsung Jatuh Cinta!"',
+    testiTitle_en: '"One Day in *Italy*, and I Immediately Fell in Love!"',
     testiTitleWeight: '800',
     galleryImg1: '/gallery-amalfi.webp', galleryImg2: '/dest-swiss.webp', galleryImg3: '/gallery-colosseum.webp', galleryImg4: '/dest-france.webp', galleryImg5: '/dest-italy.webp',
 

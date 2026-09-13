@@ -91,7 +91,10 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
               key={i}
               variants={p.gold ? pop : rise}
               className={p.gold ? styles.heroTitleGold : styles.heroTitleWhite}
-              style={{ display: 'inline-block', willChange: 'transform, filter, opacity' }}
+              // `pre-wrap`: pertahankan spasi di tepi tiap potongan (mis. " Aja!")
+              // yang kalau tidak akan ditelan oleh `inline-block` sehingga kata
+              // emas & kata sesudahnya menempel ("AgendainAja!"). Tetap boleh wrap.
+              style={{ display: 'inline-block', whiteSpace: 'pre-wrap', willChange: 'transform, filter, opacity' }}
             >
               {p.text === ' ' ? ' ' : p.text}
             </motion.span>

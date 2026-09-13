@@ -161,4 +161,27 @@
   .paymentGrid {
     grid-template-columns: repeat(4, 1fr);
   }
+
+  /* Beri ruang bawah agar baris copyright tidak tertutup tombol WhatsApp
+     mengambang (FAB fixed di pojok kanan-bawah) pada layar kecil. */
+  .bottom {
+    padding-bottom: 5rem;
+  }
+}
+
+/* Tablet (641–768px): sandingkan Navigasi & Hubungi Kami jadi dua kolom agar
+   ruang kosong di kanan terpakai (bukan menumpuk seperti ponsel). Mitra
+   Pembayaran tetap selebar penuh di bawahnya. Blok ini setelah aturan ≤768px
+   agar menang untuk rentang 641–768. */
+@media (min-width: 641px) and (max-width: 768px) {
+  /* Navigasi di kiri, Hubungi Kami di kanan (space-between). */
+  .columns {
+    grid-template-columns: auto auto;
+    justify-content: space-between;
+  }
+
+  /* Mitra Pembayaran turun ke baris sendiri, selebar penuh. */
+  .columns > .col:last-child {
+    grid-column: 1 / -1;
+  }
 }
