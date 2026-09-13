@@ -8,6 +8,8 @@ import { WhatsAppIcon } from "@/components/HomeContent/shared";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { parseGoldText } from "@/lib/utils/textFormatting";
 import { localizeRepeater, PRIVATE_TRIP_REPEATERS } from "@/lib/i18n/localize";
+import { generateWhatsAppLink } from "@/lib/utils";
+import { waPrivateTripGeneral } from "@/lib/whatsapp-messages";
 
 const whyItems = [
   {
@@ -120,7 +122,10 @@ export default function PrivateTripWhy({
 
             <FadeIn direction="up" delay={0.4} className={styles.ctaWrapper}>
               <a
-                href="https://wa.me/6281995264565"
+                href={generateWhatsAppLink(
+                  privatetripSettings?.whatsapp_number,
+                  waPrivateTripGeneral(locale === "en"),
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.btnPrimary}

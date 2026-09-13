@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { WhatsAppIcon } from "@/components/HomeContent/shared";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { parseGoldText } from "@/lib/utils/textFormatting";
+import { generateWhatsAppLink } from "@/lib/utils";
+import { waPrivateTripGeneral } from "@/lib/whatsapp-messages";
 
 export default function PrivateTripHero({
   privatetripSettings = {},
@@ -72,7 +74,10 @@ export default function PrivateTripHero({
             {isEn ? "View Private Packages" : "Lihat Paket Private"} &rarr;
           </a>
           <a
-            href="https://wa.me/6281995264565"
+            href={generateWhatsAppLink(
+              privatetripSettings?.whatsapp_number,
+              waPrivateTripGeneral(isEn),
+            )}
             target="_blank"
             rel="noopener noreferrer"
             className={styles.btnPrimary}

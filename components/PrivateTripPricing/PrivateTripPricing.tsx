@@ -7,6 +7,8 @@ import { WhatsAppIcon } from "@/components/HomeContent/shared";
 import DynamicIcon from "@/components/DynamicIcon/DynamicIcon";
 import { parseGoldText } from "@/lib/utils/textFormatting";
 import { useTranslation } from "@/lib/i18n/useTranslation";
+import { generateWhatsAppLink } from "@/lib/utils";
+import { waPrivateTripPackage } from "@/lib/whatsapp-messages";
 
 interface PrivateTripPackageData {
   id?: number;
@@ -244,7 +246,14 @@ export default function PrivateTripPricing({
                   {/* WhatsApp Action Button */}
                   <div className={styles.actionRow}>
                     <a
-                      href="https://wa.me/6281995264565"
+                      href={generateWhatsAppLink(
+                        privatetripSettings?.whatsapp_number,
+                        waPrivateTripPackage(
+                          isEn,
+                          tier.title,
+                          tier.locationTab,
+                        ),
+                      )}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.btnPrimary}

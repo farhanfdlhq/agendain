@@ -5,6 +5,8 @@ import Navbar from "@/components/Navbar/Navbar"
 import Footer from "@/components/Footer/Footer"
 import FloatingWhatsApp from "@/components/FloatingWhatsApp/FloatingWhatsApp"
 import { LanguageProvider } from "@/lib/i18n/LanguageContext"
+import { formatWhatsAppNumber } from "@/lib/utils"
+import { waFloating } from "@/lib/whatsapp-messages"
 
 export default function FrontLayout({ children, settings, initialLocale = 'id' }: { children: React.ReactNode, settings?: any, initialLocale?: 'id' | 'en' }) {
   const pathname = usePathname()
@@ -19,13 +21,17 @@ export default function FrontLayout({ children, settings, initialLocale = 'id' }
   }
 
   const isHome = pathname === '/'
+  const isEn = initialLocale === 'en'
 
   return (
     <LanguageProvider initialLocale={initialLocale}>
       <Navbar settings={settings} />
       <main className={!isHome ? "non-home-main" : ""}>{children}</main>
       <Footer settings={settings} />
-      <FloatingWhatsApp />
+      <FloatingWhatsApp
+        phoneNumber={formatWhatsAppNumber(settings?.whatsapp_number) || undefined}
+        message={waFloating(isEn, pathname)}
+      />
     </LanguageProvider>
   )
 }

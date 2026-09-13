@@ -11,6 +11,8 @@ import Counter from "@/components/Motion/Counter";
 import styles from "./page.module.css";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { parseGoldText } from "@/lib/utils/textFormatting";
+import { generateWhatsAppLink } from "@/lib/utils";
+import { waOpenTripGeneral } from "@/lib/whatsapp-messages";
 
 interface OpenTripContentProps {
   packages: any[];
@@ -200,7 +202,10 @@ export default function OpenTripContent({
         primaryBtnText={
           getSetting("ctaBtnText") || t("openTrip.cta.btnPrimary")
         }
-        primaryBtnLink="https://wa.me/6281995264565"
+        primaryBtnLink={generateWhatsAppLink(
+          opentripSettings?.whatsapp_number,
+          waOpenTripGeneral(isEn),
+        )}
         secondaryBtnText={t("openTrip.cta.btnSecondary")}
         secondaryBtnLink="#jadwal"
       />

@@ -1,4 +1,5 @@
 import React from "react";
+import { generateWhatsAppLink } from "@/lib/utils";
 import styles from "./CallToActionBanner.module.css";
 
 interface CallToActionBannerProps {
@@ -22,7 +23,7 @@ export default function CallToActionBanner({
   titleLine3,
   description,
   primaryBtnText,
-  primaryBtnLink = "https://wa.me/6281995264565",
+  primaryBtnLink = generateWhatsAppLink(),
   secondaryBtnText,
   secondaryBtnLink = "#jadwal",
 }: CallToActionBannerProps) {

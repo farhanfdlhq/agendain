@@ -7,6 +7,8 @@ import CallToActionBanner from "@/components/CallToActionBanner/CallToActionBann
 import { prisma } from "@/lib/prisma";
 import { parseGoldText } from "@/lib/utils/textFormatting";
 import { getI18nSetting, getServerLocale } from "@/lib/i18n/server";
+import { generateWhatsAppLink } from "@/lib/utils";
+import { waPrivateTripGeneral } from "@/lib/whatsapp-messages";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -60,6 +62,10 @@ export default async function PrivateTripPage() {
         titleLine3={ctaTitle ? undefined : (isEn ? "Only!" : "Aja!")}
         description={ctaSubtitle}
         primaryBtnText={ctaBtnText}
+        primaryBtnLink={generateWhatsAppLink(
+          privatetripSettings?.whatsapp_number,
+          waPrivateTripGeneral(isEn),
+        )}
         secondaryBtnText={secBtnText}
         secondaryBtnLink="#jadwal"
       />
