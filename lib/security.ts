@@ -301,6 +301,11 @@ export const InvoiceSchema = z.object({
   items: z.array(InvoiceItemSchema).min(1, "Minimal satu item").max(100, "Maksimal 100 item"),
   pajakLabel: z.string().trim().max(40).nullable().optional(),
   pajakPersen: z.coerce.number().min(0).max(100).optional(),
+  // Kurs 1 EUR dalam rupiah, diisi admin secara manual. Hanya memengaruhi
+  // PADANAN yang ditampilkan (Rp ≈), bukan total tertagih — total tetap
+  // dihitung server dari item, jadi kurs manual tak bisa dipakai mengubah
+  // jumlah tagihan. Kosong = kurs diambil otomatis (Wise) saat invoice terbit.
+  kurs: z.coerce.number().min(0).max(100_000_000).nullable().optional(),
   catatan: z.string().trim().max(2000).nullable().optional(),
   paymentAccountId: z.coerce.number().int().positive().nullable().optional(),
   status: z.enum(["draft", "terkirim", "lunas", "batal"]).optional(),

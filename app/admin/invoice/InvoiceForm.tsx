@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { hitungInvoice, formatUang, type MataUang } from "@/lib/invoice"
-import { formatMoneyInput, parseMoneyInput } from "@/lib/currency"
+import { formatMoneyInput, parseMoneyInput, hitungPadanan } from "@/lib/currency"
 
 type Item = { deskripsi: string; qty: number | string; harga: number | string; kategori: string; durasi: string; notes: string }
 type Akun = { id: number; label: string; bank: string; aktif: boolean; isDefault: boolean }
@@ -36,6 +36,7 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
     judul: "", tanggal: hariIni(), jatuhTempo: "",
     bahasa: "id", mataUang: "IDR" as MataUang,
     pajakLabel: "", pajakPersen: 0 as number | string,
+    kurs: "" as number | string,
     catatan: "", status: "draft", paymentAccountId: "" as string,
     items: [ { ...ITEM_KOSONG } ] as Item[],
   })
@@ -109,6 +110,7 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
           jatuhTempo: inv.jatuhTempo ? String(inv.jatuhTempo).slice(0, 10) : "",
           bahasa: inv.bahasa ?? "id", mataUang: (inv.mataUang ?? "IDR") as MataUang,
           pajakLabel: inv.pajakLabel ?? "", pajakPersen: Number(inv.pajakPersen ?? 0),
+          kurs: inv.kurs != null && Number(inv.kurs) > 0 ? Number(inv.kurs) : "",
           catatan: inv.catatan ?? "", status: inv.status ?? "draft",
           paymentAccountId: inv.paymentAccountId ? String(inv.paymentAccountId) : "",
           items: Array.isArray(inv.items) && inv.items.length
@@ -167,6 +169,7 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
           kategori: it.kategori || "", durasi: it.durasi || "", notes: it.notes || "",
         })),
         pajakLabel: form.pajakLabel || null, pajakPersen: Number(form.pajakPersen) || 0,
+        kurs: Number(form.kurs) > 0 ? Number(form.kurs) : null,
         catatan: form.catatan || null, status: form.status,
         paymentAccountId: form.paymentAccountId ? Number(form.paymentAccountId) : null,
       }
@@ -354,6 +357,15 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
                 <div className="flex justify-between text-base font-bold border-t pt-2">
                   <span>Total</span><span className="tabular-nums">{formatUang(angka.total, form.mataUang)}</span>
                 </div>
+                {Number(form.kurs) > 0 && (() => {
+                  const padanan = hitungPadanan(form.mataUang, angka.total, Number(form.kurs))
+                  return padanan != null ? (
+                    <div className="flex justify-between text-xs text-muted-foreground pt-1">
+                      <span>1 EUR = {formatUang(Number(form.kurs), "IDR")}</span>
+                      <span className="tabular-nums">≈ {formatUang(padanan, form.mataUang === "EUR" ? "IDR" : "EUR")}</span>
+                    </div>
+                  ) : null
+                })()}
               </div>
             </CardContent>
           </Card>
@@ -418,6 +430,15 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
                     <SelectItem value="EUR">EUR (Euro)</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="kurs">Kurs 1 EUR = Rp (opsional)</Label>
+                <Input id="kurs" type="text" inputMode="decimal" placeholder="mis. 17.500"
+                  value={formatMoneyInput(form.kurs)}
+                  onChange={e => set("kurs", parseMoneyInput(e.target.value))} />
+                <p className="text-xs text-muted-foreground">
+                  Isi untuk mengunci kurs sendiri; padanan Rp mengikuti angka ini. Kosongkan untuk kurs otomatis saat invoice terbit.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label>Bahasa Dokumen</Label>

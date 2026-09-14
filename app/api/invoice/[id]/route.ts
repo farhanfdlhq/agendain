@@ -4,7 +4,7 @@ import { InvoiceSchema, getClientIp, serverError } from "@/lib/security";
 import { requirePermission } from "@/lib/rbac";
 import { logAudit } from "@/lib/audit";
 import { hitungInvoice, type InvoiceItem } from "@/lib/invoice";
-import { bekukanKurs } from "@/lib/currency";
+import { bekukanKurs, hitungPadanan } from "@/lib/currency";
 
 // Next 16: `params` adalah Promise dan WAJIB di-await.
 type Ctx = { params: Promise<{ id: string }> };
@@ -65,11 +65,17 @@ export async function PUT(req: Request, ctx: Ctx) {
     const status = d.status ?? lama.status;
     const mataUang = d.mataUang ?? lama.mataUang;
 
-    // Kurs dibekukan SEKALI, saat invoice pertama kali meninggalkan status
-    // draft. Setelah itu tidak pernah disegarkan lagi walau invoice disunting.
+    // Kurs: bila admin mengisi kurs manual, pakai itu dan hitung ulang padanan
+    // dari total terkini (jadi total padanan selalu mengikuti isian). Bila
+    // kosong, pertahankan perilaku lama: kurs dibekukan SEKALI saat invoice
+    // pertama meninggalkan draft, lalu tidak disegarkan lagi.
+    const kursManual = d.kurs && Number(d.kurs) > 0 ? Number(d.kurs) : null;
     let kurs = lama.kurs as unknown as number | null;
     let totalPadanan = lama.totalPadanan as unknown as number | null;
-    if (status !== "draft" && !kurs) {
+    if (kursManual) {
+      kurs = kursManual;
+      totalPadanan = hitungPadanan(mataUang, total, kursManual);
+    } else if (status !== "draft" && !kurs) {
       const beku = await bekukanKurs(mataUang, total);
       kurs = beku.kurs;
       totalPadanan = beku.totalPadanan;

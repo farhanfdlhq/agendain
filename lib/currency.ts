@@ -73,6 +73,21 @@ let lastFetchTime = 0;
  * kurs sengaja tidak melempar: penerbitan invoice tidak boleh gagal hanya
  * karena layanan kurs sedang tak bisa dihubungi.
  */
+/**
+ * Padanan (nilai tukar) dari kurs yang SUDAH diketahui — dipakai saat admin
+ * mengisi kurs 1 EUR secara manual di invoice. EUR → dikali kurs (jadi rupiah),
+ * IDR → dibagi kurs (jadi euro). Kembalikan null bila kurs tak valid.
+ */
+export const hitungPadanan = (
+  mataUang: string,
+  total: number,
+  kurs: number,
+): number | null => {
+  if (!kurs || kurs <= 0 || !Number.isFinite(total)) return null;
+  const padanan = mataUang === "EUR" ? total * kurs : total / kurs;
+  return Math.round(padanan * 100) / 100;
+};
+
 export const bekukanKurs = async (
   mataUang: string,
   total: number,

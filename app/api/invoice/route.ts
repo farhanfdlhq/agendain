@@ -5,7 +5,7 @@ import { InvoiceSchema, getClientIp, serverError } from "@/lib/security";
 import { requirePermission } from "@/lib/rbac";
 import { logAudit } from "@/lib/audit";
 import { formatNomorInvoice, hitungInvoice, type InvoiceItem } from "@/lib/invoice";
-import { bekukanKurs } from "@/lib/currency";
+import { bekukanKurs, hitungPadanan } from "@/lib/currency";
 
 /** Token tautan publik. Panjang & acak supaya invoice orang lain tak bisa ditebak. */
 const buatToken = () => randomBytes(24).toString("base64url");
@@ -79,9 +79,17 @@ export async function POST(req: Request) {
     );
 
     const status = d.status ?? "draft";
-    const { kurs, totalPadanan } = status === "draft"
-      ? { kurs: null, totalPadanan: null }
-      : await bekukanKurs(d.mataUang ?? "IDR", total);
+    // Kurs: pakai isian manual admin bila ada (padanan langsung mengikuti,
+    // bahkan saat draft). Bila kosong & bukan draft, bekukan kurs otomatis.
+    const kursManual = d.kurs && Number(d.kurs) > 0 ? Number(d.kurs) : null;
+    let kurs: number | null = null;
+    let totalPadanan: number | null = null;
+    if (kursManual) {
+      kurs = kursManual;
+      totalPadanan = hitungPadanan(d.mataUang ?? "IDR", total, kursManual);
+    } else if (status !== "draft") {
+      ({ kurs, totalPadanan } = await bekukanKurs(d.mataUang ?? "IDR", total));
+    }
 
     const prefix = await prefixNomor();
     const dasar = {
