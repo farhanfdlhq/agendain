@@ -31,7 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
-    'DOKUMEN': true, // mulai terbuka (dokumen sering dipakai), tapi kini bisa ditutup
+    'DOKUMEN': false, // selalu mulai tertutup; buka manual bila perlu
     'BLOG': false,
     'PENGATURAN': false,
     'HALAMAN': false,

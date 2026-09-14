@@ -5,6 +5,7 @@ import { Globe, Link2, MessageCircle, Music2, Phone } from 'lucide-react'
 import InstagramIcon from '@/components/icons/mdi_instagram.svg'
 import YoutubeIcon from '@/components/icons/mdi_youtube.svg'
 import TwitterIcon from '@/components/icons/mdi_twitter.svg'
+import ThreadsIcon from '@/components/icons/threads.svg'
 import MailIcon from '@/components/icons/ic_baseline-email.svg'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { parseFooterSettings, safeHref, type FooterSocial } from '@/lib/footer-settings'
@@ -14,6 +15,7 @@ const SVG_ICONS: Record<string, any> = {
   instagram: InstagramIcon,
   youtube: YoutubeIcon,
   twitter: TwitterIcon,
+  threads: ThreadsIcon,
   email: MailIcon,
 }
 

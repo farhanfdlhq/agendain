@@ -12,6 +12,7 @@ export const FOOTER_SOCIAL_PLATFORMS = [
   { id: "instagram", label: "Instagram" },
   { id: "youtube", label: "YouTube" },
   { id: "twitter", label: "X / Twitter" },
+  { id: "threads", label: "Threads" },
   { id: "email", label: "Email" },
   { id: "facebook", label: "Facebook" },
   { id: "whatsapp", label: "WhatsApp" },
@@ -32,6 +33,7 @@ export const DEFAULT_FOOTER_SOCIALS: FooterSocial[] = [
   { platform: "instagram", label: "@agendain.id", url: "https://instagram.com/agendain.id" },
   { platform: "youtube", label: "Youtube", url: "https://youtube.com/@agendain" },
   { platform: "twitter", label: "Twitter", url: "https://twitter.com/agendain" },
+  { platform: "threads", label: "Threads", url: "https://www.threads.net/@agendain.id" },
   { platform: "email", label: "info@agendain.com", url: "mailto:info@agendain.com" },
 ];
 
