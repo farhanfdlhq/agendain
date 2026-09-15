@@ -2,6 +2,15 @@
   "name": "agendain-temp",
   "version": "0.1.0",
   "private": true,
+  "//browserslist": "Target browser modern agar Next tidak menyertakan polyfill/transpile 'legacy JavaScript' untuk peramban lawas (audit Lighthouse). Cakupan ini menutup >97% pengguna global per 2026.",
+  "browserslist": [
+    "chrome >= 90",
+    "edge >= 90",
+    "firefox >= 90",
+    "safari >= 15",
+    "ios_saf >= 15",
+    "not dead"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

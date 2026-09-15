@@ -6,9 +6,14 @@ const isDev = process.env.NODE_ENV !== "production";
 // Di production dihapus agar permukaan XSS lebih kecil. unsafe-inline pada
 // script tetap dipertahankan karena bootstrap inline Next.js membutuhkannya
 // (beralih ke nonce butuh refactor besar dan berisiko regresi).
+//
+// static.cloudflareinsights.com: beacon Web Analytics yang DISUNTIK otomatis
+// oleh Cloudflare di edge. Tanpa izin ini, script-nya diblokir CSP → memunculkan
+// error di console (menurunkan skor Lighthouse "Best Practices"). Beacon-nya
+// mengirim data ke cloudflareinsights.com (lihat connect-src).
 const scriptSrc = isDev
-  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-  : "script-src 'self' 'unsafe-inline'";
+  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com"
+  : "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com";
 
 const csp = [
   "default-src 'self'",
@@ -16,7 +21,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://images.unsplash.com https://res.cloudinary.com",
   "font-src 'self' data:",
-  "connect-src 'self'",
+  "connect-src 'self' https://cloudflareinsights.com",
   "frame-src 'self' https://www.youtube.com https://www.instagram.com",
   "object-src 'none'",
   "base-uri 'self'",

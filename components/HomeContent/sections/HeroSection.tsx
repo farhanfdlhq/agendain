@@ -42,19 +42,23 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
     hidden: {},
     visible: { transition: { staggerChildren: reduce ? 0 : 0.09, delayChildren: 0.15 } },
   }
+  // Hanya menganimasikan opacity + transform (y/scale) — keduanya di-composite
+  // GPU. `filter: blur()` sengaja DIHAPUS: ia tidak bisa di-composite sehingga
+  // Lighthouse menandainya "animasi tidak digabungkan" dan memperlambat LCP/SI
+  // di HP. Kesan sinematiknya tetap terjaga lewat rise + pop.
   const rise: Variants = reduce
     ? { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.5 } } }
     : {
-        hidden: { opacity: 0, y: 24, filter: 'blur(8px)' },
-        visible: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.75, ease: EASE } },
+        hidden: { opacity: 0, y: 24 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } },
       }
   // Kata emas: sama seperti rise tapi dengan spring "pop".
   const pop: Variants = reduce
     ? rise
     : {
-        hidden: { opacity: 0, y: 24, scale: 0.9, filter: 'blur(6px)' },
+        hidden: { opacity: 0, y: 24, scale: 0.9 },
         visible: {
-          opacity: 1, y: 0, scale: 1, filter: 'blur(0px)',
+          opacity: 1, y: 0, scale: 1,
           transition: { type: 'spring', stiffness: 200, damping: 15, mass: 0.7 },
         },
       }
@@ -94,7 +98,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
               // `pre-wrap`: pertahankan spasi di tepi tiap potongan (mis. " Aja!")
               // yang kalau tidak akan ditelan oleh `inline-block` sehingga kata
               // emas & kata sesudahnya menempel ("AgendainAja!"). Tetap boleh wrap.
-              style={{ display: 'inline-block', whiteSpace: 'pre-wrap', willChange: 'transform, filter, opacity' }}
+              style={{ display: 'inline-block', whiteSpace: 'pre-wrap', willChange: 'transform, opacity' }}
             >
               {p.text === ' ' ? ' ' : p.text}
             </motion.span>
