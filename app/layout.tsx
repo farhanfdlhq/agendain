@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
 import FrontLayout from "@/components/FrontLayout/FrontLayout";
 import {
   Montserrat,
@@ -105,9 +106,35 @@ export async function generateMetadata(): Promise<Metadata> {
   const rawFavicon = settingsObj.site_favicon || "/favicon.ico"
   const siteFavicon = rawFavicon.includes("?") ? rawFavicon : `${rawFavicon}?t=${Date.now()}`
   
+  const title = `${siteName} | Travel Agency Indonesia ke Eropa`
+  const description = `Paket perjalanan terbaik dari Indonesia ke Eropa bersama ${siteName}. Open trip & private trip Eropa dengan guide berpengalaman.`
+
   return {
-    title: `${siteName} | Travel Agency Indonesia ke Eropa`,
-    description: `Paket perjalanan terbaik dari Indonesia ke Eropa bersama ${siteName}.`,
+    // metadataBase membuat semua URL relatif (OG image, canonical) jadi absolut —
+    // wajib agar Google & media sosial menerima tautan penuh.
+    metadataBase: new URL(SITE_URL),
+    title,
+    description,
+    alternates: { canonical: "/" },
+    // Kode verifikasi Google Search Console: tempel token dari env
+    // GOOGLE_SITE_VERIFICATION (Search Console → verifikasi metode "HTML tag").
+    verification: process.env.GOOGLE_SITE_VERIFICATION
+      ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+      : undefined,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, "max-image-preview": "large" },
+    },
+    openGraph: {
+      type: "website",
+      siteName,
+      title,
+      description,
+      url: SITE_URL,
+      locale: "id_ID",
+    },
+    twitter: { card: "summary_large_image", title, description },
     icons: {
       icon: siteFavicon,
       shortcut: siteFavicon,
