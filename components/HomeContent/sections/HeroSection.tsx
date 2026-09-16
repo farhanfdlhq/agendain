@@ -42,23 +42,27 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
     hidden: {},
     visible: { transition: { staggerChildren: reduce ? 0 : 0.09, delayChildren: 0.15 } },
   }
-  // Hanya menganimasikan opacity + transform (y/scale) — keduanya di-composite
-  // GPU. `filter: blur()` sengaja DIHAPUS: ia tidak bisa di-composite sehingga
-  // Lighthouse menandainya "animasi tidak digabungkan" dan memperlambat LCP/SI
-  // di HP. Kesan sinematiknya tetap terjaga lewat rise + pop.
+  // Hanya menganimasikan transform (y/scale) — di-composite GPU & TIDAK menahan
+  // cat pertama. `opacity` sengaja TETAP 1: judul & subtitle adalah konten
+  // above-the-fold (elemen LCP = <p heroSubtitle>). Kalau di-fade dari opacity:0,
+  // Framer merender varian `hidden` ke HTML SSR sehingga teks baru terlihat
+  // SETELAH hydration — di CPU HP yang lambat itu melonjakkan LCP ke ~4,3 dtk
+  // (di desktop hydration instan, jadi LCP tetap ~1 dtk; kode sama, CPU beda).
+  // Kesan sinematik tetap terjaga lewat rise (slide) + pop (spring). `filter:
+  // blur()` juga tetap DIHAPUS karena tak bisa di-composite.
   const rise: Variants = reduce
-    ? { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { duration: 0.5 } } }
+    ? { hidden: {}, visible: {} }
     : {
-        hidden: { opacity: 0, y: 24 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.75, ease: EASE } },
+        hidden: { y: 24 },
+        visible: { y: 0, transition: { duration: 0.75, ease: EASE } },
       }
   // Kata emas: sama seperti rise tapi dengan spring "pop".
   const pop: Variants = reduce
     ? rise
     : {
-        hidden: { opacity: 0, y: 24, scale: 0.9 },
+        hidden: { y: 24, scale: 0.9 },
         visible: {
-          opacity: 1, y: 0, scale: 1,
+          y: 0, scale: 1,
           transition: { type: 'spring', stiffness: 200, damping: 15, mass: 0.7 },
         },
       }

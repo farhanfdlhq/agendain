@@ -18,7 +18,7 @@ export default function LanguageToggle() {
           <motion.div layoutId="activeLangBg" className={styles.activeBg} transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
         )}
         <span className={styles.contentWrapper}>
-          <img src="/flags/id.png" alt="ID" width={20} height={15} className={styles.flag} /> ID
+          <img src="/flags/id.png" alt="" aria-hidden="true" width={20} height={15} className={styles.flag} /> ID
         </span>
       </button>
       <button
@@ -30,7 +30,7 @@ export default function LanguageToggle() {
           <motion.div layoutId="activeLangBg" className={styles.activeBg} transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
         )}
         <span className={styles.contentWrapper}>
-          <img src="/flags/en.png" alt="EN" width={20} height={15} className={styles.flag} /> EN
+          <img src="/flags/en.png" alt="" aria-hidden="true" width={20} height={15} className={styles.flag} /> EN
         </span>
       </button>
       </div>
