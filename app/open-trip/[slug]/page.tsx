@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/og";
+import { JsonLd, productLd } from "@/lib/jsonld";
 import BookingForm from "@/components/BookingForm/BookingForm";
 import GalleryLightbox from "@/components/GalleryLightbox/GalleryLightbox";
 import {
@@ -44,13 +45,20 @@ export async function generateMetadata(props: {
   const desc = (pkg.deskripsi || "").replace(/\s+/g, " ").trim().slice(0, 155);
 
   // Foto pertama paket → og:image (foto berupa Json: array string url atau objek {url}).
+  // Foto paket bisa berupa array string atau array objek {full,medium,thumb}
+  // (lihat parsing di komponen). Ambil resolusi terbaik yang ada.
   const fotos = Array.isArray(pkg.foto) ? (pkg.foto as unknown[]) : [];
   const first = fotos[0];
   const fotoUrl =
     typeof first === "string"
       ? first
-      : first && typeof first === "object" && "url" in first
-        ? String((first as { url: unknown }).url)
+      : first && typeof first === "object"
+        ? String(
+            (first as any).full ||
+              (first as any).medium ||
+              (first as any).thumb ||
+              "",
+          ) || undefined
         : undefined;
 
   return pageMeta({
@@ -243,6 +251,15 @@ export default async function PaketDetail(props: {
 
   return (
     <div className={styles.page}>
+      <JsonLd
+        data={productLd({
+          name: nama,
+          description: deskripsi,
+          image: mainImage,
+          path: `/open-trip/${slug}`,
+          price: hargaIDRNum,
+        })}
+      />
       <div className={styles.container}>
         {/* Breadcrumb */}
         <div className={styles.breadcrumb}>

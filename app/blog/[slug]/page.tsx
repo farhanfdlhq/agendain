@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import BlogDetailContent from './BlogDetailContent'
 import { pageMeta } from '@/lib/og'
+import { JsonLd, blogPostingLd } from '@/lib/jsonld'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -33,5 +34,22 @@ export default async function BlogDetailPage({ params }: Props) {
     include: { category: true }
   })
 
-  return <BlogDetailContent post={post} related={related} />
+  return (
+    <>
+      <JsonLd
+        data={blogPostingLd({
+          title: post.title,
+          description: post.metaDescription || post.excerpt,
+          image: post.ogImage || post.thumbnail,
+          path: `/blog/${slug}`,
+          datePublished: post.publishedAt,
+          dateModified: post.updatedAt,
+          authorName: post.author,
+          publisherName: 'Agendain',
+          publisherLogo: '/agendain.jpeg',
+        })}
+      />
+      <BlogDetailContent post={post} related={related} />
+    </>
+  )
 }

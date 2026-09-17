@@ -12,11 +12,18 @@ const DEFAULT_OG = `${SITE_URL}/og-image.jpg`;
  * andal dengan JPG/PNG, sedangkan foto situs mayoritas WebP. Nilai kosong atau
  * URL eksternal jatuh ke kartu brand default (anti-SSRF: hanya path lokal).
  */
-export function ogImage(src?: string | null): string {
+export function ogImage(src?: string | null, card?: { title?: string; subtitle?: string }): string {
   if (typeof src !== "string") return DEFAULT_OG;
   const s = src.trim();
   if (!s || !s.startsWith("/") || s.startsWith("//")) return DEFAULT_OG;
-  return `${SITE_URL}/og?src=${encodeURIComponent(s)}`;
+  const q = new URLSearchParams({ src: s });
+  // Teks kartu (judul + subjudul) di-overlay di atas foto — meniru hero halaman.
+  // Tanpa `card`, endpoint mengembalikan foto ter-crop apa adanya.
+  if (card?.title?.trim()) {
+    q.set("title", card.title.trim());
+    if (card.subtitle?.trim()) q.set("subtitle", card.subtitle.trim());
+  }
+  return `${SITE_URL}/og?${q.toString()}`;
 }
 
 /**
@@ -33,8 +40,10 @@ export function pageMeta(opts: {
   description?: string;
   path: string;
   image?: string | null;
+  /** Teks yang di-overlay di atas foto og:image (meniru hero halaman). */
+  card?: { title?: string; subtitle?: string };
 }): Metadata {
-  const img = ogImage(opts.image);
+  const img = ogImage(opts.image, opts.card);
   return {
     title: opts.title,
     description: opts.description,

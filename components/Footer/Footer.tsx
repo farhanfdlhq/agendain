@@ -9,6 +9,7 @@ import ThreadsIcon from '@/components/icons/threads.svg'
 import MailIcon from '@/components/icons/ic_baseline-email.svg'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { parseFooterSettings, safeHref, type FooterSocial } from '@/lib/footer-settings'
+import { sanitizeHtml } from '@/lib/sanitize'
 import styles from './Footer.module.css'
 
 const SVG_ICONS: Record<string, any> = {
@@ -78,7 +79,11 @@ export default function Footer({ settings }: { settings?: any }) {
             {/* Tagline boleh memuat <strong>. Sudah dibersihkan saat disimpan
                 di POST /api/settings/footer, jadi DOMPurify tidak perlu ikut
                 ke bundle client yang dipakai semua halaman. */}
-            <p className={styles.topBandTagline} dangerouslySetInnerHTML={{ __html: tagline }} />
+            {/* Defense-in-depth: nilai sudah disanitasi saat simpan (POST
+                /api/settings/footer), tapi sanitasi ringan saat render menutup
+                risiko bila kelak ada jalur tulis lain. sanitizeHtml MURNI (regex,
+                tanpa DOMPurify) → tak menambah beban bundle client. */}
+            <p className={styles.topBandTagline} dangerouslySetInnerHTML={{ __html: sanitizeHtml(tagline) }} />
           </div>
         </div>
       </div>
