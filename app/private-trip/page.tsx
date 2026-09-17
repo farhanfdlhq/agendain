@@ -9,13 +9,16 @@ import { parseGoldText } from "@/lib/utils/textFormatting";
 import { getI18nSetting, getServerLocale } from "@/lib/i18n/server";
 import { generateWhatsAppLink } from "@/lib/utils";
 import { waPrivateTripGeneral } from "@/lib/whatsapp-messages";
+import { pageMeta } from "@/lib/og";
 import styles from "./page.module.css";
 
-export const metadata = {
+export const metadata = pageMeta({
   title: "Private Trip Eropa Eksklusif | Agendain",
   description:
     "Rencanakan perjalanan Private Trip Eropa Anda secara khusus dengan Agendain. Itinerary fleksibel, guide berpengalaman, dan privasi penuh.",
-};
+  path: "/private-trip",
+  image: "/private_trip_hero.webp",
+});
 
 export const revalidate = 60;
 

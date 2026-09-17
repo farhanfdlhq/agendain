@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 export const metadata: Metadata = {
   title: 'Privacy Policy | Agendain',
   description: 'Kebijakan privasi dan perlindungan data pelanggan Agendain.',
+  alternates: { canonical: '/privacy-policy' },
 }
 
 export const revalidate = 60;

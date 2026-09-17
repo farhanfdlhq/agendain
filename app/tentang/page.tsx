@@ -6,6 +6,7 @@ export const revalidate = 60
 export const metadata = {
   title: 'Tentang Kami | Agendain',
   description: 'Mengenal lebih dekat Agendain, teman perjalanan Eropa Anda.',
+  alternates: { canonical: '/tentang' },
 }
 
 export default async function TentangPage() {

@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import BlogDetailContent from './BlogDetailContent'
+import { pageMeta } from '@/lib/og'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -10,15 +11,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await prisma.blogPost.findUnique({ where: { slug }, include: { category: true } })
   if (!post || post.status !== 'published') return { title: 'Artikel Tidak Ditemukan' }
 
-  return {
+  // og:image = thumbnail/OG artikel itu sendiri (dilewatkan /og → JPG 1200x630).
+  return pageMeta({
     title: post.metaTitle || `${post.title} | Agendain Blog`,
     description: post.metaDescription || post.excerpt,
-    openGraph: {
-      title: post.metaTitle || post.title,
-      description: post.metaDescription || post.excerpt,
-      images: [{ url: post.ogImage || post.thumbnail }],
-    }
-  }
+    path: `/blog/${slug}`,
+    image: post.ogImage || post.thumbnail,
+  })
 }
 
 export default async function BlogDetailPage({ params }: Props) {

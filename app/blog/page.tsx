@@ -6,6 +6,7 @@ export const revalidate = 60
 export const metadata = {
   title: 'Blog & Travel Tips | Agendain',
   description: 'Temukan inspirasi liburan impianmu, tips perjalanan praktis, dan cerita seru dari Kawan Agendain.',
+  alternates: { canonical: '/blog' },
 }
 
 export default async function BlogPage() {

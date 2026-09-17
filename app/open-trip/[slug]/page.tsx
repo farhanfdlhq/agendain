@@ -3,6 +3,8 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { pageMeta } from "@/lib/og";
 import BookingForm from "@/components/BookingForm/BookingForm";
 import GalleryLightbox from "@/components/GalleryLightbox/GalleryLightbox";
 import {
@@ -25,6 +27,39 @@ import { pickLocalized } from "@/lib/i18n/localize";
 import { safeHref } from "@/lib/footer-settings";
 
 export const revalidate = 3600; // Cache for 1 hour
+
+// Metadata unik per paket: tanpa ini halaman detail mewarisi judul generik
+// beranda + canonical "/" → Google menganggapnya duplikat/berkualitas rendah
+// dan tak mengindeksnya. Judul & deskripsi diambil dari data paket, canonical
+// menunjuk diri sendiri.
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await props.params;
+  const pkg = await prisma.openTrip.findUnique({
+    where: { slug },
+    include: { destinasi: true },
+  });
+  if (!pkg) return { title: "Paket Tidak Ditemukan | Agendain" };
+  const desc = (pkg.deskripsi || "").replace(/\s+/g, " ").trim().slice(0, 155);
+
+  // Foto pertama paket → og:image (foto berupa Json: array string url atau objek {url}).
+  const fotos = Array.isArray(pkg.foto) ? (pkg.foto as unknown[]) : [];
+  const first = fotos[0];
+  const fotoUrl =
+    typeof first === "string"
+      ? first
+      : first && typeof first === "object" && "url" in first
+        ? String((first as { url: unknown }).url)
+        : undefined;
+
+  return pageMeta({
+    title: `${pkg.nama} — Open Trip ${pkg.destinasi?.nama ?? "Eropa"} | Agendain`,
+    description: desc || `Open trip ${pkg.nama} bersama Agendain.`,
+    path: `/open-trip/${slug}`,
+    image: fotoUrl,
+  });
+}
 
 export default async function PaketDetail(props: {
   params: Promise<{ slug: string }>;

@@ -1,6 +1,19 @@
 import styles from './page.module.css'
 import { prisma } from '@/lib/prisma'
 import OpenTripContent from './OpenTripContent'
+import { pageMeta } from '@/lib/og'
+
+// Canonical menunjuk /open-trip TANPA query param: halaman ini memakai filter
+// via searchParams (?destinasi=…&durasi=…) yang menghasilkan banyak URL berisi
+// konten sama → sumber "Duplikat" di Search Console. Self-canonical ke versi
+// bersih mengonsolidasikannya jadi satu. og:image = foto hero open trip.
+export const metadata = pageMeta({
+  title: 'Open Trip Eropa | Paket Wisata Grup Hemat — Agendain',
+  description:
+    'Jelajahi Eropa bareng open trip Agendain: jadwal pasti, harga hemat, guide berpengalaman. Pilih destinasi & durasi favoritmu.',
+  path: '/open-trip',
+  image: '/open_trip_hero.webp',
+})
 
 export default async function PaketPage({
   searchParams,

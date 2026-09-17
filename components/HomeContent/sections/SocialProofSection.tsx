@@ -82,8 +82,8 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
                   </AnimatePresence>
                 </div>
               </div>
-              <button className={styles.sliderBtnLeft} onClick={() => setActiveTestimonial(prev => prev === 0 ? testiItems.length - 1 : prev - 1)}><ChevronLeft size={24} color="#ffffff" /></button>
-              <button className={styles.sliderBtnRight} onClick={() => setActiveTestimonial(prev => prev === testiItems.length - 1 ? 0 : prev + 1)}><ChevronRight size={24} color="#ffffff" /></button>
+              <button aria-label="Testimoni sebelumnya" className={styles.sliderBtnLeft} onClick={() => setActiveTestimonial(prev => prev === 0 ? testiItems.length - 1 : prev - 1)}><ChevronLeft size={24} color="#ffffff" /></button>
+              <button aria-label="Testimoni berikutnya" className={styles.sliderBtnRight} onClick={() => setActiveTestimonial(prev => prev === testiItems.length - 1 ? 0 : prev + 1)}><ChevronRight size={24} color="#ffffff" /></button>
             </div>
           </div>
         </FadeIn>

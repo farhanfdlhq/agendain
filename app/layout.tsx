@@ -115,7 +115,11 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(SITE_URL),
     title,
     description,
-    alternates: { canonical: "/" },
+    // CATATAN: canonical TIDAK diset di sini. Metadata Next diwarisi ke semua
+    // halaman anak, jadi `canonical: "/"` di root dulu bocor ke SETIAP halaman —
+    // /open-trip, /blog, dst semua mengaku kanonisnya beranda → Google menandai
+    // "Duplikat, tanpa versi kanonis". Tiap halaman kini menyetel canonical-nya
+    // sendiri (self-referencing) via `alternates.canonical`.
     // Kode verifikasi Google Search Console: tempel token dari env
     // GOOGLE_SITE_VERIFICATION (Search Console → verifikasi metode "HTML tag").
     verification: process.env.GOOGLE_SITE_VERIFICATION
@@ -133,8 +137,24 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       url: SITE_URL,
       locale: "id_ID",
+      // Kartu pratinjau saat link dibagikan (WhatsApp, FB, LinkedIn, dll).
+      // WAJIB agar muncul thumbnail besar. File statis 1200x630 JPG di /public
+      // (JPG dipilih karena scraper WA/FB paling andal dgn JPG/PNG, bukan WebP).
+      images: [
+        {
+          url: `${SITE_URL}/og-image.jpg`,
+          width: 1200,
+          height: 630,
+          alt: `${siteName} — Open Trip & Private Trip Eropa`,
+        },
+      ],
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [`${SITE_URL}/og-image.jpg`],
+    },
     icons: {
       icon: siteFavicon,
       shortcut: siteFavicon,

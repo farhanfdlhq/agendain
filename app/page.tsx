@@ -1,7 +1,26 @@
 import HomeContent from '@/components/HomeContent/HomeContent'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
+import { pageMeta } from '@/lib/og'
 
 export const revalidate = 60;
+
+// og:image beranda = foto hero beranda (dari CMS `home_settings.heroBgImage`),
+// jadi pratinjau share menampilkan hero yang sedang tayang. Canonical self-ref.
+export async function generateMetadata(): Promise<Metadata> {
+  let hero: string | undefined;
+  try {
+    const row = await prisma.setting.findUnique({ where: { key: "home_settings" } });
+    if (row) hero = JSON.parse(row.value)?.heroBgImage;
+  } catch {}
+  return pageMeta({
+    title: "Agendain | Travel Agency Indonesia ke Eropa",
+    description:
+      "Paket perjalanan terbaik dari Indonesia ke Eropa bersama Agendain. Open trip & private trip Eropa dengan guide berpengalaman.",
+    path: "/",
+    image: hero || "/hero-coastal.webp",
+  });
+}
 
 // Dummy data fallback for development if DB is empty
 const DUMMY_PACKAGES = [
