@@ -100,6 +100,14 @@ async function getSettings(): Promise<any> {
   }
 }
 
+// theme-color (toolbar browser mobile) + viewport. Nilai gold brand — bisa
+// disesuaikan; ini menu baru, tidak mengubah warna komponen yang sudah ada.
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#F5A623",
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const settingsObj = await getSettings()
   const siteName = settingsObj.site_name || "Agendain"
@@ -153,7 +161,11 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: [`${SITE_URL}/og-image.jpg`],
+      site: "@agendain",
+      creator: "@agendain",
+      images: [
+        { url: `${SITE_URL}/og-image.jpg`, alt: `${siteName} — Open Trip & Private Trip Eropa` },
+      ],
     },
     icons: {
       icon: siteFavicon,

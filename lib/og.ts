@@ -55,13 +55,15 @@ export function pageMeta(opts: {
       title: opts.title,
       description: opts.description,
       locale: "id_ID",
-      images: [{ url: img, width: 1200, height: 630 }],
+      images: [{ url: img, width: 1200, height: 630, alt: opts.title }],
     },
     twitter: {
       card: "summary_large_image",
       title: opts.title,
       description: opts.description,
-      images: [img],
+      site: "@agendain",
+      creator: "@agendain",
+      images: [{ url: img, alt: opts.title }],
     },
   };
 }
