@@ -8,6 +8,7 @@
 export const FONT_CHOICES = [
   "Montserrat",
   "Inter",
+  "Inter Display",
   "Outfit",
   "Poppins",
   "Playfair Display",
@@ -16,6 +17,7 @@ export const FONT_CHOICES = [
   "DM Sans",
   "Lora",
   "Cabin",
+  "Gasoek One",
 ] as const;
 
 export type FontChoice = (typeof FONT_CHOICES)[number];
@@ -30,6 +32,7 @@ export type FontChoice = (typeof FONT_CHOICES)[number];
 export const FONT_CSS_VARS = {
   Montserrat: "--font-montserrat",
   Inter: "--font-inter",
+  "Inter Display": "--font-inter-display",
   Outfit: "--font-outfit",
   Poppins: "--font-poppins",
   "Playfair Display": "--font-playfair",
@@ -38,6 +41,7 @@ export const FONT_CSS_VARS = {
   "DM Sans": "--font-dm-sans",
   Lora: "--font-lora",
   Cabin: "--font-cabin",
+  "Gasoek One": "--font-gasoek-one",
 } as const satisfies Record<FontChoice, `--${string}`>;
 
 export const DEFAULT_HEADING_FONT: FontChoice = "Plus Jakarta Sans";

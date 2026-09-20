@@ -179,20 +179,39 @@
   margin-bottom: clamp(2.25rem, 5vw, 4rem);
 }
 
+/* Eyebrow: pil kecil (bukan lagi heading 900 yang menyaingi judul di bawahnya,
+   dan tak lagi memakai teks FAQ "Masih Ragu?" yang dobel). */
 .whyTitleMain {
+  display: inline-block;
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 4vw, 2.75rem);
-  font-weight: 900;
+  font-size: clamp(0.75rem, 1.6vw, 0.8125rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* Biru brand untuk teks di latar putih (kuning #FFC704 flicker: kontras hanya
+     ~1.4:1). Kuning kini khusus FILL (badge). */
   color: var(--color-primary);
-  margin-bottom: 0.25rem;
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  margin-bottom: 1rem;
 }
 
 .whyTitleSub {
   font-family: var(--font-display);
-  font-size: clamp(1.25rem, 3vw, 2rem);
-  font-weight: 700;
+  font-size: clamp(1.5rem, 3.4vw, 2.4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+  text-wrap: balance;
+}
+/* Dasar heading biru; kata ber-highlight ("Agendain") tetap KUNING sesuai
+   permintaan klien. (Kuning di putih kontrasnya rendah = getaran halus, tapi ini
+   keputusan brand — dipakai HANYA pada 1 kata sebagai aksen, bukan blok teks.) */
+/* "Agendain" = teks kuning (keputusan klien). Dasar heading tetap biru. */
+.whyTitleSub .textYellow,
+.whyTitleSub .heroTitleGold {
   color: var(--color-dominant);
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
 /* Alternating cards */
@@ -287,6 +306,209 @@
   font-size: clamp(1rem, 2.2vw, 1.125rem);
   line-height: 1.7;
   color: var(--color-body);
+}
+
+/* Badge angka di sisi TEKS (menggantikan angka raksasa di foto): lingkaran gold
+   + garis aksen yang meredup — menandai urutan alasan tanpa terasa "scaffold". */
+.whyCardBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.whyCardBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--color-dominant);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.125rem;
+  line-height: 1;
+  box-shadow: 0 10px 22px -8px color-mix(in srgb, var(--color-dominant) 65%, transparent);
+}
+
+.whyCardBadgeLine {
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-dominant) 45%, transparent), transparent);
+}
+
+/* ---------- BENTO "Kenapa Agendain" ---------- */
+.whyBento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(200px, auto);
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+.whyTile {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  min-height: 220px;
+  display: flex;
+  align-items: flex-end;
+  isolation: isolate;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+}
+
+.whyTile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 50px -18px rgba(6, 20, 33, 0.35);
+}
+
+/* Tile besar = 2×2, lebar = 2×1, kecil = 1×1 → bento asimetris. */
+.whyTileLarge { grid-column: span 2; grid-row: span 2; min-height: 460px; }
+.whyTileWide  { grid-column: span 2; }
+.whyTileSmall { grid-column: span 1; }
+
+.whyTileImg {
+  object-fit: cover;
+  z-index: -2;
+  transition: transform 0.6s ease;
+}
+.whyTile:hover .whyTileImg { transform: scale(1.05); }
+
+.whyTileScrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top, rgba(6, 20, 33, 0.92) 0%, rgba(6, 20, 33, 0.55) 42%, rgba(6, 20, 33, 0.12) 100%);
+}
+
+.whyTileContent {
+  padding: clamp(1.1rem, 2.2vw, 1.9rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  color: #ffffff;
+}
+
+/* Badge angka: kuning FILL + teks navy (pemakaian kuning yang benar). */
+.whyTileBadge {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.5rem;
+  border-radius: 999px;
+  background: var(--color-dominant);
+  color: var(--color-primary);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.whyTileTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 2.2vw, 1.7rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  text-wrap: balance;
+}
+.whyTileLarge .whyTileTitle { font-size: clamp(1.6rem, 3vw, 2.25rem); }
+
+.whyTileDesc {
+  font-size: clamp(0.9rem, 1.6vw, 1.02rem);
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 48ch;
+}
+
+/* ---------- Opsi B: Sticky title + daftar alasan (editorial, text-forward) ---------- */
+.whyLayout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) 1.3fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.whyIntro {
+  position: sticky;
+  top: 6rem;
+}
+.whyIntro .whyTitleSub { margin-top: 0.75rem; }
+
+.whyList {
+  display: flex;
+  flex-direction: column;
+}
+
+.whyListItem {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: start;
+  padding: clamp(1.4rem, 3vw, 2.1rem) 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+.whyListItem:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.whyListNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  background: var(--color-dominant);
+  color: var(--color-primary);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.whyListTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-primary);
+}
+.whyListDesc {
+  margin-top: 0.55rem;
+  font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+  line-height: 1.65;
+  color: var(--color-body);
+  max-width: 60ch;
+}
+
+@media (max-width: 900px) {
+  .whyLayout {
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  .whyIntro { position: static; top: auto; }
+}
+
+@media (max-width: 900px) {
+  .whyBento { grid-template-columns: repeat(2, 1fr); }
+  .whyTileLarge { grid-column: span 2; grid-row: span 1; min-height: 300px; }
+  .whyTileWide  { grid-column: span 2; }
+  .whyTileSmall { grid-column: span 1; }
+}
+
+@media (max-width: 560px) {
+  .whyBento { grid-template-columns: 1fr; }
+  .whyTileLarge,
+  .whyTileWide,
+  .whyTileSmall { grid-column: span 1; grid-row: span 1; min-height: 240px; }
 }
 
 

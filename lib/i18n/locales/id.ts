@@ -147,6 +147,7 @@ const id: Record<string, string> = {
     "Dari tiket, hotel, sampai itinerary, semua udah kami siapkan. Kamu tinggal ajak teman dan siap berangkat.",
   "home.hero.btnWa": "Hubungi Kami Gratis!",
   "home.hero.btnPack": "Agendain Sekarang",
+  "home.why.eyebrow": "Bikin Wacana Jadi Nyata",
   "home.whyTitle": "Kenapa Agendain Travel Jadi Solusi Wacana Kamu",
   "home.why1.title": "All-in-One!",
   "home.why1.desc":

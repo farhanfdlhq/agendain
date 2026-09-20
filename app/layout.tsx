@@ -12,7 +12,9 @@ import {
   DM_Sans,
   Lora,
   Cabin,
+  Gasoek_One,
 } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import {
   DEFAULT_BODY_FONT,
@@ -34,6 +36,20 @@ import {
 // blok `satisfies` di bawah yang menjaga keduanya tidak melenceng.
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-montserrat", display: 'swap' });
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: 'swap', preload: false });
+// Inter Display: cut optik "display" resmi dari Inter (rsms.me) untuk ukuran
+// besar/judul — persis seperti extendi.it. Di-self-host (bukan Google Fonts,
+// yang tak memisahkan varian display) via next/font/local.
+const interDisplay = localFont({
+  src: [
+    { path: "../assets/inter-display/InterDisplay-Regular.woff2", weight: "400", style: "normal" },
+    { path: "../assets/inter-display/InterDisplay-Medium.woff2", weight: "500", style: "normal" },
+    { path: "../assets/inter-display/InterDisplay-SemiBold.woff2", weight: "600", style: "normal" },
+    { path: "../assets/inter-display/InterDisplay-Bold.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-inter-display",
+  display: 'swap',
+  preload: false,
+});
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: 'swap', preload: false });
 // Poppins satu-satunya pilihan yang bukan variable font, jadi bobotnya harus
 // disebut eksplisit. Rentangnya menutup 800 yang dipakai .heroTitle.
@@ -46,11 +62,15 @@ const lora = Lora({ subsets: ["latin"], variable: "--font-lora", display: 'swap'
 // Cabin: humanist sans (garis keturunan Gill Sans) — substitusi "Humanist 521"
 // dari brand guide, karena Humanist 521 bukan Google Font.
 const cabin = Cabin({ subsets: ["latin"], variable: "--font-cabin", display: 'swap', preload: false });
+// Gasoek One: display tebal (poster) — hanya weight 400, cocok untuk JUDUL,
+// bukan paragraf. Inspirasi dari extendi.it.
+const gasoekOne = Gasoek_One({ subsets: ["latin"], weight: ["400"], variable: "--font-gasoek-one", display: 'swap', preload: false });
 
 // Penjaga tipe: gagal compile bila nama var di atas dan di lib/fonts.ts beda.
 const _FONT_VAR_NAMES = {
   Montserrat: "--font-montserrat",
   Inter: "--font-inter",
+  "Inter Display": "--font-inter-display",
   Outfit: "--font-outfit",
   Poppins: "--font-poppins",
   "Playfair Display": "--font-playfair",
@@ -59,12 +79,14 @@ const _FONT_VAR_NAMES = {
   "DM Sans": "--font-dm-sans",
   Lora: "--font-lora",
   Cabin: "--font-cabin",
+  "Gasoek One": "--font-gasoek-one",
 } as const satisfies typeof FONT_CSS_VARS;
 void _FONT_VAR_NAMES;
 
 const FONT_CLASSES: Record<FontChoice, string> = {
   "Montserrat": montserrat.variable,
   "Inter": inter.variable,
+  "Inter Display": interDisplay.variable,
   "Outfit": outfit.variable,
   "Poppins": poppins.variable,
   "Playfair Display": playfair.variable,
@@ -73,6 +95,7 @@ const FONT_CLASSES: Record<FontChoice, string> = {
   "DM Sans": dmSans.variable,
   "Lora": lora.variable,
   "Cabin": cabin.variable,
+  "Gasoek One": gasoekOne.variable,
 };
 
 import { prisma } from "@/lib/prisma"

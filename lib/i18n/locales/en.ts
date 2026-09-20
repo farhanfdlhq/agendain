@@ -123,6 +123,7 @@ const en: Record<string, string> = {
   'home.hero.desc': 'Tickets, hotels, itineraries, we\'ve got it all covered! Just grab your friends and pack your bags!',
   'home.hero.btnWa': 'Contact Us for Free!',
   'home.hero.btnPack': 'Book Now',
+  'home.why.eyebrow': 'Turn Plans Into Trips',
   'home.whyTitle': 'Why Agendain Travel is Your Best Solution',
   'home.why1.title': 'All-in-One!',
   'home.why1.desc': 'Skip the hassle. With Agendain, your flights, hotels, and daily itineraries are all sorted. Just pack your bags, grab your friends, and you\'re good to go!',

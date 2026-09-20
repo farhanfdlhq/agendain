@@ -43,36 +43,38 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.whySectionHeader}>
-            <h2 className={styles.whyTitleMain} style={gs('whyTitleMainWeight') ? { fontWeight: Number(gs('whyTitleMainWeight')) } : undefined}>{gs('whyTitleMain', 'home.faq.title')}</h2>
-            <h3 className={styles.whyTitleSub} style={gs('whyTitleSubWeight') ? { fontWeight: Number(gs('whyTitleSubWeight')) } : undefined}>{renderHighlightedTitle(gs('whyTitleSub', 'home.whyTitle'))}</h3>
+            <span className={styles.whyTitleMain} style={gs('whyTitleMainWeight') ? { fontWeight: Number(gs('whyTitleMainWeight')) } : undefined}>{gs('whyTitleMain', 'home.why.eyebrow')}</span>
+            <h2 className={styles.whyTitleSub} style={gs('whyTitleSubWeight') ? { fontWeight: Number(gs('whyTitleSubWeight')) } : undefined}>{renderHighlightedTitle(gs('whyTitleSub', 'home.whyTitle'))}</h2>
           </div>
         </FadeIn>
-        {whyItems.map((card: any, i: number) => {
-          const isReversed = i % 2 !== 0
-          // Arah reveal mengikuti sisi gambar kartu (selang-seling), bukan
-          // fade-up seragam: kartu normal masuk dari kiri, kartu reverse dari
-          // kanan — gerak mencerminkan komposisi, bukan template.
-          return (
-            <FadeIn key={i} direction={isReversed ? 'left' : 'right'} delay={i * 0.1}>
-              <div 
-                className={isReversed ? styles.whyCardReverse : styles.whyCard}
-                style={{
-                  ...(homeSettings?.whyBorderColor ? { borderColor: homeSettings.whyBorderColor } : {}),
-                  ...(homeSettings?.whyBorderWidth ? { borderWidth: homeSettings.whyBorderWidth } : {})
-                }}
-              >
-                <div className={styles.whyCardImage}>
-                  <Image src={card.image || card.foto || '/placeholder.webp'} alt={card.title} fill className={styles.whyCardImageItem}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
-                  <div className={isReversed ? styles.whyCardNumberRight : styles.whyCardNumberLeft}>{card.number || `#0${i + 1}`}</div>
+        {/* Bento asimetris: 1 tile besar (alasan utama) + 1 lebar + 2 kecil, tiap
+            tile foto ber-scrim gelap dengan teks putih & badge angka (kuning
+            fill). Ritme ukuran yang beragam menghindari kesan "kartu seragam". */}
+        <div className={styles.whyBento}>
+          {whyItems.map((card: any, i: number) => {
+            const tileClass = i === 0 ? styles.whyTileLarge : i === 1 ? styles.whyTileWide : styles.whyTileSmall
+            const showDesc = i < 2
+            return (
+              <FadeIn key={i} direction="up" delay={i * 0.08} className={`${styles.whyTile} ${tileClass}`}>
+                <Image
+                  src={card.image || card.foto || '/placeholder.webp'}
+                  alt={card.title}
+                  fill
+                  className={styles.whyTileImg}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
+                />
+                <div className={styles.whyTileScrim} aria-hidden="true" />
+                <div className={styles.whyTileContent}>
+                  <span className={styles.whyTileBadge}>{String(i + 1).padStart(2, '0')}</span>
+                  <h3 className={styles.whyTileTitle} style={card.titleWeight ? { fontWeight: Number(card.titleWeight) } : undefined}>{card.title}</h3>
+                  {showDesc && (
+                    <p className={styles.whyTileDesc} style={card.descWeight ? { fontWeight: Number(card.descWeight) } : undefined}>{card.desc}</p>
+                  )}
                 </div>
-                <div className={styles.whyCardText}>
-                  <h3 className={styles.whyCardTitle} style={card.titleWeight ? { fontWeight: Number(card.titleWeight) } : undefined}>{card.title}</h3>
-                  <p className={styles.whyCardDesc} style={card.descWeight ? { fontWeight: Number(card.descWeight) } : undefined}>{card.desc}</p>
-                </div>
-              </div>
-            </FadeIn>
-          )
-        })}
+              </FadeIn>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
