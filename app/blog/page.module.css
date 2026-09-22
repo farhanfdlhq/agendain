@@ -81,7 +81,7 @@
 
 .searchInput {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  padding: 0.75rem 2.75rem 0.75rem 2.75rem;
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
   font-size: 0.9375rem;
@@ -94,6 +94,36 @@
   border-color: var(--color-primary);
   background: white;
   box-shadow: 0 0 0 3px rgba(5,69,105, 0.1);
+}
+
+/* Tombol clear (X) di dalam field pencarian — kontrol reset yang jelas. */
+.searchClear {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  color: var(--color-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.searchClear:hover {
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+}
+
+/* Hitung hasil pencarian/filter — umpan balik "sistem mendengar" input. */
+.resultCount {
+  margin: 0 0 1.5rem;
+  color: var(--color-muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
 }
 
 /* ---------- FEATURED POST ---------- */
@@ -156,6 +186,11 @@
 }
 
 .postCategory {
+  /* Kicker kategori + aksen kuning brand di kiri untuk memperkuat hierarki
+     kartu featured (bukan sekadar teks uppercase polos). */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
   color: var(--color-primary);
   font-weight: 700;
   font-size: 0.875rem;
@@ -163,14 +198,28 @@
   letter-spacing: 1px;
   margin-bottom: 1rem;
 }
+.postCategory::before {
+  content: "";
+  width: 1.75rem;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--color-dominant);
+}
 
 .featuredTitle {
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 3vw, 2.5rem);
-  color: var(--color-ink);
+  /* Navy brand, bukan hitam murni — lebih lembut & konsisten identitas. */
+  color: var(--color-primary);
   font-weight: 800;
   line-height: 1.3;
   margin-bottom: 1rem;
+  /* Batasi judul agar tinggi kartu tak meledak (gambar ikut meregang). */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .featuredExcerpt {
@@ -178,6 +227,13 @@
   font-size: 1.125rem;
   line-height: 1.7;
   margin-bottom: 2rem;
+  /* Ringkasan dipotong 3 baris — konsisten dengan kartu grid, dan menjaga
+     kolom gambar tak memanjang mengikuti teks. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Meta Data */

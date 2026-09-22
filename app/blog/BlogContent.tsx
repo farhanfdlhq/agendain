@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useEffect, useMemo, useDeferredValue } from 'react'
-import { Calendar, Clock, ChevronRight, Search, RefreshCw } from 'lucide-react'
+import { Calendar, Clock, ChevronRight, Search, RefreshCw, X } from 'lucide-react'
 import styles from './page.module.css'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import FadeIn from '@/components/Motion/FadeIn'
@@ -146,13 +146,23 @@ export default function BlogContent({ blogSettings = {} }: { blogSettings?: any 
             
             <div className={styles.searchWrapper}>
               <Search size={18} className={styles.searchIcon} />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 placeholder={language === 'en' ? "Search articles..." : "Cari artikel..."}
                 className={styles.searchInput}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className={styles.searchClear}
+                  aria-label={language === 'en' ? 'Clear search' : 'Hapus pencarian'}
+                >
+                  <X size={16} />
+                </button>
+              )}
             </div>
           </div>
         </FadeIn>
@@ -166,6 +176,18 @@ export default function BlogContent({ blogSettings = {} }: { blogSettings?: any 
           </div>
         ) : (
           <>
+            {/* Umpan balik hasil: tampil hanya saat pencarian/filter aktif,
+                sekaligus menegaskan sistem "mendengar" input pengguna. */}
+            {(deferredSearch !== '' || activeCategorySlug !== 'semua') && (
+              <p className={styles.resultCount}>
+                {filteredPosts.length}{' '}
+                {language === 'en'
+                  ? `article${filteredPosts.length === 1 ? '' : 's'} found`
+                  : 'artikel ditemukan'}
+                {deferredSearch !== '' && <> · &ldquo;{deferredSearch}&rdquo;</>}
+              </p>
+            )}
+
             {/* Featured Post */}
             {featuredPost && (
               <FadeIn direction="up" delay={0.3}>

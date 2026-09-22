@@ -214,6 +214,18 @@
   color: var(--color-dominant);
 }
 
+/* Eyebrow (pill terang): kata ber-*teks* jadi CHIP kuning (fill + teks navy),
+   BUKAN teks kuning yang flicker. Konsisten dengan aturan "kuning = fill". */
+.whyTitleMain .textYellow,
+.whyTitleMain .heroTitleGold {
+  display: inline-block;
+  background: var(--color-dominant);
+  color: var(--color-primary);
+  padding: 0.05em 0.4em;
+  border-radius: 6px;
+  line-height: 1.2;
+}
+
 /* Alternating cards */
 .whyCard {
   display: grid;

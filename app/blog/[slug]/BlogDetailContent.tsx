@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
 import { Calendar, Clock, ChevronRight, Share2, ArrowLeft, User, RefreshCw } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import FadeIn from '@/components/Motion/FadeIn'
@@ -9,7 +10,7 @@ import Stagger from '@/components/Motion/Stagger'
 import { Badge } from '@/components/ui/badge'
 import { sanitizeRichText } from '@/lib/sanitize-richtext'
 import { Button } from '@/components/ui/button'
-import { toast } from 'react-hot-toast'
+import ShareModal from '@/components/blog/ShareModal'
 
 type BlogCategory = { id: number; nama: string; namaEn: string | null; slug: string }
 type BlogPost = {
@@ -57,10 +58,7 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
   const publishedRef = post.publishedAt || post.createdAt
   const showUpdated = new Date(post.updatedAt).getTime() - new Date(publishedRef).getTime() > 60_000
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(window.location.href)
-    toast.success(language === 'en' ? 'Link copied!' : 'Link disalin!')
-  }
+  const [shareOpen, setShareOpen] = useState(false)
 
   return (
     <div className="bg-background min-h-screen pt-24 pb-16">
@@ -92,7 +90,7 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
             </div>
             
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-2">
+              <Button variant="outline" size="sm" onClick={() => setShareOpen(true)} className="gap-2 min-h-[44px] px-4 sm:min-h-0 sm:px-3">
                 <Share2 size={14} /> {language === 'en' ? 'Share' : 'Bagikan'}
               </Button>
             </div>
@@ -174,6 +172,8 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
           </FadeIn>
         )}
       </div>
+
+      <ShareModal open={shareOpen} onOpenChange={setShareOpen} title={title} language={language} />
     </div>
   )
 }
