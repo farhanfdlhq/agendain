@@ -12,10 +12,17 @@ interface CounterProps {
 export default function Counter({ value, suffix = "", duration = 2 }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
-  
-  const [displayValue, setDisplayValue] = useState("0");
-  
-  const motionValue = useMotionValue(0);
+
+  const format = (n: number) => Intl.NumberFormat("en-US").format(Math.floor(n));
+
+  // Mulai dari ~60% nilai final, BUKAN 0. Sebelum masuk viewport (mis. stats di
+  // bawah lipatan), angka tetap terlihat wajar — bukan "0+ 0+ 0K+" yang terkesan
+  // kosong/rusak. Count-up tetap menghidupkan saat blok terlihat.
+  const floor = Math.max(0, Math.round(value * 0.6));
+
+  const [displayValue, setDisplayValue] = useState(() => format(floor));
+
+  const motionValue = useMotionValue(floor);
   const springValue = useSpring(motionValue, {
     duration: duration * 1000,
     bounce: 0,
@@ -28,9 +35,10 @@ export default function Counter({ value, suffix = "", duration = 2 }: CounterPro
   }, [isInView, value, motionValue]);
 
   useEffect(() => {
-    springValue.on("change", (latest) => {
-      setDisplayValue(Intl.NumberFormat("en-US").format(Math.floor(latest)));
+    const unsub = springValue.on("change", (latest) => {
+      setDisplayValue(format(latest));
     });
+    return () => unsub();
   }, [springValue]);
 
   return (

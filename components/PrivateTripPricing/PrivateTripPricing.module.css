@@ -91,7 +91,8 @@
   position: absolute;
   top: 0.875rem;
   left: 0.875rem;
-  background: rgba(15, 23, 42, 0.85);
+  /* Badge navy brand (seragam semua kartu) + pin gold. */
+  background: #14577d;
   color: #ffffff;
   backdrop-filter: blur(8px);
   padding: 0.4rem 0.85rem;
@@ -114,12 +115,18 @@
 }
 
 .subtitle {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #94a3b8;
+  /* Label = aksen gold HEMAT & kecil (gold fill + teks navy) — satu highlight
+     saja, sengaja lebih kecil dari judul agar judul tetap hero. */
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #14577d;
+  background: #ffc704;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin: 0 0 0.4rem 0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.35rem;
+  margin: 0 0 0.7rem 0;
 }
 
 .title {
@@ -142,12 +149,13 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.35rem 0.65rem;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  /* Chip navy brand (palet 2-warna: navy + gold). Ikon+border ikut navy. */
+  background: color-mix(in srgb, #14577d 6%, #ffffff);
+  border: 1px solid color-mix(in srgb, #14577d 22%, #ffffff);
   border-radius: 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #475569;
+  color: #14577d;
 }
 
 .featureList {
@@ -170,7 +178,7 @@
   width: 15px;
   height: 15px;
   min-width: 15px;
-  border: 2.5px solid #0284c7;
+  border: 2.5px solid #14577d;
   border-radius: 50%;
   margin-top: 3px;
   flex-shrink: 0;

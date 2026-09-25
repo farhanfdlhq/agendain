@@ -31,7 +31,7 @@ const DEFAULT_PACKAGES: PrivateTripPackageData[] = [
     subtitle: "Italy - Value",
     image: "/gallery-colosseum.webp",
     locationTab: "Italy",
-    chips: ["Durasi Fleksibel", "Semua Ukuran Grup", "Jadwal Bebas"],
+    chips: ["[Bed] Hotel Bintang 2/3", "[Compass] Transport Lokal", "[Check] Paling Hemat"],
     features: [
       "Solusi terbaik buat kamu yang pengen keliling Eropa hemat tapi gak mau keganggu orang lain di open trip.",
       "Rasakan pengalaman otentik naik transportasi lokal, serasa jadi traveler sejati!",
@@ -44,7 +44,7 @@ const DEFAULT_PACKAGES: PrivateTripPackageData[] = [
     subtitle: "Italy - Balance",
     image: "/dest-italy.webp",
     locationTab: "Italy",
-    chips: ["Durasi Fleksibel", "Semua Ukuran Grup", "Jadwal Bebas"],
+    chips: ["[Bed] Hotel Bintang 3", "[Car] 1x Private Car", "[Star] Best Value"],
     features: [
       "Pilihan paling cerdas buat kamu yang mau liburan berkesan tanpa kompromi kenyamanan",
       "Nikmati istirahat berkualitas di Hotel Bintang 3 yang cozy",
@@ -57,7 +57,7 @@ const DEFAULT_PACKAGES: PrivateTripPackageData[] = [
     subtitle: "Italy - Premium",
     image: "/dest-france.webp",
     locationTab: "Italy",
-    chips: ["Durasi Fleksibel", "Semua Ukuran Grup", "Jadwal Bebas"],
+    chips: ["[Bed] Hotel Bintang 4", "[Car] 3-4x Private Car", "[Shield] Luggage Service"],
     features: [
       "Untuk kamu yang percaya bahwa liburan terbaik = tanpa drama dan tanpa ribet",
       "Tidur pulas di Hotel Bintang 4 pilihan eksklusif",
@@ -90,7 +90,7 @@ export default function PrivateTripPricing({
           height="13"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#64748b"
+          stroke="currentColor"
           strokeWidth="2.2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -107,7 +107,7 @@ export default function PrivateTripPricing({
           height="13"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#64748b"
+          stroke="currentColor"
           strokeWidth="2.2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -125,7 +125,7 @@ export default function PrivateTripPricing({
         height="13"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="#64748b"
+        stroke="currentColor"
         strokeWidth="2.2"
         strokeLinecap="round"
         strokeLinejoin="round"

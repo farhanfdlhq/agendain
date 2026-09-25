@@ -1,0 +1,102 @@
+/* Loader rute: pesawat terbang mulus menyusuri jalur putus-putus (loop seamless),
+   menggantikan airplane yang replay patah-patah. Semua animasi kontinu (bukan
+   start/stop) supaya terasa hidup, bukan kaku. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1.25rem;
+  padding: 2.5rem 1rem;
+}
+
+.scene {
+  position: relative;
+  width: min(240px, 70vw);
+  height: 60px;
+}
+
+/* Jalur penerbangan putus-putus yang bergerak (memberi kesan maju terus). */
+.path {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-primary) 32%, transparent) 0 7px,
+    transparent 7px 15px
+  );
+  background-size: 15px 2px;
+  animation: trail 0.7s linear infinite;
+}
+
+/* Titik pangkal & tujuan di ujung jalur. */
+.dot {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background: var(--color-primary);
+}
+.dotStart { left: -2px; }
+.dotEnd {
+  right: -2px;
+  background: var(--color-dominant);
+}
+
+/* Pesawat: terbang kiri→kanan kontinu + mengangguk halus, fade di ujung. */
+.plane {
+  position: absolute;
+  top: 50%;
+  margin-top: -11px;
+  left: 0;
+  color: var(--color-primary);
+  animation: fly 2.6s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  will-change: left, transform, opacity;
+}
+
+@keyframes trail {
+  to { background-position: -15px 0; }
+}
+
+@keyframes fly {
+  0%   { left: -8%;  transform: translateY(0) rotate(-6deg); opacity: 0; }
+  14%  { opacity: 1; }
+  50%  { transform: translateY(-9px) rotate(3deg); }
+  86%  { opacity: 1; }
+  100% { left: 100%; transform: translateY(0) rotate(-6deg); opacity: 0; }
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  max-width: 24rem;
+  text-align: center;
+  color: var(--color-ink);
+  opacity: 0.65;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+/* Hormati preferensi gerak minimal. */
+@media (prefers-reduced-motion: reduce) {
+  .path, .plane, .title { animation: none; }
+  .plane { left: 44%; opacity: 1; }
+}
