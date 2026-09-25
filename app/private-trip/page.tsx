@@ -41,6 +41,7 @@ export default async function PrivateTripPage() {
   const ctaLabel = await getI18nSetting(privatetripSettings, 'ctaLabel') || (isEn ? "Ready to Go?" : "Mau Berangkat?");
   const ctaTitle = await getI18nSetting(privatetripSettings, 'ctaTitle');
   const ctaTitleWeight = await getI18nSetting(privatetripSettings, 'ctaTitleWeight');
+  const ctaTitleSize = await getI18nSetting(privatetripSettings, 'ctaTitleSize');
   const ctaSubtitle = await getI18nSetting(privatetripSettings, 'ctaSubtitle') || 
     (isEn ? "No need to be confused, no need to be complicated. The Agendain team is ready to help you from choosing packages, processing visas, until you land safely in Europe." 
           : "Gak perlu bingung, gak perlu ribet. Tim Agendain siap bantuin dari pemilihan paket, pengurusan visa, sampai kamu mendarat dengan selamat di Eropa.");
@@ -59,7 +60,7 @@ export default async function PrivateTripPage() {
 
       <CallToActionBanner
         label={ctaLabel}
-        titleLine1={ctaTitle ? parseGoldText(ctaTitle, styles, ctaTitleWeight) : (isEn ? "Book Now" : "Booking Sekarang")}
+        titleLine1={ctaTitle ? parseGoldText(ctaTitle, styles, ctaTitleWeight, ctaTitleSize) : (isEn ? "Book Now" : "Booking Sekarang")}
         titleLine2={ctaTitle ? undefined : (isEn ? "Starting From" : "Mulai Dari")}
         titleHighlight={ctaTitle ? undefined : (isEn ? "500k" : "500rb")}
         titleLine3={ctaTitle ? undefined : (isEn ? "Only!" : "Aja!")}

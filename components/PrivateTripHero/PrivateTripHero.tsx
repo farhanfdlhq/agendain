@@ -1,4 +1,5 @@
 "use client";
+import { fontStyleFrom } from '@/lib/font-style'
 import Image from "next/image";
 import styles from "./PrivateTripHero.module.css";
 import { Badge } from "@/components/ui/badge";
@@ -49,9 +50,7 @@ export default function PrivateTripHero({
         <p
           className={styles.subtitle}
           style={{
-            fontWeight: getSetting("heroSubtitleWeight")
-              ? Number(getSetting("heroSubtitleWeight"))
-              : undefined,
+            ...fontStyleFrom(getSetting("heroSubtitleWeight"), getSetting("heroSubtitleSize")),
           }}
         >
           {getSetting("heroSubtitle") ||

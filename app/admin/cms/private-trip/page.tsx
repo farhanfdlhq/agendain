@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AirplaneLoader from "@/components/ui/airplane-loader";
 import { MediaPicker } from "@/components/ui/media-picker";
-import { FontWeightPicker } from "@/components/ui/font-weight-picker";
+import { FontControls } from "@/components/ui/font-size-picker";
 import DynamicIcon, { AVAILABLE_ICONS } from "@/components/DynamicIcon/DynamicIcon";
 import { foldLegacyRepeaters, PRIVATE_TRIP_REPEATERS } from "@/lib/i18n/localize";
 
@@ -280,9 +280,11 @@ export default function PrivateTripCMSPage() {
   ) => {
     const activeFieldName = activeTab === "en" ? `${fieldName}_en` : fieldName;
     const weightField = `${fieldName}Weight`;
+    const sizeField = `${fieldName}Size`;
     const selectedWeight = data[weightField]
       ? Number(data[weightField])
       : undefined;
+    const selectedSize = data[sizeField] ? Number(data[sizeField]) : undefined;
     const isTitleOrHighlight =
       label.includes("*") ||
       label.toLowerCase().includes("kuning") ||
@@ -349,8 +351,11 @@ export default function PrivateTripCMSPage() {
               <div
                 className="text-base font-bold text-slate-100 mt-1 pl-1 pr-2 tracking-tight leading-relaxed break-words"
                 style={
-                  enableWeight && selectedWeight
-                    ? { fontWeight: selectedWeight }
+                  enableWeight
+                    ? {
+                        ...(selectedWeight ? { fontWeight: selectedWeight } : {}),
+                        ...(selectedSize ? { fontSize: selectedSize } : {}),
+                      }
                     : undefined
                 }
               >
@@ -362,10 +367,14 @@ export default function PrivateTripCMSPage() {
 
         {enableWeight && (
           <div className="pt-2 border-t border-border/40">
-            <FontWeightPicker
-              value={data[weightField]}
-              onChange={(val) =>
+            <FontControls
+              weightValue={data[weightField]}
+              onWeightChange={(val) =>
                 setData((prev: any) => ({ ...prev, [weightField]: val }))
+              }
+              sizeValue={data[sizeField]}
+              onSizeChange={(val) =>
+                setData((prev: any) => ({ ...prev, [sizeField]: val }))
               }
               defaultWeight={defaultWeight}
             />

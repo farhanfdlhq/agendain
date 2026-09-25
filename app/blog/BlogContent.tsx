@@ -1,4 +1,5 @@
 'use client'
+import { fontStyleFrom } from '@/lib/font-style'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useEffect, useMemo, useDeferredValue } from 'react'
@@ -114,10 +115,10 @@ export default function BlogContent({ blogSettings = {} }: { blogSettings?: any 
       <HeroHeader
         backgroundImage={heroImage}
         title={heroTitle
-          ? parseGoldText(heroTitle, styles, blogSettings.heroTitleWeight)
+          ? parseGoldText(heroTitle, styles, blogSettings.heroTitleWeight, blogSettings.heroTitleSize)
           : <>{language === 'en' ? 'Agendain' : 'Jurnal'} <span className={styles.textGold}>{language === 'en' ? 'Journal' : 'Agendain'}</span></>}
         subtitle={heroSubtitle
-          ? <span style={blogSettings.heroSubtitleWeight ? { fontWeight: Number(blogSettings.heroSubtitleWeight) } : undefined}>{heroSubtitle}</span>
+          ? <span style={fontStyleFrom(blogSettings.heroSubtitleWeight, blogSettings.heroSubtitleSize)}>{heroSubtitle}</span>
           : (language === 'en'
             ? "Discover your dream vacation inspiration, practical travel tips, and exciting stories from around Europe."
             : "Temukan inspirasi liburan impianmu, tips perjalanan praktis, dan cerita seru dari berbagai sudut Eropa.")}

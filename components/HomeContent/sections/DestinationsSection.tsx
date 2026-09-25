@@ -1,4 +1,5 @@
 'use client'
+import { fontStyle } from '@/lib/font-style'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Star } from 'lucide-react'
@@ -26,8 +27,8 @@ export default function DestinationsSection({ gs, t, packages }: { gs: any, t: a
         <FadeIn direction="up">
           <div className={styles.destWrapper}>
             <div className={styles.destHeaderLeftWrapper}>
-              <p className={styles.destEyebrow} style={gs('destEyebrowWeight') ? { fontWeight: Number(gs('destEyebrowWeight')) } : undefined}>{gs('destEyebrow', 'dest.subtitle', 'Eksplor Bersama Agendain')}</p>
-              <h2 className={styles.destTitle} style={gs('destTitleWeight') ? { fontWeight: Number(gs('destTitleWeight')) } : undefined}>{renderHighlightedTitle(gs('destTitle', 'home.popularDest', 'Favorite Destination'))}</h2>
+              <p className={styles.destEyebrow} style={fontStyle(gs, 'destEyebrow')}>{gs('destEyebrow', 'dest.subtitle', 'Eksplor Bersama Agendain')}</p>
+              <h2 className={styles.destTitle} style={fontStyle(gs, 'destTitle')}>{renderHighlightedTitle(gs('destTitle', 'home.popularDest', 'Favorite Destination'))}</h2>
               <Link href="/open-trip" className={styles.destViewAll}>{t('home.exploreDest') || 'Lihat Semua Destinasi →'}</Link>
             </div>
         <Stagger className={styles.destGrid}>

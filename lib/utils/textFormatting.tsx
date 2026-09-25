@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { fontStyleFrom } from '@/lib/font-style';
 
 /**
  * Parses a string containing asterisks into an array of React elements.
@@ -10,13 +11,13 @@ import React, { ReactNode } from 'react';
  * @param fontWeight Optional font weight to apply to the text
  * @returns ReactNode
  */
-export function parseGoldText(text: string | undefined | null, styles: any, fontWeight?: string): ReactNode {
+export function parseGoldText(text: string | undefined | null, styles: any, fontWeight?: string, fontSize?: string | number): ReactNode {
   if (!text) return null;
 
   const parts = text.split(/(\*[^*]+\*)/g);
-  
+
   return (
-    <span style={fontWeight ? { fontWeight: Number(fontWeight) } : undefined}>
+    <span style={fontStyleFrom(fontWeight, fontSize)}>
       {parts.map((part, idx) => {
         if (part.startsWith('*') && part.endsWith('*') && part.length >= 2) {
           const innerText = part.slice(1, -1);

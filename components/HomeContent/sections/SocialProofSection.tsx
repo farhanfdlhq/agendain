@@ -1,4 +1,5 @@
 'use client'
+import { fontStyle } from '@/lib/font-style'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
@@ -50,7 +51,7 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
         </FadeIn>
         <FadeIn direction="right" delay={0.2} className={styles.socialProofRightWrapper}>
           <div className={styles.socialProofRight}>
-            <h2 className={styles.socialProofRightTitle} style={gs('socialTitleWeight') ? { fontWeight: Number(gs('socialTitleWeight')) } : undefined}>
+            <h2 className={styles.socialProofRightTitle} style={fontStyle(gs, 'socialTitle')}>
               {gs('socialTitle') ? (
                 renderHighlightedTitle(gs('socialTitle'), '', styles.textYellow)
               ) : (
@@ -59,7 +60,7 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
                 </>
               )}
             </h2>
-            <p className={styles.socialProofRightSubtitle} style={gs('socialSubtitleWeight') ? { fontWeight: Number(gs('socialSubtitleWeight')) } : undefined}>{gs('socialSubtitle', 'home.social.subtitle')}</p>
+            <p className={styles.socialProofRightSubtitle} style={fontStyle(gs, 'socialSubtitle')}>{gs('socialSubtitle', 'home.social.subtitle')}</p>
             <div className={styles.testimonialSliderContainer} onMouseEnter={() => setIsSliderHovered(true)} onMouseLeave={() => setIsSliderHovered(false)}>
               <div className={styles.testimonialSlider}>
                 <div className={styles.testimonialSlides}>

@@ -1,4 +1,5 @@
 'use client'
+import { fontStyle, fontStyleFrom } from '@/lib/font-style'
 import Image from 'next/image'
 import FadeIn from '@/components/Motion/FadeIn'
 import styles from '../HomeContent.module.css'
@@ -43,8 +44,8 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.whySectionHeader}>
-            <span className={styles.whyTitleMain} style={gs('whyTitleMainWeight') ? { fontWeight: Number(gs('whyTitleMainWeight')) } : undefined}>{renderHighlightedTitle(gs('whyTitleMain', 'home.why.eyebrow'))}</span>
-            <h2 className={styles.whyTitleSub} style={gs('whyTitleSubWeight') ? { fontWeight: Number(gs('whyTitleSubWeight')) } : undefined}>{renderHighlightedTitle(gs('whyTitleSub', 'home.whyTitle'))}</h2>
+            <span className={styles.whyTitleMain} style={fontStyle(gs, 'whyTitleMain')}>{renderHighlightedTitle(gs('whyTitleMain', 'home.why.eyebrow'))}</span>
+            <h2 className={styles.whyTitleSub} style={fontStyle(gs, 'whyTitleSub')}>{renderHighlightedTitle(gs('whyTitleSub', 'home.whyTitle'))}</h2>
           </div>
         </FadeIn>
         {/* Bento asimetris: 1 tile besar (alasan utama) + 1 lebar + 2 kecil, tiap
@@ -66,9 +67,9 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
                 <div className={styles.whyTileScrim} aria-hidden="true" />
                 <div className={styles.whyTileContent}>
                   <span className={styles.whyTileBadge}>{String(i + 1).padStart(2, '0')}</span>
-                  <h3 className={styles.whyTileTitle} style={card.titleWeight ? { fontWeight: Number(card.titleWeight) } : undefined}>{card.title}</h3>
+                  <h3 className={styles.whyTileTitle} style={fontStyleFrom(card.titleWeight, card.titleSize)}>{card.title}</h3>
                   {showDesc && (
-                    <p className={styles.whyTileDesc} style={card.descWeight ? { fontWeight: Number(card.descWeight) } : undefined}>{card.desc}</p>
+                    <p className={styles.whyTileDesc} style={fontStyleFrom(card.descWeight, card.descSize)}>{card.desc}</p>
                   )}
                 </div>
               </FadeIn>

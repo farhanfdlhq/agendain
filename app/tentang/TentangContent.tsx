@@ -1,4 +1,5 @@
 'use client'
+import { fontStyleFrom } from '@/lib/font-style'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './page.module.css'
@@ -22,8 +23,8 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
       {/* Hero Section */}
       <HeroHeader 
         backgroundImage={getSetting('heroImage') || "/dest-swiss.webp"}
-        title={parseGoldText(getSetting('heroTitle') || (isEn ? 'What is *Agendain*?' : 'Apa itu *Agendain*?'), styles, getSetting('heroTitleWeight'))}
-        subtitle={<span style={{ fontWeight: getSetting('heroSubtitleWeight') ? Number(getSetting('heroSubtitleWeight')) : undefined }}>{getSetting('heroSubtitle') || t('about.new.heroSubtitle')}</span>}
+        title={parseGoldText(getSetting('heroTitle') || (isEn ? 'What is *Agendain*?' : 'Apa itu *Agendain*?'), styles, getSetting('heroTitleWeight'), getSetting('heroTitleSize'))}
+        subtitle={<span style={{ ...fontStyleFrom(getSetting('heroSubtitleWeight'), getSetting('heroSubtitleSize')) }}>{getSetting('heroSubtitle') || t('about.new.heroSubtitle')}</span>}
         minHeight="600px"
         paddingBottom="200px"
       />
@@ -44,13 +45,13 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
               </div>
             </div>
             <div className={styles.missionText}>
-              <h3 className={styles.missionLabel} style={{ fontWeight: getSetting('missionLabelWeight') ? Number(getSetting('missionLabelWeight')) : undefined }}>
+              <h3 className={styles.missionLabel} style={{ ...fontStyleFrom(getSetting('missionLabelWeight'), getSetting('missionLabelSize')) }}>
                 {getSetting('missionLabel') || t('about.new.missionLabel')}
               </h3>
-              <h2 className={styles.missionTitle} style={{ fontWeight: getSetting('missionTitleWeight') ? Number(getSetting('missionTitleWeight')) : undefined }}>
+              <h2 className={styles.missionTitle} style={{ ...fontStyleFrom(getSetting('missionTitleWeight'), getSetting('missionTitleSize')) }}>
                 {getSetting('missionTitle') || t('about.new.missionTitle')}
               </h2>
-              <p className={styles.missionDesc} style={{ fontWeight: getSetting('missionDescWeight') ? Number(getSetting('missionDescWeight')) : undefined }} dangerouslySetInnerHTML={{ __html: sanitizeRichText(getSetting('missionDesc') || t('about.new.missionDesc')).replace(/\\n/g, '<br/>') }} />
+              <p className={styles.missionDesc} style={{ ...fontStyleFrom(getSetting('missionDescWeight'), getSetting('missionDescSize')) }} dangerouslySetInnerHTML={{ __html: sanitizeRichText(getSetting('missionDesc') || t('about.new.missionDesc')).replace(/\\n/g, '<br/>') }} />
             </div>
           </div>
         </FadeIn>
@@ -102,8 +103,8 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
           <div className={styles.guideSection}>
             <div className={styles.guideContent}>
               <div className={styles.guidePill}>{getSetting('guidePill') || t('about.new.guidePill')}</div>
-              <h2 className={styles.guideTitle}>{parseGoldText(getSetting('guideTitle') || (isEn ? 'Meet Our *Lead Guide*' : 'Meet Our *Lead Guide*'), styles, getSetting('guideTitleWeight'))}</h2>
-              <p className={styles.guideDesc} style={{ fontWeight: getSetting('guideDescWeight') ? Number(getSetting('guideDescWeight')) : undefined }}>
+              <h2 className={styles.guideTitle}>{parseGoldText(getSetting('guideTitle') || (isEn ? 'Meet Our *Lead Guide*' : 'Meet Our *Lead Guide*'), styles, getSetting('guideTitleWeight'), getSetting('guideTitleSize'))}</h2>
+              <p className={styles.guideDesc} style={{ ...fontStyleFrom(getSetting('guideDescWeight'), getSetting('guideDescSize')) }}>
                 {getSetting('guideDescP1') || t('about.new.guideDescP1')}<br/><br/>
                 {getSetting('guideDescP2') || t('about.new.guideDescP2')}
               </p>

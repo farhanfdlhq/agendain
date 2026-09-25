@@ -1,4 +1,5 @@
 'use client'
+import { fontStyle } from '@/lib/font-style'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
@@ -38,8 +39,8 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
         <FadeIn direction="up">
           <div className={styles.accordionHeaderCenter}>
             <div className={styles.accordionEyebrowPill}>{t('home.testi.badge') || 'Sudut Pandang'}</div>
-            <h2 className={styles.accordionTitleCenter} style={gs('accTitleWeight') ? { fontWeight: Number(gs('accTitleWeight')) } : undefined}>{renderHighlightedTitle(gs('accTitle', 'home.accTitle', 'Lihat, Hirup, & Simpan Memori'))}</h2>
-            <h3 className={styles.accordionSubtitleCenter} style={gs('accSubtitleWeight') ? { fontWeight: Number(gs('accSubtitleWeight')) } : undefined}>{gs('accSubtitle', 'home.accSubtitle', 'Sudut Terbaik Eropa')}</h3>
+            <h2 className={styles.accordionTitleCenter} style={fontStyle(gs, 'accTitle')}>{renderHighlightedTitle(gs('accTitle', 'home.accTitle', 'Lihat, Hirup, & Simpan Memori'))}</h2>
+            <h3 className={styles.accordionSubtitleCenter} style={fontStyle(gs, 'accSubtitle')}>{gs('accSubtitle', 'home.accSubtitle', 'Sudut Terbaik Eropa')}</h3>
           </div>
         </FadeIn>
         <div className={styles.accordionLayout}>

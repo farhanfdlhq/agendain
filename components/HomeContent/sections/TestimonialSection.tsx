@@ -1,4 +1,5 @@
 'use client'
+import { fontStyle } from '@/lib/font-style'
 import Image from 'next/image'
 import Link from 'next/link'
 import FadeIn from '@/components/Motion/FadeIn'
@@ -11,8 +12,8 @@ export default function TestimonialSection({ gs, t, waLink }: { gs: any, t: any,
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.testimonialHeader}>
-            <span className={styles.testimonialBadge} style={gs('testiBadgeWeight') ? { fontWeight: Number(gs('testiBadgeWeight')) } : undefined}>{gs('testiBadge', 'home.testi.badge')}</span>
-            <h2 className={styles.testimonialTitle} style={gs('testiTitleWeight') ? { fontWeight: Number(gs('testiTitleWeight')) } : undefined}>
+            <span className={styles.testimonialBadge} style={fontStyle(gs, 'testiBadge')}>{gs('testiBadge', 'home.testi.badge')}</span>
+            <h2 className={styles.testimonialTitle} style={fontStyle(gs, 'testiTitle')}>
               {gs('testiTitle') ? (
                 renderHighlightedTitle(gs('testiTitle'), '', styles.testimonialTitleHighlight)
               ) : (

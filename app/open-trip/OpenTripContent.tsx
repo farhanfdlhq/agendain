@@ -1,5 +1,5 @@
 "use client";
-
+import { fontStyleFrom } from '@/lib/font-style'
 import Image from "next/image";
 import PackageCard from "@/components/PackageCard/PackageCard";
 import OpenTripFilter, {
@@ -70,9 +70,7 @@ export default function OpenTripContent({
               <p
                 className={styles.heroSubtitle}
                 style={{
-                  fontWeight: getSetting("heroSubtitleWeight")
-                    ? Number(getSetting("heroSubtitleWeight"))
-                    : undefined,
+                  ...fontStyleFrom(getSetting("heroSubtitleWeight"), getSetting("heroSubtitleSize")),
                 }}
               >
                 {getSetting("heroSubtitle")}
@@ -145,9 +143,7 @@ export default function OpenTripContent({
               <p
                 className={styles.sectionSubtitle}
                 style={{
-                  fontWeight: getSetting("packagesSubtitleWeight")
-                    ? Number(getSetting("packagesSubtitleWeight"))
-                    : undefined,
+                  ...fontStyleFrom(getSetting("packagesSubtitleWeight"), getSetting("packagesSubtitleSize")),
                   textAlign: "center",
                   marginTop: "1rem",
                   color: "var(--text-secondary)",

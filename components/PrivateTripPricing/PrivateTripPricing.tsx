@@ -1,5 +1,5 @@
 "use client";
-
+import { fontStyleFrom } from '@/lib/font-style'
 import Image from "next/image";
 import FadeIn from "@/components/Motion/FadeIn";
 import styles from "./PrivateTripPricing.module.css";
@@ -154,9 +154,7 @@ export default function PrivateTripPricing({
               <p
                 className={styles.sectionSubtitle}
                 style={{
-                  fontWeight: getSetting("packagesSubtitleWeight")
-                    ? Number(getSetting("packagesSubtitleWeight"))
-                    : undefined,
+                  ...fontStyleFrom(getSetting("packagesSubtitleWeight"), getSetting("packagesSubtitleSize")),
                 }}
               >
                 {getSetting("packagesSubtitle")}

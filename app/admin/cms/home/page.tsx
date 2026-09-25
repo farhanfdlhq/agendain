@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { MediaPicker } from "@/components/ui/media-picker"
-import { FontWeightPicker } from "@/components/ui/font-weight-picker"
+import { FontControls } from "@/components/ui/font-size-picker"
 import { foldLegacyRepeaters, HOME_REPEATERS } from "@/lib/i18n/localize"
 
 export default function HomeCMSPage() {
@@ -261,7 +261,9 @@ export default function HomeCMSPage() {
   const renderTextInput = (label: string, fieldName: string, isTextarea = false, placeholder = '', enableWeight = false, defaultWeight = "400") => {
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
     const weightField = `${fieldName}Weight`;
+    const sizeField = `${fieldName}Size`;
     const selectedWeight = data[weightField] ? Number(data[weightField]) : undefined;
+    const selectedSize = data[sizeField] ? Number(data[sizeField]) : undefined;
     const isTitleOrHighlight = label.includes('*') || label.toLowerCase().includes('kuning') || fieldName.includes('Title') || (data[activeFieldName] && String(data[activeFieldName]).includes('*'));
 
     return (
@@ -309,9 +311,9 @@ export default function HomeCMSPage() {
                   </span>
                 )}
               </div>
-              <div 
+              <div
                 className="text-base font-bold text-slate-100 mt-1 pl-1 pr-2 tracking-tight leading-relaxed break-words"
-                style={enableWeight && selectedWeight ? { fontWeight: selectedWeight } : undefined}
+                style={enableWeight ? { ...(selectedWeight ? { fontWeight: selectedWeight } : {}), ...(selectedSize ? { fontSize: selectedSize } : {}) } : undefined}
               >
                 {renderLivePreview(String(data[activeFieldName]))}
               </div>
@@ -321,9 +323,11 @@ export default function HomeCMSPage() {
 
         {enableWeight && (
           <div className="pt-2 border-t border-border/40">
-            <FontWeightPicker
-              value={data[weightField]}
-              onChange={(val) => setData((prev: any) => ({ ...prev, [weightField]: val }))}
+            <FontControls
+              weightValue={data[weightField]}
+              onWeightChange={(val) => setData((prev: any) => ({ ...prev, [weightField]: val }))}
+              sizeValue={data[sizeField]}
+              onSizeChange={(val) => setData((prev: any) => ({ ...prev, [sizeField]: val }))}
               defaultWeight={defaultWeight}
             />
           </div>
@@ -431,9 +435,11 @@ export default function HomeCMSPage() {
                     )}
                     {f.enableWeight && (
                       <div className="pt-1">
-                        <FontWeightPicker
-                          value={item[`${f.name}Weight`]}
-                          onChange={(val) => handleItemChange(index, `${f.name}Weight`, val)}
+                        <FontControls
+                          weightValue={item[`${f.name}Weight`]}
+                          onWeightChange={(val) => handleItemChange(index, `${f.name}Weight`, val)}
+                          sizeValue={item[`${f.name}Size`]}
+                          onSizeChange={(val) => handleItemChange(index, `${f.name}Size`, val)}
                         />
                       </div>
                     )}
@@ -556,9 +562,11 @@ export default function HomeCMSPage() {
                       )}
                       {tf.enableWeight && (
                         <div className="pt-1">
-                          <FontWeightPicker
-                            value={item[`${tf.name}Weight`]}
-                            onChange={(val) => handleItemChange(index, `${tf.name}Weight`, val)}
+                          <FontControls
+                            weightValue={item[`${tf.name}Weight`]}
+                            onWeightChange={(val) => handleItemChange(index, `${tf.name}Weight`, val)}
+                            sizeValue={item[`${tf.name}Size`]}
+                            onSizeChange={(val) => handleItemChange(index, `${tf.name}Size`, val)}
                           />
                         </div>
                       )}

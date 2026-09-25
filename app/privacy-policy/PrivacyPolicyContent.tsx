@@ -1,5 +1,5 @@
 'use client'
-
+import { fontStyleFrom } from '@/lib/font-style'
 import styles from './page.module.css'
 import HeroHeader from '@/components/HeroHeader/HeroHeader'
 import FadeIn from '@/components/Motion/FadeIn'
@@ -28,12 +28,12 @@ export default function PrivacyPolicyContent({ privacySettings = {} }: { privacy
         backgroundImage={getSetting('heroImage') || "/hero-coastal.webp"}
         title={
           getSetting('heroTitle') 
-            ? parseGoldText(getSetting('heroTitle'), styles, getSetting('heroTitleWeight'))
+            ? parseGoldText(getSetting('heroTitle'), styles, getSetting('heroTitleWeight'), getSetting('heroTitleSize'))
             : <>{t('privacy.title')} <span className={styles.textGold}>Policy</span></>
         }
         subtitle={
           getSetting('heroSubtitle') ? (
-            <span style={{ fontWeight: getSetting('heroSubtitleWeight') ? Number(getSetting('heroSubtitleWeight')) : undefined }}>
+            <span style={{ ...fontStyleFrom(getSetting('heroSubtitleWeight'), getSetting('heroSubtitleSize')) }}>
               {getSetting('heroSubtitle')}
             </span>
           ) : (

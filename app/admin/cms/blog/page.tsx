@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { MediaPicker } from "@/components/ui/media-picker"
-import { FontWeightPicker } from "@/components/ui/font-weight-picker"
+import { FontControls } from "@/components/ui/font-size-picker"
 
 export default function BlogCMSPage() {
   const [data, setData] = useState<any>({
@@ -126,7 +126,9 @@ export default function BlogCMSPage() {
   const renderTextInput = (label: string, fieldName: string, isTextarea = false, placeholder = '', enableWeight = false, defaultWeight = "400") => {
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
     const weightField = `${fieldName}Weight`;
+    const sizeField = `${fieldName}Size`;
     const selectedWeight = data[weightField] ? Number(data[weightField]) : undefined;
+    const selectedSize = data[sizeField] ? Number(data[sizeField]) : undefined;
     const isTitleOrHighlight = label.includes('*') || label.toLowerCase().includes('kuning') || fieldName.includes('Title') || (data[activeFieldName] && String(data[activeFieldName]).includes('*'));
 
     return (
@@ -176,7 +178,7 @@ export default function BlogCMSPage() {
               </div>
               <div
                 className="text-base font-bold text-slate-100 mt-1 pl-1 pr-2 tracking-tight leading-relaxed break-words"
-                style={enableWeight && selectedWeight ? { fontWeight: selectedWeight } : undefined}
+                style={enableWeight ? { ...(selectedWeight ? { fontWeight: selectedWeight } : {}), ...(selectedSize ? { fontSize: selectedSize } : {}) } : undefined}
               >
                 {renderLivePreview(String(data[activeFieldName]))}
               </div>
@@ -186,9 +188,11 @@ export default function BlogCMSPage() {
 
         {enableWeight && (
           <div className="pt-2 border-t border-border/40">
-            <FontWeightPicker
-              value={data[weightField]}
-              onChange={(val) => setData((prev: any) => ({ ...prev, [weightField]: val }))}
+            <FontControls
+              weightValue={data[weightField]}
+              onWeightChange={(val) => setData((prev: any) => ({ ...prev, [weightField]: val }))}
+              sizeValue={data[sizeField]}
+              onSizeChange={(val) => setData((prev: any) => ({ ...prev, [sizeField]: val }))}
               defaultWeight={defaultWeight}
             />
           </div>

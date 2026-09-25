@@ -46,7 +46,7 @@ export default function PrivateTripWorkflow({ privatetripSettings }: { privatetr
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.header}>
-            <h2 className={styles.title}>{parseGoldText(gs('workflowTitle', t('pt.workflow.title')), styles, privatetripSettings?.workflowTitleWeight)}</h2>
+            <h2 className={styles.title}>{parseGoldText(gs('workflowTitle', t('pt.workflow.title')), styles, privatetripSettings?.workflowTitleWeight, privatetripSettings?.workflowTitleSize)}</h2>
             <p className={styles.subtitle}>{gs('workflowSubtitle', t('pt.workflow.subtitle'))}</p>
           </div>
         </FadeIn>

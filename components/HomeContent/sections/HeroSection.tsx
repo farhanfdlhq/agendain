@@ -1,4 +1,5 @@
 'use client'
+import { fontStyle } from '@/lib/font-style'
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion, type Variants } from 'framer-motion'
@@ -92,7 +93,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
         <motion.h1
           className={styles.heroTitle}
           variants={container}
-          style={gs('heroTitleWeight') ? { fontWeight: Number(gs('heroTitleWeight')) } : undefined}
+          style={fontStyle(gs, 'heroTitle')}
         >
           {parts.map((p, i) => (
             <motion.span
@@ -114,7 +115,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
         <motion.p
           className={styles.heroSubtitle}
           variants={rise}
-          style={gs('heroSubtitleWeight') ? { fontWeight: Number(gs('heroSubtitleWeight')) } : undefined}
+          style={fontStyle(gs, 'heroSubtitle')}
         >
           {gs('heroSubtitle', 'home.hero.desc')}
         </motion.p>
