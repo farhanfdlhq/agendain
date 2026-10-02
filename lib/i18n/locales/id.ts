@@ -299,6 +299,7 @@ const id: Record<string, string> = {
   "openTrip.cta.btnSecondary": "Lihat Jadwal Trip",
 
   // Open Trip — kartu paket
+  "openTrip.emptyNone": "Belum ada open trip yang dibuka saat ini. Jadwal baru segera hadir. Tanyakan via WhatsApp untuk info keberangkatan berikutnya.",
   "openTrip.empty": "Belum ada open trip yang cocok dengan filter ini. Coba ubah destinasi atau durasi.",
   "openTrip.card.days": "Hari",
   "openTrip.card.nights": "Malam",

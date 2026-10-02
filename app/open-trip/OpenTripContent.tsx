@@ -21,12 +21,15 @@ interface OpenTripContentProps {
   packages: OpenTripCardData[];
   destList: DestOption[];
   opentripSettings?: any;
+  /** Ada filter destinasi/durasi aktif → pesan kosong menyarankan ubah filter. */
+  isFiltered?: boolean;
 }
 
 export default function OpenTripContent({
   packages,
   destList,
   opentripSettings = {},
+  isFiltered = false,
 }: OpenTripContentProps) {
   const { t, locale } = useTranslation();
   const isEn = locale === "en";
@@ -191,7 +194,7 @@ export default function OpenTripContent({
                 transition={{ duration: 0.3, ease }}
                 className={styles.empty}
               >
-                {t("openTrip.empty")}
+                {t(isFiltered ? "openTrip.empty" : "openTrip.emptyNone")}
               </motion.p>
             )}
           </div>

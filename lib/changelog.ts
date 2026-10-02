@@ -26,6 +26,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.0.1',
+    date: '2026-10-02',
+    title: 'Tampilan rapi saat belum ada open trip yang dibuka',
+    fixed: [
+      'Halaman Open Trip menampilkan "Belum ada open trip yang dibuka saat ini" bila memang belum ada paket terbit; pesan "ubah filter" hanya muncul saat filter destinasi/durasi dipakai.',
+      'Section Destinasi Favorit di beranda disembunyikan otomatis selama belum ada paket terbit, dan muncul lagi begitu paket diterbitkan.',
+    ],
+  },
+  {
     version: '1.0.0',
     date: '2026-10-02',
     title: 'Tampilan baru open trip, footer & privacy policy, plus log versi',

@@ -80,5 +80,8 @@ export default async function PaketPage({
     console.error('DB fetch failed', error)
   }
 
-  return <OpenTripContent packages={packages} destList={destList} opentripSettings={opentripSettings} />
+  // Urutan tidak menyaring hasil, jadi hanya destinasi/durasi yang dihitung "filter aktif".
+  const isFiltered = Boolean(destinasiFilter || durasiFilter)
+
+  return <OpenTripContent packages={packages} destList={destList} opentripSettings={opentripSettings} isFiltered={isFiltered} />
 }

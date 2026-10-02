@@ -239,6 +239,7 @@ const en: Record<string, string> = {
   'openTrip.cta.btnSecondary': 'View Trip Schedules',
 
   // Open Trip — package card
+  'openTrip.emptyNone': 'No open trips are available right now. New schedules are coming soon. Ask us on WhatsApp about the next departure.',
   'openTrip.empty': 'No open trips match these filters yet. Try another destination or duration.',
   'openTrip.card.days': 'Days',
   'openTrip.card.nights': 'Nights',

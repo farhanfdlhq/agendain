@@ -59,8 +59,9 @@ export default function HomeContent({
         return <HeroSection key="hero" gs={gs} t={t} waLink={waLink} />
       case 'why': 
         return <WhySection key="why" gs={gs} t={t} locale={locale} homeSettings={homeSettings} />
-      case 'destinations': 
-        return <DestinationsSection key="destinations" gs={gs} packages={packages} />
+      case 'destinations':
+        // Tanpa paket terbit, section ini hanya judul + tombol kosong → disembunyikan.
+        return packages.length > 0 ? <DestinationsSection key="destinations" gs={gs} packages={packages} /> : null
       case 'testimonial': 
         return <TestimonialSection key="testimonial" gs={gs} t={t} waLink={waLink} />
       case 'accordion': 
