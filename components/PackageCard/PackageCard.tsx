@@ -2,98 +2,100 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin, Circle } from 'lucide-react'
+import { CalendarDays, Clock, Users } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
-import { formatPriceShort } from '@/lib/currency'
+import { formatIDR } from '@/lib/currency'
 import { pickLocalized } from '@/lib/i18n/localize'
+import type { OpenTripCardData } from '@/lib/open-trip-card'
 import styles from './PackageCard.module.css'
 
-interface PackageProps {
-  id: number
-  slug: string
-  nama: string
-  namaEn?: string | null
-  harga: number
-  durasi: number
-  destinasi: { nama: string; namaEn?: string | null }
-  fotoThumbnail: string
-  label?: string | null
+type PackageCardProps = OpenTripCardData & {
+  /** Kartu di atas lipatan (mis. beranda) boleh dimuat lebih awal. */
+  priority?: boolean
 }
 
-export default function PackageCard({ slug, nama, namaEn, harga, durasi, destinasi, fotoThumbnail }: PackageProps) {
+/**
+ * Kartu open trip — dipakai beranda (Destinasi Favorit) & /open-trip.
+ * Semua isi dari DB (lib/open-trip-card.ts); baris yang datanya kosong
+ * disembunyikan, bukan diisi teks contoh.
+ */
+export default function PackageCard({
+  slug, nama, namaEn, harga, durasi, destinasi, fotoThumbnail, label,
+  tanggalKeberangkatan, kuota, kursiTerisi = 0, priority = false,
+}: PackageCardProps) {
   const { t, translateData, locale } = useTranslation()
 
-  // Nama paket versi Inggris bila admin sudah mengisinya, kalau tidak tetap
-  // memakai nama Indonesia.
   const localizedNama = pickLocalized({ nama, namaEn }, 'nama', locale) || nama
-
-  const formattedHarga = formatPriceShort(harga, locale)
-
-  // Format durasi
-  const malam = durasi > 1 ? durasi - 2 : durasi - 1;
-  const durasiText = `${durasi} ${t('openTrip.card.days')} ${malam > 0 ? malam : 0} ${t('openTrip.card.nights')}`;
-
-  // Judul dipotong agar tinggi kartu tetap seragam di grid.
-  const displayTitle = localizedNama.length > 25 ? localizedNama.substring(0, 25) + '...' : localizedNama;
-
-  // "Mulai dari" / "Start From" ditumpuk dua baris, sama seperti kartu di beranda.
-  const [startWord, fromWord] = (t('home.dest.startFrom') || 'Start From').split(' ')
-
-  // Nama destinasi: utamakan kolom `namaEn` dari CMS, baru kamus 21 entri
-  // di `translateData` sebagai jaring terakhir.
   const destName = (destinasi && pickLocalized(destinasi, 'nama', locale)) || ''
-  const destLabel = translateData(destName) || 'Eropa'
+  const destLabel = translateData(destName) || destName
+
+  const malam = Math.max(durasi > 1 ? durasi - 2 : durasi - 1, 0)
+  const durasiText = `${durasi} ${t('openTrip.card.days')} ${malam} ${t('openTrip.card.nights')}`
+
+  // Tanggal yang sudah lewat tidak dipajang sebagai jadwal.
+  const dep = tanggalKeberangkatan ? new Date(tanggalKeberangkatan) : null
+  const isUpcoming = !!dep && dep.getTime() >= new Date().setHours(0, 0, 0, 0)
+  const depText = isUpcoming
+    ? new Intl.DateTimeFormat(locale === 'en' ? 'en-GB' : 'id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(dep!)
+    : null
+
+  const sisa = typeof kuota === 'number' && kuota > 0 ? Math.max(kuota - kursiTerisi, 0) : null
+  const seatText = sisa === null ? null
+    : sisa === 0 ? t('openTrip.card.seatsFull')
+    : t('openTrip.card.seatsLeft').replace('{n}', String(sisa))
 
   return (
-    <Link href={`/open-trip/${slug}`} className={styles.destCard} suppressHydrationWarning aria-label={`${t('openTrip.card.ariaDetail')} ${localizedNama}`}>
-      <div className={styles.destCardImageWrapper} suppressHydrationWarning>
+    <Link
+      href={`/open-trip/${slug}`}
+      className={styles.card}
+      aria-label={`${t('openTrip.card.ariaDetail')} ${localizedNama}`}
+    >
+      <div className={styles.media}>
         <Image
           src={fotoThumbnail || '/placeholder.webp'}
-          alt={localizedNama}
+          alt=""
           fill
-          sizes="(max-width: 744px) 100vw, (max-width: 1128px) 50vw, 33vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
           className={styles.image}
-          loading="lazy"
+          priority={priority}
         />
-        <div className={styles.locationBadge}>
-          <MapPin size={12} strokeWidth={2.5} />
-          <span>{destLabel}</span>
-        </div>
+        {label && <span className={styles.badge}>{label}</span>}
       </div>
 
-      <div className={styles.destCardBody} suppressHydrationWarning>
-        <h3 className={styles.destCardName}>{displayTitle}</h3>
+      <div className={styles.body}>
+        {destLabel && <p className={styles.dest}>{destLabel}</p>}
+        <h3 className={styles.title}>{localizedNama}</h3>
+        <span className={styles.chip}>
+          <Clock size={14} aria-hidden="true" />
+          {durasiText}
+        </span>
 
-        <div className={styles.destCardPriceWrapper}>
-          <div className={styles.destCardPriceLabel}>
-            <span>{startWord}</span>
-            <span>{fromWord}</span>
-          </div>
-          <span className={styles.destCardPriceValue}>{formattedHarga}</span>
-        </div>
-
-        <ul className={styles.scheduleList}>
+        <ul className={styles.facts}>
           <li>
-            <Circle size={10} className={styles.scheduleIcon} />
-            {durasiText}
+            <CalendarDays size={16} aria-hidden="true" className={styles.factIcon} />
+            {depText ? (
+              <span><strong>{t('openTrip.card.departure')}</strong> {depText}</span>
+            ) : (
+              <span>{t('openTrip.card.scheduleTba')}</span>
+            )}
           </li>
-          <li>
-            <Circle size={10} className={styles.scheduleIcon} />
-            {t('openTrip.card.seasonSpring')}
-          </li>
-          <li>
-            <Circle size={10} className={styles.scheduleIcon} />
-            {t('openTrip.card.seasonSummer')}
-          </li>
-          <li>
-            <Circle size={10} className={styles.scheduleIcon} />
-            {t('openTrip.card.seasonAutumn')}
-          </li>
+          {seatText && (
+            <li className={sisa !== null && sisa <= 5 ? styles.factUrgent : undefined}>
+              <Users size={16} aria-hidden="true" className={styles.factIcon} />
+              <span>{seatText}</span>
+            </li>
+          )}
         </ul>
+      </div>
 
-        <div className={styles.destCardBottom} suppressHydrationWarning>
-          <span className={styles.destCardBooking}>{t('nav.contact')}</span>
+      <div className={styles.footer}>
+        <div className={styles.price}>
+          <span className={styles.priceLabel}>{t('openTrip.card.priceFrom')}</span>
+          <span className={styles.priceValue}>
+            {formatIDR(harga)} <small>{t('openTrip.card.perPax')}</small>
+          </span>
         </div>
+        <span className={styles.cta} aria-hidden="true">{t('openTrip.card.viewDetail')}</span>
       </div>
     </Link>
   )

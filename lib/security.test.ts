@@ -310,7 +310,7 @@ describe("InvoiceSettingsSchema", () => {
     const r = InvoiceSettingsSchema.safeParse({
       namaLegal: "PT Agendain Wisata Indonesia",
       alamat: "Jl. Contoh No. 1, Jakarta",
-      telepon: "+62 812 3456 7890",
+      telepon: "+62 819 9526 4565",
       email: "billing@agendain.com",
       website: "https://agendain.com",
       npwp: "01.234.567.8-901.000",

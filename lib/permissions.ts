@@ -44,11 +44,38 @@ export const PERMISSION_IDS = [
   "blog_edit",
   "blog_delete",
   "users_manage",
+  "roles_manage",
+  "audit_view",
   "settings_manage",
+  "profile_manage",
   "cms_manage",
 ] as const;
 
 export type PermissionId = (typeof PERMISSION_IDS)[number];
+
+/**
+ * Penanda bahwa sebuah role sudah disimpan dengan vokabuler menu Pengaturan
+ * yang terpisah (`roles_manage`, `audit_view`, `profile_manage`). Disisipkan
+ * otomatis saat role disimpan; bukan izin yang dicek gerbang mana pun.
+ */
+export const RBAC_SETTINGS_V2 = "rbac_settings_v2";
+
+/**
+ * Role lama (disimpan sebelum menu Pengaturan dipecah) diberi izin setara
+ * agar aksesnya tidak tiba-tiba hilang: dulu `users_manage` membuka Kelola
+ * User + Audit Log + Roles, dan Akun & Profil terbuka untuk semua. Role yang
+ * sudah membawa penanda v2 dibiarkan apa adanya — centang admin yang berlaku.
+ */
+export function upgradeLegacyPermissions(permissions: string[]): string[] {
+  if (permissions.includes("all") || permissions.includes(RBAC_SETTINGS_V2)) return permissions;
+  const out = new Set(permissions);
+  out.add("profile_manage");
+  if (out.has("users_manage")) {
+    out.add("audit_view");
+    out.add("roles_manage");
+  }
+  return [...out];
+}
 
 export type RoleDef = {
   id: string;
@@ -60,7 +87,8 @@ export type RoleDef = {
 /**
  * Grant bawaan. Dipilih agar akses efektif TIDAK berubah dibanding perilaku
  * lama: `blog_*` tidak diberikan ke admin/editor (blog dulu super-admin-only),
- * `users_manage`/`settings_manage` hanya milik super_admin lewat 'all'.
+ * `users_manage`/`roles_manage`/`audit_view`/`settings_manage` hanya milik
+ * super_admin lewat 'all'; `profile_manage` (Akun & Profil) untuk semua role.
  */
 export const DEFAULT_ROLES: RoleDef[] = [
   {
@@ -98,6 +126,8 @@ export const DEFAULT_ROLES: RoleDef[] = [
       "itinerary_edit",
       "itinerary_delete",
       "cms_manage",
+      "profile_manage",
+      RBAC_SETTINGS_V2,
     ],
   },
   {
@@ -112,6 +142,8 @@ export const DEFAULT_ROLES: RoleDef[] = [
       "destinasi_create",
       "destinasi_edit",
       "cms_manage",
+      "profile_manage",
+      RBAC_SETTINGS_V2,
     ],
   },
 ];

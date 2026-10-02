@@ -234,10 +234,10 @@ describe("buildInvoiceView — href kontak kop", () => {
   it("email & telepon jadi mailto:/tel:", () => {
     const v = buildInvoiceView({
       invoice: invoiceDasar,
-      settings: { email: "billing@agendain.com", telepon: "+62 812-3456-7890" },
+      settings: { email: "billing@agendain.com", telepon: "+62 819-9526-4565" },
       sekarang: new Date(2026, 7, 31),
     });
     expect(v.kop.emailHref).toBe("mailto:billing@agendain.com");
-    expect(v.kop.teleponHref).toBe("tel:+6281234567890");
+    expect(v.kop.teleponHref).toBe("tel:+6281995264565");
   });
 });

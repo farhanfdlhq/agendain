@@ -5,6 +5,7 @@ import { logAudit } from "@/lib/audit"
 import {
   DEFAULT_ROLES,
   PERMISSION_IDS,
+  RBAC_SETTINGS_V2,
   SUPER_ADMIN_ROLE,
   getRolesConfig,
   invalidateRolesCache,
@@ -13,7 +14,7 @@ import {
 } from "@/lib/rbac"
 
 export async function GET() {
-  const gate = await requirePermission(undefined, "GET /api/admin/roles", "users_manage")
+  const gate = await requirePermission(undefined, "GET /api/admin/roles", "roles_manage")
   if (gate.denied) return gate.denied
 
   const roles = await getRolesConfig()
@@ -57,7 +58,7 @@ function sanitizeRoles(input: unknown): { ok: true; roles: RoleDef[] } | { ok: f
         ? ['all']
         : (Array.isArray(raw?.permissions) ? raw.permissions : []).filter(
             (p: unknown): p is string => typeof p === 'string' && ALLOWED_PERMISSIONS.has(p),
-          )
+          ).concat(RBAC_SETTINGS_V2)
 
     roles.push({
       id,
@@ -77,7 +78,7 @@ function sanitizeRoles(input: unknown): { ok: true; roles: RoleDef[] } | { ok: f
 }
 
 export async function POST(req: Request) {
-  const gate = await requirePermission(req, "POST /api/admin/roles", "users_manage")
+  const gate = await requirePermission(req, "POST /api/admin/roles", "roles_manage")
   if (gate.denied) return gate.denied
 
   try {

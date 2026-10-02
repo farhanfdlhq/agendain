@@ -101,8 +101,11 @@ const PERMISSIONS_GROUPS = [
   {
     category: 'SYSTEM & SETTINGS',
     items: [
-      { id: 'users_manage', label: 'Kelola Users & Roles' },
       { id: 'settings_manage', label: 'Pengaturan Sistem' },
+      { id: 'users_manage', label: 'Kelola User' },
+      { id: 'audit_view', label: 'Lihat Audit Log' },
+      { id: 'roles_manage', label: 'Kelola Roles & Permissions' },
+      { id: 'profile_manage', label: 'Akun & Profil (ubah profil & password sendiri)' },
       { id: 'cms_manage', label: 'Kelola Konten & Desain' },
     ]
   }
@@ -118,14 +121,14 @@ export default function RolesPermissionsPage() {
   // Modal State
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [formData, setFormData] = useState<Role>({ id: '', name: '', description: '', permissions: [] })
+  const [formData, setFormData] = useState<Role>({ id: '', name: '', description: '', permissions: ['profile_manage'] })
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     if (!session) return
     let cancelled = false
 
-    // Akses halaman ini ditentukan permission `users_manage`, bukan id role,
+    // Akses halaman ini ditentukan permission `roles_manage`, bukan id role,
     // supaya role custom yang diberi izin itu bisa membukanya. Gerbang
     // sebenarnya tetap di POST/GET /api/admin/roles.
     ;(async () => {
@@ -133,7 +136,7 @@ export default function RolesPermissionsPage() {
         const res = await fetch('/api/admin/me')
         const me = res.ok ? await res.json() : null
         if (cancelled) return
-        if (!hasPermission(me, 'users_manage')) {
+        if (!hasPermission(me, 'roles_manage')) {
           router.push('/admin')
           return
         }
@@ -164,7 +167,7 @@ export default function RolesPermissionsPage() {
       setFormData(role)
     } else {
       setEditingId(null)
-      setFormData({ id: '', name: '', description: '', permissions: [] })
+      setFormData({ id: '', name: '', description: '', permissions: ['profile_manage'] })
     }
     setIsDialogOpen(true)
   }

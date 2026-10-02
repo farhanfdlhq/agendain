@@ -10,6 +10,7 @@ import {
   hasPermission,
   type PermissionSubject,
   type RoleDef,
+  upgradeLegacyPermissions,
 } from "@/lib/permissions";
 
 // Method yang mengubah state → wajib lolos verifikasi CSRF. GET/HEAD/OPTIONS
@@ -32,8 +33,10 @@ const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 export {
   DEFAULT_ROLES,
   PERMISSION_IDS,
+  RBAC_SETTINGS_V2,
   SUPER_ADMIN_ROLE,
   hasPermission,
+  upgradeLegacyPermissions,
 } from "@/lib/permissions";
 export type { PermissionId, PermissionSubject, RoleDef } from "@/lib/permissions";
 
@@ -58,7 +61,10 @@ function parseRoles(raw: string): RoleDef[] | null {
       r.permissions.some((p) => typeof p === "string" && !p.includes("_") && p !== "all"),
   );
   if (hasOldFormat) return null;
-  return parsed as RoleDef[];
+  return (parsed as RoleDef[]).map((r) => ({
+    ...r,
+    permissions: upgradeLegacyPermissions(Array.isArray(r.permissions) ? r.permissions : []),
+  }));
 }
 
 /** roles_config dari DB (fallback DEFAULT_ROLES), di-cache singkat. */

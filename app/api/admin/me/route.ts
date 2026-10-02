@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
  * Identitas + permission efektif milik pemanggil sendiri.
  *
  * Dibutuhkan sidebar admin: /api/admin/roles hanya untuk pemegang
- * `users_manage`, jadi role biasa tidak bisa memakainya untuk tahu menu apa
+ * `roles_manage`, jadi role biasa tidak bisa memakainya untuk tahu menu apa
  * yang boleh ia lihat. Tanpa `required` — cukup sesi admin yang sah.
  */
 export async function GET(request: Request) {

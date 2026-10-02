@@ -20,7 +20,10 @@ import {
 
 export default function FooterCMSPage() {
   const [data, setData] = useState<any>({
+    eyebrow: '', eyebrow_en: '',
     tagline: '', tagline_en: '',
+    desc: '', desc_en: '',
+    waButton: '', waButton_en: '',
     menuTitle: '', menuTitle_en: '',
     contactTitle: '', contactTitle_en: '',
     paymentTitle: '', paymentTitle_en: '',
@@ -200,12 +203,21 @@ export default function FooterCMSPage() {
         <Card className="border shadow-sm overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b pb-4">
             <CardTitle className="text-lg text-primary">Tagline & Judul Kolom</CardTitle>
-            <CardDescription>Baris atas footer dan judul ketiga kolomnya.</CardDescription>
+            <CardDescription>Kolom brand footer (eyebrow, tagline, deskripsi) dan judul kolom.</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
+                {renderTextInput('Eyebrow (label kecil kuning)', 'eyebrow', false, 'Spesialis Trip Eropa')}
+              </div>
+              <div className="sm:col-span-2">
                 {renderTextInput('Tagline', 'tagline', true, 'Mau Jalan tapi Wacana Doang? <strong>Agendain aja!</strong>', 'Boleh memakai <strong>, <em>, dan <br>. Tag lain akan dibuang otomatis.')}
+              </div>
+              <div className="sm:col-span-2">
+                {renderTextInput('Deskripsi Singkat', 'desc', true, 'Travel agency digital terpercaya untuk perjalanan Anda dari Indonesia ke Eropa.', 'Teks biasa di bawah tagline, di atas tombol WhatsApp.')}
+              </div>
+              <div className="sm:col-span-2">
+                {renderTextInput('Teks Tombol WhatsApp', 'waButton', false, 'Chat WhatsApp', 'Nomor diambil dari Pengaturan → Nomor WhatsApp. Kosongkan nomor di sana untuk menyembunyikan tombol.')}
               </div>
               {renderTextInput('Judul Kolom Navigasi', 'menuTitle', false, 'Menu Utama')}
               {renderTextInput('Judul Kolom Kontak', 'contactTitle', false, 'Hubungi')}
@@ -218,7 +230,7 @@ export default function FooterCMSPage() {
         <Card className="border shadow-sm overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b pb-4">
             <CardTitle className="text-lg text-primary">Kontak & Sosial Media</CardTitle>
-            <CardDescription>Isi kolom &quot;Hubungi&quot;. Pilih platform untuk menentukan ikonnya.</CardDescription>
+            <CardDescription>Email, WhatsApp &amp; Telepon tampil di kolom &quot;Hubungi&quot;; platform lain (Instagram, YouTube, dll.) jadi tombol ikon di baris atas footer.</CardDescription>
           </CardHeader>
           <CardContent className="pt-6 space-y-3">
             {socials.length === 0 && (

@@ -15,6 +15,7 @@ import { Badge } from "@/components/reui/badge"
 import PlugConnectedIcon from "@/components/ui/plug-connected-icon"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { hasPermission, type PermissionSubject } from "@/lib/permissions"
+import { APP_VERSION } from "@/lib/changelog"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -174,9 +175,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       items: [
         { name: 'Pengaturan Sistem', href: '/admin/settings', icon: <Settings size={18} />, perm: ['settings_manage'] },
         { name: 'Kelola User', href: '/admin/settings/users', icon: <Users size={18} />, perm: ['users_manage'] },
-        { name: 'Audit Log', href: '/admin/settings/audit-log', icon: <History size={18} />, perm: ['users_manage'] },
-        { name: 'Roles & Permissions', href: '/admin/settings/roles', icon: <PlugConnectedIcon size={18} />, perm: ['users_manage'] },
-        { name: 'Akun & Profil', href: '/admin/settings/profile', icon: <UserCog size={18} />, perm: [] },
+        { name: 'Audit Log', href: '/admin/settings/audit-log', icon: <History size={18} />, perm: ['audit_view'] },
+        { name: 'Roles & Permissions', href: '/admin/settings/roles', icon: <PlugConnectedIcon size={18} />, perm: ['roles_manage'] },
+        { name: 'Akun & Profil', href: '/admin/settings/profile', icon: <UserCog size={18} />, perm: ['profile_manage'] },
       ]
     }
   ]
@@ -296,7 +297,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {!collapsed && (
                 <div className="flex flex-col items-start ml-3 overflow-hidden text-left flex-1">
                   <span className="text-sm font-bold truncate w-full text-foreground group-hover:text-primary transition-colors">{session.user?.name}</span>
-                  <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mt-0.5">{subject.roleName}</span>
+                  {/* Versi web sebaris dengan role → tinggi kartu profil tidak bertambah. */}
+                  <span className="text-[11px] text-muted-foreground font-semibold mt-0.5 truncate w-full">
+                    <span className="uppercase tracking-wider">{subject.roleName}</span>
+                    <span className="font-medium tabular-nums opacity-80"> · v{APP_VERSION}</span>
+                  </span>
                 </div>
               )}
             </Button>

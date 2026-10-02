@@ -31,6 +31,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import AirplaneLoader from "@/components/ui/airplane-loader";
+import { useRequirePermission } from "@/hooks/use-require-permission";
 import { Alert, AlertTitle, AlertDescription } from "@/components/reui/alert";
 import { MediaPicker } from "@/components/ui/media-picker";
 import { formatWhatsAppNumber } from "@/lib/utils";
@@ -39,6 +40,7 @@ import { getCroppedImg } from "@/lib/cropImage";
 import { Minus, Plus, UploadCloud } from "lucide-react";
 
 export default function SettingsPage() {
+  useRequirePermission("settings_manage");
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [uploadingLogo, setUploadingLogo] = useState(false);

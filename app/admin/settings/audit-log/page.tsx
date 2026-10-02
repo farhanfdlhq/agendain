@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, Suspense } from "react"
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { ScrollText, RefreshCw, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,9 @@ import AirplaneLoader from "@/components/ui/airplane-loader"
 import { PageSizeSelect } from "@/components/ui/page-size-select"
 import { TablePagination } from "@/components/ui/table-pagination"
 import { hasPermission } from "@/lib/permissions"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import ChangelogList from "@/components/admin/ChangelogList"
+import { APP_VERSION } from "@/lib/changelog"
 
 type AuditLog = {
   id: number
@@ -63,9 +66,28 @@ function formatDetail(detail: string): string {
   }
 }
 
+// useSearchParams wajib di dalam Suspense agar halaman tetap bisa di-prerender.
 export default function AuditLogPage() {
+  return (
+    <Suspense fallback={<div className="flex h-64 items-center justify-center"><AirplaneLoader size={48} /></div>}>
+      <AuditLogContent />
+    </Suspense>
+  )
+}
+
+type TabKey = "audit" | "versi"
+
+function AuditLogContent() {
   const { data: session } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  // null = izin belum diketahui. Tab Log Versi terbuka untuk semua admin;
+  // tab Audit hanya untuk pemegang `audit_view`.
+  const [canAudit, setCanAudit] = useState<boolean | null>(null)
+  const activeTab: TabKey = canAudit === false || searchParams.get("tab") === "versi" ? "versi" : "audit"
+  const changeTab = (value: string) => {
+    router.replace(value === "versi" ? "?tab=versi" : "?", { scroll: false })
+  }
   const [logs, setLogs] = useState<AuditLog[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -103,10 +125,13 @@ export default function AuditLogPage() {
         const res = await fetch('/api/admin/me')
         const me = res.ok ? await res.json() : null
         if (cancelled) return
-        if (!hasPermission(me, 'users_manage')) {
-          router.push('/admin')
+        if (!hasPermission(me, 'audit_view')) {
+          // Bukan pemegang izin audit: tetap boleh melihat Log Versi.
+          setCanAudit(false)
+          setLoading(false)
           return
         }
+        setCanAudit(true)
         fetchData(1, 10)
       } catch {
         if (!cancelled) router.push('/admin')
@@ -131,7 +156,7 @@ export default function AuditLogPage() {
   const from = total === 0 ? 0 : (page - 1) * pageSize + 1
   const to = Math.min(page * pageSize, total)
 
-  if (loading && logs.length === 0) {
+  if (activeTab === "audit" && loading && logs.length === 0) {
     return <div className="flex h-64 items-center justify-center"><AirplaneLoader size={48} /></div>
   }
 
@@ -140,13 +165,36 @@ export default function AuditLogPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Audit Log</h2>
-          <p className="text-sm text-muted-foreground mt-1">Jejak aktivitas keamanan: login, perubahan user, role, dan profil.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Jejak aktivitas keamanan dan riwayat pembaruan web. Versi saat ini: <span className="font-semibold text-foreground">v{APP_VERSION}</span>
+          </p>
         </div>
-        <Button variant="outline" onClick={() => fetchData(page, pageSize)} disabled={loading} className="rounded-full px-5 whitespace-nowrap">
-          <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          Segarkan
-        </Button>
+        {activeTab === "audit" && (
+          <Button variant="outline" onClick={() => fetchData(page, pageSize)} disabled={loading} className="rounded-full px-5 whitespace-nowrap">
+            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            Segarkan
+          </Button>
+        )}
       </div>
+
+      <Tabs value={activeTab} onValueChange={changeTab} className="gap-6">
+        <TabsList className="w-fit">
+          {canAudit !== false && (
+            <TabsTrigger value="audit" className="px-4">Audit</TabsTrigger>
+          )}
+          <TabsTrigger value="versi" className="px-4">Log Versi</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="versi">
+          <Card className="border-0 shadow-sm bg-zinc-50/50 dark:bg-zinc-900/50">
+            <CardContent className="p-6">
+              <ChangelogList />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {canAudit !== false && (
+        <TabsContent value="audit">
 
       <Card className="border-0 shadow-sm bg-zinc-50/50 dark:bg-zinc-900/50">
         <CardContent className="p-6">
@@ -238,6 +286,9 @@ export default function AuditLogPage() {
           </div>
         </CardContent>
       </Card>
+        </TabsContent>
+        )}
+      </Tabs>
 
       <Dialog open={!!detailLog} onOpenChange={(open) => { if (!open) setDetailLog(null) }}>
         <DialogContent className="sm:max-w-lg">

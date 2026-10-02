@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/rbac'
 
 export async function GET(req: Request) {
-  const gate = await requirePermission(req, 'GET /api/admin/audit-log', 'users_manage')
+  const gate = await requirePermission(req, 'GET /api/admin/audit-log', 'audit_view')
   if (gate.denied) return gate.denied
 
   const { searchParams } = new URL(req.url)

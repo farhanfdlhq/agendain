@@ -15,10 +15,12 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { useRequirePermission } from "@/hooks/use-require-permission"
 import { MediaPicker } from "@/components/ui/media-picker"
 import PasswordValidator, { isPasswordValid } from "@/components/PasswordValidator/PasswordValidator"
 
 export default function ProfilePage() {
+  useRequirePermission("profile_manage")
   const { update } = useSession()
   const [loading, setLoading] = useState(true)
   const [savingAccount, setSavingAccount] = useState(false)

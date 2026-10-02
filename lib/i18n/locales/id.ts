@@ -15,11 +15,13 @@ const id: Record<string, string> = {
   "footer.tagline": "Mau Jalan tapi Wacana Doang? Agendain aja!",
   "footer.desc":
     "Travel agency digital terpercaya untuk perjalanan Anda dari Indonesia ke Eropa.",
+  "footer.eyebrow": "Spesialis Trip Eropa",
+  "footer.chatWa": "Chat WhatsApp",
   "footer.copyright": "Semua hak dilindungi.",
   "home.featuredPackages": "Open Trip Unggulan",
   "home.viewAll": "Lihat Semua Open Trip →",
   "home.popularDest": "Destinasi Favorit",
-  "home.exploreDest": "Jelajahi Eropa",
+  "home.exploreDest": "Lihat Semua Open Trip",
   "home.ctaPrimary": "Rencanakan Private Trip",
   "home.ctaSecondary": "Chat WhatsApp",
   "feat.euro": "Spesialis Eropa",
@@ -133,6 +135,9 @@ const id: Record<string, string> = {
   "search.notFound": "Destinasi tidak ditemukan",
   "search.people": "Orang",
   "search.group": "10+ Orang (Grup)",
+  "filter.results": "{n} open trip ditemukan",
+  "filter.reset": "Reset filter",
+  "filter.loading": "Memuat trip…",
   "filter.dest": "Destinasi",
   "filter.allDest": "Semua Destinasi",
   "filter.duration": "Durasi",
@@ -294,15 +299,17 @@ const id: Record<string, string> = {
   "openTrip.cta.btnSecondary": "Lihat Jadwal Trip",
 
   // Open Trip — kartu paket
+  "openTrip.empty": "Belum ada open trip yang cocok dengan filter ini. Coba ubah destinasi atau durasi.",
   "openTrip.card.days": "Hari",
   "openTrip.card.nights": "Malam",
   "openTrip.card.viewDetail": "Lihat Detail",
   "openTrip.card.ariaDetail": "Lihat detail paket",
-  // Tiga baris musim ini sama untuk semua paket (belum dari DB), tapi tetap
-  // lewat kamus supaya bulannya ikut berganti di halaman English.
-  "openTrip.card.seasonSpring": "Spring 11 April | 23 Mei",
-  "openTrip.card.seasonSummer": "Summer 6 Juni - 19 Sept",
-  "openTrip.card.seasonAutumn": "Autumn 17 Okt - 28 Nov",
+  "openTrip.card.departure": "Berangkat",
+  "openTrip.card.scheduleTba": "Jadwal berikutnya menyusul",
+  "openTrip.card.seatsLeft": "Sisa {n} kursi",
+  "openTrip.card.seatsFull": "Kursi penuh",
+  "openTrip.card.priceFrom": "Mulai",
+  "openTrip.card.perPax": "/pax",
 
   // Open Trip — halaman detail
   "openTrip.detail.duration": "Durasi",

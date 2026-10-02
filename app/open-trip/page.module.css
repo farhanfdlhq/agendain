@@ -145,7 +145,7 @@
 }
 
 .sectionHeader {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   text-align: left;
 }
 
@@ -158,10 +158,22 @@
 
 .sectionTitle {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3vw, 2.5rem);
-  font-weight: 500;
-  color: #111827; /* Dark black */
-  line-height: 1.2;
+  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  color: var(--color-primary);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Subjudul rata kiri mengikuti judul (dulu rata tengah → kolom "patah"). */
+.sectionSubtitle {
+  margin-top: 0.75rem;
+  max-width: 60ch;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--color-body);
+  text-wrap: pretty;
 }
 
 .grid {
@@ -171,7 +183,6 @@
      memenuhi layar. */
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 2rem;
-  margin-top: 3rem;
 }
 
 @media (max-width: 744px) {
@@ -198,4 +209,30 @@
   .statBox:last-child {
     border-bottom: none;
   }
+}
+
+/* Hasil filter kosong: pesan jujur, bukan paket contoh. */
+.empty {
+  margin-top: 0;
+  padding: 2.5rem 1.5rem;
+  border: 1px dashed #cfd8e0;
+  border-radius: 16px;
+  text-align: center;
+  color: var(--color-body);
+  font-size: 1rem;
+}
+
+/* Hasil filter: redup + non-interaktif selama data baru dimuat. */
+.results {
+  transition: opacity 0.2s ease;
+}
+
+.results[data-pending] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.gridItem {
+  height: 100%;
+  min-width: 0;
 }

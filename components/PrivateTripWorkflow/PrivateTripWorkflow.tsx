@@ -51,15 +51,16 @@ export default function PrivateTripWorkflow({ privatetripSettings }: { privatetr
           </div>
         </FadeIn>
 
-        <div className={styles.grid}>
+        <div className={styles.grid} role="list">
           {workflowSteps.map((step, idx) => (
-            <FadeIn key={idx} direction="up" delay={0.1 * (idx + 1)}>
-              <div className={styles.stepItem}>
-                <div className={styles.iconBox}>
+            <FadeIn key={idx} direction="up" delay={0.1 * (idx + 1)} className={styles.stepCell}>
+              <div className={styles.stepItem} role="listitem">
+                <div className={styles.iconBox} aria-hidden="true">
+                  <span className={styles.stepNum}>{idx + 1}</span>
                   {idx === 0 && (
                     <svg
-                      width="32"
-                      height="32"
+                      width="28"
+                      height="28"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -70,8 +71,8 @@ export default function PrivateTripWorkflow({ privatetripSettings }: { privatetr
                   )}
                   {idx === 1 && (
                     <svg
-                      width="32"
-                      height="32"
+                      width="28"
+                      height="28"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -86,8 +87,8 @@ export default function PrivateTripWorkflow({ privatetripSettings }: { privatetr
                   )}
                   {idx === 2 && (
                     <svg
-                      width="32"
-                      height="32"
+                      width="28"
+                      height="28"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -99,8 +100,8 @@ export default function PrivateTripWorkflow({ privatetripSettings }: { privatetr
                   )}
                   {idx === 3 && (
                     <svg
-                      width="32"
-                      height="32"
+                      width="28"
+                      height="28"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"

@@ -1,76 +1,45 @@
 'use client'
 import { fontStyle } from '@/lib/font-style'
-import Image from 'next/image'
 import Link from 'next/link'
-import { Star } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import FadeIn from '@/components/Motion/FadeIn'
 import Stagger from '@/components/Motion/Stagger'
-import { useTranslation } from '@/lib/i18n/useTranslation'
-import { formatPriceShort } from '@/lib/currency'
-import { pickLocalized } from '@/lib/i18n/localize'
+import PackageCard from '@/components/PackageCard/PackageCard'
+import type { OpenTripCardData } from '@/lib/open-trip-card'
 import styles from '../HomeContent.module.css'
 import { renderHighlightedTitle } from '../shared'
 
-const DESTINATIONS = [
-  { name: 'France', price: '18 Juta', rating: '5/5', image: '/dest-france.webp', slug: 'prancis' },
-  { name: 'Swiss', price: '24 Juta', rating: '5/5', image: '/dest-swiss.webp', slug: 'swiss' },
-  { name: 'Italy', price: '20 Juta', rating: '5/5', image: '/dest-italy.webp', slug: 'italia' },
-]
-
-export default function DestinationsSection({ gs, t, packages }: { gs: any, t: any, packages: any[] }) {
-  // `t` datang sebagai prop dari HomeContent; locale-nya diambil langsung agar
-  // tidak perlu lagi menebak bahasa dari isi terjemahan.
-  const { locale } = useTranslation()
+/**
+ * Destinasi Favorit — 3 open trip terbaru dari DB, memakai kartu yang SAMA
+ * dengan halaman /open-trip (components/PackageCard). Tidak ada data contoh:
+ * bila belum ada paket terbit, section hanya menampilkan kepala + tombol.
+ */
+export default function DestinationsSection({ gs, packages }: {
+  gs: (key: string, fallbackTKey?: string, defaultStatic?: string) => string
+  packages: OpenTripCardData[]
+}) {
   return (
     <section key="destinations" className={styles.destSection}>
       <div className={styles.container}>
         <FadeIn direction="up">
-          <div className={styles.destWrapper}>
-            <div className={styles.destHeaderLeftWrapper}>
+          <div className={styles.destHead}>
+            <div>
               <p className={styles.destEyebrow} style={fontStyle(gs, 'destEyebrow')}>{gs('destEyebrow', 'dest.subtitle', 'Eksplor Bersama Agendain')}</p>
               <h2 className={styles.destTitle} style={fontStyle(gs, 'destTitle')}>{renderHighlightedTitle(gs('destTitle', 'home.popularDest', 'Favorite Destination'))}</h2>
-              <Link href="/open-trip" className={styles.destViewAll}>{t('home.exploreDest') || 'Lihat Semua Destinasi →'}</Link>
             </div>
-        <Stagger className={styles.destGrid}>
-          {((packages || []).length > 0 ? packages.slice(0, 3) : DESTINATIONS).map((pkg) => (
-            <Link key={pkg.slug} href={`/open-trip/${pkg.slug}`} className={styles.destCard}>
-              <div className={styles.destCardImageWrapper}>
-                <Image src={pkg.fotoThumbnail || pkg.image || '/placeholder.webp'} alt={pickLocalized(pkg, 'nama', locale) || pkg.name} fill className={styles.destCardImage}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
-              </div>
-              <div className={styles.destCardBody}>
-                <div className={styles.destCardTop}>
-                  <h3 className={styles.destCardName}>{pickLocalized(pkg, 'nama', locale) || pkg.name}</h3>
-                  <span className={styles.destCardRating}>
-                    <Star size={12} fill="#f59e0b" className={styles.destCardRatingStar} />
-                    <span className={styles.destCardRatingText}>{pkg.rating || '5/5'}</span>
-                  </span>
-                </div>
-                <div className={styles.destCardBottom}>
-                  <div className={styles.destCardPriceWrapper}>
-                    {pkg.harga || pkg.price ? (
-                      <>
-                        <div className={styles.destCardPriceLabel}>
-                          <span>{t('home.dest.startFrom')?.split(' ')[0] || 'Start'}</span>
-                          <span>{t('home.dest.startFrom')?.split(' ')[1] || 'From'}</span>
-                        </div>
-                        <span className={styles.destCardPriceValue}>{
-                          pkg.harga
-                            ? formatPriceShort(Number(pkg.harga), locale)
-                            : pkg.price
-                        }</span>
-                      </>
-                    ) : (
-                      <span className={styles.destCardPriceValue} style={{ fontSize: '1.25rem', paddingLeft: '0.5rem' }}>{t('nav.destinations')}</span>
-                    )}
-                  </div>
-                  <span className={styles.destCardBooking}>{t('openTrip.card.viewDetail')}</span>
-                </div>
-              </div>
+            <Link href="/open-trip" className={styles.destViewAll}>
+              {gs('destBtn', 'home.exploreDest')}
+              <ArrowRight size={18} aria-hidden="true" />
             </Link>
-          ))}
-        </Stagger>
           </div>
         </FadeIn>
+        {packages.length > 0 && (
+          <Stagger className={styles.destGrid}>
+            {packages.map((pkg) => (
+              <PackageCard key={pkg.id} {...pkg} />
+            ))}
+          </Stagger>
+        )}
       </div>
     </section>
   )

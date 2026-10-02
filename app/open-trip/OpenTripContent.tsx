@@ -1,7 +1,10 @@
 "use client";
+import { useTransition } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { fontStyleFrom } from '@/lib/font-style'
 import Image from "next/image";
 import PackageCard from "@/components/PackageCard/PackageCard";
+import type { OpenTripCardData } from "@/lib/open-trip-card";
 import OpenTripFilter, {
   type DestOption,
 } from "@/components/OpenTripFilter/OpenTripFilter";
@@ -15,7 +18,7 @@ import { generateWhatsAppLink } from "@/lib/utils";
 import { waOpenTripGeneral } from "@/lib/whatsapp-messages";
 
 interface OpenTripContentProps {
-  packages: any[];
+  packages: OpenTripCardData[];
   destList: DestOption[];
   opentripSettings?: any;
 }
@@ -27,6 +30,11 @@ export default function OpenTripContent({
 }: OpenTripContentProps) {
   const { t, locale } = useTranslation();
   const isEn = locale === "en";
+  // Navigasi filter dibungkus transition → selama data baru dimuat, grid
+  // diredupkan (bukan kosong), lalu kartu keluar/masuk dengan animasi.
+  const [isPending, startTransition] = useTransition();
+  const reduceMotion = useReducedMotion();
+  const ease = [0.25, 1, 0.5, 1] as const;
   const getSetting = (key: string) => {
     const val = isEn
       ? opentripSettings[`${key}_en`] || opentripSettings[key]
@@ -142,24 +150,50 @@ export default function OpenTripContent({
             {getSetting("packagesSubtitle") && (
               <p
                 className={styles.sectionSubtitle}
-                style={{
-                  ...fontStyleFrom(getSetting("packagesSubtitleWeight"), getSetting("packagesSubtitleSize")),
-                  textAlign: "center",
-                  marginTop: "1rem",
-                  color: "var(--text-secondary)",
-                }}
+                style={fontStyleFrom(getSetting("packagesSubtitleWeight"), getSetting("packagesSubtitleSize"))}
               >
                 {getSetting("packagesSubtitle")}
               </p>
             )}
           </div>
 
-          <OpenTripFilter destList={destList} />
+          <OpenTripFilter
+            destList={destList}
+            resultCount={packages.length}
+            isPending={isPending}
+            startTransition={startTransition}
+          />
 
-          <div className={styles.grid}>
-            {packages.map((pkg) => (
-              <PackageCard key={pkg.id} {...pkg} />
-            ))}
+          <div className={styles.results} data-pending={isPending || undefined} aria-busy={isPending}>
+            {packages.length > 0 ? (
+              <div className={styles.grid}>
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {packages.map((pkg, i) => (
+                    <motion.div
+                      key={pkg.id}
+                      layout={!reduceMotion}
+                      initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.4, ease, delay: reduceMotion ? 0 : i * 0.05 }}
+                      className={styles.gridItem}
+                    >
+                      <PackageCard {...pkg} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <motion.p
+                key="empty"
+                initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, ease }}
+                className={styles.empty}
+              >
+                {t("openTrip.empty")}
+              </motion.p>
+            )}
           </div>
         </div>
       </div>

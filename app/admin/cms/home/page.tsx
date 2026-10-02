@@ -33,6 +33,7 @@ export default function HomeCMSPage() {
     // Destinations
     destEyebrow: '', destEyebrow_en: '',
     destTitle: '', destTitle_en: '',
+    destBtn: '', destBtn_en: '',
 
     // Testimonial
     testiBadge: '', testiBadge_en: '',
@@ -704,6 +705,7 @@ export default function HomeCMSPage() {
           <CardContent className="grid gap-6 sm:grid-cols-2 pt-6">
             {renderTextInput('Eyebrow (Teks Kecil Atas)', 'destEyebrow', false, '', true, '500')}
             {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'destTitle', false, '', true, '800')}
+            {renderTextInput('Teks Tombol (menuju halaman Open Trip)', 'destBtn', false, 'Lihat Semua Open Trip')}
           </CardContent>
         </Card>
 

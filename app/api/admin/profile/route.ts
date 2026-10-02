@@ -5,8 +5,13 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { ProfileUpdateSchema, getClientIp, csrfBlocked } from '@/lib/security'
 import { logAudit } from '@/lib/audit'
+import { requirePermission } from '@/lib/rbac'
 
 export async function GET() {
+  // Akun & Profil masuk RBAC (`profile_manage`); sesi tetap dibaca untuk email.
+  const gate = await requirePermission(undefined, 'GET /api/admin/profile', 'profile_manage')
+  if (gate.denied) return gate.denied
+
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -19,6 +24,10 @@ export async function GET() {
 
 export async function PUT(req: NextRequest) {
   if (csrfBlocked(req)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+  // Akun & Profil masuk RBAC (`profile_manage`); sesi tetap dibaca untuk email.
+  const gate = await requirePermission(req, 'PUT /api/admin/profile', 'profile_manage')
+  if (gate.denied) return gate.denied
 
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

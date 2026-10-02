@@ -30,11 +30,9 @@ const getTestimonials = (t: any) => [
 
 export default function HomeContent({
   packages,
-  destinations,
   homeSettings,
 }: {
   packages: any[]
-  destinations: any[]
   homeSettings: any
 }) {
   const { t, locale } = useTranslation()
@@ -62,7 +60,7 @@ export default function HomeContent({
       case 'why': 
         return <WhySection key="why" gs={gs} t={t} locale={locale} homeSettings={homeSettings} />
       case 'destinations': 
-        return <DestinationsSection key="destinations" gs={gs} t={t} packages={packages} />
+        return <DestinationsSection key="destinations" gs={gs} packages={packages} />
       case 'testimonial': 
         return <TestimonialSection key="testimonial" gs={gs} t={t} waLink={waLink} />
       case 'accordion': 

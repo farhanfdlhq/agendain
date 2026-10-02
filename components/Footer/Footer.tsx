@@ -1,14 +1,15 @@
 'use client'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Globe, Link2, MessageCircle, Music2, Phone } from 'lucide-react'
+import { Globe, Link2, Mail, MessageCircle, Music2, Phone } from 'lucide-react'
 import InstagramIcon from '@/components/icons/mdi_instagram.svg'
 import YoutubeIcon from '@/components/icons/mdi_youtube.svg'
 import TwitterIcon from '@/components/icons/mdi_twitter.svg'
 import ThreadsIcon from '@/components/icons/threads.svg'
 import MailIcon from '@/components/icons/ic_baseline-email.svg'
 import { useTranslation } from '@/lib/i18n/useTranslation'
-import { parseFooterSettings, safeHref, type FooterSocial } from '@/lib/footer-settings'
+import { FOOTER_SOCIAL_PLATFORMS, parseFooterSettings, safeHref } from '@/lib/footer-settings'
+import { formatWhatsAppNumber } from '@/lib/utils'
 import { sanitizeHtml } from '@/lib/sanitize'
 import styles from './Footer.module.css'
 
@@ -39,6 +40,17 @@ function SocialIcon({ platform }: { platform: string }) {
   return <Lucide size={18} className={styles.socialIcon} aria-hidden="true" />
 }
 
+// Platform "kontak" tampil sebagai baris ikon+label+nilai di kolom Hubungi;
+// sisanya (sosial media) jadi tombol ikon bulat di baris atas footer.
+const CONTACT_PLATFORMS = new Set(['email', 'whatsapp', 'phone'])
+const CONTACT_ICONS: Record<string, any> = { email: Mail, whatsapp: MessageCircle, phone: Phone }
+
+// 6281995264565 → 0819-9526-4565 (tampilan saja; tautan tetap wa.me/62…).
+function displayPhone(num: string): string {
+  const local = num.startsWith('62') ? `0${num.slice(2)}` : num
+  return local.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3')
+}
+
 export default function Footer({ settings }: { settings?: any }) {
   const { t, locale } = useTranslation()
   const siteName = settings?.site_name || "agendain"
@@ -51,100 +63,135 @@ export default function Footer({ settings }: { settings?: any }) {
   const fs = (key: string): string =>
     ((isEn ? (footer.raw[`${key}_en`] || footer.raw[key]) : footer.raw[key]) || '').toString().trim()
 
+  const eyebrow = fs('eyebrow') || t('footer.eyebrow')
   const tagline = fs('tagline') || t('footer.tagline') || 'Mau Jalan tapi Wacana Doang? <strong>Agendain aja!</strong>'
+  const desc = fs('desc') || t('footer.desc')
   const menuTitle = fs('menuTitle') || t('footer.mainMenu') || 'Navigasi'
   const contactTitle = fs('contactTitle') || t('footer.contact')
   const paymentTitle = fs('paymentTitle') || 'Payment Partners'
   const copyright = fs('copyright') || t('footer.copyright')
 
+  // Nomor dari Pengaturan → Umum. Kosong = tombol & baris WhatsApp disembunyikan (tanpa nomor contoh).
+  const waNumber = formatWhatsAppNumber(settings?.whatsapp_number)
+  const waLabel = fs('waButton') || t('footer.chatWa')
+  const waHref = `https://wa.me/${waNumber}?text=${encodeURIComponent(isEn ? 'Hi Agendain! I have a question.' : 'Halo Agendain! Saya mau tanya-tanya nih.')}`
+
+  const socialLinks = footer.socials.filter((s) => !CONTACT_PLATFORMS.has(s.platform))
+  const contacts = footer.socials.filter((s) => CONTACT_PLATFORMS.has(s.platform))
+  // WhatsApp selalu ada di kolom kontak (nomor dari Pengaturan) bila CMS belum mencantumkannya.
+  if (waNumber && !contacts.some((c) => c.platform === 'whatsapp')) {
+    contacts.unshift({ platform: 'whatsapp', label: displayPhone(waNumber), url: waHref })
+  }
+  const platformLabel = (id: string) => FOOTER_SOCIAL_PLATFORMS.find((p) => p.id === id)?.label || id
+
   return (
     <footer className={styles.footer} suppressHydrationWarning>
-      {/* Top Band with tagline */}
-      <div className={styles.topBand} suppressHydrationWarning>
-        <div className={styles.container} suppressHydrationWarning>
-          <div className={styles.topBandInner}>
-            <Link href="/" className={styles.footerLogo}>
-              {siteLogo ? (
-                <img
-                  src={siteLogo}
-                  alt={siteName}
-                  className={styles.footerLogoImg}
-                  style={{ '--logo-height': settings?.logo_height ? `${settings.logo_height}px` : undefined } as React.CSSProperties}
-                />
-              ) : (
-                <span className={styles.footerLogoText}>{siteName}</span>
-              )}
-            </Link>
-            <div className={styles.topBandDivider} />
-            {/* Tagline boleh memuat <strong>. Sudah dibersihkan saat disimpan
-                di POST /api/settings/footer, jadi DOMPurify tidak perlu ikut
-                ke bundle client yang dipakai semua halaman. */}
-            {/* Defense-in-depth: nilai sudah disanitasi saat simpan (POST
-                /api/settings/footer), tapi sanitasi ringan saat render menutup
-                risiko bila kelak ada jalur tulis lain. sanitizeHtml MURNI (regex,
-                tanpa DOMPurify) → tak menambah beban bundle client. */}
-            <p className={styles.topBandTagline} dangerouslySetInnerHTML={{ __html: sanitizeHtml(tagline) }} />
+      <div className={styles.container}>
+        {/* Baris atas: logo kiri, sosial media kanan */}
+        <div className={styles.topRow}>
+          <Link href="/" className={styles.footerLogo}>
+            {siteLogo ? (
+              <img
+                src={siteLogo}
+                alt={siteName}
+                className={styles.footerLogoImg}
+                style={{ '--logo-height': settings?.logo_height ? `${settings.logo_height}px` : undefined } as React.CSSProperties}
+              />
+            ) : (
+              <span className={styles.footerLogoText}>{siteName}</span>
+            )}
+          </Link>
+          {socialLinks.length > 0 && (
+            <ul className={styles.socials}>
+              {socialLinks.map((social, i) => {
+                const href = safeHref(social.url)
+                const isExternal = /^https?:/i.test(href)
+                return (
+                  <li key={`${social.platform}-${i}`}>
+                    <a
+                      href={href}
+                      className={styles.socialBtn}
+                      aria-label={platformLabel(social.platform)}
+                      title={social.label || platformLabel(social.platform)}
+                      {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    >
+                      <SocialIcon platform={social.platform} />
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </div>
+
+        <div className={styles.columns}>
+          {/* Brand: eyebrow, tagline, deskripsi, CTA WhatsApp */}
+          <div className={styles.brandCol}>
+            {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
+            {/* Tagline boleh memuat <strong>. Sudah disanitasi saat disimpan
+                (POST /api/settings/footer); sanitasi ringan saat render menutup
+                risiko jalur tulis lain. sanitizeHtml MURNI (regex, tanpa
+                DOMPurify) → tak menambah beban bundle client. */}
+            <p className={styles.tagline} dangerouslySetInnerHTML={{ __html: sanitizeHtml(tagline) }} />
+            {desc && <p className={styles.desc}>{desc}</p>}
+            {waNumber && (
+              <a href={waHref} target="_blank" rel="noopener noreferrer" className={styles.waBtn}>
+                <MessageCircle size={18} aria-hidden="true" />
+                <span>{waLabel} · {displayPhone(waNumber)}</span>
+              </a>
+            )}
+          </div>
+
+          {/* Navigasi — sengaja tetap otomatis, tidak dikelola CMS */}
+          <nav className={styles.col} aria-label={menuTitle}>
+            <h3 className={styles.colTitle}>{menuTitle}</h3>
+            <ul className={styles.links}>
+              <li><Link href="/">{t('nav.home')}</Link></li>
+              <li><Link href="/tentang">{t('nav.about')}</Link></li>
+              <li><Link href="/open-trip">{t('nav.openTrip')}</Link></li>
+              <li><Link href="/private-trip">{t('nav.privateTrip')}</Link></li>
+              <li><Link href="/blog">{t('nav.blog')}</Link></li>
+            </ul>
+          </nav>
+
+          {/* Hubungi */}
+          <div className={styles.col}>
+            <h3 className={styles.colTitle}>{contactTitle}</h3>
+            <ul className={styles.contactList}>
+              {contacts.map((c, i) => {
+                const href = safeHref(c.url)
+                const isExternal = /^https?:/i.test(href)
+                const Icon = CONTACT_ICONS[c.platform] || Link2
+                return (
+                  <li key={`${c.platform}-${i}`}>
+                    <a href={href} className={styles.contactItem} {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+                      <span className={styles.contactIcon}><Icon size={16} aria-hidden="true" /></span>
+                      <span className={styles.contactText}>
+                        <span className={styles.contactLabel}>{platformLabel(c.platform)}</span>
+                        <span className={styles.contactValue}>{c.label || href.replace(/^(mailto:|tel:)/, '')}</span>
+                      </span>
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
         </div>
-      </div>
 
-      {/* Main Footer Columns */}
-      <div className={styles.mainFooter} suppressHydrationWarning>
-        <div className={styles.container} suppressHydrationWarning>
-          <div className={styles.columns} suppressHydrationWarning>
-            {/* Navigasi — sengaja tetap otomatis, tidak dikelola CMS */}
-            <div className={styles.col} suppressHydrationWarning>
-              <h3 className={styles.colTitle}>{menuTitle}</h3>
-              <ul className={styles.links}>
-                <li><Link href="/">{t('nav.home')}</Link></li>
-                <li><Link href="/tentang">{t('nav.about')}</Link></li>
-                <li><Link href="/open-trip">{t('nav.openTrip')}</Link></li>
-                <li><Link href="/private-trip">{t('nav.privateTrip')}</Link></li>
-                <li><Link href="/blog">{t('nav.blog')}</Link></li>
-                <li><Link href="/privacy-policy">{t('nav.privacy')}</Link></li>
-              </ul>
-            </div>
-
-            {/* Hubungi */}
-            <div className={styles.col} suppressHydrationWarning>
-              <h3 className={styles.colTitle}>{contactTitle}</h3>
-              <ul className={styles.links}>
-                {footer.socials.map((social: FooterSocial, i: number) => {
-                  const href = safeHref(social.url)
-                  const isExternal = /^https?:/i.test(href)
-                  return (
-                    <li key={`${social.platform}-${i}`}>
-                      <a
-                        href={href}
-                        {...(isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                      >
-                        <SocialIcon platform={social.platform} /> {social.label || social.platform}
-                      </a>
-                    </li>
-                  )
-                })}
-              </ul>
-            </div>
-
-            {/* Payment Partners */}
-            <div className={styles.col} suppressHydrationWarning>
-              <h3 className={styles.colTitle}>{paymentTitle}</h3>
-              <div className={styles.paymentGrid} suppressHydrationWarning>
-                {footer.paymentBadges.map((name: string, i: number) => (
-                  <div key={`${name}-${i}`} className={styles.paymentBadge} suppressHydrationWarning>
-                    {name}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {/* Mitra pembayaran */}
+        <div className={styles.paymentRow}>
+          <span className={styles.paymentTitle}>{paymentTitle}</span>
+          <ul className={styles.paymentList}>
+            {footer.paymentBadges.map((name: string, i: number) => (
+              <li key={`${name}-${i}`} className={styles.paymentBadge}>{name}</li>
+            ))}
+          </ul>
         </div>
-      </div>
 
-      {/* Bottom copyright */}
-      <div className={styles.bottom} suppressHydrationWarning>
-        <div className={styles.container} suppressHydrationWarning>
+        {/* Bawah: copyright kiri, tautan legal kanan */}
+        <div className={styles.bottom}>
           <p>&copy; {new Date().getFullYear()} {siteName}. {copyright}</p>
+          <Link href="/privacy-policy" className={styles.bottomLink}>{t('nav.privacy')}</Link>
         </div>
       </div>
     </footer>

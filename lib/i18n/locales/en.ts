@@ -14,11 +14,13 @@ const en: Record<string, string> = {
   'footer.help': 'Help',
   'footer.tagline': 'Stop planning, start packing. Agendain Now!',
   'footer.desc': 'Trusted digital travel agency for your journey from Indonesia to Europe.',
+  'footer.eyebrow': 'Europe Trip Specialist',
+  'footer.chatWa': 'Chat on WhatsApp',
   'footer.copyright': 'All rights reserved.',
   'home.featuredPackages': 'Featured Packages',
   'home.viewAll': 'View All Packages →',
   'home.popularDest': 'Popular Destinations',
-  'home.exploreDest': 'Explore Europe →',
+  'home.exploreDest': 'See All Open Trips',
   'home.ctaPrimary': 'Plan Private Trip',
   'home.ctaSecondary': 'Chat WhatsApp',
   'feat.euro': 'Europe Specialist',
@@ -110,6 +112,9 @@ const en: Record<string, string> = {
   'search.notFound': 'Destination not found',
   'search.people': 'People',
   'search.group': '10+ People (Group)',
+  'filter.results': '{n} open trips found',
+  'filter.reset': 'Reset filters',
+  'filter.loading': 'Loading trips…',
   'filter.dest': 'Destination',
   'filter.allDest': 'All Destinations',
   'filter.duration': 'Duration',
@@ -234,15 +239,17 @@ const en: Record<string, string> = {
   'openTrip.cta.btnSecondary': 'View Trip Schedules',
 
   // Open Trip — package card
+  'openTrip.empty': 'No open trips match these filters yet. Try another destination or duration.',
   'openTrip.card.days': 'Days',
   'openTrip.card.nights': 'Nights',
   'openTrip.card.viewDetail': 'View Details',
   'openTrip.card.ariaDetail': 'View package details',
-  // Tiga baris musim ini sama untuk semua paket (belum dari DB), tapi tetap
-  // diterjemahkan supaya kartunya tidak setengah Indonesia di halaman English.
-  'openTrip.card.seasonSpring': 'Spring 11 Apr | 23 May',
-  'openTrip.card.seasonSummer': 'Summer 6 Jun - 19 Sep',
-  'openTrip.card.seasonAutumn': 'Autumn 17 Oct - 28 Nov',
+  'openTrip.card.departure': 'Departs',
+  'openTrip.card.scheduleTba': 'Next schedule coming soon',
+  'openTrip.card.seatsLeft': '{n} seats left',
+  'openTrip.card.seatsFull': 'Fully booked',
+  'openTrip.card.priceFrom': 'From',
+  'openTrip.card.perPax': '/pax',
 
   // Open Trip — detail page
   'openTrip.detail.duration': 'Duration',

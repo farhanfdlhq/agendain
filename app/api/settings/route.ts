@@ -49,7 +49,7 @@ export async function GET() {
 
 // Key yang TIDAK boleh ditulis lewat endpoint generik ini karena punya
 // penulis sendiri dengan gerbang & validasi berbeda. Terpenting: `roles_config`
-// digerbangi `users_manage` di /api/admin/roles — tanpa blokir ini, pemegang
+// digerbangi `roles_manage` di /api/admin/roles — tanpa blokir ini, pemegang
 // `settings_manage` saja bisa menimpanya (mis. memberi role-nya `["all"]`) =
 // ESKALASI PRIVILEGE. Key `*_settings` (theme/home/about/dst) juga punya route
 // tersendiri dengan sanitizeSettingsPayload/validasi masing-masing.

@@ -524,244 +524,97 @@
 }
 
 
-/* ---------- FAVORITE DESTINATIONS ---------- */
+/* ---------- FAVORITE DESTINATIONS ----------
+   Tanpa panel pembungkus: kartu langsung di atas kanvas (panel rounded + kartu
+   di dalamnya = nested card). Kepala section di atas, grid sama persis dengan
+   /open-trip sehingga kartu identik di kedua halaman. */
 .destSection {
   padding: clamp(2.75rem, 6vw, 5rem) 0;
   background: var(--color-canvas);
 }
 
-.destWrapper {
-  background: #f5f6f8;
-  border-radius: clamp(1.5rem, 3vw, 2.5rem);
-  padding: clamp(2rem, 5vw, 4rem) clamp(1.25rem, 4vw, 3rem);
+.destHead {
   display: flex;
-  align-items: center;
-  gap: clamp(1.5rem, 4vw, 3rem);
-}
-
-.destHeaderLeftWrapper {
-  display: flex;
-  flex-direction: column;
-  width: 22%;
-  flex-shrink: 0;
-  align-items: flex-start;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+  flex-wrap: wrap;
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
 }
 
 .destEyebrow {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  margin-bottom: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-accent-blue);
+  margin-bottom: 0.5rem;
 }
 
 .destTitle {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  font-size: clamp(1.875rem, 3.5vw, 2.75rem);
   font-weight: 800;
-  color: #111827; /* Near black for maximum contrast */
-  line-height: 1.05;
-  margin-bottom: 2rem;
-  letter-spacing: -0.03em;
-  max-width: 10ch; /* Forces the Favorite Destination line break perfectly */
-}
-
-.destSubtitleSmall {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #4b5563;
-  margin-bottom: 2.5rem;
+  color: var(--color-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
 .destViewAll {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.875rem 1.5rem;
-  border: 1px solid #1c1c1c;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-full);
   background: transparent;
-  color: #1c1c1c;
-  font-weight: 600;
+  color: var(--color-primary);
+  font-weight: 700;
   font-size: 0.9375rem;
-  transition: all 0.25s;
   text-decoration: none;
-  width: fit-content;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
 }
 
 .destViewAll:hover {
-  background: #1c1c1c;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
 }
 
+.destViewAll:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+.destViewAll svg {
+  transition: transform 0.2s;
+}
+
+.destViewAll:hover svg {
+  transform: translateX(3px);
+}
+
+/* Sama dengan .grid di app/open-trip/page.module.css. */
 .destGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
-  flex: 1;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2rem);
 }
 
-/* Pembungkus animasi Stagger. `min-width: 0` wajib: kolom `1fr` berarti
-   `minmax(auto, 1fr)`, jadi tanpa ini lebar min-content kartu (harga & tombol
-   yang nowrap) bisa melebihi bagiannya dan grid keluar dari .destWrapper. */
+/* Pembungkus animasi Stagger ikut meregang setinggi baris grid. */
 .destGrid > div {
-  height: 100%;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.destCard {
-  border-radius: 1.5rem;
-  overflow: hidden;
-  background: #ffffff;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  transition: transform 0.3s, box-shadow 0.3s;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
   height: 100%;
-  flex: 1;
-}
-
-.destCard:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.1);
-}
-
-.destCardImageWrapper {
-  position: relative;
-  aspect-ratio: 4 / 3.5;
-  overflow: hidden;
-}
-
-.destCardImageWrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s;
-}
-
-.destCard:hover .destCardImageWrapper img {
-  transform: scale(1.05);
-}
-
-.destCardBody {
-  padding: 1.125rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  flex: 1;
-  background: #ffffff;
-}
-
-.destCardTop {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.destCardName {
-  font-family: var(--font-display);
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-  line-height: 1.4;
-}
-
-.destCardRating {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.destCardRatingStar {
-  color: #facc15;
-}
-
-.destCardRatingText {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-ink);
-}
-
-.destCardBottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  gap: 0.5rem;
-}
-
-.destCardPriceWrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 0; /* Allow wrapper to shrink if needed */
-}
-
-.destCardPriceLabel {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #4b5563; /* Accessible gray */
-  line-height: 1.2;
-  flex-shrink: 0;
-}
-
-.destCardPriceValue {
-  font-size: 1.125rem; /* Reduced from 1.25rem to fit better */
-  font-weight: 800;
-  color: #111827;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.destCardBooking {
-  padding: 0.5rem 1rem; /* Reduced from 1.25rem */
-  background: #0f3050; /* Deep blue from image */
-  color: #ffffff;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.destCardBooking:hover {
-  background: #081e35;
-  transform: translateY(-1px);
-}
-
-@media (max-width: 1024px) {
-  .destWrapper {
-    flex-direction: column;
-    padding: clamp(1.75rem, 4vw, 3rem) clamp(1.25rem, 4vw, 2rem);
-  }
-  .destHeaderLeftWrapper {
-    width: 100%;
-    align-items: center;
-    text-align: center;
-  }
-  .destTitle {
-    word-spacing: normal;
-    margin-bottom: 2rem;
-  }
-  .destGrid {
-    grid-template-columns: repeat(2, 1fr);
-    width: 100%;
-  }
 }
 
 @media (max-width: 640px) {
   .destGrid {
     grid-template-columns: 1fr;
+  }
+
+  .destViewAll {
+    width: 100%;
   }
 }
 
@@ -1248,7 +1101,10 @@
 .testimonialSlideInactiveNext {
   width: 65%;
   height: 100%;
-  background: #a89400; /* Solid Olive/Dark Yellow */
+  /* Kartu samping: navy brand tembus-pandang, bukan olive — kartu kuning
+     aktif jadi satu-satunya fokus. */
+  background: rgba(5, 69, 105, 0.82);
+  backdrop-filter: blur(6px);
   padding: 2rem;
   z-index: 1;
 }
@@ -1270,13 +1126,34 @@
   font-weight: 800;
   font-size: 1.125rem;
   margin-bottom: 0.5rem;
-  color: var(--color-on-dominant); /* Dark blue */
+  color: var(--color-primary);
 }
 
+/* Teks di kartu kuning = navy (kontras ±6:1). Putih di atas kuning cuma
+   ±1.5:1 — itu yang membuat deskripsi "tenggelam". */
 .testimonialSlideText {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   line-height: 1.6;
-  color: #ffffff;
+  color: var(--color-primary);
+}
+
+/* Warna teks ikut ditransisikan dengan durasi & kurva yang SAMA dengan latar
+   kartu (.testimonialSlideBase). Tanpa ini teks berganti instan sementara
+   latar masih memudar 0,4 dtk → sempat teks putih di atas kuning (dan navy di
+   atas navy) saat slider digeser. */
+.testimonialSlideName,
+.testimonialSlideText {
+  transition: color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.testimonialSlideInactivePrev .testimonialSlideName,
+.testimonialSlideInactiveNext .testimonialSlideName {
+  color: var(--color-dominant);
+}
+
+.testimonialSlideInactivePrev .testimonialSlideText,
+.testimonialSlideInactiveNext .testimonialSlideText {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .sliderBtnLeft,
@@ -1441,9 +1318,6 @@
     order: 1;
   }
 
-  .destGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 
   .accordionLayout {
     grid-template-columns: 1fr;
@@ -1503,14 +1377,7 @@
     font-size: 3.5rem;
   }
 
-  .destGrid {
-    grid-template-columns: 1fr;
-  }
 
-  .destHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 
   .galleryMasonry {
     grid-template-columns: 1fr 1fr;
@@ -1650,12 +1517,6 @@
     bottom: 1rem;
   }
 
-  /* Destinasi Favorit: di tablet pakai 2 kolom, jangan 1 kolom (aturan ≤768px)
-     yang membuat tiap kartu jadi banner full-width raksasa. Blok akhir ini
-     menang atas `.destGrid { grid-template-columns: 1fr }`. */
-  .destGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 /* Mobile: sembunyikan slider testimoni kuning (testimonialSliderContainer).

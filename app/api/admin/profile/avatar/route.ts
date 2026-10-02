@@ -5,11 +5,16 @@ import { prisma } from '@/lib/prisma'
 import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { existsSync } from 'fs'
+import { requirePermission } from '@/lib/rbac'
 import { validateUploadedFile, matchesFileSignature, getClientIp, csrfBlocked } from '@/lib/security'
 import { logAudit } from '@/lib/audit'
 
 export async function POST(req: NextRequest) {
   if (csrfBlocked(req)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+  // Akun & Profil masuk RBAC (`profile_manage`); sesi tetap dibaca untuk email.
+  const gate = await requirePermission(req, 'POST /api/admin/profile/avatar', 'profile_manage')
+  if (gate.denied) return gate.denied
 
   const session = await getServerSession(authOptions)
   if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

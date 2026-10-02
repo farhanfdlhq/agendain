@@ -9,23 +9,20 @@
   padding: 0 var(--space-lg);
 }
 
-/* ── Top Brand Band ── */
-.topBand {
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  padding: 2rem 0;
-}
-
-.topBandInner {
+/* ── Baris atas: logo + sosial media ── */
+.topRow {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1.5rem;
   flex-wrap: wrap;
+  padding: 2rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footerLogo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   flex-shrink: 0;
 }
 
@@ -44,144 +41,264 @@
   text-transform: lowercase;
 }
 
-.topBandDivider {
-  width: 1px;
-  height: 32px;
-  background: rgba(255,255,255,0.25);
-  flex-shrink: 0;
+.socials {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
 }
 
-.topBandTagline {
-  font-size: 0.9375rem;
-  color: rgba(255,255,255,0.75);
+.socialBtn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
 }
 
-.topBandTagline strong {
+.socialBtn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: var(--color-dominant);
+  transform: translateY(-2px);
+}
+
+.socialIcon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Kolom utama ── */
+.columns {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  padding: 2.75rem 0;
+}
+
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  max-width: 26rem;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--color-dominant);
 }
 
-/* ── Main Footer Columns ── */
-.mainFooter {
-  padding: 2.5rem 0;
+.tagline {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #ffffff;
 }
 
-.columns {
-  display: grid;
-  grid-template-columns: 1fr 1.5fr 1.5fr;
-  gap: var(--space-xl);
+.tagline strong {
+  color: var(--color-dominant);
+}
+
+.desc {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.waBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  margin-top: 0.25rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-full);
+  background: var(--color-whatsapp);
+  color: #0b2e1a;
+  font-weight: 700;
+  font-size: 0.9375rem;
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.waBtn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 .col {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: 1rem;
 }
 
 .colTitle {
-  font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--color-dominant, #FDC600);
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffffff;
 }
 
 .links {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 0.75rem;
 }
 
 .links a {
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.9375rem;
   transition: color 0.2s;
-  font-size: 1rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
 }
 
 .links a:hover {
   color: var(--color-dominant);
 }
 
-.socialIcon {
-  font-size: 0.8125rem;
+.contactList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-/* ── Payment Grid ── */
-.paymentGrid {
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  color: inherit;
+}
+
+.contactIcon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-dominant);
+}
+
+.contactText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.contactLabel {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.contactValue {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.72);
+  overflow-wrap: anywhere;
+  transition: color 0.2s;
+}
+
+.contactItem:hover .contactValue {
+  color: var(--color-dominant);
+}
+
+/* ── Mitra pembayaran ── */
+.paymentRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.paymentTitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.paymentList {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
 .paymentBadge {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
+  padding: 0.375rem 0.75rem;
   border-radius: 6px;
-  padding: 0.5rem 0.375rem;
-  text-align: center;
-  font-size: 0.6875rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(255,255,255,0.8);
-  transition: background 0.2s;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.paymentBadge:hover {
-  background: rgba(255,255,255,0.18);
-}
-
-/* ── Bottom ── */
+/* ── Bawah ── */
 .bottom {
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding: var(--space-base) 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.25rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.8125rem;
-  color: rgba(255,255,255,0.5);
-  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
 }
 
-@media (max-width: 768px) {
+.bottomLink {
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.2s;
+}
+
+.bottomLink:hover {
+  color: var(--color-dominant);
+}
+
+/* Tablet: brand selebar penuh, Navigasi & Hubungi berdampingan di bawahnya. */
+@media (max-width: 1024px) {
+  .columns {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .brandCol {
+    grid-column: 1 / -1;
+    max-width: 36rem;
+  }
+}
+
+@media (max-width: 640px) {
   .columns {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 2.25rem;
   }
 
-  .topBandInner {
+  .waBtn {
+    width: 100%;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: 0.875rem;
+  }
+
+  .bottom {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .topBandDivider {
-    width: 48px;
-    height: 1px;
-  }
-
-  .paymentGrid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  /* Beri ruang bawah agar baris copyright tidak tertutup tombol WhatsApp
-     mengambang (FAB fixed di pojok kanan-bawah) pada layar kecil. */
-  .bottom {
-    padding-bottom: 5rem;
-  }
-}
-
-/* Tablet (641–768px): sandingkan Navigasi & Hubungi Kami jadi dua kolom agar
-   ruang kosong di kanan terpakai (bukan menumpuk seperti ponsel). Mitra
-   Pembayaran tetap selebar penuh di bawahnya. Blok ini setelah aturan ≤768px
-   agar menang untuk rentang 641–768. */
-@media (min-width: 641px) and (max-width: 768px) {
-  /* Navigasi di kiri, Hubungi Kami di kanan (space-between). */
-  .columns {
-    grid-template-columns: auto auto;
-    justify-content: space-between;
-  }
-
-  /* Mitra Pembayaran turun ke baris sendiri, selebar penuh. */
-  .columns > .col:last-child {
-    grid-column: 1 / -1;
+    /* Ruang untuk tombol WhatsApp mengambang (FAB) di pojok kanan-bawah. */
+    padding-bottom: 5.5rem;
   }
 }
