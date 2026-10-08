@@ -11,11 +11,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { FontControls } from "@/components/ui/font-size-picker"
+import { sanitizeHtml } from "@/lib/sanitize"
 import {
   DEFAULT_FOOTER_SOCIALS,
   DEFAULT_PAYMENT_BADGES,
   FOOTER_SOCIAL_PLATFORMS,
   type FooterSocial,
+  taglineToHtml,
+  taglineToStars,
 } from "@/lib/footer-settings"
 
 export default function FooterCMSPage() {
@@ -62,6 +66,10 @@ export default function FooterCMSPage() {
       .then(res => {
         if (!res.error) {
           const { socials: s, paymentBadges: b, ...rest } = res
+          // Tagline lama ber-<strong> ditampilkan dalam format standar *bintang*.
+          for (const k of ['tagline', 'tagline_en']) {
+            if (typeof rest[k] === 'string') rest[k] = taglineToStars(rest[k])
+          }
           setData((prev: any) => ({ ...prev, ...rest }))
           if (Array.isArray(s) && s.length) setSocials(s)
           if (Array.isArray(b) && b.length) setBadges(b)
@@ -108,26 +116,67 @@ export default function FooterCMSPage() {
     setData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const renderTextInput = (label: string, fieldName: string, isTextarea = false, placeholder = '', hint = '') => {
+  // Pola sama dengan CMS Beranda/Tentang: badge bahasa aktif, Font Weight +
+  // Font Size (disimpan `${field}Weight/Size`, berlaku ID & EN), dan live preview
+  // untuk teks ber-sorotan (`*bintang*` = kata kuning, sama dengan CMS lain).
+  const renderTextInput = (
+    label: string,
+    fieldName: string,
+    opts: { textarea?: boolean; placeholder?: string; hint?: string; defaultWeight?: string; preview?: boolean } = {},
+  ) => {
+    const { textarea = false, placeholder = '', hint = '', defaultWeight = '400', preview = false } = opts
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName
+    const weightField = `${fieldName}Weight`
+    const sizeField = `${fieldName}Size`
+    const selectedWeight = data[weightField] ? Number(data[weightField]) : undefined
+    const selectedSize = data[sizeField] ? Number(data[sizeField]) : undefined
     // Placeholder = teks yang BENAR-BENAR muncul bila kolom dikosongkan. Di tab
     // EN itu berarti nilai Indonesia lebih dulu (lihat fs() di
     // components/Footer/Footer.tsx), baru default kamus.
     const effectivePlaceholder = activeTab === 'en' ? data[fieldName] || placeholder : placeholder
+    const previewValue = String(data[activeFieldName] || effectivePlaceholder || '')
+    const weightStyle = selectedWeight ? { fontWeight: selectedWeight } : undefined
+
     return (
-      <div className="space-y-2 p-3.5 rounded-xl border border-border/60 bg-muted/10 shadow-xs">
-        <Label className="flex items-center justify-between gap-2 text-sm font-semibold">
-          <span>{label}</span>
-          <span className="text-[10px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded uppercase tracking-wider shrink-0">
-            {activeTab}
-          </span>
-        </Label>
-        {isTextarea ? (
-          <Textarea name={activeFieldName} value={data[activeFieldName] || ''} onChange={handleChange} placeholder={effectivePlaceholder} rows={3} />
-        ) : (
-          <Input type="text" name={activeFieldName} value={data[activeFieldName] || ''} onChange={handleChange} placeholder={effectivePlaceholder} />
+      <div className="space-y-3 p-3.5 rounded-xl border border-border/60 bg-muted/10 shadow-xs">
+        <div className="space-y-2">
+          <Label className="flex items-center justify-between gap-2 text-sm font-semibold">
+            <span>{label}</span>
+            <span className="text-[10px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded uppercase tracking-wider shrink-0">
+              {activeTab}
+            </span>
+          </Label>
+          {textarea ? (
+            <Textarea name={activeFieldName} value={data[activeFieldName] || ''} onChange={handleChange} placeholder={effectivePlaceholder} rows={3} style={weightStyle} />
+          ) : (
+            <Input type="text" name={activeFieldName} value={data[activeFieldName] || ''} onChange={handleChange} placeholder={effectivePlaceholder} style={weightStyle} />
+          )}
+          {hint && <p className="text-[11px] text-muted-foreground italic">{hint}</p>}
+        </div>
+
+        {preview && previewValue && (
+          <div className="relative p-3 rounded-lg bg-[#054569] border border-white/10 overflow-hidden">
+            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#FFC704]/15 text-[#FFC704] border border-[#FFC704]/25 inline-flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FFC704] animate-pulse" />
+              Live Preview
+            </span>
+            <p
+              className="mt-2 text-white leading-snug break-words [&_strong]:text-[#FFC704]"
+              style={{ fontWeight: selectedWeight || Number(defaultWeight), ...(selectedSize ? { fontSize: selectedSize } : {}) }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(taglineToHtml(previewValue)) }}
+            />
+          </div>
         )}
-        {hint && <p className="text-[11px] text-muted-foreground italic">{hint}</p>}
+
+        <div className="pt-2 border-t border-border/40">
+          <FontControls
+            weightValue={data[weightField]}
+            onWeightChange={(val) => setData((prev: Record<string, unknown>) => ({ ...prev, [weightField]: val }))}
+            sizeValue={data[sizeField]}
+            onSizeChange={(val) => setData((prev: Record<string, unknown>) => ({ ...prev, [sizeField]: val }))}
+            defaultWeight={defaultWeight}
+          />
+        </div>
       </div>
     )
   }
@@ -159,7 +208,7 @@ export default function FooterCMSPage() {
       <div ref={topHeaderRef} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground">CMS Footer</h2>
-          <p className="text-muted-foreground text-sm mt-1">Kelola tagline, judul kolom, kontak/sosial media, badge pembayaran, dan copyright.</p>
+          <p className="text-muted-foreground text-sm mt-1">Kelola isi footer: kolom brand, judul kolom, kontak & sosial media, mitra pembayaran, dan copyright.</p>
         </div>
         <Button
           onClick={handleSubmit}
@@ -202,27 +251,32 @@ export default function FooterCMSPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card className="border shadow-sm overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b pb-4">
-            <CardTitle className="text-lg text-primary">Tagline & Judul Kolom</CardTitle>
-            <CardDescription>Kolom brand footer (eyebrow, tagline, deskripsi) dan judul kolom.</CardDescription>
+            <CardTitle className="text-lg text-primary">Kolom Brand</CardTitle>
+            <CardDescription>Bagian kiri footer: label kecil, tagline, deskripsi, dan tombol WhatsApp.</CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="grid gap-4 sm:grid-cols-2">
+              {renderTextInput('Eyebrow (label kecil kuning)', 'eyebrow', { placeholder: 'Spesialis Trip Eropa', defaultWeight: '700' })}
+              {renderTextInput('Teks Tombol WhatsApp', 'waButton', { placeholder: 'Chat WhatsApp', defaultWeight: '700', hint: 'Nomor diambil dari Pengaturan → Nomor WhatsApp. Kosongkan nomor di sana untuk menyembunyikan tombol.' })}
               <div className="sm:col-span-2">
-                {renderTextInput('Eyebrow (label kecil kuning)', 'eyebrow', false, 'Spesialis Trip Eropa')}
+                {renderTextInput('Tagline', 'tagline', { textarea: true, preview: true, defaultWeight: '700', placeholder: 'Mau Jalan tapi Wacana Doang? *Agendain aja!*', hint: 'Apit kata dengan *bintang* untuk warna kuning.' })}
               </div>
               <div className="sm:col-span-2">
-                {renderTextInput('Tagline', 'tagline', true, 'Mau Jalan tapi Wacana Doang? <strong>Agendain aja!</strong>', 'Boleh memakai <strong>, <em>, dan <br>. Tag lain akan dibuang otomatis.')}
+                {renderTextInput('Deskripsi Singkat', 'desc', { textarea: true, placeholder: 'Travel agency digital terpercaya untuk perjalanan Anda dari Indonesia ke Eropa.' })}
               </div>
-              <div className="sm:col-span-2">
-                {renderTextInput('Deskripsi Singkat', 'desc', true, 'Travel agency digital terpercaya untuk perjalanan Anda dari Indonesia ke Eropa.', 'Teks biasa di bawah tagline, di atas tombol WhatsApp.')}
-              </div>
-              <div className="sm:col-span-2">
-                {renderTextInput('Teks Tombol WhatsApp', 'waButton', false, 'Chat WhatsApp', 'Nomor diambil dari Pengaturan → Nomor WhatsApp. Kosongkan nomor di sana untuk menyembunyikan tombol.')}
-              </div>
-              {renderTextInput('Judul Kolom Navigasi', 'menuTitle', false, 'Menu Utama')}
-              {renderTextInput('Judul Kolom Kontak', 'contactTitle', false, 'Hubungi')}
-              {renderTextInput('Judul Kolom Pembayaran', 'paymentTitle', false, 'Payment Partners')}
-              {renderTextInput('Teks Copyright', 'copyright', false, 'Semua hak dilindungi.', 'Tahun & nama situs ditambahkan otomatis di depannya.')}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border shadow-sm overflow-hidden">
+          <CardHeader className="bg-slate-50/50 border-b pb-4">
+            <CardTitle className="text-lg text-primary">Kolom Navigasi & Hubungi Kami</CardTitle>
+            <CardDescription>Judul dua kolom tengah footer. Isi menu navigasi otomatis; isi kontak diatur di kartu berikutnya.</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {renderTextInput('Judul Kolom Navigasi', 'menuTitle', { placeholder: 'Menu Utama', defaultWeight: '700' })}
+              {renderTextInput('Judul Kolom Kontak', 'contactTitle', { placeholder: 'Hubungi', defaultWeight: '700' })}
             </div>
           </CardContent>
         </Card>
@@ -283,10 +337,14 @@ export default function FooterCMSPage() {
 
         <Card className="border shadow-sm overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b pb-4">
-            <CardTitle className="text-lg text-primary">Badge Pembayaran</CardTitle>
-            <CardDescription>Teks pada kotak-kotak di kolom pembayaran.</CardDescription>
+            <CardTitle className="text-lg text-primary">Mitra Pembayaran</CardTitle>
+            <CardDescription>Judul dan teks pada kotak-kotak di baris pembayaran.</CardDescription>
           </CardHeader>
-          <CardContent className="pt-6 space-y-3">
+          <CardContent className="pt-6 space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {renderTextInput('Judul Baris Pembayaran', 'paymentTitle', { placeholder: 'Payment Partners', defaultWeight: '700' })}
+            </div>
+            <Label className="text-sm font-semibold">Badge Pembayaran</Label>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {badges.map((badge, i) => (
                 <div key={i} className="flex items-center gap-2">
@@ -304,6 +362,18 @@ export default function FooterCMSPage() {
             <Button type="button" variant="outline" className="rounded-full gap-2" onClick={() => setBadges(prev => [...prev, ''])}>
               <Plus size={16} /> Tambah Badge
             </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="border shadow-sm overflow-hidden">
+          <CardHeader className="bg-slate-50/50 border-b pb-4">
+            <CardTitle className="text-lg text-primary">Baris Bawah</CardTitle>
+            <CardDescription>Teks copyright di bagian paling bawah footer.</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {renderTextInput('Teks Copyright', 'copyright', { placeholder: 'Semua hak dilindungi.', hint: 'Tahun & nama situs ditambahkan otomatis di depannya.' })}
+            </div>
           </CardContent>
         </Card>
       </form>

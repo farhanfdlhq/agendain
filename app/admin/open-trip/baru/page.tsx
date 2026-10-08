@@ -289,7 +289,7 @@ export default function TambahPaketPage() {
         router.push("/admin/open-trip")
         router.refresh()
       } else {
-        toast.error("Gagal menambahkan openTrip. Pastikan data terisi dengan benar.")
+        toast.error("Gagal menambahkan paket. Pastikan data terisi dengan benar.")
       }
     } catch (err) {
       toast.error("Terjadi kesalahan server.")
@@ -722,7 +722,7 @@ export default function TambahPaketPage() {
                   required
                 />
                 <p className="text-[11px] text-muted-foreground">
-                  Wajib diisi. Setiap open trip kini punya tanggal keberangkatan tetap.
+                  Wajib diisi.
                 </p>
               </div>
 

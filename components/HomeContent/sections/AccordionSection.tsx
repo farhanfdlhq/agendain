@@ -49,13 +49,13 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
               <FadeIn key={i} direction="up" delay={i * 0.05}>
                 <div className={activeAccordion === i ? styles.accordionItemActive : styles.accordionItem}>
                   <button className={styles.accordionTrigger} onClick={() => setActiveAccordion(activeAccordion === i ? -1 : i)} aria-expanded={activeAccordion === i}>
-                    <span>{item.title}</span>
+                    <span style={fontStyle(gs, 'accItemTitle')}>{item.title}</span>
                     <span className={activeAccordion === i ? styles.accordionIconOpen : styles.accordionIcon}><ArrowDown size={16} /></span>
                   </button>
                   <AnimatePresence initial={false}>
                     {activeAccordion === i && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: 'easeInOut' }} style={{ overflow: 'hidden' }}>
-                        <div className={styles.accordionBody}>{item.body}</div>
+                        <div className={styles.accordionBody} style={fontStyle(gs, 'accItemBody')}>{item.body}</div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -64,7 +64,7 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
             ))}
             <FadeIn direction="up" delay={0.3}>
               <div className={styles.accordionBtnWrapper}>
-                <Link href="/open-trip" className={styles.accordionBottomBtn}>{t('home.faq.more')?.replace('?', '') || 'Pertanyaan Lain'} &rarr;</Link>
+                <Link href="/open-trip" className={styles.accordionBottomBtn}>{t('home.viewAll')}</Link>
               </div>
             </FadeIn>
           </div>

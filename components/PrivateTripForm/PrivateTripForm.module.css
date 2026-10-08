@@ -30,10 +30,10 @@
 
 .title {
   font-family: var(--font-display);
-  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-size: var(--type-section);
   font-weight: 700;
   color: var(--color-on-background);
-  line-height: 1.2;
+  line-height: var(--leading-section);
   margin-bottom: 0.75rem;
 }
 

@@ -8,9 +8,10 @@ import TwitterIcon from '@/components/icons/mdi_twitter.svg'
 import ThreadsIcon from '@/components/icons/threads.svg'
 import MailIcon from '@/components/icons/ic_baseline-email.svg'
 import { useTranslation } from '@/lib/i18n/useTranslation'
-import { FOOTER_SOCIAL_PLATFORMS, parseFooterSettings, safeHref } from '@/lib/footer-settings'
+import { FOOTER_SOCIAL_PLATFORMS, parseFooterSettings, safeHref, taglineToHtml } from '@/lib/footer-settings'
 import { formatWhatsAppNumber } from '@/lib/utils'
 import { sanitizeHtml } from '@/lib/sanitize'
+import { fontStyleFrom } from '@/lib/font-style'
 import styles from './Footer.module.css'
 
 const SVG_ICONS: Record<string, any> = {
@@ -64,12 +65,15 @@ export default function Footer({ settings }: { settings?: any }) {
     ((isEn ? (footer.raw[`${key}_en`] || footer.raw[key]) : footer.raw[key]) || '').toString().trim()
 
   const eyebrow = fs('eyebrow') || t('footer.eyebrow')
-  const tagline = fs('tagline') || t('footer.tagline') || 'Mau Jalan tapi Wacana Doang? <strong>Agendain aja!</strong>'
+  // `*teks*` = kata kuning (sama dengan CMS lain); `<strong>` lama tetap didukung.
+  const tagline = taglineToHtml(fs('tagline') || t('footer.tagline') || 'Mau Jalan tapi Wacana Doang? *Agendain aja!*')
   const desc = fs('desc') || t('footer.desc')
   const menuTitle = fs('menuTitle') || t('footer.mainMenu') || 'Navigasi'
   const contactTitle = fs('contactTitle') || t('footer.contact')
   const paymentTitle = fs('paymentTitle') || 'Payment Partners'
   const copyright = fs('copyright') || t('footer.copyright')
+  // Font Weight/Size dari CMS Footer (berlaku ID & EN); kosong = gaya bawaan.
+  const fst = (key: string) => fontStyleFrom(footer.raw[`${key}Weight`], footer.raw[`${key}Size`])
 
   // Nomor dari Pengaturan → Umum. Kosong = tombol & baris WhatsApp disembunyikan (tanpa nomor contoh).
   const waNumber = formatWhatsAppNumber(settings?.whatsapp_number)
@@ -127,24 +131,24 @@ export default function Footer({ settings }: { settings?: any }) {
         <div className={styles.columns}>
           {/* Brand: eyebrow, tagline, deskripsi, CTA WhatsApp */}
           <div className={styles.brandCol}>
-            {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
+            {eyebrow && <p className={styles.eyebrow} style={fst('eyebrow')}>{eyebrow}</p>}
             {/* Tagline boleh memuat <strong>. Sudah disanitasi saat disimpan
                 (POST /api/settings/footer); sanitasi ringan saat render menutup
                 risiko jalur tulis lain. sanitizeHtml MURNI (regex, tanpa
                 DOMPurify) → tak menambah beban bundle client. */}
-            <p className={styles.tagline} dangerouslySetInnerHTML={{ __html: sanitizeHtml(tagline) }} />
-            {desc && <p className={styles.desc}>{desc}</p>}
+            <p className={styles.tagline} style={fst('tagline')} dangerouslySetInnerHTML={{ __html: sanitizeHtml(tagline) }} />
+            {desc && <p className={styles.desc} style={fst('desc')}>{desc}</p>}
             {waNumber && (
               <a href={waHref} target="_blank" rel="noopener noreferrer" className={styles.waBtn}>
                 <MessageCircle size={18} aria-hidden="true" />
-                <span>{waLabel} · {displayPhone(waNumber)}</span>
+                <span style={fst('waButton')}>{waLabel} · {displayPhone(waNumber)}</span>
               </a>
             )}
           </div>
 
           {/* Navigasi — sengaja tetap otomatis, tidak dikelola CMS */}
           <nav className={styles.col} aria-label={menuTitle}>
-            <h3 className={styles.colTitle}>{menuTitle}</h3>
+            <h3 className={styles.colTitle} style={fst('menuTitle')}>{menuTitle}</h3>
             <ul className={styles.links}>
               <li><Link href="/">{t('nav.home')}</Link></li>
               <li><Link href="/tentang">{t('nav.about')}</Link></li>
@@ -156,7 +160,7 @@ export default function Footer({ settings }: { settings?: any }) {
 
           {/* Hubungi */}
           <div className={styles.col}>
-            <h3 className={styles.colTitle}>{contactTitle}</h3>
+            <h3 className={styles.colTitle} style={fst('contactTitle')}>{contactTitle}</h3>
             <ul className={styles.contactList}>
               {contacts.map((c, i) => {
                 const href = safeHref(c.url)
@@ -180,7 +184,7 @@ export default function Footer({ settings }: { settings?: any }) {
 
         {/* Mitra pembayaran */}
         <div className={styles.paymentRow}>
-          <span className={styles.paymentTitle}>{paymentTitle}</span>
+          <span className={styles.paymentTitle} style={fst('paymentTitle')}>{paymentTitle}</span>
           <ul className={styles.paymentList}>
             {footer.paymentBadges.map((name: string, i: number) => (
               <li key={`${name}-${i}`} className={styles.paymentBadge}>{name}</li>
@@ -190,7 +194,7 @@ export default function Footer({ settings }: { settings?: any }) {
 
         {/* Bawah: copyright kiri, tautan legal kanan */}
         <div className={styles.bottom}>
-          <p>&copy; {new Date().getFullYear()} {siteName}. {copyright}</p>
+          <p style={fst('copyright')}>&copy; {new Date().getFullYear()} {siteName}. {copyright}</p>
           <Link href="/privacy-policy" className={styles.bottomLink}>{t('nav.privacy')}</Link>
         </div>
       </div>

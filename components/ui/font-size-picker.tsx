@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { Check, ChevronDown, Ruler } from "lucide-react"
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { FontWeightPicker } from "@/components/ui/font-weight-picker"
+import { FONT_SIZE_PRESETS, FONT_SIZE_ROLES } from "@/lib/font-size-presets"
 
 export interface FontSizePickerProps {
   value: string | number | undefined
@@ -13,8 +14,7 @@ export interface FontSizePickerProps {
   placeholder?: string
 }
 
-// Preset px di daftar dropdown. Nilai lain tetap bisa diketik langsung.
-export const FONT_SIZE_PRESETS = [12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 80, 96]
+export { FONT_SIZE_PRESETS, FONT_SIZE_ROLES } from "@/lib/font-size-presets"
 
 const MIN = 8
 const MAX = 200
@@ -142,8 +142,11 @@ export function FontSizePicker({
           className="w-(--radix-popover-trigger-width) min-w-40 overflow-hidden rounded-lg border border-border bg-popover p-0 text-popover-foreground shadow-lg"
         >
           <ul id={listId} role="listbox" aria-label="Ukuran font" className="max-h-72 overflow-y-auto p-1 [scrollbar-width:thin] [scrollbar-color:var(--border)_transparent]">
-            {[{ v: "", text: "Auto (default desain)" }, ...FONT_SIZE_PRESETS.map((s) => ({ v: String(s), text: String(s) }))].map(
-              ({ v, text }) => {
+            {[
+              { v: "", text: "Auto (default desain)", role: "" },
+              ...FONT_SIZE_PRESETS.map((s) => ({ v: String(s), text: String(s), role: FONT_SIZE_ROLES[s] ?? "" })),
+            ].map(
+              ({ v, text, role }) => {
                 const selected = current === v
                 return (
                   <li key={v || "auto"} role="option" aria-selected={selected}>
@@ -154,7 +157,8 @@ export function FontSizePicker({
                       className={`flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm tabular-nums transition-colors hover:bg-primary/10 hover:text-primary focus-visible:bg-primary/10 focus-visible:text-primary ${selected ? "font-semibold text-primary" : ""}`}
                     >
                       <Check className={`h-3.5 w-3.5 shrink-0 ${selected ? "opacity-100" : "opacity-0"}`} />
-                      {text}
+                      <span>{text}</span>
+                      {role && <span className="ml-auto text-xs font-normal text-muted-foreground">{role}</span>}
                     </button>
                   </li>
                 )

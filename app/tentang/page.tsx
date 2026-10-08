@@ -23,8 +23,20 @@ export default async function TentangPage() {
     recentPosts = await prisma.blogPost.findMany({
       where: { status: 'published' },
       orderBy: { publishedAt: 'desc' },
-      take: 3,
-      include: { category: true }
+      // Semua artikel terbit; halaman Tentang memecahnya 2 per halaman di klien.
+      // Hanya field yang dipakai kartu (tanpa isi artikel) agar payload kecil.
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        titleEn: true,
+        excerpt: true,
+        excerptEn: true,
+        thumbnail: true,
+        publishedAt: true,
+        createdAt: true,
+        category: { select: { nama: true, namaEn: true } },
+      },
     })
   } catch (e) {
     console.error(e)

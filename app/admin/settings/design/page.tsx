@@ -85,7 +85,7 @@ export default function DesignSystemPage() {
       const data = await res.json()
       if (res.ok) {
         setBaseline(snapRef.current) // tandai bersih setelah simpan
-        toast.success('Design System berhasil diperbarui! Skala otomatis dibuat.')
+        toast.success('Desain berhasil diperbarui.')
       } else {
         toast.error(data.error || 'Terjadi kesalahan saat menyimpan.')
       }
@@ -136,7 +136,7 @@ export default function DesignSystemPage() {
     <div className="flex flex-col gap-6 w-full max-w-5xl mx-auto py-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">Global Design System</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Desain Global</h2>
           <p className="text-muted-foreground text-sm">Atur palet warna, tipografi, dan gaya antarmuka secara terpusat.</p>
         </div>
         <Button 
@@ -155,35 +155,35 @@ export default function DesignSystemPage() {
           onClick={() => setActiveTab('brand')}
           className="rounded-full"
         >
-          <Palette className="mr-2 h-4 w-4" /> Brand Colors
+          <Palette className="mr-2 h-4 w-4" /> Warna Brand
         </Button>
         <Button 
           variant={activeTab === 'semantic' ? 'secondary' : 'ghost'} 
           onClick={() => setActiveTab('semantic')}
           className="rounded-full"
         >
-          <AlertTriangle className="mr-2 h-4 w-4" /> Semantic
+          <AlertTriangle className="mr-2 h-4 w-4" /> Status
         </Button>
         <Button 
           variant={activeTab === 'typography' ? 'secondary' : 'ghost'} 
           onClick={() => setActiveTab('typography')}
           className="rounded-full"
         >
-          <Type className="mr-2 h-4 w-4" /> Typography
+          <Type className="mr-2 h-4 w-4" /> Tipografi
         </Button>
         <Button 
           variant={activeTab === 'surface' ? 'secondary' : 'ghost'} 
           onClick={() => setActiveTab('surface')}
           className="rounded-full"
         >
-          <Box className="mr-2 h-4 w-4" /> Surfaces & Shapes
+          <Box className="mr-2 h-4 w-4" /> Latar & Bentuk
         </Button>
         <Button 
           variant={activeTab === 'layout' ? 'secondary' : 'ghost'} 
           onClick={() => setActiveTab('layout')}
           className="rounded-full"
         >
-          <LayoutTemplate className="mr-2 h-4 w-4" /> Header & Footer
+          <LayoutTemplate className="mr-2 h-4 w-4" /> Navbar & Footer
         </Button>
       </div>
 
@@ -192,7 +192,7 @@ export default function DesignSystemPage() {
         {activeTab === 'brand' && (
           <Card>
             <CardHeader>
-              <CardTitle>Brand Colors</CardTitle>
+              <CardTitle>Warna Brand</CardTitle>
               <CardDescription>Warna utama yang mewakili identitas brand Agendain.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -206,7 +206,7 @@ export default function DesignSystemPage() {
         {activeTab === 'semantic' && (
           <Card>
             <CardHeader>
-              <CardTitle>Semantic / Status Colors</CardTitle>
+              <CardTitle>Warna Status</CardTitle>
               <CardDescription>Warna untuk mengkomunikasikan status dan pesan sistem.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6 sm:grid-cols-2">
@@ -221,12 +221,12 @@ export default function DesignSystemPage() {
         {activeTab === 'typography' && (
           <Card>
             <CardHeader>
-              <CardTitle>Global Typography</CardTitle>
+              <CardTitle>Tipografi</CardTitle>
               <CardDescription>Pilih jenis huruf yang digunakan di seluruh platform.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label>Heading Font (H1 - H6)</Label>
+                <Label>Font Judul (H1–H6)</Label>
                 <Select value={theme.headingFont} onValueChange={v => handleChange('headingFont', v)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -237,7 +237,7 @@ export default function DesignSystemPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Body Font (Paragraphs, Text)</Label>
+                <Label>Font Teks (paragraf)</Label>
                 <Select value={theme.bodyFont} onValueChange={v => handleChange('bodyFont', v)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -254,7 +254,7 @@ export default function DesignSystemPage() {
         {activeTab === 'surface' && (
           <Card>
             <CardHeader>
-              <CardTitle>Surfaces & Shapes</CardTitle>
+              <CardTitle>Latar & Bentuk</CardTitle>
               <CardDescription>Warna latar belakang, teks utama, dan radius sudut elemen.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-6 sm:grid-cols-2">
@@ -262,7 +262,7 @@ export default function DesignSystemPage() {
               {renderColorField('Main Text / Ink', 'colorText')}
               
               <div className="space-y-2 sm:col-span-2">
-                <Label>Global Border Radius</Label>
+                <Label>Kelengkungan Sudut</Label>
                 <Select value={theme.borderRadius} onValueChange={v => handleChange('borderRadius', v)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -280,7 +280,7 @@ export default function DesignSystemPage() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Navbar (Header)</CardTitle>
+                <CardTitle>Navbar</CardTitle>
                 <CardDescription>Warna untuk bilah navigasi utama website publik.</CardDescription>
               </CardHeader>
               <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

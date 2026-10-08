@@ -107,3 +107,17 @@ export function safeHref(url: unknown): string {
   if (trimmed.startsWith("/") || trimmed.startsWith("#")) return trimmed;
   return "#";
 }
+
+/**
+ * Tagline footer memakai format sorotan yang sama dengan CMS lain: `*teks*`
+ * = kata kuning. Data lama masih bisa berisi `<strong>teks</strong>`; keduanya
+ * didukung supaya tagline yang sudah tersimpan tetap tampil benar.
+ */
+export function taglineToHtml(value: string): string {
+  return value.replace(/\*([^*\n]+)\*/g, "<strong>$1</strong>");
+}
+
+/** Untuk form CMS: tampilkan `<strong>`/`<b>` lama sebagai `*teks*`. */
+export function taglineToStars(value: string): string {
+  return value.replace(/<(strong|b)>([\s\S]*?)<\/\1>/gi, "*$2*");
+}

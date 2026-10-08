@@ -51,13 +51,13 @@ export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs
             <FadeIn key={i} direction="up" delay={i * 0.05}>
               <div className={styles.faqItem}>
                 <button className={styles.faqTrigger} onClick={() => setActiveFaq(activeFaq === i ? null : i)} aria-expanded={activeFaq === i}>
-                  <span>{item.q}</span>
+                  <span style={fontStyle(gs, 'faqQuestion')}>{item.q}</span>
                   <span className={activeFaq === i ? styles.faqIconOpen : styles.faqIcon}><ArrowDown size={18} /></span>
                 </button>
                 <AnimatePresence initial={false}>
                   {activeFaq === i && (
                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.3, ease: 'easeInOut' }} style={{ overflow: 'hidden' }}>
-                      <div className={styles.faqBody}>{item.a}</div>
+                      <div className={styles.faqBody} style={fontStyle(gs, 'faqAnswer')}>{item.a}</div>
                     </motion.div>
                   )}
                 </AnimatePresence>

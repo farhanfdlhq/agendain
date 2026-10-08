@@ -233,7 +233,7 @@ export default function PrivateTripForm({
                 <h3 className={styles.successTitle}>{t("pt.success")}</h3>
                 <p className={styles.successDesc}>
                   Terima kasih <strong>{formData.nama}</strong>. Tim kami akan
-                  segera menganalisa rute <strong>{formData.destinasi}</strong>{" "}
+                  segera menganalisis rute <strong>{formData.destinasi}</strong>{" "}
                   Anda dan menghubungi Anda secepatnya.
                 </p>
                 <div className={styles.successActions}>

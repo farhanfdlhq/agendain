@@ -252,7 +252,7 @@ export default function PrivateTripCMSPage() {
         <Label className="flex items-center gap-2">{label}</Label>
         {resolutionHint && (
           <p className="text-[11px] text-muted-foreground mt-0 mb-2 font-medium italic">
-            💡 Resolusi yang disarankan:{" "}
+            Resolusi yang disarankan:{" "}
             <span className="font-bold text-slate-700">{resolutionHint}</span>
           </p>
         )}
@@ -886,7 +886,7 @@ export default function PrivateTripCMSPage() {
             )}
             <div className="space-y-4 border-t pt-4">
               <Label className="text-base font-semibold">
-                Langkah-langkah Workflow
+                Langkah Cara Booking
               </Label>
               {renderArrayEditor(
                 "workflowSteps",

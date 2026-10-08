@@ -167,7 +167,7 @@ export default function HomeCMSPage() {
         </Label>
         {resolutionHint && (
           <p className="text-[11px] text-muted-foreground mt-0 mb-2 font-medium italic">
-            💡 Resolusi yang disarankan: <span className="font-bold text-slate-700">{resolutionHint}</span>
+            Resolusi yang disarankan: <span className="font-bold text-slate-700">{resolutionHint}</span>
           </p>
         )}
         <MediaPicker 
@@ -190,8 +190,8 @@ export default function HomeCMSPage() {
     return (
       <Card className="mt-8 border shadow-sm">
         <CardHeader className="p-4 border-b bg-muted/20">
-          <CardTitle className="text-lg">Pengaturan Urutan Bagian (Section Order)</CardTitle>
-          <CardDescription>Geser ke atas atau bawah untuk mengatur urutan tampilan bagian di halaman beranda. Anda juga bisa menarik kotak (drag and drop) untuk menyusunnya dengan cepat!</CardDescription>
+          <CardTitle className="text-lg">Urutan Bagian Beranda</CardTitle>
+          <CardDescription>Seret kotak atau gunakan tombol panah untuk mengatur urutan bagian di beranda.</CardDescription>
         </CardHeader>
         <CardContent className="pt-6">
           <Reorder.Group axis="y" values={orderArray} onReorder={handleReorder} className="flex flex-col gap-2 list-none p-0 m-0">
@@ -337,6 +337,25 @@ export default function HomeCMSPage() {
     )
   }
 
+  // Gaya teks satu kelompok item daftar (mis. semua pertanyaan FAQ). Disimpan
+  // sebagai `${fieldName}Weight/Size` tanpa _en: berlaku di ID & EN, dibaca
+  // section depan lewat fontStyle(gs, fieldName).
+  const renderGroupFont = (label: string, hint: string, fieldName: string, defaultWeight: string) => (
+    <div className="space-y-3 p-3.5 rounded-xl border border-border/60 bg-muted/10 shadow-xs">
+      <div>
+        <p className="text-sm font-semibold">{label}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{hint}</p>
+      </div>
+      <FontControls
+        weightValue={data[`${fieldName}Weight`]}
+        onWeightChange={(val) => setData((prev: Record<string, unknown>) => ({ ...prev, [`${fieldName}Weight`]: val }))}
+        sizeValue={data[`${fieldName}Size`]}
+        onSizeChange={(val) => setData((prev: Record<string, unknown>) => ({ ...prev, [`${fieldName}Size`]: val }))}
+        defaultWeight={defaultWeight}
+      />
+    </div>
+  )
+
   const renderArrayEditor = (
     label: string, 
     fieldName: string, 
@@ -407,7 +426,7 @@ export default function HomeCMSPage() {
                     <Label className="text-xs">{f.label}</Label>
                     {f.resolutionHint && (
                       <p className="text-[10px] text-muted-foreground mt-0 mb-1 font-medium italic">
-                        💡 Rekomendasi: <span className="font-bold text-slate-700">{f.resolutionHint}</span>
+                        Rekomendasi: <span className="font-bold text-slate-700">{f.resolutionHint}</span>
                       </p>
                     )}
                     {f.isImage ? (
@@ -531,7 +550,7 @@ export default function HomeCMSPage() {
                   <Label className="text-xs">{imageField.label}</Label>
                   {imageField.resolutionHint && (
                     <p className="text-[10px] text-muted-foreground mt-0 mb-1 font-medium italic">
-                      💡 Rekomendasi: <span className="font-bold text-slate-700">{imageField.resolutionHint}</span>
+                      Rekomendasi: <span className="font-bold text-slate-700">{imageField.resolutionHint}</span>
                     </p>
                   )}
                   <MediaPicker 
@@ -648,7 +667,7 @@ export default function HomeCMSPage() {
 
         <Card className="border shadow-sm">
           <CardHeader className="p-4 border-b bg-muted/20">
-            <CardTitle className="text-lg">Bagian Mengapa Memilih Kami (Why Choose Us)</CardTitle>
+            <CardTitle className="text-lg">Bagian Mengapa Memilih Kami</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
@@ -716,7 +735,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Badge / Tagline', 'testiBadge', false, '', true, '500')}
-              {renderTextInput('Kutipan Judul (Bisa pakai <span>Italia</span>)', 'testiTitle', false, '', true, '800')}
+              {renderTextInput('Kutipan Judul (Gunakan *teks* untuk warna kuning)', 'testiTitle', false, '', true, '800')}
             </div>
             
             <div className="space-y-4 pt-4 border-t mt-4">
@@ -747,6 +766,11 @@ export default function HomeCMSPage() {
               </div>
             </div>
             
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderGroupFont('Gaya Teks Judul Item', 'Berlaku untuk semua judul item accordion.', 'accItemTitle', '500')}
+              {renderGroupFont('Gaya Teks Deskripsi Item', 'Berlaku untuk semua isi item saat dibuka.', 'accItemBody', '400')}
+            </div>
+
             {renderArrayEditor('Item Accordion', 'accItems', [
               { name: 'title', label: 'Judul Pertanyaan/Topik' },
               { name: 'body', label: 'Deskripsi Jawaban', isTextarea: true }
@@ -756,7 +780,7 @@ export default function HomeCMSPage() {
 
         <Card className="border shadow-sm">
           <CardHeader className="p-4 border-b bg-muted/20">
-            <CardTitle className="text-lg">Bagian Bukti Sosial (Social Proof)</CardTitle>
+            <CardTitle className="text-lg">Bagian Bukti Sosial</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
@@ -772,7 +796,7 @@ export default function HomeCMSPage() {
             {renderSplitArrayEditor(
               'Kutipan Testimoni Slider (Data Pelanggan)', 
               'testiItems', 
-              { name: 'photo', label: 'Foto Pelanggan (Wajib/Opsional)', resolutionHint: '1080x1080 px (Square)' },
+              { name: 'photo', label: 'Foto Pelanggan (opsional)', resolutionHint: '1080x1080 px (Square)' },
               [
                 { name: 'name', label: 'Nama Pelanggan', placeholder: 'Contoh: El Rumi' },
                 { name: 'text', label: 'Teks Kutipan Testimoni', isTextarea: true, placeholder: 'Tulis ulasan/testimoni pelanggan di sini...' }
@@ -789,6 +813,11 @@ export default function HomeCMSPage() {
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle', false, '', true, '800')}
               {renderTextInput('Teks Pendek', 'faqSubtitle', false, '', true, '500')}
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderGroupFont('Gaya Teks Pertanyaan', 'Berlaku untuk semua pertanyaan FAQ.', 'faqQuestion', '600')}
+              {renderGroupFont('Gaya Teks Jawaban', 'Berlaku untuk semua jawaban FAQ saat dibuka.', 'faqAnswer', '400')}
             </div>
 
             {renderArrayEditor('Daftar FAQ', 'faqItems', [

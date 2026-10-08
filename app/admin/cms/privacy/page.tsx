@@ -131,7 +131,7 @@ export default function PrivacyCMSPage() {
         </Label>
         {resolutionHint && (
           <p className="text-[11px] text-muted-foreground mt-0 mb-2 font-medium italic">
-            💡 Resolusi yang disarankan: <span className="font-bold text-slate-700">{resolutionHint}</span>
+            Resolusi yang disarankan: <span className="font-bold text-slate-700">{resolutionHint}</span>
           </p>
         )}
         <MediaPicker 
@@ -294,7 +294,7 @@ export default function PrivacyCMSPage() {
         {/* Hero Section (6col-6col Layout) */}
         <Card className="border-0 shadow-sm ring-1 ring-slate-100 bg-white/50 overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
-            <CardTitle className="text-lg font-bold text-slate-800">Hero Section (Header)</CardTitle>
+            <CardTitle className="text-lg font-bold text-slate-800">Bagian Hero</CardTitle>
             <CardDescription>Sesuaikan gambar latar, judul, dan deskripsi utama.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">

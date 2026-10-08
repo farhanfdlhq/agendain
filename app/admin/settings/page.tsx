@@ -247,7 +247,7 @@ export default function SettingsPage() {
 
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label>Logo Title (Favicon Browser)</Label>
+                <Label>Favicon (Ikon Tab Browser)</Label>
                 <div className="flex flex-col gap-2">
                   <MediaPicker
                     value={formData.site_favicon || ""}
@@ -265,7 +265,7 @@ export default function SettingsPage() {
                     }}
                     accept="image/png,image/x-icon,image/vnd.microsoft.icon,.ico"
                     label="Pilih Favicon"
-                    description="Ikon untuk penampil judul tab di browser."
+                    description="Ikon kecil yang tampil di tab browser."
                   />
                 </div>
               </div>
@@ -275,7 +275,7 @@ export default function SettingsPage() {
                   Tema & Tampilan. */}
               <Alert variant="info" className="shadow-xs">
                 <Info className="h-5 w-5" />
-                <AlertTitle>TIP: Saran Praktik Terbaik</AlertTitle>
+                <AlertTitle>Saran</AlertTitle>
                 <AlertDescription className="text-xs leading-relaxed">
                   <p>
                     Gunakan format{" "}
@@ -419,7 +419,7 @@ export default function SettingsPage() {
                 htmlFor="global_informasi_penting_en"
                 className="text-xs text-muted-foreground font-normal pt-1"
               >
-                🇬🇧 English (opsional — kosongkan untuk pakai versi Indonesia)
+                English (opsional, kosongkan untuk memakai versi Indonesia)
               </Label>
               <Textarea
                 id="global_informasi_penting_en"
@@ -450,7 +450,7 @@ export default function SettingsPage() {
                 htmlFor="global_kebijakan_pembatalan_en"
                 className="text-xs text-muted-foreground font-normal pt-1"
               >
-                🇬🇧 English (opsional — kosongkan untuk pakai versi Indonesia)
+                English (opsional, kosongkan untuk memakai versi Indonesia)
               </Label>
               <Textarea
                 id="global_kebijakan_pembatalan_en"
@@ -465,36 +465,9 @@ export default function SettingsPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="global_opsi_penjemputan">
-                Opsi Penjemputan (Default)
-              </Label>
-              <Textarea
-                id="global_opsi_penjemputan"
-                name="global_opsi_penjemputan"
-                value={formData.global_opsi_penjemputan}
-                onChange={handleChange}
-                rows={4}
-                placeholder="Tulis setiap poin di baris baru..."
-              />
-              <Label
-                htmlFor="global_opsi_penjemputan_en"
-                className="text-xs text-muted-foreground font-normal pt-1"
-              >
-                🇬🇧 English (opsional — kosongkan untuk pakai versi Indonesia)
-              </Label>
-              <Textarea
-                id="global_opsi_penjemputan_en"
-                name="global_opsi_penjemputan_en"
-                value={formData.global_opsi_penjemputan_en}
-                onChange={handleChange}
-                rows={4}
-                placeholder={
-                  formData.global_opsi_penjemputan ||
-                  "Write each point on a new line..."
-                }
-              />
-            </div>
+            {/* Opsi Penjemputan (global) dihapus dari form: di halaman paket sudah
+                digantikan Akomodasi + Penerbangan dan nilainya tak dibaca di mana pun.
+                Data lama tetap tersimpan, tidak ikut terhapus. */}
           </CardContent>
         </Card>
       </form>

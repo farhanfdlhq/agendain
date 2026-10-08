@@ -64,7 +64,7 @@ export default function LoginForm({ logoUrl }: { logoUrl: string }) {
                 className="max-h-24 w-auto object-contain drop-shadow-sm"
               />
             )}
-            <p className="text-lg text-primary-foreground/80 font-medium">Sistem Manajemen Perjalanan Eksklusif</p>
+            <p className="text-lg text-primary-foreground/80 font-medium">Panel Admin</p>
           </div>
         </div>
 

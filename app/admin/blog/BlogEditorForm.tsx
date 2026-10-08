@@ -243,8 +243,8 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
         <div className="lg:col-span-2 space-y-6">
           <Tabs defaultValue="id">
             <TabsList>
-              <TabsTrigger value="id">🇮🇩 Indonesia</TabsTrigger>
-              <TabsTrigger value="en">🇬🇧 English</TabsTrigger>
+              <TabsTrigger value="id">Indonesia</TabsTrigger>
+              <TabsTrigger value="en">English</TabsTrigger>
             </TabsList>
 
             <TabsContent value="id" className="space-y-4 mt-4">
@@ -382,7 +382,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
               <CollapsibleTrigger asChild>
                 <CardHeader className="pb-3 cursor-pointer hover:bg-muted/30 transition-colors">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm">SEO Settings</CardTitle>
+                    <CardTitle className="text-sm">Pengaturan SEO</CardTitle>
                     <ChevronDown size={16} className={`text-muted-foreground transition-transform ${seoOpen ? 'rotate-180' : ''}`} />
                   </div>
                 </CardHeader>

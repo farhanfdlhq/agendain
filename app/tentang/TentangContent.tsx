@@ -1,5 +1,6 @@
 'use client'
 import { fontStyleFrom } from '@/lib/font-style'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import styles from './page.module.css'
@@ -9,10 +10,27 @@ import HeroHeader from '@/components/HeroHeader/HeroHeader'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { parseGoldText } from '@/lib/utils/textFormatting'
 import { sanitizeRichText } from '@/lib/sanitize-richtext'
+import Pagination from '@/components/Pagination/Pagination'
+
+const POSTS_PER_PAGE = 2
 
 export default function TentangContent({ aboutSettings = {}, recentPosts = [] }: { aboutSettings?: any, recentPosts?: any[] }) {
   const { t, locale } = useTranslation()
   const isEn = locale === 'en'
+  const [postPage, setPostPage] = useState(1)
+  const pageCount = Math.ceil(recentPosts.length / POSTS_PER_PAGE)
+  const visiblePosts = recentPosts.slice((postPage - 1) * POSTS_PER_PAGE, postPage * POSTS_PER_PAGE)
+  const articlesRef = useRef<HTMLDivElement>(null)
+  // Di mobile kartu bertumpuk: setelah pindah halaman, bawa awal daftar artikel
+  // kembali ke layar bila sudah tergulir lewat (tidak menggulir bila masih terlihat).
+  const goToPostPage = (p: number) => {
+    setPostPage(p)
+    const el = articlesRef.current
+    if (el && el.getBoundingClientRect().top < 0) {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+    }
+  }
   const getSetting = (key: string) => {
     const val = isEn ? (aboutSettings[`${key}_en`] || aboutSettings[key]) : aboutSettings[key];
     return val;
@@ -58,10 +76,10 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
 
         {/* Articles Grid Section */}
         {recentPosts && recentPosts.length > 0 && (
-          <div className={styles.articlesSection}>
+          <div className={styles.articlesSection} ref={articlesRef}>
             <Stagger staggerDelay={0.1}>
               <div className={styles.articleGrid}>
-                {recentPosts.map((post, index) => {
+                {visiblePosts.map((post, index) => {
                   const title = isEn ? (post.titleEn || post.title) : post.title;
                   const excerpt = isEn ? (post.excerptEn || post.excerpt) : post.excerpt;
                   const categoryName = isEn ? (post.category?.namaEn || post.category?.nama) : post.category?.nama;
@@ -95,6 +113,14 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
                 })}
               </div>
             </Stagger>
+            <Pagination
+              page={postPage}
+              pageCount={pageCount}
+              onPageChange={goToPostPage}
+              label={isEn ? 'Article pages' : 'Halaman artikel'}
+              prevLabel={isEn ? 'Previous page' : 'Halaman sebelumnya'}
+              nextLabel={isEn ? 'Next page' : 'Halaman berikutnya'}
+            />
           </div>
         )}
 
@@ -108,7 +134,7 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
                 {getSetting('guideDescP1') || t('about.new.guideDescP1')}<br/><br/>
                 {getSetting('guideDescP2') || t('about.new.guideDescP2')}
               </p>
-              <Link href="/konsultasi" className={styles.guideBtn}>
+              <Link href="/private-trip" className={styles.guideBtn}>
                 {t('about.new.guideBtn')}
               </Link>
             </div>

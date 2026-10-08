@@ -88,7 +88,7 @@ export default function BlogCMSPage() {
       <Label className="flex items-center gap-2">{label}</Label>
       {resolutionHint && (
         <p className="text-[11px] text-muted-foreground mt-0 mb-2 font-medium italic">
-          💡 Resolusi yang disarankan: <span className="font-bold text-slate-700">{resolutionHint}</span>
+          Resolusi yang disarankan: <span className="font-bold text-slate-700">{resolutionHint}</span>
         </p>
       )}
       <MediaPicker

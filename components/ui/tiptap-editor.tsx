@@ -155,32 +155,32 @@ export function TiptapEditor({ value, onChange, placeholder = 'Mulai menulis...'
     <div className="border rounded-lg overflow-hidden">
       {/* Toolbar */}
       <div className="flex flex-wrap gap-0.5 p-2 border-b bg-muted/30">
-        <ToolBtn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold"><Bold size={16} /></ToolBtn>
-        <ToolBtn active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()} title="Italic"><Italic size={16} /></ToolBtn>
-        <ToolBtn active={editor.isActive('underline')} onClick={() => editor.chain().focus().toggleUnderline().run()} title="Underline"><UnderlineIcon size={16} /></ToolBtn>
-        <ToolBtn active={editor.isActive('strike')} onClick={() => editor.chain().focus().toggleStrike().run()} title="Strikethrough"><Strikethrough size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()} title="Tebal"><Bold size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()} title="Miring"><Italic size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive('underline')} onClick={() => editor.chain().focus().toggleUnderline().run()} title="Garis bawah"><UnderlineIcon size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive('strike')} onClick={() => editor.chain().focus().toggleStrike().run()} title="Coret"><Strikethrough size={16} /></ToolBtn>
         <span className="w-px h-6 bg-border self-center mx-1" />
         <ToolBtn active={editor.isActive('heading', { level: 1 })} onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} title="H1"><Heading1 size={16} /></ToolBtn>
         <ToolBtn active={editor.isActive('heading', { level: 2 })} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} title="H2"><Heading2 size={16} /></ToolBtn>
         <ToolBtn active={editor.isActive('heading', { level: 3 })} onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} title="H3"><Heading3 size={16} /></ToolBtn>
         <span className="w-px h-6 bg-border self-center mx-1" />
-        <ToolBtn active={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()} title="Bullet List"><List size={16} /></ToolBtn>
-        <ToolBtn active={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()} title="Ordered List"><ListOrdered size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive('bulletList')} onClick={() => editor.chain().focus().toggleBulletList().run()} title="Daftar poin"><List size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive('orderedList')} onClick={() => editor.chain().focus().toggleOrderedList().run()} title="Daftar bernomor"><ListOrdered size={16} /></ToolBtn>
         <span className="w-px h-6 bg-border self-center mx-1" />
-        <ToolBtn active={editor.isActive({ textAlign: 'left' })} onClick={() => editor.chain().focus().setTextAlign('left').run()} title="Align Left"><AlignLeft size={16} /></ToolBtn>
-        <ToolBtn active={editor.isActive({ textAlign: 'center' })} onClick={() => editor.chain().focus().setTextAlign('center').run()} title="Align Center"><AlignCenter size={16} /></ToolBtn>
-        <ToolBtn active={editor.isActive({ textAlign: 'right' })} onClick={() => editor.chain().focus().setTextAlign('right').run()} title="Align Right"><AlignRight size={16} /></ToolBtn>
-        <ToolBtn active={editor.isActive({ textAlign: 'justify' })} onClick={() => editor.chain().focus().setTextAlign('justify').run()} title="Justify"><AlignJustify size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive({ textAlign: 'left' })} onClick={() => editor.chain().focus().setTextAlign('left').run()} title="Rata kiri"><AlignLeft size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive({ textAlign: 'center' })} onClick={() => editor.chain().focus().setTextAlign('center').run()} title="Rata tengah"><AlignCenter size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive({ textAlign: 'right' })} onClick={() => editor.chain().focus().setTextAlign('right').run()} title="Rata kanan"><AlignRight size={16} /></ToolBtn>
+        <ToolBtn active={editor.isActive({ textAlign: 'justify' })} onClick={() => editor.chain().focus().setTextAlign('justify').run()} title="Rata kiri-kanan"><AlignJustify size={16} /></ToolBtn>
         <span className="w-px h-6 bg-border self-center mx-1" />
         <ToolBtn active={editor.isActive('link')} onClick={async () => {
           const url = await promptLink(editor.getAttributes('link').href || '')
           if (url) editor.chain().focus().setLink({ href: url }).run()
-        }} title="Insert Link"><LinkIcon size={16} /></ToolBtn>
-        <ToolBtn active={false} onClick={() => editor.chain().focus().unsetLink().run()} title="Remove Link"><Unlink size={16} /></ToolBtn>
-        <ToolBtn active={false} onClick={() => fileInputRef.current?.click()} title="Insert Image"><ImagePlus size={16} /></ToolBtn>
+        }} title="Sisipkan tautan"><LinkIcon size={16} /></ToolBtn>
+        <ToolBtn active={false} onClick={() => editor.chain().focus().unsetLink().run()} title="Hapus tautan"><Unlink size={16} /></ToolBtn>
+        <ToolBtn active={false} onClick={() => fileInputRef.current?.click()} title="Sisipkan gambar"><ImagePlus size={16} /></ToolBtn>
         <span className="w-px h-6 bg-border self-center mx-1" />
-        <ToolBtn active={false} onClick={() => editor.chain().focus().undo().run()} title="Undo"><Undo size={16} /></ToolBtn>
-        <ToolBtn active={false} onClick={() => editor.chain().focus().redo().run()} title="Redo"><Redo size={16} /></ToolBtn>
+        <ToolBtn active={false} onClick={() => editor.chain().focus().undo().run()} title="Urungkan"><Undo size={16} /></ToolBtn>
+        <ToolBtn active={false} onClick={() => editor.chain().focus().redo().run()} title="Ulangi"><Redo size={16} /></ToolBtn>
       </div>
 
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />

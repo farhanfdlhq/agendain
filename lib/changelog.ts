@@ -26,6 +26,29 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.1.0',
+    date: '2026-10-09',
+    title: 'Ukuran judul seragam, kontrol font lebih lengkap, dan CMS Footer standar',
+    added: [
+      'Halaman Tentang Kami: artikel blog tampil 2 per halaman dengan tombol nomor halaman.',
+      'CMS Beranda: ketebalan & ukuran teks pertanyaan dan jawaban FAQ, serta judul dan isi daftar "Sudut Pandang", bisa diatur.',
+      'Tombol "Lihat Website" di dashboard membuka halaman yang sedang diedit (mis. CMS Tentang Kami → /tentang, edit paket → halaman paketnya).',
+      'Pilihan Font Size di CMS diberi label peran: Hero, Judul Section, Judul Kartu, Lead, Body, Caption.',
+    ],
+    improved: [
+      'Ukuran judul seragam di semua halaman: semua judul hero sama besar, begitu juga semua judul section.',
+      'CMS Footer mengikuti standar CMS lain: tiap teks punya Font Weight & Font Size, live preview tagline, dan kartu disusun sesuai urutan footer.',
+      'Tagline footer memakai format *bintang* untuk kata kuning, sama dengan halaman CMS lain.',
+      'Teks di dashboard admin dirapikan ke Bahasa Indonesia (Roles, Desain, editor artikel, dan lainnya) tanpa emoji dan istilah teknis yang bocor.',
+    ],
+    fixed: [
+      'Tombol "Konsultasi Trip" di halaman Tentang Kami tidak lagi membuka halaman yang tidak ada; kini menuju Private Trip.',
+      'Tombol di bawah daftar "Sudut Pandang" berlabel sesuai tujuannya: "Lihat Semua Open Trip".',
+      'Statistik Open Trip terbaca "Tahun Pengalaman", dan beberapa teks salah ketik atau kurang tepat di website diperbaiki.',
+      'Field "Opsi Penjemputan" yang sudah tidak dipakai dihapus dari Pengaturan Sistem.',
+    ],
+  },
+  {
     version: '1.0.1',
     date: '2026-10-02',
     title: 'Tampilan rapi saat belum ada open trip yang dibuka',

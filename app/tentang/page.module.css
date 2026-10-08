@@ -73,6 +73,8 @@
 .articlesSection {
   margin-top: 5rem;
   margin-bottom: 5rem;
+  /* Saat digulir otomatis (ganti halaman artikel), jangan tertutup header. */
+  scroll-margin-top: calc(var(--navbar-offset, 96px) + 1rem);
 }
 
 .articleGrid {
@@ -260,7 +262,8 @@
 
 .guideTitle {
   font-family: var(--font-display);
-  font-size: 2.5rem;
+  font-size: var(--type-section);
+  line-height: var(--leading-section);
   font-weight: 800;
   color: var(--color-ink);
   margin-bottom: 1.5rem;
@@ -333,10 +336,6 @@
   
   .guideImageWrapper {
     height: 350px;
-  }
-  
-  .guideTitle {
-    font-size: 2rem;
   }
 }
 

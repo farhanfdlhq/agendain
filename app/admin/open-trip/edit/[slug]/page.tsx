@@ -372,7 +372,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
         router.push("/admin/open-trip")
         router.refresh()
       } else {
-        toast.error("Gagal memperbarui openTrip. Pastikan data terisi dengan benar.")
+        toast.error("Gagal memperbarui paket. Pastikan data terisi dengan benar.")
       }
     } catch (error) {
       console.error(error)
@@ -834,7 +834,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                   required
                 />
                 <p className="text-[11px] text-muted-foreground">
-                  Wajib diisi. Setiap open trip kini punya tanggal keberangkatan tetap.
+                  Wajib diisi.
                 </p>
               </div>
 

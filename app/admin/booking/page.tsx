@@ -288,7 +288,7 @@ export default function AdminBookingPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Cari nama, email, atau openTrip..."
+                placeholder="Cari nama, email, atau paket..."
                 className="pl-9 rounded-full bg-white dark:bg-zinc-900 border-zinc-200"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -302,7 +302,7 @@ export default function AdminBookingPage() {
                 <SelectContent>
                   <SelectItem value="all">Semua Status</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="paid">Lunas (Paid)</SelectItem>
+                  <SelectItem value="paid">Lunas</SelectItem>
                   <SelectItem value="cancelled">Dibatalkan</SelectItem>
                 </SelectContent>
               </Select>

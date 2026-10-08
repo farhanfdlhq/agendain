@@ -334,7 +334,7 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="judul">Judul Dokumen *</Label>
-                <Input id="judul" placeholder="Itinerary Keluarga Jhonson" value={form.judul}
+                <Input id="judul" placeholder="Itinerary Keluarga Johnson" value={form.judul}
                   aria-invalid={!!errors.judul}
                   onChange={e => { set("judul", e.target.value); clearError("judul") }} />
               </div>

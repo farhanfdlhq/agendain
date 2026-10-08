@@ -32,28 +32,28 @@ const PERMISSIONS_GROUPS = [
   {
     category: 'PAKET WISATA',
     items: [
-      { id: 'paket_view', label: 'View Paket Wisata' },
-      { id: 'paket_create', label: 'Create Paket Wisata' },
-      { id: 'paket_edit', label: 'Edit Paket Wisata' },
-      { id: 'paket_delete', label: 'Delete Paket Wisata' },
+      { id: 'paket_view', label: 'Lihat Paket Wisata' },
+      { id: 'paket_create', label: 'Tambah Paket Wisata' },
+      { id: 'paket_edit', label: 'Ubah Paket Wisata' },
+      { id: 'paket_delete', label: 'Hapus Paket Wisata' },
     ]
   },
   {
     category: 'DESTINASI',
     items: [
-      { id: 'destinasi_view', label: 'View Destinasi' },
-      { id: 'destinasi_create', label: 'Create Destinasi' },
-      { id: 'destinasi_edit', label: 'Edit Destinasi' },
-      { id: 'destinasi_delete', label: 'Delete Destinasi' },
+      { id: 'destinasi_view', label: 'Lihat Destinasi' },
+      { id: 'destinasi_create', label: 'Tambah Destinasi' },
+      { id: 'destinasi_edit', label: 'Ubah Destinasi' },
+      { id: 'destinasi_delete', label: 'Hapus Destinasi' },
     ]
   },
   {
     category: 'PESANAN (BOOKING)',
     items: [
-      { id: 'booking_view', label: 'View Pesanan' },
-      { id: 'booking_create', label: 'Create Pesanan' },
-      { id: 'booking_edit', label: 'Edit Pesanan' },
-      { id: 'booking_delete', label: 'Delete Pesanan' },
+      { id: 'booking_view', label: 'Lihat Pesanan' },
+      { id: 'booking_create', label: 'Tambah Pesanan' },
+      { id: 'booking_edit', label: 'Ubah Pesanan' },
+      { id: 'booking_delete', label: 'Hapus Pesanan' },
     ]
   },
   {
@@ -62,19 +62,19 @@ const PERMISSIONS_GROUPS = [
     // invoice dibangun — itu sebabnya menu invoice tak muncul di layar Roles.
     category: 'INVOICE',
     items: [
-      { id: 'invoice_view', label: 'View Invoice' },
-      { id: 'invoice_create', label: 'Create Invoice' },
-      { id: 'invoice_edit', label: 'Edit Invoice' },
-      { id: 'invoice_delete', label: 'Delete Invoice' },
+      { id: 'invoice_view', label: 'Lihat Invoice' },
+      { id: 'invoice_create', label: 'Tambah Invoice' },
+      { id: 'invoice_edit', label: 'Ubah Invoice' },
+      { id: 'invoice_delete', label: 'Hapus Invoice' },
     ]
   },
   {
     category: 'ITINERARY',
     items: [
-      { id: 'itinerary_view', label: 'View Itinerary' },
-      { id: 'itinerary_create', label: 'Create Itinerary' },
-      { id: 'itinerary_edit', label: 'Edit Itinerary' },
-      { id: 'itinerary_delete', label: 'Delete Itinerary' },
+      { id: 'itinerary_view', label: 'Lihat Itinerary' },
+      { id: 'itinerary_create', label: 'Tambah Itinerary' },
+      { id: 'itinerary_edit', label: 'Ubah Itinerary' },
+      { id: 'itinerary_delete', label: 'Hapus Itinerary' },
     ]
   },
   {
@@ -84,18 +84,18 @@ const PERMISSIONS_GROUPS = [
     // yang sudah tercentang.
     category: 'PERMINTAAN TRIP',
     items: [
-      { id: 'inquiry_view', label: 'View Permintaan Trip' },
-      { id: 'inquiry_edit', label: 'Edit Permintaan Trip' },
-      { id: 'inquiry_delete', label: 'Delete Permintaan Trip' },
+      { id: 'inquiry_view', label: 'Lihat Permintaan Trip' },
+      { id: 'inquiry_edit', label: 'Ubah Permintaan Trip' },
+      { id: 'inquiry_delete', label: 'Hapus Permintaan Trip' },
     ]
   },
   {
     category: 'ARTIKEL (BLOG)',
     items: [
-      { id: 'blog_view', label: 'View Artikel' },
-      { id: 'blog_create', label: 'Create Artikel' },
-      { id: 'blog_edit', label: 'Edit Artikel' },
-      { id: 'blog_delete', label: 'Delete Artikel' },
+      { id: 'blog_view', label: 'Lihat Artikel' },
+      { id: 'blog_create', label: 'Tambah Artikel' },
+      { id: 'blog_edit', label: 'Ubah Artikel' },
+      { id: 'blog_delete', label: 'Hapus Artikel' },
     ]
   },
   {
@@ -105,7 +105,7 @@ const PERMISSIONS_GROUPS = [
       { id: 'users_manage', label: 'Kelola User' },
       { id: 'audit_view', label: 'Lihat Audit Log' },
       { id: 'roles_manage', label: 'Kelola Roles & Permissions' },
-      { id: 'profile_manage', label: 'Akun & Profil (ubah profil & password sendiri)' },
+      { id: 'profile_manage', label: 'Akun & Profil' },
       { id: 'cms_manage', label: 'Kelola Konten & Desain' },
     ]
   }
@@ -314,8 +314,8 @@ export default function RolesPermissionsPage() {
                   <TableHead className="w-12 font-semibold text-muted-foreground">#</TableHead>
                   <TableHead className="font-semibold text-muted-foreground">Nama Role</TableHead>
                   <TableHead className="font-semibold text-muted-foreground">Deskripsi</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground text-center">Permissions</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground text-center">User Count</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground text-center">Hak Akses</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground text-center">Jumlah User</TableHead>
                   <TableHead className="w-12"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -405,7 +405,7 @@ export default function RolesPermissionsPage() {
                     className="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                   />
                   <label htmlFor="all-access" className="text-xs font-bold text-primary dark:text-primary cursor-pointer uppercase">
-                    FULL ACCESS (Pilih Semua)
+                    Akses Penuh (semua izin)
                   </label>
                 </div>
               </div>

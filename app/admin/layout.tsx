@@ -16,6 +16,7 @@ import PlugConnectedIcon from "@/components/ui/plug-connected-icon"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { hasPermission, type PermissionSubject } from "@/lib/permissions"
 import { APP_VERSION } from "@/lib/changelog"
+import { adminPreviewUrl } from "@/lib/admin-preview-url"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -85,7 +86,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
       <div className="flex flex-col h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950 text-muted-foreground gap-4">
         <AirplaneLoader size={48} />
-        <p className="font-medium animate-pulse mt-2">Menyiapkan Workspace...</p>
+        <p className="font-medium animate-pulse mt-2">Menyiapkan dashboard...</p>
       </div>
     )
   }
@@ -374,7 +375,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <div className="flex items-center gap-3">
             <Button variant="outline" size="sm" asChild className="rounded-full shadow-none transition-all px-4 hidden sm:flex border-border/50 bg-transparent hover:bg-muted text-foreground">
-              <Link href="/" target="_blank">
+              {/* Membuka halaman publik yang sesuai dengan halaman admin yang sedang dibuka. */}
+              <Link href={adminPreviewUrl(pathname)} target="_blank">
                 <ExternalLink className="mr-2 h-4 w-4" />
                 <span className="font-medium">Lihat Website</span>
               </Link>

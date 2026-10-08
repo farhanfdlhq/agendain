@@ -15,10 +15,10 @@
 }
 
 .sectionTitle {
-  font-size: 2.25rem;
+  font-size: var(--type-section);
   font-weight: 800;
   color: #0f172a;
-  line-height: 1.2;
+  line-height: var(--leading-section);
 }
 
 .sectionSubtitle {

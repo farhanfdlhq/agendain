@@ -259,7 +259,7 @@ export default function PrivateTripPricing({
                       <span className={styles.waIconWrapper}>
                         <WhatsAppIcon size={14} />
                       </span>
-                      <span>Tanya Gratis Via Whatsapp</span>
+                      <span>Tanya Gratis via WhatsApp</span>
                     </a>
                   </div>
                 </div>

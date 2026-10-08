@@ -12,7 +12,7 @@ const id: Record<string, string> = {
   "footer.mainMenu": "Menu Utama",
   "footer.contact": "Hubungi",
   "footer.help": "Bantuan",
-  "footer.tagline": "Mau Jalan tapi Wacana Doang? Agendain aja!",
+  "footer.tagline": "Mau Jalan tapi Wacana Doang? *Agendain aja!*",
   "footer.desc":
     "Travel agency digital terpercaya untuk perjalanan Anda dari Indonesia ke Eropa.",
   "footer.eyebrow": "Spesialis Trip Eropa",
@@ -60,20 +60,20 @@ const id: Record<string, string> = {
   "about.new.heroTitleStart": "Apa itu",
   "about.new.heroTitleEnd": "?",
   "about.new.heroSubtitle":
-    "Bagi kami, menjelajahi Eropa bukan sekadar berpindah dari satu destinasi ke destinasi lain, melainkan tentang mengumpulkan cerita baru yang membekas di hati. Agendain hadir untuk memastikan seluruh langkah perjalananmu berjalan mulus, aman, dan bebas dari drama printilan logistik yang membingungkan. Ruang blog ini kami dedikasikan sebagai panduan lokal, tempat berbagi cerita nyata, serta kurasi hidden gems terbaik langsung dari sudut-sudut tercantik Eropa. Yuk, persiapkan kopermu, resapi setiap keindahannya, dan mari agendakan petualangan sinematikmu bersama kami.",
+    "Bagi kami, menjelajahi Eropa bukan sekadar berpindah dari satu destinasi ke destinasi lain, melainkan tentang mengumpulkan cerita baru yang membekas di hati. Agendain hadir untuk memastikan seluruh langkah perjalananmu berjalan mulus, aman, dan bebas dari drama printilan logistik yang membingungkan. Yuk, persiapkan kopermu, resapi setiap keindahannya, dan mari agendakan petualangan sinematikmu bersama kami.",
   "about.new.missionLabel": "Misi kami",
   "about.new.missionTitle":
     "Mengubah rencana liburanmu menjadi cerita paling bahagia.",
   "about.new.missionDesc":
     "Di Agendain, fokus kami adalah memastikan kamu pulang membawa cerita terbaik. Bagi kami, traveling bukan sekadar berpindah kota, melainkan tentang tawa dan kenyamanan di setiap detiknya. Misi kami simpel: menjaga agar seluruh momen liburanmu mulai dari berburu spot foto aesthetic hingga bersantai di hotel pilihan, berjalan seru, mulus, dan bikin kamu pengen berangkat lagi!",
-  "about.new.guidePill": "Dibalik Agendain",
+  "about.new.guidePill": "Di Balik Agendain",
   "about.new.guideTitle": "Meet Our Lead Guide",
   "about.new.guideDescP1":
     '"Eropa punya sejuta pesona yang tak cukup hanya dinikmati dari foto. Harus dirasakan, diresapi, dan dikenang."',
   "about.new.guideDescP2":
     "Kenalin, sosok di balik setiap rute perjalanan Agendain yang memastikan setiap destinasi tidak hanya sekadar dikunjungi, tapi juga memberikan pengalaman yang paling berkesan.",
   "about.new.guideBtn": "Konsultasi Trip →",
-  "about.new.readMore": "Read More",
+  "about.new.readMore": "Baca Selengkapnya",
   "pkg.title": "Temukan Open Trip Impian Anda",
   "pkg.subtitle": "Pilih dari berbagai destinasi menakjubkan di Eropa.",
   "dest.title": "Destinasi Eropa Kami",
@@ -192,7 +192,7 @@ const id: Record<string, string> = {
   "home.faq.q3":
     "Apakah harga open trip yang tertera sudah termasuk tiket pesawat?",
   "home.faq.a3":
-    "Tergantung paket yang dipilih. Beberapa paket sudah termasuk tiket pesawat PP, dan beberapa lainnya belum. Detail lengkap tertera di setiap halaman openTrip.",
+    "Tergantung paket yang dipilih. Beberapa paket sudah termasuk tiket pesawat PP, dan beberapa lainnya belum. Detail lengkap tertera di setiap halaman paket.",
   "home.faq.q4": "Bagaimana sistem pembayarannya? Apakah bisa dicicil?",
   "home.faq.a4":
     "Ya, kami menyediakan sistem pembayaran bertahap (cicilan tanpa bunga). DP minimal 30% dan sisanya bisa dilunasi sebelum keberangkatan sesuai jadwal yang disepakati.",
@@ -283,8 +283,8 @@ const id: Record<string, string> = {
   "openTrip.stats.dest": "Destinasi Unik",
   "openTrip.stats.travelers": "Traveler Senang",
   "openTrip.stats.satisfaction": "Tingkat Kepuasan",
-  "openTrip.stats.years": "Pengalaman",
-  "openTrip.stats.experience": "Bertahun-tahun",
+  "openTrip.stats.years": "Tahun",
+  "openTrip.stats.experience": "Pengalaman",
   "openTrip.section.label": "Semua Jadwal Keberangkatan",
   "openTrip.section.title1": "Eksplor Eropa",
   "openTrip.section.title2": "Dengan Paket Tur Eksklusif",

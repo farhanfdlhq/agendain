@@ -310,7 +310,7 @@ export default function ProfilePage() {
             <form onSubmit={handleAccountSubmit}>
               <CardHeader className="border-b-2 border-border pb-5 mb-5">
                 <CardTitle>Profil Pengguna</CardTitle>
-                <CardDescription>Informasi ini akan ditampilkan publik dan digunakan untuk notifikasi sistem.</CardDescription>
+                <CardDescription>Nama ini dipakai sebagai penulis artikel blog bila kolom Penulis dikosongkan.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">

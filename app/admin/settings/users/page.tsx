@@ -239,7 +239,7 @@ export default function UserManagementPage() {
                   <TableHead className="w-12 font-semibold text-muted-foreground py-4">#</TableHead>
                   <TableHead className="font-semibold text-muted-foreground py-4">Nama</TableHead>
                   <TableHead className="font-semibold text-muted-foreground text-center">Role</TableHead>
-                  <TableHead className="font-semibold text-muted-foreground text-center">Permissions</TableHead>
+                  <TableHead className="font-semibold text-muted-foreground text-center">Hak Akses</TableHead>
                   <TableHead className="font-semibold text-muted-foreground text-center">Tanggal Dibuat</TableHead>
                   <TableHead className="w-12"></TableHead>
                 </TableRow>
@@ -254,7 +254,7 @@ export default function UserManagementPage() {
                         <div className="flex flex-col">
                           <div className="flex items-center gap-2 font-semibold">
                             {u.nama}
-                            {isYou && <Badge variant="secondary" className="text-[10px] h-4 px-1.5 bg-muted">You</Badge>}
+                            {isYou && <Badge variant="secondary" className="text-[10px] h-4 px-1.5 bg-muted">Anda</Badge>}
                           </div>
                           <span className="text-xs text-muted-foreground mt-0.5">{u.email}</span>
                         </div>

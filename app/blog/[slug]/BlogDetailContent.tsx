@@ -66,7 +66,7 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
         
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link href="/" className="hover:text-primary transition-colors">{t('nav.home')}</Link>
           <ChevronRight size={14} />
           <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
           <ChevronRight size={14} />

@@ -118,7 +118,7 @@ export default function OpenTripCMSPage() {
         </Label>
         {resolutionHint && (
           <p className="text-[11px] text-muted-foreground mt-0 mb-2 font-medium italic">
-            💡 Resolusi yang disarankan: <span className="font-bold text-slate-700">{resolutionHint}</span>
+            Resolusi yang disarankan: <span className="font-bold text-slate-700">{resolutionHint}</span>
           </p>
         )}
         <MediaPicker 
@@ -293,7 +293,7 @@ export default function OpenTripCMSPage() {
                 {renderTextInput('Label Kecil di Atas', 'ctaLabel', false, 'Penawaran Spesial')}
                 {renderTextInput('Baris 1: Judul Utama (*Kuning*)', 'ctaTitle', false, 'Booking Sekarang', true, '800')}
                 {renderTextInput('Baris 2: Sub-Judul (Opsional)', 'ctaSubtitle', true, 'Amankan kursi Anda sebelum kehabisan.', true, '500')}
-                {renderTextInput('Teks Tombol Primary', 'ctaBtnText', false, 'Chat Whatsapp Sekarang')}
+                {renderTextInput('Teks Tombol Utama', 'ctaBtnText', false, 'Chat Whatsapp Sekarang')}
               </CardContent>
             </Card>
 
