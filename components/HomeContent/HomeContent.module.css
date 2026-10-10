@@ -58,7 +58,10 @@
   position: relative;
   z-index: 1;
   text-align: center;
-  max-width: 850px;
+  /* Potongan judul berwarna putih adalah inline-block (untuk animasi), jadi
+     harus muat satu baris di --type-hero 64px (~806px) — kalau tidak ia pecah
+     di dalam dan potongan emas terdorong ke baris ketiga. */
+  max-width: 900px;
   width: 100%;
   padding: 0 var(--space-lg);
   display: flex;

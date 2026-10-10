@@ -13,6 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { MediaPicker } from "@/components/ui/media-picker"
 import { FontControls } from "@/components/ui/font-size-picker"
+import { NumberStepper } from "@/components/ui/number-stepper"
+import { OPEN_TRIP_STAT_DEFAULTS, openTripStatFormDefaults, resolveOpenTripStats } from "@/lib/open-trip-stats"
 
 export default function OpenTripCMSPage() {
   const [data, setData] = useState<any>({
@@ -21,6 +23,7 @@ export default function OpenTripCMSPage() {
     heroImage: '',
     packagesTitle: '', packagesTitle_en: '', packagesTitleWeight: '800',
     packagesSubtitle: '', packagesSubtitle_en: '', packagesSubtitleWeight: '500',
+    ...openTripStatFormDefaults(),
   })
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
@@ -271,6 +274,80 @@ export default function OpenTripCMSPage() {
                   {renderTextInput('Judul Utama (*Highlight Kuning*)', 'heroTitle', false, 'Eksplorasi Eropa *Lebih Seru* Bareng Teman Baru', true, '800')}
                   {renderTextInput('Sub-Judul (Deskripsi)', 'heroSubtitle', true, 'Gabung di Open Trip Agendain...', true, '500')}
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border shadow-sm overflow-hidden">
+            <CardHeader className="bg-slate-50/50 border-b pb-4">
+              <CardTitle className="text-lg text-primary">Statistik</CardTitle>
+              <CardDescription>
+                Empat angka di bawah hero, dihitung naik saat terlihat. Akhiran ditulis setelah angka, mis. <code>+</code>, <code>K+</code>, <code>%</code>; kosongkan bila tidak perlu.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-5">
+              {/* Pratinjau meniru bar statistik di website, memakai resolver yang sama. */}
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Pratinjau</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 rounded-xl border border-[#0f3050]/70 bg-white py-4">
+                  {resolveOpenTripStats(data, activeTab === 'en').map((s, i) => (
+                    <div key={i} className="px-2 py-1 text-center">
+                      <p className="text-2xl font-extrabold tabular-nums text-gray-900">{s.value}{s.suffix}</p>
+                      <p className="mt-0.5 text-xs font-medium text-gray-600">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="hidden sm:grid grid-cols-[1.25rem_9.5rem_5.5rem_1fr] gap-3 px-1 text-xs font-medium text-muted-foreground">
+                  <span />
+                  <span>Angka</span>
+                  <span>Akhiran</span>
+                  <span className="flex items-center gap-2">
+                    Label
+                    <span className="text-[10px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">{activeTab}</span>
+                  </span>
+                </div>
+                {OPEN_TRIP_STAT_DEFAULTS.map((d, i) => {
+                  const n = i + 1
+                  const labelField = activeTab === 'en' ? `stat${n}Label_en` : `stat${n}Label`
+                  return (
+                    <div
+                      key={n}
+                      role="group"
+                      aria-label={`Statistik ${n}`}
+                      className="grid grid-cols-[1.25rem_1fr_5.5rem] sm:grid-cols-[1.25rem_9.5rem_5.5rem_1fr] items-center gap-x-3 gap-y-2 rounded-lg border border-border/60 bg-muted/10 p-2"
+                    >
+                      <span className="text-center text-sm font-bold tabular-nums text-muted-foreground">{n}</span>
+                      <NumberStepper
+                        aria-label={`Angka statistik ${n}`}
+                        min={0}
+                        name={`stat${n}Value`}
+                        value={data[`stat${n}Value`]}
+                        onValueChange={(v) => setData((prev: any) => ({ ...prev, [`stat${n}Value`]: v }))}
+                        placeholder={String(d.value)}
+                      />
+                      <Input
+                        aria-label={`Akhiran statistik ${n}`}
+                        name={`stat${n}Suffix`}
+                        maxLength={4}
+                        value={data[`stat${n}Suffix`] ?? ''}
+                        onChange={handleChange}
+                        placeholder={d.suffix}
+                        className="text-center font-semibold"
+                      />
+                      <Input
+                        aria-label={`Label statistik ${n} (${activeTab.toUpperCase()})`}
+                        name={labelField}
+                        value={data[labelField] ?? ''}
+                        onChange={handleChange}
+                        placeholder={activeTab === 'en' ? d.label_en : d.label}
+                        className="col-start-2 col-span-2 sm:col-start-auto sm:col-span-1"
+                      />
+                    </div>
+                  )
+                })}
               </div>
             </CardContent>
           </Card>

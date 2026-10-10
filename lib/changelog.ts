@@ -26,6 +26,20 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.2.0',
+    date: '2026-10-10',
+    title: 'Statistik Open Trip bisa diatur dari CMS',
+    added: [
+      'CMS Open Trip: kartu Statistik untuk mengatur angka, akhiran (+, K+, %), dan label Indonesia/Inggris keempat statistik di bawah hero, lengkap dengan pratinjau.',
+    ],
+    improved: [
+      'Kolom angka Statistik memakai tombol − / + yang lebih jelas, menggantikan panah kecil bawaan browser.',
+    ],
+    fixed: [
+      'Judul hero Beranda kembali tampil 2 baris di layar lebar (sebelumnya terpecah 3 baris).',
+    ],
+  },
+  {
     version: '1.1.0',
     date: '2026-10-09',
     title: 'Ukuran judul seragam, kontrol font lebih lengkap, dan CMS Footer standar',

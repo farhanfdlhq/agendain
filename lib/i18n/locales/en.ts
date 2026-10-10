@@ -217,12 +217,6 @@ const en: Record<string, string> = {
   'openTrip.hero.title1': 'Visit The Most',
   'openTrip.hero.title2': 'Beautiful Places in Europe',
   'openTrip.hero.title3': 'With',
-  'openTrip.stats.exp': 'Experiences',
-  'openTrip.stats.dest': 'Unique Destinations',
-  'openTrip.stats.travelers': 'Happy Travelers',
-  'openTrip.stats.satisfaction': 'Satisfaction Rate',
-  'openTrip.stats.years': 'Years of',
-  'openTrip.stats.experience': 'Experience',
   'openTrip.section.label': 'All Departure Schedules',
   // Tiga baris, sama seperti versi Indonesia. Sebelumnya title3 tidak ada di
   // kamus EN sehingga jatuh ke "Agendain!" berbahasa Indonesia dan judulnya

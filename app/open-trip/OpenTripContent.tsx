@@ -16,6 +16,7 @@ import { useTranslation } from "@/lib/i18n/useTranslation";
 import { parseGoldText } from "@/lib/utils/textFormatting";
 import { generateWhatsAppLink } from "@/lib/utils";
 import { waOpenTripGeneral } from "@/lib/whatsapp-messages";
+import { resolveOpenTripStats } from "@/lib/open-trip-stats";
 
 interface OpenTripContentProps {
   packages: OpenTripCardData[];
@@ -93,35 +94,14 @@ export default function OpenTripContent({
 
       <div className={styles.statsWrapper}>
         <div className={styles.statsContainer}>
-          <div className={styles.statBox}>
-            <h4>
-              <Counter value={2} suffix="+" duration={1.5} />
-            </h4>
-            <p>
-              {t("openTrip.stats.years") || (isEn ? "Years of" : "Pengalaman")}
-              <br />
-              {t("openTrip.stats.experience") ||
-                (isEn ? "Experience" : "Bertahun-tahun")}
-            </p>
-          </div>
-          <div className={styles.statBox}>
-            <h4>
-              <Counter value={63} suffix="+" duration={1.5} />
-            </h4>
-            <p>{t("openTrip.stats.dest")}</p>
-          </div>
-          <div className={styles.statBox}>
-            <h4>
-              <Counter value={32} suffix="K+" duration={1.5} />
-            </h4>
-            <p>{t("openTrip.stats.travelers")}</p>
-          </div>
-          <div className={styles.statBox}>
-            <h4>
-              <Counter value={94} suffix="%" duration={1.5} />
-            </h4>
-            <p>{t("openTrip.stats.satisfaction")}</p>
-          </div>
+          {resolveOpenTripStats(opentripSettings, isEn).map((stat, i) => (
+            <div key={i} className={styles.statBox}>
+              <h4>
+                <Counter value={stat.value} suffix={stat.suffix} duration={1.5} />
+              </h4>
+              <p>{stat.label}</p>
+            </div>
+          ))}
         </div>
       </div>
 
