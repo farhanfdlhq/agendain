@@ -26,6 +26,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.2.1',
+    date: '2026-10-10',
+    title: 'Halaman error yang rapi saat website gagal dimuat',
+    improved: [
+      'Saat website sedang diperbarui atau mengalami gangguan, pengunjung kini melihat halaman bermerek Agendain dengan tombol Muat ulang dan Beranda, serta otomatis mencoba lagi, bukan tulisan polos "Internal Server Error".',
+    ],
+  },
+  {
     version: '1.2.0',
     date: '2026-10-10',
     title: 'Statistik Open Trip bisa diatur dari CMS',
