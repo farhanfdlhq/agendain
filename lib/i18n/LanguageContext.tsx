@@ -69,8 +69,13 @@ function LanguageProviderInner({ children, initialLocale = 'id' }: { children: R
 }
 
 export function LanguageProvider({ children, initialLocale = 'id' }: { children: ReactNode, initialLocale?: Locale }) {
+  // Fallback ini ikut ter-render di HTML server (useSearchParams men-suspend).
+  // Dulu `t: (k) => k` → HTML awal berisi kunci mentah ("nav.home") yang terlihat
+  // oleh crawler & oleh pengunjung bila JS gagal dimuat. Pakai kamus yang sama.
+  const fallbackT = (key: string): string =>
+    dictionaries[initialLocale][key] || dictionaries['id'][key] || key
   return (
-    <Suspense fallback={<LanguageContext.Provider value={{ locale: initialLocale, setLocale: () => {}, t: (k) => k }}>{children}</LanguageContext.Provider>}>
+    <Suspense fallback={<LanguageContext.Provider value={{ locale: initialLocale, setLocale: () => {}, t: fallbackT }}>{children}</LanguageContext.Provider>}>
       <LanguageProviderInner initialLocale={initialLocale}>{children}</LanguageProviderInner>
     </Suspense>
   )

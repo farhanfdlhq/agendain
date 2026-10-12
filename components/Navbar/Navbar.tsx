@@ -7,6 +7,7 @@ import { useTranslation } from '@/lib/i18n/useTranslation'
 import LanguageToggle from '@/components/LanguageToggle/LanguageToggle'
 import { generateWhatsAppLink } from '@/lib/utils'
 import styles from './Navbar.module.css'
+import { siteLogoOr } from "@/lib/site-logo"
 
 export default function Navbar({ settings }: { settings?: any }) {
   const { t } = useTranslation()
@@ -50,7 +51,7 @@ export default function Navbar({ settings }: { settings?: any }) {
   }, [open])
 
   const siteName = settings?.site_name || "agendain"
-  const siteLogo = settings?.site_logo && settings.site_logo !== "/logo.png" ? settings.site_logo : "/agendain.jpeg"
+  const siteLogo = siteLogoOr(settings?.site_logo)
 
   const isHome = pathname === '/'
 

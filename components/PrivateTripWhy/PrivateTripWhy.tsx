@@ -112,7 +112,7 @@ export default function PrivateTripWhy({
               className={styles.imageWrapper}
             >
               <Image
-                src="/private_trip_why.png"
+                src={privatetripSettings?.whyImage || "/private_trip_why.png"}
                 alt="Private Trip di Eropa"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"

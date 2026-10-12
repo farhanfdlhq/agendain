@@ -4,6 +4,7 @@ import { Metadata } from 'next'
 import BlogDetailContent from './BlogDetailContent'
 import { pageMeta } from '@/lib/og'
 import { JsonLd, blogPostingLd } from '@/lib/jsonld'
+import { LOGO_BLUE } from '@/lib/site-logo'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -46,7 +47,7 @@ export default async function BlogDetailPage({ params }: Props) {
           dateModified: post.updatedAt,
           authorName: post.author,
           publisherName: 'Agendain',
-          publisherLogo: '/agendain.jpeg',
+          publisherLogo: LOGO_BLUE,
         })}
       />
       <BlogDetailContent post={post} related={related} />

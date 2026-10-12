@@ -13,6 +13,7 @@ import { formatWhatsAppNumber } from '@/lib/utils'
 import { sanitizeHtml } from '@/lib/sanitize'
 import { fontStyleFrom } from '@/lib/font-style'
 import styles from './Footer.module.css'
+import { siteLogoOr } from "@/lib/site-logo"
 
 const SVG_ICONS: Record<string, any> = {
   instagram: InstagramIcon,
@@ -55,7 +56,7 @@ function displayPhone(num: string): string {
 export default function Footer({ settings }: { settings?: any }) {
   const { t, locale } = useTranslation()
   const siteName = settings?.site_name || "agendain"
-  const siteLogo = settings?.site_logo && settings.site_logo !== "/logo.png" ? settings.site_logo : "/agendain.jpeg"
+  const siteLogo = siteLogoOr(settings?.site_logo)
 
   // Isi footer dari CMS (`footer_settings`). Key ini otomatis ikut di prop
   // `settings` karena getSettings() memakai prisma.setting.findMany().

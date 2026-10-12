@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Lock, Mail, AlertCircle, Eye, EyeOff } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -73,9 +74,13 @@ export default function LoginForm({ logoUrl }: { logoUrl: string }) {
           <div className="w-full max-w-sm mx-auto space-y-6">
             <div className="space-y-2 text-center md:text-left">
               {logoUrl && (
+                // Logo situs versi putih: di HP diberi latar navy seperti panel kiri desktop,
+                // kalau tidak ia hilang di atas latar terang.
                 <div className="md:hidden flex justify-center mb-4">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={logoUrl} alt="Logo Website" className="max-h-14 w-auto object-contain" />
+                  <div className="rounded-xl bg-primary px-5 py-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={logoUrl} alt="Logo Website" className="max-h-9 w-auto object-contain" />
+                  </div>
                 </div>
               )}
               <h2 className="text-3xl font-bold tracking-tight">Selamat Datang Kembali</h2>
@@ -147,7 +152,14 @@ export default function LoginForm({ logoUrl }: { logoUrl: string }) {
               </Button>
             </form>
 
-            <div className="pt-6 text-center text-sm text-muted-foreground">
+            <div className="pt-6 flex flex-col sm:flex-row items-center justify-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
+              <Link
+                href="/"
+                className="font-medium text-primary underline-offset-4 hover:underline focus-visible:underline focus-visible:outline-none"
+              >
+                Kembali ke website
+              </Link>
+              <span aria-hidden="true" className="hidden sm:inline">·</span>
               <p>&copy; {new Date().getFullYear()} Agendain Travel.</p>
             </div>
           </div>

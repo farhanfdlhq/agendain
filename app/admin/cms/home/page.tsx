@@ -758,7 +758,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-4">
-                {renderImageInput('URL Gambar (Kiri/Kanan Tergantung Layar)', 'accImage', '/accordion-street.webp', '800x1200 px (Portrait)')}
+                {renderImageInput('Gambar di Samping Daftar Item Accordion', 'accImage', '/accordion-street.webp', '800x1200 px (Portrait)')}
               </div>
               <div className="space-y-4 flex flex-col justify-start">
                 {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle', false, '', true, '800')}
@@ -785,7 +785,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-4">
-                {renderImageInput('URL Gambar Background', 'socialBgImg', '/dest-italy.webp', '1920x1080 px (Landscape)')}
+                {renderImageInput('Gambar Latar Section (tampil buram & gelap di belakang testimoni)', 'socialBgImg', '/dest-italy.webp', '1920x1080 px (Landscape)')}
               </div>
               <div className="space-y-4 flex flex-col justify-start">
                 {renderTextInput('Judul Sorotan Utama', 'socialTitle', true, '', true, '800')}

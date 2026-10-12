@@ -22,15 +22,17 @@ export PM2_HOME=/root/.pm2
 
 cd "$APP_DIR"
 
-echo "==> [1/6] git pull"
+echo "==> [1/7] git pull"
 # Buang lockfile kotor hasil `npm install` di server agar pull tidak abort.
 git checkout -- package-lock.json 2>/dev/null || true
+# error-page.html diisi ulang tiap deploy (langkah 6) → kembalikan versi repo dulu.
+git checkout -- public/error-page.html 2>/dev/null || true
 git pull origin main
 
-echo "==> [2/6] npm install"
+echo "==> [2/7] npm install"
 npm install
 
-echo "==> [3/6] prisma db push + generate"
+echo "==> [3/7] prisma db push + generate"
 npx prisma db push
 npx prisma generate
 
@@ -39,13 +41,13 @@ npx prisma generate
 # deleteMany pada privateTripPackage, jadi paket private trip ditulis ulang
 # setiap deploy. Lewati dengan: SEED=0 bash scripts/deploy.sh
 if [ "${SEED:-1}" = "1" ]; then
-  echo "==> [4/6] prisma db seed"
+  echo "==> [4/7] prisma db seed"
   npx prisma db seed
 else
-  echo "==> [4/6] prisma db seed (DILEWATI, SEED=0)"
+  echo "==> [4/7] prisma db seed (DILEWATI, SEED=0)"
 fi
 
-echo "==> [5/6] build"
+echo "==> [5/7] build"
 # Bersihkan .next dulu. Tanpa ini, `next build` me-reuse chunk lama dari
 # `.next/cache` (mis. CSS), sehingga perbaikan yang sudah ter-push tetap
 # menyajikan file basi — lalu Cloudflare men-cache-nya. Ini biang "sticky &
@@ -54,7 +56,11 @@ echo "==> [5/6] build"
 rm -rf .next
 npm run build
 
-echo "==> [6/6] restart pm2"
+echo "==> [6/7] halaman error: tanam logo & favicon dari Pengaturan"
+# Hanya membaca DB; gagal = tetap logo bawaan (tidak menghentikan deploy).
+npx tsx scripts/build-error-page.ts || true
+
+echo "==> [7/7] restart pm2"
 # restart bila proses sudah ada; start bila belum (deploy pertama).
 "$PM2" restart agendain --update-env || "$PM2" start "npm run start -- -p $PORT" --name agendain
 "$PM2" save

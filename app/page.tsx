@@ -41,6 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 import { Suspense } from 'react'
 import AirplaneLoader from '@/components/ui/airplane-loader'
+import { LOGO_BLUE, siteLogoOr } from '@/lib/site-logo'
 
 async function HomeDataFetcher() {
   // Sama persis dengan /open-trip (urutan terbaru, hanya published) supaya
@@ -98,14 +99,14 @@ async function buildSiteLd() {
     const rows = await prisma.setting.findMany()
     const map = rows.reduce((a: any, c: any) => { a[c.key] = c.value; return a }, {})
     const name = map.site_name || 'Agendain'
-    const logo = map.site_logo && map.site_logo !== '/logo.png' ? map.site_logo : '/agendain.jpeg'
+    const logo = siteLogoOr(map.site_logo, LOGO_BLUE)
     const footer = parseFooterSettings(map.footer_settings)
     const sameAs = footer.socials.map((s) => safeHref(s.url)).filter((u) => /^https?:\/\//i.test(u))
     let telephone: string | undefined
     try { telephone = JSON.parse(map.home_settings || '{}')?.whatsapp_number || undefined } catch {}
     return [organizationLd({ name, logo, sameAs, telephone }), websiteLd(name)]
   } catch {
-    return [organizationLd({ name: 'Agendain', logo: '/agendain.jpeg' }), websiteLd('Agendain')]
+    return [organizationLd({ name: 'Agendain', logo: LOGO_BLUE }), websiteLd('Agendain')]
   }
 }
 

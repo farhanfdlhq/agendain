@@ -26,6 +26,25 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.3.0',
+    date: '2026-10-12',
+    title: 'Gambar Private Trip dari CMS, halaman error memakai logo situs',
+    added: [
+      'CMS Private Trip: gambar di samping daftar keunggulan ("Mengapa Memilih Kami") kini bisa diganti.',
+      'Halaman login admin: tautan "Kembali ke website".',
+    ],
+    improved: [
+      'Halaman "sedang istirahat" saat website diperbarui kini memakai logo dan favicon yang terpasang di Pengaturan.',
+      'Label gambar CMS Beranda lebih jelas: gambar samping Accordion dibedakan dari gambar latar Bukti Sosial (yang tampil buram).',
+      'Bila logo di Pengaturan belum diisi, website memakai logo resmi Agendain (versi putih atau biru sesuai latar).',
+    ],
+    fixed: [
+      'Menu dan footer tidak lagi sempat menampilkan kode teks seperti "nav.home" sebelum halaman selesai dimuat.',
+      'Logo di halaman login admin kini terlihat di HP.',
+      'Favicon pada tab PDF invoice/itinerary kembali tampil.',
+    ],
+  },
+  {
     version: '1.2.1',
     date: '2026-10-10',
     title: 'Halaman error yang rapi saat website gagal dimuat',

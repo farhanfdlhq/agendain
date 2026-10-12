@@ -816,6 +816,12 @@ export default function PrivateTripCMSPage() {
               true,
               "500",
             )}
+            {renderImageInput(
+              "Gambar di Samping Daftar Keunggulan",
+              "whyImage",
+              "/private_trip_why.png",
+              "1200x900 px (Landscape 4:3; di HP dipotong persegi)",
+            )}
             <div className="space-y-4 border-t pt-4">
               <Label className="text-base font-semibold">
                 Daftar Keunggulan

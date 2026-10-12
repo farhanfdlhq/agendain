@@ -17,12 +17,13 @@ import AirplaneLoader from "@/components/ui/airplane-loader"
 import { hasPermission, type PermissionSubject } from "@/lib/permissions"
 import { APP_VERSION } from "@/lib/changelog"
 import { adminPreviewUrl } from "@/lib/admin-preview-url"
+import { LOGO_WHITE } from "@/lib/site-logo"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
   const pathname = usePathname()
   const router = useRouter()
-  const [siteLogo, setSiteLogo] = useState("/agendain.jpeg")
+  const [siteLogo, setSiteLogo] = useState(LOGO_WHITE)
   const [siteName, setSiteName] = useState("Agendain")
   // Dipakai saat sidebar menyempit — logo penuh terlalu lebar di lebar kolaps.
   const [siteFavicon, setSiteFavicon] = useState("/favicon.ico")

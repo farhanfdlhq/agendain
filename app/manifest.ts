@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { LOGO_BLUE } from "@/lib/site-logo";
 
 // Web App Manifest → Next menyajikannya di /manifest.webmanifest dan otomatis
 // menambah <link rel="manifest">. Mengaktifkan "Add to Home Screen" (Android)
@@ -15,6 +16,6 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#F5A623",
-    icons: [{ src: "/agendain.jpeg", sizes: "any", type: "image/jpeg" }],
+    icons: [{ src: LOGO_BLUE, sizes: "any", type: "image/png" }],
   };
 }

@@ -1,5 +1,6 @@
 import { getSiteSettings } from "@/lib/get-settings"
 import LoginForm from "./LoginForm"
+import { siteLogoOr } from "@/lib/site-logo"
 
 // Server component: `site_logo` dibaca di sini dan diteruskan ke form sebagai
 // prop, sehingga logo yang benar sudah ada di HTML pertama. Sebelumnya halaman
@@ -9,13 +10,9 @@ import LoginForm from "./LoginForm"
 export default async function LoginPage() {
   const settings = await getSiteSettings()
 
-  // Konvensi fallback yang sama dengan Navbar & Footer: "/logo.png" dianggap
-  // belum diset. Fallback ke aset brand `/agendain.jpeg`, BUKAN placeholder
-  // dummy. Dalam kondisi normal cabang ini tak terpakai karena site_logo terisi.
-  const logoUrl =
-    settings.site_logo && settings.site_logo !== "/logo.png"
-      ? settings.site_logo
-      : "/agendain.jpeg"
+  // "/logo.png"/kosong dianggap belum diset → logo cadangan versi putih
+  // (lib/site-logo.ts), sama dengan Navbar & Footer.
+  const logoUrl = siteLogoOr(settings.site_logo)
 
   return <LoginForm logoUrl={logoUrl} />
 }
