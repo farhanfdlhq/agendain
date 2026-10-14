@@ -1,6 +1,7 @@
 "use client";
-import { motion, useInView, useReducedMotion, Variants } from "framer-motion";
+import { motion, useInView, Variants } from "framer-motion";
 import { useRef } from "react";
+import { useBelowFoldReveal } from "./useBelowFoldReveal";
 
 interface FadeInProps {
   children: React.ReactNode;
@@ -10,6 +11,14 @@ interface FadeInProps {
   duration?: number;
 }
 
+const OFFSETS = {
+  up: { y: 25 },
+  down: { y: -25 },
+  left: { x: 20 },
+  right: { x: -20 },
+  none: {},
+} as const;
+
 export default function FadeIn({
   children,
   delay = 0,
@@ -17,48 +26,23 @@ export default function FadeIn({
   className = "",
   duration = 0.6,
 }: FadeInProps) {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-10%" });
-  const reduce = useReducedMotion();
+  // Server & layar pertama: langsung terlihat. Reduced-motion: tak pernah bergerak.
+  const animateIn = useBelowFoldReveal(ref);
 
-  // Hormati prefers-reduced-motion: tampilkan isi langsung tanpa gerak apa pun
-  // (bukan sekadar mempercepat). Konten tetap terlihat walau animasi dimatikan.
-  if (reduce) {
-    return (
-      <div ref={ref} className={className}>
-        {children}
-      </div>
-    );
-  }
-
-  const getVariants = (): Variants => {
-    switch (direction) {
-      case "up":
-        return { hidden: { opacity: 0, y: 25 }, visible: { opacity: 1, y: 0 } };
-      case "down":
-        return {
-          hidden: { opacity: 0, y: -25 },
-          visible: { opacity: 1, y: 0 },
-        };
-      case "left":
-        return { hidden: { opacity: 0, x: 20 }, visible: { opacity: 1, x: 0 } };
-      case "right":
-        return {
-          hidden: { opacity: 0, x: -20 },
-          visible: { opacity: 1, x: 0 },
-        };
-      case "none":
-        return { hidden: { opacity: 0 }, visible: { opacity: 1 } };
-    }
+  const variants: Variants = {
+    // Disembunyikan seketika (elemen masih di luar layar), muncul dengan transisi.
+    hidden: { opacity: 0, ...OFFSETS[direction], transition: { duration: 0 } },
+    visible: { opacity: 1, x: 0, y: 0, transition: { duration, delay, ease: "easeOut" } },
   };
 
   return (
     <motion.div
       ref={ref}
-      variants={getVariants()}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-      transition={{ duration, delay, ease: "easeOut" }}
+      variants={variants}
+      initial={false}
+      animate={!animateIn || isInView ? "visible" : "hidden"}
       className={className}
     >
       {children}

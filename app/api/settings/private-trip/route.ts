@@ -4,6 +4,10 @@ import { prisma } from '@/lib/prisma'
 import { sanitizeSettingsPayload, serverError } from '@/lib/security'
 import { requirePermission } from '@/lib/rbac'
 
+// Poin fitur diketik per baris di CMS; rapikan spasi & buang baris kosong di sini.
+const cleanLines = (lines: unknown): string[] =>
+  Array.isArray(lines) ? lines.map((l) => String(l).trim()).filter(Boolean) : []
+
 export async function POST(req: Request) {
   try {
     const gate = await requirePermission(req, 'POST /api/settings/private-trip', 'cms_manage')
@@ -34,7 +38,7 @@ export async function POST(req: Request) {
                image: pkg.image || '',
                locationTab: pkg.locationTab || '',
                chips: pkg.chips || [],
-               features: pkg.features || []
+               features: cleanLines(pkg.features)
             }
          });
       }

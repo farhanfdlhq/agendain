@@ -27,6 +27,8 @@
   box-shadow: 0 8px 32px rgba(0,0,0,0.06);
   margin-bottom: 4rem;
   border: 1px solid var(--color-hairline);
+  /* Target #artikel (link kategori/halaman): berhenti di bawah navbar sticky. */
+  scroll-margin-top: 110px;
 }
 
 .categoryScroll {
@@ -48,6 +50,7 @@
   color: var(--color-muted);
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: none;
   transition: all 0.2s ease;
 }
 
@@ -90,6 +93,12 @@
   background: var(--color-surface-soft);
 }
 
+/* type="search" — sembunyikan tombol × bawaan browser (sudah ada .searchClear). */
+.searchInput::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
 .searchInput:focus {
   border-color: var(--color-primary);
   background: white;
@@ -119,6 +128,12 @@
 }
 
 /* Hitung hasil pencarian/filter — umpan balik "sistem mendengar" input. */
+/* Daftar sedang dimuat ulang (pencarian): redup sebentar, tanpa spinner penuh. */
+.listPending {
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
 .resultCount {
   margin: 0 0 1.5rem;
   color: var(--color-muted);
@@ -417,6 +432,28 @@
     width: 100%;
   }
 
+  /* Chip kategori bisa digeser ke samping (scrollbar disembunyikan). Tepi kanan
+     memudar sebagai tanda "masih ada lagi", lalu hilang saat sudah di ujung.
+     Fade hanya aktif lewat scroll-driven animation: bila browser belum
+     mendukung, atau chip muat tanpa digeser, tak ada chip yang tampak pudar. */
+  .categoryScroll {
+    scroll-snap-type: x proximity;
+    padding-right: 0;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--chip-fade)), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - var(--chip-fade)), transparent);
+  }
+
+  .categoryBadge {
+    scroll-snap-align: start;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .categoryScroll {
+      animation: chipEdgeFade linear both;
+      animation-timeline: scroll(self inline);
+    }
+  }
+
   .postsGrid {
     grid-template-columns: 1fr;
   }
@@ -432,4 +469,16 @@
    diam-diam jatuh ke warna judul biasa. */
 .textGold {
   color: var(--color-dominant);
+}
+
+@property --chip-fade {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes chipEdgeFade {
+  from { --chip-fade: 48px; }
+  92% { --chip-fade: 48px; }
+  to { --chip-fade: 0px; }
 }

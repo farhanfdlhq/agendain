@@ -9,6 +9,7 @@ import { ArrowLeft, Save, Plus, Trash2, Lightbulb } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { NumberStepper } from "@/components/ui/number-stepper"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -312,8 +313,8 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
                     </div>
                     <div className="col-span-4 sm:col-span-2 space-y-1">
                       <Label className="text-xs text-muted-foreground sm:hidden">Qty</Label>
-                      <Input type="number" min="0.01" step="any" value={it.qty}
-                        onChange={e => ubahItem(i, "qty", e.target.value)} />
+                      <NumberStepper min={0.01} step="any" buttonStep={1} value={it.qty} aria-label={`Qty item ${i + 1}`}
+                        onValueChange={v => ubahItem(i, "qty", v)} />
                     </div>
                     <div className="col-span-8 sm:col-span-3 space-y-1">
                       <Label className="text-xs text-muted-foreground sm:hidden">Harga satuan</Label>
@@ -474,8 +475,8 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pajakPersen">Pajak (%)</Label>
-                  <Input id="pajakPersen" type="number" min="0" max="100" step="0.01" value={form.pajakPersen}
-                    onChange={e => set("pajakPersen", e.target.value)} />
+                  <NumberStepper id="pajakPersen" min={0} max={100} step={0.01} buttonStep={1} value={form.pajakPersen}
+                    onValueChange={v => set("pajakPersen", v)} />
                 </div>
               </div>
               <div className="space-y-2">

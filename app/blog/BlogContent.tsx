@@ -2,17 +2,17 @@
 import { fontStyleFrom } from '@/lib/font-style'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState, useEffect, useMemo, useDeferredValue } from 'react'
-import { Calendar, Clock, ChevronRight, Search, RefreshCw, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useRef, useState, useTransition } from 'react'
+import { Calendar, Clock, ChevronRight, Search, X } from 'lucide-react'
 import styles from './page.module.css'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import FadeIn from '@/components/Motion/FadeIn'
 import Stagger from '@/components/Motion/Stagger'
 import HeroHeader from '@/components/HeroHeader/HeroHeader'
-import AirplaneLoader from '@/components/ui/airplane-loader'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import Pagination from '@/components/Pagination/Pagination'
 import { parseGoldText } from '@/lib/utils/textFormatting'
+import { blogListHref } from '@/lib/blog-list'
 
 type BlogCategory = { id: number; nama: string; namaEn: string | null; slug: string }
 type BlogPost = {
@@ -23,76 +23,71 @@ type BlogPost = {
   excerpt: string
   excerptEn: string | null
   thumbnail: string
-  publishedAt: string
-  createdAt: string
+  date: string
+  readMin: number
+  readMinEn: number | null
   category: BlogCategory
-  content: string // To calculate read time
-  contentEn: string | null
 }
 
-export default function BlogContent({ blogSettings = {} }: { blogSettings?: any }) {
-  const { t, locale: language } = useTranslation()
-  const [categories, setCategories] = useState<BlogCategory[]>([])
-  const [posts, setPosts] = useState<BlogPost[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  
-  const [activeCategorySlug, setActiveCategorySlug] = useState('semua')
-  const [searchQuery, setSearchQuery] = useState('')
-  const deferredSearch = useDeferredValue(searchQuery)
+type BlogContentProps = {
+  blogSettings?: any
+  categories: BlogCategory[]
+  posts: BlogPost[]
+  /** Artikel terbaru tampil besar di atas (hanya halaman 1 tanpa filter). */
+  featured: boolean
+  total: number
+  page: number
+  pageCount: number
+  kategori: string | null
+  q: string
+}
 
-  const fetchData = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const [catRes, postRes] = await Promise.all([
-        fetch('/api/blog/categories'),
-        fetch('/api/blog?pageSize=100') // Fetch max 100 for client-side filtering for simplicity on public page
-      ])
-      
-      if (!catRes.ok || !postRes.ok) throw new Error('Gagal memuat artikel')
-      
-      setCategories(await catRes.json())
-      const postData = await postRes.json()
-      setPosts(postData.posts || [])
-    } catch (e: any) {
-      setError(e.message)
-    } finally {
-      setLoading(false)
-    }
-  }
+// Data sudah dipaginasi & difilter di server (app/blog/page.tsx) supaya tautan
+// artikel ada di HTML awal untuk mesin pencari. Komponen ini hanya merender dan
+// mengubah URL (kategori, pencarian, halaman).
+export default function BlogContent({
+  blogSettings = {},
+  categories,
+  posts,
+  featured,
+  total,
+  page,
+  pageCount,
+  kategori,
+  q,
+}: BlogContentProps) {
+  const { locale: language } = useTranslation()
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const [searchQuery, setSearchQuery] = useState(q)
+  const inputRef = useRef<HTMLInputElement>(null)
 
+  // Sinkron dengan URL (mis. tombol Back) hanya saat kolom tidak sedang diketik,
+  // agar spasi di akhir ketikan tidak terhapus oleh hasil yang sudah di-trim.
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (document.activeElement !== inputRef.current) setSearchQuery(q)
+  }, [q])
 
-  const filteredPosts = useMemo(() => {
-    return posts.filter(post => {
-      const title = language === 'en' ? (post.titleEn || post.title) : post.title
-      const excerpt = language === 'en' ? (post.excerptEn || post.excerpt) : post.excerpt
-      
-      const matchesCategory = activeCategorySlug === 'semua' || post.category.slug === activeCategorySlug
-      const matchesSearch = title.toLowerCase().includes(deferredSearch.toLowerCase()) || 
-                            excerpt.toLowerCase().includes(deferredSearch.toLowerCase())
-      return matchesCategory && matchesSearch
-    })
-  }, [posts, activeCategorySlug, deferredSearch, language])
+  // Pencarian di server: tunggu jeda mengetik lalu ganti URL (kembali ke halaman 1).
+  useEffect(() => {
+    const next = searchQuery.trim()
+    if (next === q) return
+    const id = setTimeout(() => {
+      startTransition(() => {
+        router.replace(blogListHref({ kategori, q: next }, false), { scroll: false })
+      })
+    }, 400)
+    return () => clearTimeout(id)
+  }, [searchQuery, q, kategori, router])
 
-  // Get the first post as featured if no search is active
-  const featuredPost = (activeCategorySlug === 'semua' && deferredSearch === '' && filteredPosts.length > 0) 
-    ? filteredPosts[0] 
-    : null
-    
-  const gridPosts = featuredPost ? filteredPosts.slice(1) : filteredPosts
+  const featuredPost = featured ? posts[0] ?? null : null
+  const gridPosts = featuredPost ? posts.slice(1) : posts
+  const filtering = !!kategori || !!q
 
   const getTitle = (post: BlogPost) => language === 'en' ? (post.titleEn || post.title) : post.title
   const getExcerpt = (post: BlogPost) => language === 'en' ? (post.excerptEn || post.excerpt) : post.excerpt
   const getCategoryName = (cat: BlogCategory) => language === 'en' ? (cat.namaEn || cat.nama) : cat.nama
-  
-  const getReadTime = (content: string) => {
-    const words = content.replace(/<[^>]*>?/gm, '').split(/\s+/).length
-    return Math.max(1, Math.ceil(words / 200)) // 200 words per minute average
-  }
+  const getReadTime = (post: BlogPost) => (language === 'en' && post.readMinEn ? post.readMinEn : post.readMin)
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString(language === 'en' ? 'en-GB' : 'id-ID', {
@@ -126,30 +121,34 @@ export default function BlogContent({ blogSettings = {} }: { blogSettings?: any 
 
       <div className={styles.container}>
         <FadeIn direction="up" delay={0.2}>
-          <div className={styles.filterSection}>
-            <div className={styles.categoryScroll}>
-              <button 
-                onClick={() => setActiveCategorySlug('semua')}
-                className={`${styles.categoryBadge} ${activeCategorySlug === 'semua' ? styles.categoryActive : ''}`}
+          <div className={styles.filterSection} id="artikel">
+            <nav className={styles.categoryScroll} aria-label={language === 'en' ? 'Categories' : 'Kategori'}>
+              <Link
+                href={blogListHref({ q })}
+                className={`${styles.categoryBadge} ${!kategori ? styles.categoryActive : ''}`}
+                aria-current={!kategori ? 'page' : undefined}
               >
                 {language === 'en' ? 'All' : 'Semua'}
-              </button>
+              </Link>
               {categories.map(cat => (
-                <button 
+                <Link
                   key={cat.id}
-                  onClick={() => setActiveCategorySlug(cat.slug)}
-                  className={`${styles.categoryBadge} ${activeCategorySlug === cat.slug ? styles.categoryActive : ''}`}
+                  href={blogListHref({ kategori: cat.slug, q })}
+                  className={`${styles.categoryBadge} ${kategori === cat.slug ? styles.categoryActive : ''}`}
+                  aria-current={kategori === cat.slug ? 'page' : undefined}
                 >
                   {getCategoryName(cat)}
-                </button>
+                </Link>
               ))}
-            </div>
-            
+            </nav>
+
             <div className={styles.searchWrapper}>
               <Search size={18} className={styles.searchIcon} />
               <input
-                type="text"
+                ref={inputRef}
+                type="search"
                 placeholder={language === 'en' ? "Search articles..." : "Cari artikel..."}
+                aria-label={language === 'en' ? 'Search articles' : 'Cari artikel'}
                 className={styles.searchInput}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -168,24 +167,15 @@ export default function BlogContent({ blogSettings = {} }: { blogSettings?: any 
           </div>
         </FadeIn>
 
-        {loading ? (
-          <div className="flex justify-center py-20"><AirplaneLoader size={48} /></div>
-        ) : error ? (
-          <div className="text-center py-20 space-y-4">
-            <p className="text-destructive font-medium">{error}</p>
-            <Button variant="outline" onClick={fetchData} className="gap-2"><RefreshCw size={16} /> Coba lagi</Button>
-          </div>
-        ) : (
-          <>
-            {/* Umpan balik hasil: tampil hanya saat pencarian/filter aktif,
-                sekaligus menegaskan sistem "mendengar" input pengguna. */}
-            {(deferredSearch !== '' || activeCategorySlug !== 'semua') && (
+        <div className={isPending ? styles.listPending : undefined} aria-busy={isPending}>
+            {/* Umpan balik hasil: tampil hanya saat pencarian/filter aktif. */}
+            {filtering && (
               <p className={styles.resultCount}>
-                {filteredPosts.length}{' '}
+                {total}{' '}
                 {language === 'en'
-                  ? `article${filteredPosts.length === 1 ? '' : 's'} found`
+                  ? `article${total === 1 ? '' : 's'} found`
                   : 'artikel ditemukan'}
-                {deferredSearch !== '' && <> · &ldquo;{deferredSearch}&rdquo;</>}
+                {q && <> · &ldquo;{q}&rdquo;</>}
               </p>
             )}
 
@@ -202,7 +192,7 @@ export default function BlogContent({ blogSettings = {} }: { blogSettings?: any 
                       priority={true}
                       className={styles.featuredImage}
                     />
-                    <span className={styles.featuredTag}>{language === 'en' ? 'Featured Article' : 'Artikel Utama'}</span>
+                    <span className={styles.featuredTag}>{language === 'en' ? 'Latest Article' : 'Artikel Terbaru'}</span>
                   </div>
                   <div className={styles.featuredContent}>
                     <span className={styles.postCategory}>{getCategoryName(featuredPost.category)}</span>
@@ -211,10 +201,10 @@ export default function BlogContent({ blogSettings = {} }: { blogSettings?: any 
                     
                     <div className={styles.postMeta}>
                       <div className={styles.metaItem}>
-                        <Calendar size={16} /> {formatDate(featuredPost.publishedAt || featuredPost.createdAt)}
+                        <Calendar size={16} /> {formatDate(featuredPost.date)}
                       </div>
                       <div className={styles.metaItem}>
-                        <Clock size={16} /> {getReadTime(language === 'en' && featuredPost.contentEn ? featuredPost.contentEn : featuredPost.content)} min read
+                        <Clock size={16} /> {getReadTime(featuredPost)} min read
                       </div>
                     </div>
                     
@@ -249,10 +239,10 @@ export default function BlogContent({ blogSettings = {} }: { blogSettings?: any 
                         <div className={styles.postMetaBottom}>
                           <div className={styles.postMeta}>
                             <div className={styles.metaItem}>
-                              <Calendar size={14} /> {formatDate(post.publishedAt || post.createdAt)}
+                              <Calendar size={14} /> {formatDate(post.date)}
                             </div>
                             <div className={styles.metaItem}>
-                              <Clock size={14} /> {getReadTime(language === 'en' && post.contentEn ? post.contentEn : post.content)} min read
+                              <Clock size={14} /> {getReadTime(post)} min read
                             </div>
                           </div>
                         </div>
@@ -269,8 +259,16 @@ export default function BlogContent({ blogSettings = {} }: { blogSettings?: any 
                 </div>
               )
             )}
-          </>
-        )}
+
+            <Pagination
+              page={page}
+              pageCount={pageCount}
+              hrefFor={(p) => blogListHref({ kategori, q, page: p })}
+              label={language === 'en' ? 'Article pages' : 'Halaman artikel'}
+              prevLabel={language === 'en' ? 'Previous page' : 'Halaman sebelumnya'}
+              nextLabel={language === 'en' ? 'Next page' : 'Halaman berikutnya'}
+            />
+        </div>
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { X, CheckCircle, Loader2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { formatWhatsAppNumber } from '@/lib/utils'
+import { NumberStepper } from '@/components/ui/number-stepper'
 import styles from './BookingForm.module.css'
 
 type BookingFormProps = {
@@ -43,7 +44,7 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
   // sehingga booking membawa tanggal yang benar tanpa perlu diisi pengunjung.
   const [formData, setFormData] = useState({
     tanggal: fixedDeparture || '',
-    jumlahPax: 2,
+    jumlahPax: '2',
     nama: '',
     email: '',
     noWa: '',
@@ -70,11 +71,11 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
       toast.error("Mohon pilih tanggal keberangkatan.")
       return
     }
-    if (formData.jumlahPax < 1) {
+    if (Number(formData.jumlahPax) < 1) {
       toast.error("Jumlah peserta minimal 1.")
       return
     }
-    if (seatLimit !== null && formData.jumlahPax > seatLimit) {
+    if (seatLimit !== null && Number(formData.jumlahPax) > seatLimit) {
       toast.error(`Sisa kursi tinggal ${seatLimit}. Kurangi jumlah peserta.`)
       return
     }
@@ -147,16 +148,19 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
           </div>
         )}
         <div className={styles.inputGroup}>
-          <label>Jumlah Peserta (Pax)</label>
-          <input
-            type="number"
+          <label htmlFor="jumlahPax">Jumlah Peserta (Pax)</label>
+          <NumberStepper
+            variant="public"
+            id="jumlahPax"
             name="jumlahPax"
-            min="1"
+            min={1}
             // Batas atas = sisa kursi. Bila kuota tak ditetapkan, tanpa batas.
             max={seatLimit !== null ? seatLimit : undefined}
-            className={styles.input}
+            className={styles.stepper}
             value={formData.jumlahPax}
-            onChange={handleChange}
+            onValueChange={(v) => setFormData((prev) => ({ ...prev, jumlahPax: v }))}
+            decrementLabel="Kurangi peserta"
+            incrementLabel="Tambah peserta"
             required
             disabled={disabledBooking}
           />

@@ -27,6 +27,7 @@ type BlogPost = {
   status: string
   publishedAt: string | null
   createdAt: string
+  readCount?: number
   category: { id: number; nama: string; slug: string }
 }
 
@@ -39,6 +40,7 @@ export default function AdminBlogPage() {
   const deferredSearch = useDeferredValue(search)
   const [statusFilter, setStatusFilter] = useState("all")
   const [categoryFilter, setCategoryFilter] = useState("all")
+  const [sortByReads, setSortByReads] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const fetchPosts = async () => {
@@ -72,13 +74,15 @@ export default function AdminBlogPage() {
   }, [])
 
   const filtered = useMemo(() => {
-    return posts.filter((p) => {
+    const rows = posts.filter((p) => {
       const matchSearch = p.title.toLowerCase().includes(deferredSearch.toLowerCase())
       const matchStatus = statusFilter === "all" || p.status === statusFilter
       const matchCategory = categoryFilter === "all" || p.category?.slug === categoryFilter
       return matchSearch && matchStatus && matchCategory
     })
-  }, [posts, deferredSearch, statusFilter, categoryFilter])
+    // Urut "Terpopuler": jumlah dibaca terbanyak di atas (urutan asli = terbaru).
+    return sortByReads ? [...rows].sort((a, b) => (b.readCount ?? 0) - (a.readCount ?? 0)) : rows
+  }, [posts, deferredSearch, statusFilter, categoryFilter, sortByReads])
 
   const { page, pageSize, setPage, setPageSize, pageCount, startIndex, pageItems: paginatedPosts, from, to, total } = useTablePagination(filtered)
 
@@ -162,6 +166,17 @@ export default function AdminBlogPage() {
                       <TableHead>Kategori</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Tanggal</TableHead>
+                      <TableHead className="text-right">
+                        <button
+                          type="button"
+                          onClick={() => { setSortByReads((v) => !v); setPage(1) }}
+                          className="inline-flex items-center gap-1 font-medium hover:text-foreground cursor-pointer"
+                          aria-pressed={sortByReads}
+                          title={sortByReads ? "Kembali urut terbaru" : "Urutkan dari yang paling banyak dibaca"}
+                        >
+                          Dibaca {sortByReads ? "↓" : <span className="text-muted-foreground/60">↕</span>}
+                        </button>
+                      </TableHead>
                       <TableHead className="text-right">Aksi</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -183,6 +198,9 @@ export default function AdminBlogPage() {
                         </TableCell>
                         <TableCell className="text-muted-foreground text-sm">
                           {post.publishedAt ? new Date(post.publishedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date(post.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {post.status === 'published' ? (post.readCount ?? 0).toLocaleString('id-ID') : <span className="text-muted-foreground">–</span>}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">

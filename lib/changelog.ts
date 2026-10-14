@@ -26,6 +26,36 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.4.0',
+    date: '2026-10-15',
+    title: 'Blog per halaman & jumlah dibaca, form Request Private Trip baru',
+    added: [
+      'Blog: daftar artikel kini dibagi per halaman (9 artikel per halaman) dengan nomor halaman; kategori, pencarian, dan halaman tersimpan di alamat sehingga bisa dibagikan.',
+      'Blog: artikel menampilkan "kali dibaca" setelah dibaca minimal 50 kali; Admin → Blog punya kolom Dibaca yang bisa diurutkan untuk melihat artikel terpopuler.',
+      'Artikel blog: garis progres baca tipis di atas layar.',
+      'Form Request Private Trip tampil baru: panel biru berisi poin keunggulan, pilihan budget sekali klik, dan pemilih bulan yang serasi dengan desain website.',
+      'CMS Private Trip: teks form Request Private Trip (judul, sub-judul, poin keunggulan yang bisa ditambah/dihapus, ajakan WhatsApp) kini bisa diedit, serta pengaturan font untuk judul & sub-judul Cara Booking.',
+      'Kolom angka di admin dan form booking memakai tombol − / + yang lebih mudah ditekan.',
+    ],
+    improved: [
+      'Pencarian blog mencocokkan setiap kata tanpa peduli urutan dan ikut mencari judul berbahasa Inggris.',
+      'Artikel besar di atas daftar Blog kini berlabel "Artikel Terbaru" (sebelumnya "Artikel Utama"), sesuai isinya: artikel yang paling baru terbit.',
+      'Paket Private Trip tampil rapi di tengah saat hanya ada 2 paket.',
+      'CMS Private Trip lebih ringkas: teks, ketebalan, dan ukuran font dalam satu baris; daftar keunggulan & langkah tampil 2 per baris.',
+      'Isi halaman tetap terlihat walau animasi belum berjalan, dan konten di layar pertama langsung tampil tanpa menunggu animasi.',
+      'Di HP, deretan kategori blog memberi tanda bahwa masih bisa digeser.',
+      'Halaman lebih ringan dan lebih ramah mesin pencari: isi halaman tidak lagi termuat dua kali.',
+      'Pembaruan keamanan sistem website.',
+    ],
+    fixed: [
+      'CMS Private Trip: poin fitur paket kini bisa diketik normal — spasi dan Enter tidak lagi hilang.',
+      'Admin → Blog kini menampilkan semua artikel (sebelumnya maksimal 50).',
+      'Tautan kategori di halaman artikel kini membuka daftar artikel kategori tersebut.',
+      'Halaman artikel blog: label kategori, tombol Bagikan, teks info, dan garis pemisah kini tampil dengan warna brand (sebelumnya polos/hitam).',
+      'PDF itinerary & invoice kini menampilkan logo perusahaan (rata kiri seperti di halaman web), tanda tangan, dan gambar aktivitas — sebelumnya hilang bila gambarnya berformat WebP.',
+    ],
+  },
+  {
     version: '1.3.0',
     date: '2026-10-12',
     title: 'Gambar Private Trip dari CMS, halaman error memakai logo situs',

@@ -7,6 +7,7 @@ import { Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { NumberStepper } from "@/components/ui/number-stepper"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -208,13 +209,12 @@ export default function PengaturanInvoicePage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="terminHari">Termin Bayar (hari)</Label>
-              <Input
+              <NumberStepper
                 id="terminHari"
-                type="number"
                 min={0}
                 max={365}
                 value={form.terminHari}
-                onChange={e => set("terminHari", e.target.value)}
+                onValueChange={v => set("terminHari", v)}
               />
               <p className="text-xs text-muted-foreground">Mengisi tanggal jatuh tempo otomatis.</p>
             </div>
@@ -224,14 +224,14 @@ export default function PengaturanInvoicePage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="pajakPersen">Persen Pajak (%)</Label>
-              <Input
+              <NumberStepper
                 id="pajakPersen"
-                type="number"
                 min={0}
                 max={100}
-                step="0.01"
+                step={0.01}
+                buttonStep={1}
                 value={form.pajakPersen}
-                onChange={e => set("pajakPersen", e.target.value)}
+                onValueChange={v => set("pajakPersen", v)}
               />
               <p className="text-xs text-muted-foreground">Isi 0 → baris pajak tidak tercetak.</p>
             </div>

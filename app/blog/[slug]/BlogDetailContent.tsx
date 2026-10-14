@@ -3,14 +3,17 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
-import { Calendar, Clock, ChevronRight, Share2, ArrowLeft, User, RefreshCw } from 'lucide-react'
+import { Calendar, Clock, ChevronRight, Share2, User, RefreshCw, BookOpen } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import FadeIn from '@/components/Motion/FadeIn'
+import ReadingProgress from '@/components/ReadingProgress/ReadingProgress'
+import { blogListHref } from '@/lib/blog-list'
+import { formatReadCount, shouldShowReadCount } from '@/lib/blog-reads'
+import ReadTracker from './ReadTracker'
 import Stagger from '@/components/Motion/Stagger'
-import { Badge } from '@/components/ui/badge'
 import { sanitizeRichText } from '@/lib/sanitize-richtext'
-import { Button } from '@/components/ui/button'
 import ShareModal from '@/components/blog/ShareModal'
+import styles from './BlogDetail.module.css'
 
 type BlogCategory = { id: number; nama: string; namaEn: string | null; slug: string }
 type BlogPost = {
@@ -28,6 +31,7 @@ type BlogPost = {
   createdAt: Date | string
   updatedAt: Date | string
   tags: any
+  readCount?: number
   category: BlogCategory
 }
 
@@ -61,46 +65,50 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
   const [shareOpen, setShareOpen] = useState(false)
 
   return (
-    <div className="bg-background min-h-screen pt-24 pb-16">
+    <div className={`${styles.page} [timeline-scope:--article]`}>
+      <ReadingProgress targetId="isi-artikel" />
+      <ReadTracker slug={post.slug} targetId="isi-artikel" />
       <div className="container max-w-4xl mx-auto px-4 sm:px-6">
-        
+
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
-          <Link href="/" className="hover:text-primary transition-colors">{t('nav.home')}</Link>
-          <ChevronRight size={14} />
-          <Link href="/blog" className="hover:text-primary transition-colors">Blog</Link>
-          <ChevronRight size={14} />
-          <Link href={`/blog?category=${post.category.slug}`} className="hover:text-primary transition-colors">{categoryName}</Link>
-        </div>
+        <nav className={styles.breadcrumb} aria-label="Breadcrumb">
+          <Link href="/">{t('nav.home')}</Link>
+          <ChevronRight size={14} aria-hidden="true" />
+          <Link href="/blog">Blog</Link>
+          <ChevronRight size={14} aria-hidden="true" />
+          <Link href={blogListHref({ kategori: post.category.slug })}>{categoryName}</Link>
+        </nav>
 
         <FadeIn direction="up">
-          <Badge className="mb-4" variant="secondary">{categoryName}</Badge>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight mb-6">{title}</h1>
-          
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-8 text-muted-foreground border-b pb-6">
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-              <div className="flex items-center gap-1.5"><User size={16} /> {post.author || (language === 'en' ? 'Agendain Team' : 'Tim Agendain')}</div>
-              <div className="flex items-center gap-1.5"><Calendar size={16} /> {formatDate(post.publishedAt || post.createdAt)}</div>
+          <Link href={blogListHref({ kategori: post.category.slug })} className={styles.kicker}>{categoryName}</Link>
+          <h1 className={styles.title}>{title}</h1>
+
+          <div className={styles.metaBar}>
+            <div className={styles.meta}>
+              <span className={styles.metaItem}><User size={16} /> {post.author || (language === 'en' ? 'Agendain Team' : 'Tim Agendain')}</span>
+              <span className={styles.metaItem}><Calendar size={16} /> {formatDate(post.publishedAt || post.createdAt)}</span>
               {showUpdated && (
-                <div className="flex items-center gap-1.5" title={language === 'en' ? 'Last updated' : 'Terakhir diperbarui'}>
+                <span className={styles.metaItem} title={language === 'en' ? 'Last updated' : 'Terakhir diperbarui'}>
                   <RefreshCw size={14} /> {language === 'en' ? 'Updated' : 'Diperbarui'} {formatDate(post.updatedAt)}
-                </div>
+                </span>
               )}
-              <div className="flex items-center gap-1.5"><Clock size={16} /> {getReadTime(cleanHtml)} min read</div>
+              <span className={styles.metaItem}><Clock size={16} /> {getReadTime(cleanHtml)} min read</span>
+              {/* Angka publik baru tampil setelah ambang (lib/blog-reads); admin melihat semua di tabel Blog. */}
+              {shouldShowReadCount(post.readCount) && (
+                <span className={styles.metaItem}><BookOpen size={16} /> {formatReadCount(post.readCount!, language)}</span>
+              )}
             </div>
-            
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShareOpen(true)} className="gap-2 min-h-[44px] px-4 sm:min-h-0 sm:px-3">
-                <Share2 size={14} /> {language === 'en' ? 'Share' : 'Bagikan'}
-              </Button>
-            </div>
+
+            <button type="button" onClick={() => setShareOpen(true)} className={styles.shareBtn}>
+              <Share2 size={16} /> {language === 'en' ? 'Share' : 'Bagikan'}
+            </button>
           </div>
         </FadeIn>
 
         <FadeIn direction="up" delay={0.1}>
-          <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-12 shadow-md">
-            <Image 
-              src={post.thumbnail} 
+          <div className={styles.cover}>
+            <Image
+              src={post.thumbnail}
               alt={title}
               fill
               sizes="(max-width: 1024px) 100vw, 1024px"
@@ -113,7 +121,8 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
         <FadeIn direction="up" delay={0.2}>
           {/* Article Content — kelas .richtext sama dengan kanvas editor CMS (WYSIWYG) */}
           <article
-            className="richtext"
+            id="isi-artikel"
+            className="richtext [view-timeline:--article_block]"
             dangerouslySetInnerHTML={{ __html: cleanHtml }}
           />
         </FadeIn>
@@ -121,15 +130,11 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
         {/* Tags */}
         {tags.length > 0 && (
           <FadeIn direction="up" delay={0.3}>
-            <div className="mt-12 pt-8 border-t">
-              <h3 className="text-sm font-semibold text-muted-foreground mb-4 uppercase tracking-wider">
-                {language === 'en' ? 'Tags' : 'Tag'}
-              </h3>
-              <div className="flex flex-wrap gap-2">
+            <div className={styles.section}>
+              <h3 className={styles.sectionLabel}>{language === 'en' ? 'Tags' : 'Tag'}</h3>
+              <div className={styles.tags}>
                 {tags.map((tag: string) => (
-                  <Badge key={tag} variant="outline" className="bg-muted/50 hover:bg-muted cursor-default">
-                    #{tag}
-                  </Badge>
+                  <span key={tag} className={styles.tag}>#{tag}</span>
                 ))}
               </div>
             </div>
@@ -139,32 +144,27 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
         {/* Related Posts */}
         {related.length > 0 && (
           <FadeIn direction="up" delay={0.4}>
-            <div className="mt-16 pt-10 border-t">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold">{language === 'en' ? 'Related Articles' : 'Artikel Terkait'}</h2>
-                <Link href="/blog">
-                  <Button variant="ghost" className="gap-1">{language === 'en' ? 'See all' : 'Lihat semua'} <ArrowLeft size={16} className="rotate-180" /></Button>
-                </Link>
+            <div className={styles.section}>
+              <div className={styles.relatedHead}>
+                <h2 className={styles.relatedTitle}>{language === 'en' ? 'Related Articles' : 'Artikel Terkait'}</h2>
+                <Link href="/blog" className={styles.seeAll}>{language === 'en' ? 'See all' : 'Lihat semua'}</Link>
               </div>
-              
-              <Stagger className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {related.map((rel, i) => {
+
+              <Stagger className={styles.relatedGrid}>
+                {related.map((rel) => {
                   const relTitle = language === 'en' ? (rel.titleEn || rel.title) : rel.title
+                  const relCategory = language === 'en' ? (rel.category.namaEn || rel.category.nama) : rel.category.nama
                   return (
-                    <FadeIn key={rel.id} direction="up" delay={i * 0.1}>
-                      <Link href={`/blog/${rel.slug}`} className="group block h-full bg-card rounded-xl border overflow-hidden shadow-sm hover:shadow-md transition-all">
-                        <div className="relative aspect-[3/2] overflow-hidden">
-                          <Image src={rel.thumbnail} alt={relTitle} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
-                          <Badge className="absolute top-3 left-3 shadow-sm">{categoryName}</Badge>
-                        </div>
-                        <div className="p-4">
-                          <h3 className="font-bold text-lg leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">{relTitle}</h3>
-                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-4">
-                            <Calendar size={12} /> {formatDate(rel.publishedAt || rel.createdAt)}
-                          </div>
-                        </div>
-                      </Link>
-                    </FadeIn>
+                    <Link key={rel.id} href={`/blog/${rel.slug}`} className={styles.relCard}>
+                      <div className={styles.relImage}>
+                        <Image src={rel.thumbnail} alt={relTitle} fill sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 300px" />
+                        <span className={styles.relBadge}>{relCategory}</span>
+                      </div>
+                      <div className={styles.relBody}>
+                        <h3 className={styles.relCardTitle}>{relTitle}</h3>
+                        <span className={styles.relDate}><Calendar size={12} /> {formatDate(rel.publishedAt || rel.createdAt)}</span>
+                      </div>
+                    </Link>
                   )
                 })}
               </Stagger>

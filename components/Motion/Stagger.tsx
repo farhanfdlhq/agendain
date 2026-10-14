@@ -2,6 +2,7 @@
 import { motion, useInView, Variants } from "framer-motion"
 import { useRef } from "react"
 import React from "react"
+import { useBelowFoldReveal } from "./useBelowFoldReveal"
 
 interface StaggerProps {
   children: React.ReactNode
@@ -10,11 +11,13 @@ interface StaggerProps {
 }
 
 export default function Stagger({ children, staggerDelay = 0.1, className = "" }: StaggerProps) {
-  const ref = useRef(null)
+  const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-10%" })
+  // Sama seperti FadeIn: terlihat tanpa JS / di layar pertama / reduced-motion.
+  const animateIn = useBelowFoldReveal(ref)
 
   const container: Variants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, transition: { duration: 0 } },
     visible: {
       opacity: 1,
       transition: {
@@ -24,7 +27,7 @@ export default function Stagger({ children, staggerDelay = 0.1, className = "" }
   }
 
   const item: Variants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 30, transition: { duration: 0 } },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
   }
 
@@ -34,8 +37,8 @@ export default function Stagger({ children, staggerDelay = 0.1, className = "" }
     <motion.div
       ref={ref}
       variants={container}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
+      initial={false}
+      animate={!animateIn || isInView ? "visible" : "hidden"}
       className={className}
     >
       {childrenArray.map((child, index) => (

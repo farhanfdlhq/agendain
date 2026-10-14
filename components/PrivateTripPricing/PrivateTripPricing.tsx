@@ -162,7 +162,17 @@ export default function PrivateTripPricing({
             )}
           </div>
         )}
-        <div className={styles.grid}>
+        {/* Jumlah paket menentukan lebar grid: 2 paket tampil berdampingan di
+            tengah, bukan menyisakan kolom ketiga kosong. */}
+        <div
+          className={[
+            styles.grid,
+            displayPackages.length === 2 && styles.gridTwo,
+            displayPackages.length === 1 && styles.gridOne,
+          ]
+            .filter(Boolean)
+            .join(" ")}
+        >
           {displayPackages.map((tier, idx) => (
             <FadeIn key={idx} direction="up" delay={0.1 * (idx + 1)}>
               <div className={styles.card}>
@@ -172,7 +182,7 @@ export default function PrivateTripPricing({
                     src={tier.image}
                     alt={tier.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes={displayPackages.length < 3 ? "(max-width: 768px) 100vw, 480px" : "(max-width: 768px) 100vw, 33vw"}
                     className={styles.cardImage}
                   />
                   {tier.locationTab && (

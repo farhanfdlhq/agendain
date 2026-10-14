@@ -23,6 +23,7 @@
   font-size: 0.9375rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  text-decoration: none;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s, color 0.2s;
 }

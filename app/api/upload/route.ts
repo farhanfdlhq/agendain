@@ -4,6 +4,7 @@ import path from "path";
 import fsSync from "fs";
 import { matchesFileSignature, detectImageType } from "@/lib/security";
 import { requirePermission } from "@/lib/rbac";
+import { safeUploadName } from "@/lib/upload-name";
 import {
   reportServerError,
   reportUploadFailed,
@@ -139,7 +140,6 @@ export async function POST(request: Request) {
 
     const bytes = await file.arrayBuffer();
     let fileBuffer: any = Buffer.from(bytes);
-    let filename = file.name;
 
     // Verifikasi konten nyata (magic bytes), bukan hanya file.type yang
     // dikirim client. Mencegah unggahan berbahaya yang menyamar sebagai PDF/DOCX.
@@ -170,6 +170,8 @@ export async function POST(request: Request) {
 
     const isIco = ICO_TYPES.includes(declaredType);
     const isSystem = type === "system";
+    // Tipe konten final yang benar-benar disimpan → sumber ekstensi file.
+    let outType = declaredType;
 
     // Konversi/kompres gambar. ICO dilewati (libvips tak punya loader ICO).
     if (declaredType.startsWith("image/") && !isIco) {
@@ -199,13 +201,7 @@ export async function POST(request: Request) {
             .resize({ width: 1920, withoutEnlargement: true })
             .webp({ quality: 80, effort: 4 })
             .toBuffer();
-
-          const lastDot = filename.lastIndexOf(".");
-          if (lastDot !== -1) {
-            filename = filename.substring(0, lastDot) + ".webp";
-          } else {
-            filename += ".webp";
-          }
+          outType = "image/webp";
         }
       } catch (err) {
         // Longgar untuk semua: bila sharp gagal (mis. binary/libvips rusak di
@@ -226,14 +222,10 @@ export async function POST(request: Request) {
       }
     }
 
-    // ICO tanpa ekstensi → pastikan .ico agar dikenali browser sebagai favicon.
-    if (isIco && !/\.ico$/i.test(filename)) {
-      filename += ".ico";
-    }
-
+    // Ekstensi dari tipe terverifikasi, bukan dari nama kiriman klien
+    // (file PDF/PNG valid bernama x.php tak boleh tersimpan sebagai .php).
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const cleanFilename = filename.replace(/[^a-zA-Z0-9.-]/g, "");
-    const finalName = `${uniqueSuffix}-${cleanFilename}`;
+    const finalName = `${uniqueSuffix}-${safeUploadName(file.name, outType)}`;
     let uploadDir = path.join(process.cwd(), "public/uploads");
     let relativeUrl = `/uploads/${finalName}`;
 

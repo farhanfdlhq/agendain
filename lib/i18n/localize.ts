@@ -154,4 +154,5 @@ export const HOME_REPEATERS = {
 export const PRIVATE_TRIP_REPEATERS = {
   whyItems: ['title', 'desc'],
   workflowSteps: ['title', 'desc'],
+  formPoints: ['text'],
 } as const

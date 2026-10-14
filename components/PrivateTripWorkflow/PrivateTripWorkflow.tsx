@@ -3,6 +3,7 @@ import FadeIn from "@/components/Motion/FadeIn";
 import styles from "./PrivateTripWorkflow.module.css";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { parseGoldText } from "@/lib/utils/textFormatting";
+import { fontStyleFrom } from "@/lib/font-style";
 import { localizeRepeater, PRIVATE_TRIP_REPEATERS } from "@/lib/i18n/localize";
 
 const getWorkflowSteps = (t: any) => [
@@ -47,7 +48,7 @@ export default function PrivateTripWorkflow({ privatetripSettings }: { privatetr
         <FadeIn direction="up">
           <div className={styles.header}>
             <h2 className={styles.title}>{parseGoldText(gs('workflowTitle', t('pt.workflow.title')), styles, privatetripSettings?.workflowTitleWeight, privatetripSettings?.workflowTitleSize)}</h2>
-            <p className={styles.subtitle}>{gs('workflowSubtitle', t('pt.workflow.subtitle'))}</p>
+            <p className={styles.subtitle} style={fontStyleFrom(privatetripSettings?.workflowSubtitleWeight, privatetripSettings?.workflowSubtitleSize)}>{gs('workflowSubtitle', t('pt.workflow.subtitle'))}</p>
           </div>
         </FadeIn>
 

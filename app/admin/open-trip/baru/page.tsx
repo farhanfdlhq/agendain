@@ -9,6 +9,7 @@ import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { NumberStepper } from "@/components/ui/number-stepper"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -151,14 +152,16 @@ export default function TambahPaketPage() {
   const clearError = (name: string) =>
     setErrors(prev => (prev[name] ? { ...prev, [name]: false } : prev))
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+  const setField = (name: string, value: string) => {
     clearError(name)
     setFormData(prev => ({
       ...prev,
       [name]: name === 'durasi' ? Number(value) : value
     }))
   }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setField(e.target.name, e.target.value)
 
   const handleSelectChange = (name: string, value: string) => {
     clearError(name)
@@ -648,11 +651,11 @@ export default function TambahPaketPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="kuota">Kuota Peserta</Label>
-                  <Input type="number" id="kuota" name="kuota" min="1" placeholder="20" value={formData.kuota} onChange={handleChange} aria-invalid={!!errors.kuota} required />
+                  <NumberStepper id="kuota" name="kuota" min={1} placeholder="20" value={formData.kuota} onValueChange={v => setField('kuota', v)} aria-invalid={!!errors.kuota} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="kursiTerisi">Kursi Terisi</Label>
-                  <Input type="number" id="kursiTerisi" name="kursiTerisi" min="0" placeholder="0" value={formData.kursiTerisi} onChange={handleChange} />
+                  <NumberStepper id="kursiTerisi" name="kursiTerisi" min={0} placeholder="0" value={formData.kursiTerisi} onValueChange={v => setField('kursiTerisi', v)} />
                 </div>
               </div>
               <p className="text-[11px] text-muted-foreground -mt-2">
@@ -698,13 +701,12 @@ export default function TambahPaketPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="durasi">Durasi (Hari)</Label>
-                <Input
-                  type="number"
+                <NumberStepper
                   id="durasi"
                   name="durasi"
-                  min="1"
+                  min={1}
                   value={formData.durasi}
-                  onChange={handleChange}
+                  onValueChange={v => setField('durasi', v)}
                   aria-invalid={!!errors.durasi}
                   required
                 />

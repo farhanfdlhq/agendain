@@ -8,6 +8,7 @@ import { Reorder } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { NumberStepper } from "@/components/ui/number-stepper"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -691,15 +692,15 @@ export default function HomeCMSPage() {
               <div className="space-y-3">
                 <Label className="flex items-center gap-2">Ketebalan Border (px)</Label>
                 <div className="flex items-center gap-3">
-                  <Input 
-                    type="number"
-                    step="0.5"
-                    min="0"
-                    max="20"
+                  <NumberStepper
+                    step={0.5}
+                    min={0}
+                    max={20}
                     name="whyBorderWidth"
-                    value={data.whyBorderWidth ? data.whyBorderWidth.replace('px', '') : '1.5'} 
-                    onChange={(e) => setData((prev: any) => ({ ...prev, whyBorderWidth: `${e.target.value}px` }))}
-                    className="w-24"
+                    aria-label="Ketebalan border dalam px"
+                    value={data.whyBorderWidth ? data.whyBorderWidth.replace('px', '') : '1.5'}
+                    onValueChange={(v) => setData((prev: any) => ({ ...prev, whyBorderWidth: `${v}px` }))}
+                    className="w-36"
                   />
                   <span className="text-sm text-slate-500 font-medium">px</span>
                 </div>

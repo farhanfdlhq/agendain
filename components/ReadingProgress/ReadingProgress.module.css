@@ -1,0 +1,31 @@
+/* Garis 3px di tepi atas layar, di atas navbar fixed. Hiasan saja (aria-hidden):
+   informasi posisi baca tetap tersedia lewat scrollbar biasa. */
+.track {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 3px;
+  z-index: calc(var(--z-sticky) + 5);
+  pointer-events: none;
+}
+
+.bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-dominant);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+@supports (animation-timeline: view()) {
+  .bar {
+    animation: grow linear both;
+    animation-timeline: --article;
+    animation-range: contain 0% contain 100%;
+  }
+}
+
+@keyframes grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}

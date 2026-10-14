@@ -18,42 +18,51 @@ export const LanguageContext = createContext<{
   t: (key) => key,
 })
 
-function LanguageProviderInner({ children, initialLocale = 'id' }: { children: ReactNode, initialLocale?: Locale }) {
+function persistLocale(l: Locale) {
+  localStorage.setItem('agendain_lang', l)
+  document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000; SameSite=Lax`
+}
+
+// useSearchParams men-suspend saat render server, jadi hanya komponen kecil ini
+// yang dibungkus <Suspense>. Dulu Suspense membungkus {children} dan fallback-nya
+// ikut merender seluruh halaman → HTML server berisi halaman dua kali (h1 ganda).
+function UrlLocaleSync({ onLocale }: { onLocale: (l: Locale) => void }) {
   const searchParams = useSearchParams()
-  const router = useRouter()
-  const pathname = usePathname()
-  
-  const [locale, setLocaleState] = useState<Locale>(initialLocale)
 
   useEffect(() => {
     // 1. Check URL first
-    const urlLang = searchParams.get('lang') as Locale | null
-    if (urlLang && (urlLang === 'id' || urlLang === 'en')) {
-      setLocaleState(urlLang)
-      localStorage.setItem('agendain_lang', urlLang)
-      document.cookie = `NEXT_LOCALE=${urlLang}; path=/; max-age=31536000; SameSite=Lax`
+    const urlLang = searchParams.get('lang')
+    if (urlLang === 'id' || urlLang === 'en') {
+      onLocale(urlLang)
+      persistLocale(urlLang)
       return
     }
 
     // 2. Fallback to localStorage
-    const saved = localStorage.getItem('agendain_lang') as Locale | null
-    if (saved && (saved === 'id' || saved === 'en')) {
-      setLocaleState(saved)
-      document.cookie = `NEXT_LOCALE=${saved}; path=/; max-age=31536000; SameSite=Lax`
+    const saved = localStorage.getItem('agendain_lang')
+    if (saved === 'id' || saved === 'en') {
+      onLocale(saved)
+      persistLocale(saved)
     }
-  }, [searchParams])
+  }, [searchParams, onLocale])
+
+  return null
+}
+
+export function LanguageProvider({ children, initialLocale = 'id' }: { children: ReactNode, initialLocale?: Locale }) {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const [locale, setLocaleState] = useState<Locale>(initialLocale)
 
   const setLocale = (l: Locale) => {
     setLocaleState(l)
-    localStorage.setItem('agendain_lang', l)
-    document.cookie = `NEXT_LOCALE=${l}; path=/; max-age=31536000; SameSite=Lax`
-    
+    persistLocale(l)
+
     // Update URL without full page reload to maintain animations
-    const current = new URLSearchParams(Array.from(searchParams.entries()))
+    const current = new URLSearchParams(window.location.search)
     current.set('lang', l)
-    const search = current.toString()
-    const query = search ? `?${search}` : ""
-    router.push(`${pathname}${query}`, { scroll: false })
+    router.push(`${pathname}?${current.toString()}`, { scroll: false })
     router.refresh()
   }
 
@@ -63,20 +72,10 @@ function LanguageProviderInner({ children, initialLocale = 'id' }: { children: R
 
   return (
     <LanguageContext.Provider value={{ locale, setLocale, t }}>
+      <Suspense fallback={null}>
+        <UrlLocaleSync onLocale={setLocaleState} />
+      </Suspense>
       {children}
     </LanguageContext.Provider>
-  )
-}
-
-export function LanguageProvider({ children, initialLocale = 'id' }: { children: ReactNode, initialLocale?: Locale }) {
-  // Fallback ini ikut ter-render di HTML server (useSearchParams men-suspend).
-  // Dulu `t: (k) => k` → HTML awal berisi kunci mentah ("nav.home") yang terlihat
-  // oleh crawler & oleh pengunjung bila JS gagal dimuat. Pakai kamus yang sama.
-  const fallbackT = (key: string): string =>
-    dictionaries[initialLocale][key] || dictionaries['id'][key] || key
-  return (
-    <Suspense fallback={<LanguageContext.Provider value={{ locale: initialLocale, setLocale: () => {}, t: fallbackT }}>{children}</LanguageContext.Provider>}>
-      <LanguageProviderInner initialLocale={initialLocale}>{children}</LanguageProviderInner>
-    </Suspense>
   )
 }

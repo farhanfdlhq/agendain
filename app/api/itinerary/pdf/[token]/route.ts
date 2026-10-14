@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getClientIp, rateLimit } from "@/lib/security";
 import { buildItineraryView } from "@/lib/itinerary";
 import { ItineraryPdf } from "@/lib/itinerary-pdf";
+import { siapkanGambarPdf } from "@/lib/pdf-utils";
 
 // Render PDF memakan CPU dan rute ini publik (hanya berbekal token).
 const BATAS = 30;
@@ -46,6 +47,8 @@ export async function GET(req: Request, ctx: Ctx) {
       siteSettings: { site_name: map.site_name ?? "", site_logo: map.site_logo ?? "" },
     });
 
+    // WebP (format hasil upload) tak didukung @react-pdf → konversi ke PNG dulu.
+    await siapkanGambarPdf([view.kop.logo, ...view.hari.flatMap((h) => h.items.map((it) => it.gambar))]);
     const buffer = await renderToBuffer(ItineraryPdf({ v: view }));
 
     const unduh = new URL(req.url).searchParams.get("dl") === "1";

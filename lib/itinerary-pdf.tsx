@@ -13,7 +13,8 @@ const s = StyleSheet.create({
   kop: { flexDirection: "row", justifyContent: "space-between", borderBottomWidth: 1, borderBottomColor: "#d4d4d8", paddingBottom: 16 },
   kopKiri: { width: "58%" },
   kopKanan: { width: "40%", alignItems: "flex-end" },
-  logo: { height: 34, marginBottom: 8, objectFit: "contain" },
+  // Rata kiri seperti kop di halaman web (default: lebar penuh kolom → logo di tengah).
+  logo: { height: 34, marginBottom: 8, objectFit: "contain", objectPosition: "left", alignSelf: "flex-start" },
   namaPerusahaan: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#18181b" },
   kecil: { fontSize: 8, color: "#71717a" },
   judulDok: { fontSize: 20, fontFamily: "Helvetica-Bold", letterSpacing: 2, color: "#18181b", lineHeight: 1.2 },

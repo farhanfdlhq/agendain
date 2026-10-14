@@ -37,9 +37,28 @@
   gap: 2rem;
 }
 
+.gridTwo {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 980px;
+  margin-inline: auto;
+  gap: 2.5rem;
+}
+
+.gridOne {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 480px;
+  margin-inline: auto;
+}
+
 @media (max-width: 992px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .gridTwo {
+    gap: 1.5rem;
+  }
+  .gridOne {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

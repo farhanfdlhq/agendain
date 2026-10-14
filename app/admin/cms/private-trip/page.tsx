@@ -8,13 +8,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AirplaneLoader from "@/components/ui/airplane-loader";
 import { MediaPicker } from "@/components/ui/media-picker";
 import { FontControls } from "@/components/ui/font-size-picker";
 import DynamicIcon, { AVAILABLE_ICONS } from "@/components/DynamicIcon/DynamicIcon";
 import { foldLegacyRepeaters, PRIVATE_TRIP_REPEATERS } from "@/lib/i18n/localize";
+import idDict from "@/lib/i18n/locales/id";
+import enDict from "@/lib/i18n/locales/en";
+
+// Teks bawaan form "Request Private Trip" (sama dengan yang tampil di situs saat
+// field CMS kosong). Diisikan ke field kosong saat CMS dimuat agar admin
+// mengedit teks yang sedang tampil, bukan placeholder abu-abu.
+const FORM_TEXT_DEFAULTS: Record<string, string> = {
+  formTitle: "pt.formTitle",
+  formSubtitle: "pt.formDesc",
+  formWaPrompt: "pt.waPrompt",
+  formWaLink: "pt.waLink",
+};
+
+function fillFormDefaults(res: Record<string, unknown>) {
+  for (const [field, key] of Object.entries(FORM_TEXT_DEFAULTS)) {
+    if (!String(res[field] ?? "").trim()) res[field] = idDict[key];
+    if (!String(res[`${field}_en`] ?? "").trim()) res[`${field}_en`] = enDict[key];
+  }
+  if (!Array.isArray(res.formPoints) || res.formPoints.length === 0) {
+    res.formPoints = ["pt.point1", "pt.point2", "pt.point3"].map((k) => ({
+      text: idDict[k],
+      text_en: enDict[k],
+    }));
+  }
+}
 
 function BadgeInput({
   tags,
@@ -137,6 +162,11 @@ export default function PrivateTripCMSPage() {
     formTitle_en: "",
     formSubtitle: "",
     formSubtitle_en: "",
+    formPoints: [],
+    formWaPrompt: "",
+    formWaPrompt_en: "",
+    formWaLink: "",
+    formWaLink_en: "",
   });
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -173,6 +203,7 @@ export default function PrivateTripCMSPage() {
           // terpisah. Teksnya dilipat ke array utama lalu array _en dibuang,
           // sehingga simpanan berikutnya memakai bentuk baru (migrasi lazy).
           foldLegacyRepeaters(res, PRIVATE_TRIP_REPEATERS);
+          fillFormDefaults(res);
           setData((prev: any) => ({ ...prev, ...res }));
         }
         setFetching(false);
@@ -292,7 +323,16 @@ export default function PrivateTripCMSPage() {
       (data[activeFieldName] && String(data[activeFieldName]).includes("*"));
 
     return (
-      <div className="space-y-3 p-3.5 rounded-xl border border-border/60 bg-muted/10 shadow-xs">
+      <div className="@container space-y-3 p-3.5 rounded-xl border border-border/60 bg-muted/10 shadow-xs">
+        {/* Kartu lebar: teks + Ketebalan + Ukuran dalam satu baris. Kartu sempit
+            (mis. kolom Hero) tetap bertumpuk — pakai container query, bukan viewport. */}
+        <div
+          className={
+            enableWeight
+              ? "grid gap-3 @3xl:grid-cols-3 @3xl:items-start"
+              : undefined
+          }
+        >
         <div className="space-y-2">
           <Label className="flex items-center justify-between gap-2 text-sm font-semibold">
             <span>{label}</span>
@@ -329,6 +369,23 @@ export default function PrivateTripCMSPage() {
           )}
         </div>
 
+        {enableWeight && (
+          <div className="pt-2 border-t border-border/40 @3xl:col-span-2 @3xl:pt-0 @3xl:border-t-0">
+            <FontControls
+              weightValue={data[weightField]}
+              onWeightChange={(val) =>
+                setData((prev: any) => ({ ...prev, [weightField]: val }))
+              }
+              sizeValue={data[sizeField]}
+              onSizeChange={(val) =>
+                setData((prev: any) => ({ ...prev, [sizeField]: val }))
+              }
+              defaultWeight={defaultWeight}
+            />
+          </div>
+        )}
+        </div>
+
         {isTitleOrHighlight && data[activeFieldName] && (
           <div className="relative mt-2 p-3 rounded-lg bg-slate-950 border border-slate-800/80 shadow-inner flex items-center justify-between gap-3 overflow-hidden">
             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#FFC704] to-amber-600 rounded-l-lg opacity-80" />
@@ -362,22 +419,6 @@ export default function PrivateTripCMSPage() {
                 {renderLivePreview(String(data[activeFieldName]))}
               </div>
             </div>
-          </div>
-        )}
-
-        {enableWeight && (
-          <div className="pt-2 border-t border-border/40">
-            <FontControls
-              weightValue={data[weightField]}
-              onWeightChange={(val) =>
-                setData((prev: any) => ({ ...prev, [weightField]: val }))
-              }
-              sizeValue={data[sizeField]}
-              onSizeChange={(val) =>
-                setData((prev: any) => ({ ...prev, [sizeField]: val }))
-              }
-              defaultWeight={defaultWeight}
-            />
           </div>
         )}
       </div>
@@ -426,11 +467,12 @@ export default function PrivateTripCMSPage() {
             Belum ada item.
           </div>
         )}
-        <div className="grid gap-4">
+        {/* 2 item per baris di layar lebar agar tak boros ruang vertikal. */}
+        <div className="grid gap-4 xl:grid-cols-2">
           {items.map((item: any, index: number) => (
             <div
               key={index}
-              className="p-4 border rounded-xl bg-muted/10 relative shadow-sm space-y-4"
+              className="p-4 border rounded-xl bg-muted/10 relative shadow-sm space-y-3"
             >
               <Button
                 type="button"
@@ -441,15 +483,10 @@ export default function PrivateTripCMSPage() {
               >
                 &times;
               </Button>
-              <h4 className="text-sm font-semibold mb-2">Item #{index + 1}</h4>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <h4 className="text-sm font-semibold pr-8">Item #{index + 1}</h4>
+              <div className="grid gap-3">
                 {fields.map((f) => (
-                  <div
-                    key={f.key}
-                    className={
-                      f.isTextArea ? "sm:col-span-2 space-y-2" : "space-y-2"
-                    }
-                  >
+                  <div key={f.key} className="space-y-2">
                     <Label className="text-xs">{f.label}</Label>
                     {f.isIconPicker ? (
                       <div className="flex flex-col gap-1.5">
@@ -542,10 +579,10 @@ export default function PrivateTripCMSPage() {
       const newItems = [...items];
       newItems[index] = {
         ...newItems[index],
-        [field]: text
-          .split("\n")
-          .map((s) => s.trim())
-          .filter((s) => s !== ""),
+        // Baris disimpan apa adanya selama mengetik. Dulu tiap ketikan di-trim
+        // & baris kosong dibuang, sehingga spasi di akhir kata dan Enter langsung
+        // hilang ("Bisa request" → "Bisarequest"). Pembersihan dilakukan server.
+        [field]: text.split("\n"),
       };
       setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
     };
@@ -877,19 +914,25 @@ export default function PrivateTripCMSPage() {
               Teks Bagian "Cara Booking"
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-6 grid gap-6">
-            {renderTextInput(
-              "Judul",
-              "workflowTitle",
-              false,
-              "Cara Booking Private Trip",
-            )}
-            {renderTextInput(
-              "Sub-Judul",
-              "workflowSubtitle",
-              false,
-              "Dari Konsultasi Sampai Berangkat",
-            )}
+          <CardContent className="@container pt-6 grid gap-6">
+            <div className="grid gap-4 @xl:grid-cols-2">
+              {renderTextInput(
+                "Judul",
+                "workflowTitle",
+                false,
+                "Cara Booking Private Trip",
+                true,
+                "800",
+              )}
+              {renderTextInput(
+                "Sub-Judul",
+                "workflowSubtitle",
+                false,
+                "Dari Konsultasi Sampai Berangkat",
+                true,
+                "500",
+              )}
+            </div>
             <div className="space-y-4 border-t pt-4">
               <Label className="text-base font-semibold">
                 Langkah Cara Booking
@@ -902,6 +945,48 @@ export default function PrivateTripCMSPage() {
                   { key: "desc", label: "Deskripsi Langkah", isTextArea: true },
                 ],
               )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border shadow-sm overflow-hidden">
+          <CardHeader className="bg-slate-50/50 border-b pb-4">
+            <CardTitle className="text-lg text-primary">
+              Form &ldquo;Request Private Trip&rdquo;
+            </CardTitle>
+            <CardDescription>
+              Panel biru di kiri form. Kosongkan field untuk memakai teks bawaan.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6 grid gap-6">
+            {renderTextInput(
+              "Judul (*Highlight Kuning*)",
+              "formTitle",
+              false,
+              "Request Private Trip",
+              true,
+              "800",
+            )}
+            {renderTextInput(
+              "Sub-Judul",
+              "formSubtitle",
+              true,
+              "Ceritakan rencana perjalananmu, Konsultan Perjalanan kami akan merancang penawaran terbaik.",
+              true,
+              "500",
+            )}
+            <div className="space-y-4 border-t pt-4">
+              <Label className="text-base font-semibold">Poin Keunggulan</Label>
+              {renderArrayEditor("formPoints", { text: "" }, [
+                { key: "text", label: "Teks Poin" },
+              ])}
+            </div>
+            <div className="@container space-y-4 border-t pt-4">
+              <Label className="text-base font-semibold">Ajakan WhatsApp</Label>
+              <div className="grid gap-4 @xl:grid-cols-2">
+                {renderTextInput("Teks Ajakan", "formWaPrompt", false, "Lebih suka ngobrol langsung?")}
+                {renderTextInput("Teks Tautan", "formWaLink", false, "Chat via WhatsApp")}
+              </div>
             </div>
           </CardContent>
         </Card>

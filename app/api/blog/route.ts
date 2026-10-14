@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const search = searchParams.get('search')
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
-    const pageSize = Math.min(50, Math.max(1, parseInt(searchParams.get('pageSize') || '12')))
+    // Admin memuat seluruh daftar sekaligus (filter & urut di klien); publik dibatasi 50.
+    const pageSize = Math.min(admin ? 500 : 50, Math.max(1, parseInt(searchParams.get('pageSize') || '12')))
 
     // Admin mode: require session
     if (admin) {

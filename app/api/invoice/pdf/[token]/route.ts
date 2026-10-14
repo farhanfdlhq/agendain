@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getClientIp, rateLimit } from "@/lib/security";
 import { buildInvoiceView } from "@/lib/invoice";
 import { InvoicePdf } from "@/lib/invoice-pdf";
+import { siapkanGambarPdf } from "@/lib/pdf-utils";
 
 // Render PDF memakan CPU dan rute ini publik (hanya berbekal token), jadi
 // dibatasi per-IP. VPS produksi hanya 2 core.
@@ -51,6 +52,8 @@ export async function GET(req: Request, ctx: Ctx) {
       siteSettings: { site_name: map.site_name ?? "", site_logo: map.site_logo ?? "" },
     });
 
+    // WebP (format hasil upload) tak didukung @react-pdf → konversi ke PNG dulu.
+    await siapkanGambarPdf([view.kop.logo, view.tandaTangan.gambar]);
     const buffer = await renderToBuffer(InvoicePdf({ v: view }));
 
     // Tanpa `?dl=1` → STREAM (tampil di viewer browser). Dengan `?dl=1` →

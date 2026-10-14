@@ -5,39 +5,24 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { purgeCloudflareCache } from "@/lib/cloudflare";
 import { hasPermission, requirePermission, resolveActor } from "@/lib/rbac";
+import { visibleSettings } from "@/lib/settings-visibility";
 
 export async function GET() {
   try {
-    // Endpoint ini juga dipakai halaman publik (mis. PrivateTripForm) sehingga
-    // TIDAK digerbangi; yang digerbangi adalah key sensitifnya.
+    // Endpoint ini juga dipanggil tanpa login (form Private Trip, halaman login
+    // admin) sehingga TIDAK digerbangi; yang dibatasi adalah key-nya — publik
+    // hanya menerima allowlist (lihat lib/settings-visibility.ts).
     const session = await getServerSession(authOptions);
     const actor = await resolveActor(session);
-    const canSeeSensitive = hasPermission(actor, "settings_manage");
 
     const settings = await prisma.setting.findMany();
 
-    // Convert array of {key, value} to object
-    const settingsObj = settings.reduce(
-      (acc: any, curr: { key: string; value: string }) => {
-        // Jangan ekspos info rezeki/pembayaran atau rahasia lainnya jika bukan administrator yang terotentikasi
-        // `invoice_settings` memuat identitas legal, NPWP, dan gambar tanda
-        // tangan — tidak boleh terbuka ke pemanggil publik endpoint ini (dipakai
-        // juga oleh form Private Trip). Namanya tidak tertangkap pola di atas,
-        // jadi disebut eksplisit. Halaman invoice publik tidak terpengaruh:
-        // ia server component yang membaca prisma langsung.
-        const sensitiveKey =
-          /payment|secret|token|password|credential/i.test(curr.key) ||
-          curr.key === "invoice_settings";
-        if (!canSeeSensitive && sensitiveKey) {
-          return acc;
-        }
-        acc[curr.key] = curr.value;
-        return acc;
-      },
-      {},
+    return NextResponse.json(
+      visibleSettings(settings, {
+        authenticated: !!actor,
+        canSeeSensitive: hasPermission(actor, "settings_manage"),
+      }),
     );
-
-    return NextResponse.json(settingsObj);
   } catch (error) {
     console.error("Settings GET error:", error);
     return NextResponse.json(

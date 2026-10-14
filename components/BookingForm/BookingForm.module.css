@@ -30,6 +30,19 @@
   border-color: var(--color-ink);
 }
 
+/* Bingkai NumberStepper (varian public) disamakan dengan .input. */
+.stepper {
+  height: 50px;
+  padding: 6px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-card);
+}
+
+.stepper:focus-within {
+  border-color: var(--color-ink);
+}
+
 .reserveBtn {
   margin-top: var(--space-sm);
   background: var(--color-primary);
