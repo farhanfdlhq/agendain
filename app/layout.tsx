@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/site";
 import FrontLayout from "@/components/FrontLayout/FrontLayout";
+import { publicLayoutSettings } from "@/lib/settings-visibility";
 import {
   Montserrat,
   Inter,
@@ -329,7 +330,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning>
         <OfflineDetector />
         <Providers>
-          <FrontLayout settings={settingsObj} initialLocale={initialLocale}>{children}</FrontLayout>
+          <FrontLayout settings={publicLayoutSettings(settingsObj)} initialLocale={initialLocale}>{children}</FrontLayout>
         </Providers>
       </body>
     </html>

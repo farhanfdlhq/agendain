@@ -101,10 +101,8 @@ export type Actor = PermissionSubject & {
 /**
  * Siapa pemanggilnya & apa yang boleh dia lakukan.
  *
- * Role dibaca dari DB lewat user id, BUKAN dari JWT. `token.role` hanya ditulis
- * sekali saat sign-in (lib/auth.ts), jadi user yang rolenya diubah admin akan
- * membawa role lama sampai 30 hari ke depan. Membaca dari DB membuat perubahan
- * role langsung berlaku tanpa perlu logout.
+ * Identitas dan role harus tetap ada di DB. Perubahan role berlaku tanpa
+ * logout; sesi yang tak bisa diverifikasi tidak memperoleh akses.
  */
 export async function resolveActor(session: unknown): Promise<Actor | null> {
   const user = (session as { user?: { id?: unknown; email?: unknown; role?: unknown } } | null)
@@ -112,22 +110,21 @@ export async function resolveActor(session: unknown): Promise<Actor | null> {
   if (!user) return null;
 
   const idNum = Number(user.id);
-  const userId = Number.isFinite(idNum) ? idNum : null;
+  if (!Number.isSafeInteger(idNum) || idNum <= 0) return null;
+  const userId = idNum;
   const email = typeof user.email === "string" ? user.email : null;
 
-  // Role dari JWT hanya dipakai bila baris user tidak terbaca.
-  let role = typeof user.role === "string" ? user.role : "";
-  if (userId !== null) {
-    try {
-      const row = await prisma.adminUser.findUnique({
-        where: { id: userId },
-        select: { role: true },
-      });
-      if (!row) return null; // user sudah dihapus tapi sesinya masih hidup
-      role = row.role;
-    } catch (e) {
-      reportServerError({ route: "lib/rbac resolveActor", code: "actor_read_failed" }, e);
-    }
+  let role: string;
+  try {
+    const row = await prisma.adminUser.findUnique({
+      where: { id: userId },
+      select: { role: true },
+    });
+    if (!row) return null;
+    role = row.role;
+  } catch (e) {
+    reportServerError({ route: "lib/rbac resolveActor", code: "actor_read_failed" }, e);
+    return null;
   }
   if (!role) return null;
 

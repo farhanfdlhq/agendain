@@ -26,6 +26,8 @@ import { formatIDR, formatEUR, fetchExchangeRates } from "@/lib/currency";
 import { getServerLocale, getServerT } from "@/lib/i18n/server";
 import { pickLocalized } from "@/lib/i18n/localize";
 import { safeHref } from "@/lib/footer-settings";
+import { getOpenTripForViewer } from "@/lib/open-trip-access";
+import { isPublishedOpenTrip } from "@/lib/open-trip-card";
 
 export const revalidate = 3600; // Cache for 1 hour
 
@@ -37,11 +39,8 @@ export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await props.params;
-  const pkg = await prisma.openTrip.findUnique({
-    where: { slug },
-    include: { destinasi: true },
-  });
-  if (!pkg) return { title: "Paket Tidak Ditemukan | Agendain" };
+  const pkg = await getOpenTripForViewer(slug);
+  if (!pkg) return { title: "Paket Tidak Ditemukan | Agendain", robots: { index: false, follow: false } };
   const desc = (pkg.deskripsi || "").replace(/\s+/g, " ").trim().slice(0, 155);
 
   // Foto pertama paket → og:image (foto berupa Json: array string url atau objek {url}).
@@ -61,12 +60,14 @@ export async function generateMetadata(props: {
           ) || undefined
         : undefined;
 
-  return pageMeta({
+  const metadata = pageMeta({
     title: `${pkg.nama} — Open Trip ${pkg.destinasi?.nama ?? "Eropa"} | Agendain`,
     description: desc || `Open trip ${pkg.nama} bersama Agendain.`,
     path: `/open-trip/${slug}`,
     image: fotoUrl,
   });
+  if (!isPublishedOpenTrip(pkg.status)) metadata.robots = { index: false, follow: false };
+  return metadata;
 }
 
 export default async function PaketDetail(props: {
@@ -76,10 +77,7 @@ export default async function PaketDetail(props: {
 
   const [pkg, settingsArr, rates, locale, t, privatePackages] =
     await Promise.all([
-      prisma.openTrip.findUnique({
-        where: { slug },
-        include: { destinasi: true },
-      }),
+      getOpenTripForViewer(slug),
       prisma.$queryRaw`SELECT * FROM Setting`.catch(() => [] as any[]),
       fetchExchangeRates(),
       getServerLocale(),

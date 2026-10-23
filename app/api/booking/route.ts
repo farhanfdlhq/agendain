@@ -1,18 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/rbac'
-import { z } from "zod"
 import { rateLimit, checkCSRF, getClientIp } from '@/lib/security'
-
-const BookingSchema = z.object({
-  nama: z.string().min(1, "Nama harus diisi").max(100),
-  email: z.string().email("Email tidak valid"),
-  noWa: z.string().min(8, "Nomor WA terlalu pendek").max(20, "Nomor WA terlalu panjang"),
-  openTripId: z.coerce.number().positive(),
-  tanggal: z.string().datetime().or(z.string().min(1)),
-  jumlahPax: z.coerce.number().int().positive().max(100),
-  catatan: z.string().max(1000).optional().nullable(),
-})
+import { BookingSchema, BookingError, ensureBookingAvailable } from '@/lib/booking'
 
 export async function GET() {
   try {
@@ -58,27 +48,38 @@ export async function POST(req: Request) {
     }
     
     const data = result.data
-    const openTrip = await prisma.openTrip.findUnique({ where: { id: data.openTripId } })
-    if (!openTrip) return NextResponse.json({ error: 'Paket tidak ditemukan' }, { status: 404 })
-
-    const total = Number(openTrip.harga) * Number(data.jumlahPax)
-
-    const booking = await prisma.booking.create({
-      data: {
-        nama: data.nama,
-        email: data.email,
-        noWa: data.noWa,
-        openTripId: data.openTripId,
-        tanggal: new Date(data.tanggal),
-        jumlahPax: Number(data.jumlahPax),
-        catatan: data.catatan || null,
-        total: total,
-        status: 'pending'
-      }
+    const booking = await prisma.$transaction(async (tx) => {
+      // Kunci yang sama dipakai saat konfirmasi Lunas dan saat admin mengubah
+      // paket. Jangan memeriksa kuota dari snapshot di luar transaksi.
+      const locked = await tx.$queryRaw<Array<{ id: number }>>
+        `SELECT id FROM OpenTrip WHERE id = ${data.openTripId} FOR UPDATE`
+      if (!locked.length) throw new BookingError('Paket tidak ditemukan', 404)
+      const openTrip = await tx.openTrip.findUnique({ where: { id: data.openTripId } })
+      if (!openTrip) throw new BookingError('Paket tidak ditemukan', 404)
+      const paid = await tx.booking.aggregate({
+        where: { openTripId: openTrip.id, status: 'paid' },
+        _sum: { jumlahPax: true },
+      })
+      ensureBookingAvailable(openTrip, data.tanggal, data.jumlahPax, paid._sum.jumlahPax ?? 0)
+      return tx.booking.create({
+        data: {
+          ...data,
+          tanggal: openTrip.tanggalKeberangkatan ?? data.tanggal,
+          catatan: data.catatan || null,
+          total: Number(openTrip.harga) * data.jumlahPax,
+          status: 'pending',
+        },
+      })
     })
     
     return NextResponse.json(booking, { status: 201 })
   } catch (error) {
+    if (error instanceof BookingError) {
+      return NextResponse.json({ error: error.message }, { status: error.status })
+    }
+    if (error instanceof SyntaxError) {
+      return NextResponse.json({ error: 'Payload tidak valid.' }, { status: 400 })
+    }
     console.error("Booking error:", error)
     return NextResponse.json({ error: 'Gagal membuat pesanan' }, { status: 500 })
   }

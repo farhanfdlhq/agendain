@@ -4,6 +4,7 @@ import { getRolesConfig, requirePermission } from "@/lib/rbac"
 import bcrypt from 'bcryptjs'
 import { AdminUserSchema, getClientIp, serverError } from "@/lib/security"
 import { logAudit } from "@/lib/audit"
+import { canManageUserRole } from "@/lib/user-management"
 
 export async function GET(req: Request) {
   const gate = await requirePermission(req, 'GET /api/admin/users', 'users_manage')
@@ -34,6 +35,9 @@ export async function POST(req: Request) {
     const roles = await getRolesConfig()
     if (!roles.some(r => r.id === data.role)) {
       return NextResponse.json({ error: `Role "${data.role}" tidak terdaftar.` }, { status: 400 })
+    }
+    if (!canManageUserRole(gate.actor, roles.find(r => r.id === data.role))) {
+      return NextResponse.json({ error: 'Tidak diizinkan memberikan role ini.' }, { status: 403 })
     }
 
     const existing = await prisma.adminUser.findUnique({ where: { email: data.email } })

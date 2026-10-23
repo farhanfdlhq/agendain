@@ -4,6 +4,7 @@ import { getRolesConfig, requirePermission } from "@/lib/rbac"
 import bcrypt from 'bcryptjs'
 import { AdminUserUpdateSchema, getClientIp, serverError } from "@/lib/security"
 import { logAudit } from "@/lib/audit"
+import { canManageUserRole } from "@/lib/user-management"
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const gate = await requirePermission(req, 'PUT /api/admin/users/[id]', 'users_manage')
@@ -33,6 +34,10 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       select: { role: true },
     })
     if (!target) return NextResponse.json({ error: 'User tidak ditemukan' }, { status: 404 })
+    if (!canManageUserRole(gate.actor, roles.find(r => r.id === target.role)) ||
+        !canManageUserRole(gate.actor, roles.find(r => r.id === data.role))) {
+      return NextResponse.json({ error: 'Tidak diizinkan mengubah akun atau memberikan role ini.' }, { status: 403 })
+    }
     if (target.role === 'super_admin' && data.role !== 'super_admin') {
       return NextResponse.json({ error: 'Role Super Admin tidak dapat diubah' }, { status: 403 })
     }
@@ -100,6 +105,10 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     if (!target) return NextResponse.json({ error: 'User tidak ditemukan' }, { status: 404 })
     if (target.role === 'super_admin') {
       return NextResponse.json({ error: 'Akun Super Admin tidak dapat dihapus' }, { status: 403 })
+    }
+    const roles = await getRolesConfig()
+    if (!canManageUserRole(gate.actor, roles.find(r => r.id === target.role))) {
+      return NextResponse.json({ error: 'Tidak diizinkan menghapus akun ini.' }, { status: 403 })
     }
 
     await prisma.adminUser.delete({

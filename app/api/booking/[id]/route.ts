@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/rbac'
 import { BookingStatusSchema } from '@/lib/security'
+import { BookingError, remainingTripSeats } from '@/lib/booking'
+import { revalidateOpenTrips } from '@/lib/revalidate-open-trips'
 
 export async function PATCH(
   request: Request,
@@ -17,21 +19,40 @@ export async function PATCH(
       return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
     }
     const data = result.data
-    const bookingId = parseInt(id)
+    const bookingId = Number(id)
 
-    if (isNaN(bookingId)) {
+    if (!Number.isSafeInteger(bookingId) || bookingId <= 0) {
         return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
     }
 
-    const updatedBooking = await prisma.booking.update({
-      where: { id: bookingId },
-      data: {
-        ...(data.status && { status: data.status }),
+    const updatedBooking = await prisma.$transaction(async (tx) => {
+      const locked = await tx.$queryRaw<Array<{ id: number }>>
+        `SELECT t.id FROM OpenTrip t JOIN Booking b ON b.openTripId = t.id
+         WHERE b.id = ${bookingId} FOR UPDATE`
+      if (!locked.length) throw new BookingError('Booking tidak ditemukan', 404)
+      const booking = await tx.booking.findUnique({
+        where: { id: bookingId }, include: { openTrip: true },
+      })
+      if (!booking) throw new BookingError('Booking tidak ditemukan', 404)
+      if (data.status === 'paid' && booking.status !== 'paid') {
+        const paid = await tx.booking.aggregate({
+          where: { openTripId: booking.openTripId, status: 'paid', id: { not: bookingId } },
+          _sum: { jumlahPax: true },
+        })
+        const remaining = remainingTripSeats(booking.openTrip, paid._sum.jumlahPax ?? 0)
+        if (remaining !== null && booking.jumlahPax > remaining) {
+          throw new BookingError('Kuota tidak cukup untuk mengonfirmasi pembayaran booking ini.')
+        }
       }
+      return tx.booking.update({ where: { id: bookingId }, data: { status: data.status } })
     })
 
+    revalidateOpenTrips()
     return NextResponse.json(updatedBooking)
   } catch (error) {
+    if (error instanceof BookingError) {
+      return NextResponse.json({ error: error.message }, { status: error.status })
+    }
     console.error(error)
     return NextResponse.json({ error: 'Failed to update booking' }, { status: 500 })
   }
@@ -56,6 +77,7 @@ export async function DELETE(
       where: { id: bookingId }
     })
 
+    revalidateOpenTrips()
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error(error)

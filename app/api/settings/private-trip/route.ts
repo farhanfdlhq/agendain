@@ -3,10 +3,20 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { sanitizeSettingsPayload, serverError } from '@/lib/security'
 import { requirePermission } from '@/lib/rbac'
+import { z } from 'zod'
 
-// Poin fitur diketik per baris di CMS; rapikan spasi & buang baris kosong di sini.
-const cleanLines = (lines: unknown): string[] =>
-  Array.isArray(lines) ? lines.map((l) => String(l).trim()).filter(Boolean) : []
+const PackagesSchema = z.array(z.object({
+  title: z.string().max(191).default(''),
+  subtitle: z.string().max(191).default(''),
+  image: z.string().max(191).refine(
+    v => v === '' || v.startsWith('/') || /^https?:\/\//i.test(v),
+    'URL gambar tidak valid',
+  ).default(''),
+  locationTab: z.string().max(191).default(''),
+  chips: z.array(z.string().max(2000)).max(200).default([]),
+  features: z.array(z.string().max(2000)).max(200).default([])
+    .transform(lines => lines.map(l => l.trim()).filter(Boolean)),
+})).max(100).optional()
 
 export async function POST(req: Request) {
   try {
@@ -14,7 +24,14 @@ export async function POST(req: Request) {
     if (gate.denied) return gate.denied
 
     const data = await req.json()
-    const { packages, ...settingsData } = data ?? {};
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return NextResponse.json({ error: 'Payload tidak valid.' }, { status: 400 })
+    }
+    const { packages, ...settingsData } = data;
+    const parsedPackages = PackagesSchema.safeParse(packages)
+    if (!parsedPackages.success) {
+      return NextResponse.json({ error: 'Data paket tidak valid.', details: parsedPackages.error.flatten() }, { status: 400 })
+    }
 
     const parsed = sanitizeSettingsPayload(settingsData)
     if (!parsed.ok) {
@@ -22,27 +39,20 @@ export async function POST(req: Request) {
     }
     const jsonValue = parsed.serialized
 
-    await prisma.setting.upsert({
-      where: { key: 'privatetrip_settings' },
-      update: { value: jsonValue },
-      create: { key: 'privatetrip_settings', value: jsonValue },
-    })
-
-    if (packages && Array.isArray(packages)) {
-      await prisma.privateTripPackage.deleteMany();
-      for (const pkg of packages) {
-         await prisma.privateTripPackage.create({
-            data: {
-               title: pkg.title || '',
-               subtitle: pkg.subtitle || '',
-               image: pkg.image || '',
-               locationTab: pkg.locationTab || '',
-               chips: pkg.chips || [],
-               features: cleanLines(pkg.features)
-            }
-         });
+    // Semua input sudah valid. Setting dan paket berhasil/gagal bersama.
+    await prisma.$transaction(async (tx) => {
+      await tx.setting.upsert({
+        where: { key: 'privatetrip_settings' },
+        update: { value: jsonValue },
+        create: { key: 'privatetrip_settings', value: jsonValue },
+      })
+      if (parsedPackages.data !== undefined) {
+        await tx.privateTripPackage.deleteMany()
+        if (parsedPackages.data.length) {
+          await tx.privateTripPackage.createMany({ data: parsedPackages.data })
+        }
       }
-    }
+    })
 
     // Tanpa ini, getSettings() di app/layout.tsx (unstable_cache tag 'settings',
     // TTL 1 jam) menyajikan konten lama sampai sejam. revalidatePath layout
@@ -52,6 +62,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, message: 'Pengaturan Private Trip berhasil diperbarui' })
   } catch (error: any) {
+    if (error instanceof SyntaxError) {
+      return NextResponse.json({ error: 'Payload tidak valid.' }, { status: 400 })
+    }
     return serverError('settings/private-trip', error)
   }
 }

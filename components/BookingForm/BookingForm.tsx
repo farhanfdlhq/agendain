@@ -102,7 +102,10 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
         })
       })
 
-      if (!res.ok) throw new Error('Gagal memproses booking. Silakan coba lagi.')
+      if (!res.ok) {
+        const result = await res.json().catch(() => null)
+        throw new Error(result?.error || 'Gagal memproses booking. Silakan coba lagi.')
+      }
       
       setStep(2) // Success
     } catch (err: any) {

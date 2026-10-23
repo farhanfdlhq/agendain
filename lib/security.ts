@@ -211,7 +211,8 @@ export const DestinasiSchema = z.object({
 });
 
 export const BookingStatusSchema = z.object({
-  status: z.enum(["pending", "confirmed", "cancelled", "completed"]),
+  // confirmed/completed tetap diterima untuk kompatibilitas data lama.
+  status: z.enum(["pending", "paid", "confirmed", "cancelled", "completed"]),
 });
 
 // Status permintaan Private Trip. Daftar nilainya ada di

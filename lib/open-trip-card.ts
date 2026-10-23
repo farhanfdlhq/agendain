@@ -60,3 +60,7 @@ export function toOpenTripCard(p: OpenTripRow): OpenTripCardData {
 }
 
 export const PUBLISHED_OPEN_TRIP = { status: { in: ['published', 'publish'] } }
+
+export function isPublishedOpenTrip(status: string): boolean {
+  return PUBLISHED_OPEN_TRIP.status.in.includes(status)
+}

@@ -14,6 +14,7 @@ declare module "next-auth" {
     id: string
     role: string
     avatar?: string
+    passwordVersion?: string
   }
 }
 
@@ -22,5 +23,6 @@ declare module "next-auth/jwt" {
     id: string
     role: string
     avatar?: string
+    passwordVersion?: string
   }
 }

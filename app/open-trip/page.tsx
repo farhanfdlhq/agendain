@@ -19,7 +19,7 @@ export const metadata = pageMeta({
 export default async function PaketPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const params = await searchParams
   const destinasiFilter = params?.destinasi as string

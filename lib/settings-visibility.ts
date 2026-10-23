@@ -19,6 +19,16 @@ export const PUBLIC_SETTING_KEYS: ReadonlySet<string> = new Set([
   "whatsapp_message",
 ])
 
+// Props RSC ikut diserialisasi ke browser, termasuk pada halaman login.
+// Footer adalah konten publik; konfigurasi invoice/role tetap di server.
+const PUBLIC_LAYOUT_KEYS = new Set([...PUBLIC_SETTING_KEYS, "logo_height", "footer_settings"])
+
+export function publicLayoutSettings(settings: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(settings).filter(([key]) => PUBLIC_LAYOUT_KEYS.has(key)),
+  )
+}
+
 export function isSensitiveSettingKey(key: string): boolean {
   // `invoice_settings` memuat identitas legal, NPWP, dan gambar tanda tangan.
   return /payment|secret|token|password|credential/i.test(key) || key === "invoice_settings"

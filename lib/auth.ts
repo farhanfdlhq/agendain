@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { rateLimit, getClientIpFromHeaders } from "@/lib/security";
 import { logAudit } from "@/lib/audit";
+import { decodeSessionToken, passwordVersion } from "@/lib/session-token";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -122,6 +123,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           role: user.role,
           avatar: user.avatar ?? undefined,
+          passwordVersion: passwordVersion(user.password),
         };
       },
     }),
@@ -130,6 +132,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  jwt: { decode: decodeSessionToken },
   callbacks: {
     async jwt({ token, user, trigger, session }) {
       if (trigger === "update") {
@@ -141,6 +144,7 @@ export const authOptions: NextAuthOptions = {
         token.name = user.name;
         token.role = user.role;
         token.avatar = user.avatar;
+        token.passwordVersion = user.passwordVersion;
       }
       return token;
     },

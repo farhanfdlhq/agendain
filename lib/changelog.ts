@@ -26,6 +26,22 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.4.1',
+    date: '2026-10-23',
+    title: 'Perlindungan akun admin, penyimpanan CMS, dan pemesanan',
+    improved: [
+      'Pengaturan internal website terlindungi dari pengunjung.',
+      'Pengelola akun hanya dapat memberikan dan mengelola hak akses yang sesuai kewenangannya.',
+      'Ganti password mencabut sesi login lama; setelah pembaruan ini admin perlu login ulang.',
+    ],
+    fixed: [
+      'CMS Private Trip: kegagalan menyimpan tidak lagi menghapus paket yang sudah ada.',
+      'Pemesanan ditolak bila paket belum terbit, jadwal sudah lewat atau berbeda, maupun kursi tidak mencukupi.',
+      'Status Lunas dapat disimpan dan memeriksa ketersediaan kursi.',
+      'Paket draft hanya dapat dilihat oleh admin yang memiliki izin paket.',
+    ],
+  },
+  {
     version: '1.4.0',
     date: '2026-10-15',
     title: 'Blog per halaman & jumlah dibaca, form Request Private Trip baru',

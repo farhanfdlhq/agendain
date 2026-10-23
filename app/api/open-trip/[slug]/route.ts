@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/rbac'
 import { OpenTripPatchSchema, OpenTripSchema } from "@/lib/security"
 import { slugifyNama, toOpenTripData } from "@/lib/open-trip-fields"
+import { getOpenTripForViewer } from "@/lib/open-trip-access"
+import { revalidateOpenTrips } from "@/lib/revalidate-open-trips"
 
 export async function GET(
   request: Request,
@@ -10,16 +12,13 @@ export async function GET(
 ) {
   try {
     const { slug } = await params
-    const pkg = await prisma.openTrip.findUnique({
-      where: { slug },
-      include: { destinasi: true }
-    })
+    const pkg = await getOpenTripForViewer(slug)
     
     if (!pkg) {
       return NextResponse.json({ error: 'Package not found' }, { status: 404 })
     }
     
-    return NextResponse.json(pkg)
+    return NextResponse.json(pkg, { headers: { 'Cache-Control': 'private, no-store' } })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch package details' }, { status: 500 })
   }
@@ -48,6 +47,7 @@ export async function PATCH(
       }
     })
 
+    revalidateOpenTrips()
     return NextResponse.json(updatedPackage)
   } catch (error) {
     console.error(error)
@@ -85,6 +85,7 @@ export async function PUT(
       } as any
     })
 
+    revalidateOpenTrips()
     return NextResponse.json(updatedPackage)
   } catch (error) {
     console.error(error)
@@ -105,6 +106,7 @@ export async function DELETE(
       where: { slug }
     })
 
+    revalidateOpenTrips()
     return NextResponse.json({ message: 'Package deleted successfully' })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete package' }, { status: 500 })
