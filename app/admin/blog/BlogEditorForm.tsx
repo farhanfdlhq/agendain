@@ -17,6 +17,9 @@ import { MediaPicker } from "@/components/ui/media-picker"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import Link from "next/link"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { KATEGORI_BLOG, LabelEditDialog } from "@/components/admin/label-manager"
+import { useAdminAccess } from "@/components/admin/admin-access"
+import { hasPermission } from "@/lib/permissions"
 
 type BlogCategory = { id: number; nama: string; slug: string }
 
@@ -41,10 +44,13 @@ const NILAI_KOSONG: BlogValues = {
 const serialize = (v: BlogValues) => JSON.stringify(v)
 
 export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
+  const subject = useAdminAccess()
   const router = useRouter()
   const [loading, setLoading] = useState(mode === "edit")
   const [saving, setSaving] = useState(false)
   const [categories, setCategories] = useState<BlogCategory[]>([])
+  // Tambah kategori langsung dari form artikel (dialog); null = tertutup.
+  const [kategoriDialogKey, setKategoriDialogKey] = useState<number | null>(null)
   const [seoOpen, setSeoOpen] = useState(false)
 
   // Form state
@@ -301,7 +307,16 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
 
           {/* Category */}
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm">Kategori</CardTitle></CardHeader>
+            <CardHeader className="pb-3 flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm">Kategori</CardTitle>
+              {hasPermission(subject, 'blog_create') && <button
+                type="button"
+                onClick={() => setKategoriDialogKey(Date.now())}
+                className="text-xs font-medium text-primary hover:underline cursor-pointer"
+              >
+                + Kategori baru
+              </button>}
+            </CardHeader>
             <CardContent>
               <Select value={categoryId} onValueChange={(v) => { setCategoryId(v); clearError('category') }}>
                 <SelectTrigger aria-invalid={!!errors.category}><SelectValue placeholder="Pilih kategori" /></SelectTrigger>
@@ -311,6 +326,19 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
                   ))}
                 </SelectContent>
               </Select>
+              {kategoriDialogKey !== null && (
+                <LabelEditDialog
+                  kind={KATEGORI_BLOG}
+                  key={kategoriDialogKey}
+                  open
+                  onOpenChange={(o) => !o && setKategoriDialogKey(null)}
+                  onSaved={(row) => {
+                    setCategories((prev) => [...prev, row as BlogCategory].sort((a, b) => a.nama.localeCompare(b.nama)))
+                    setCategoryId(String(row.id))
+                    clearError('category')
+                  }}
+                />
+              )}
             </CardContent>
           </Card>
 

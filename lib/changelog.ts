@@ -26,6 +26,22 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.4.2',
+    date: '2026-10-23',
+    title: 'Sidebar admin lebih ringkas dan pengelolaan kategori blog',
+    improved: [
+      'Artikel Blog tersedia langsung di menu utama; pesanan, dokumen, halaman situs, dan pengaturan dikelompokkan lebih jelas.',
+      'Kategori blog dapat dikelola dari daftar artikel dan ditambahkan dari editor artikel.',
+      'Menu serta tombol aksi mengikuti hak akses pengguna.',
+    ],
+    fixed: [
+      'Menu tetap bisa dibuka saat sidebar diciutkan; grup dapat dioperasikan dengan keyboard.',
+      'Menu HP menutup setelah memilih halaman, dan tautan bagian tetap terbaca pada layar kecil.',
+      'Pratinjau artikel draft dari daftar artikel kembali membuka pratinjau yang benar.',
+      'Kegagalan memuat kategori menawarkan Coba lagi, dan kategori yang masih digunakan tidak dapat dihapus.',
+    ],
+  },
+  {
     version: '1.4.1',
     date: '2026-10-23',
     title: 'Perlindungan akun admin, penyimpanan CMS, dan pemesanan',

@@ -3,6 +3,9 @@
 import { useState, useEffect, useMemo, useDeferredValue } from "react"
 import { EmptyState } from "@/components/reui/empty-state"
 import { AdminHeader } from "@/components/reui/admin-header"
+import { KATEGORI_BLOG, LabelManagerDialog, useLabelManagerOpen } from "@/components/admin/label-manager"
+import { useAdminAccess } from "@/components/admin/admin-access"
+import { hasPermission } from "@/lib/permissions"
 import Link from "next/link"
 import Image from "next/image"
 import { Plus, Edit2, Trash2, Search, FileText, RefreshCw, Eye } from "lucide-react"
@@ -34,12 +37,17 @@ type BlogPost = {
 export default function AdminBlogPage() {
   const { confirm } = useConfirm()
   const [posts, setPosts] = useState<BlogPost[]>([])
-  const [categories, setCategories] = useState<any[]>([])
+  const [categories, setCategories] = useState<Array<{ id: number; nama: string; slug: string }>>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const deferredSearch = useDeferredValue(search)
   const [statusFilter, setStatusFilter] = useState("all")
   const [categoryFilter, setCategoryFilter] = useState("all")
+  const [kategoriOpen, setKategoriOpen] = useLabelManagerOpen("kategori")
+  const subject = useAdminAccess()
+  const canCreate = hasPermission(subject, 'blog_create')
+  const canEdit = hasPermission(subject, 'blog_edit')
+  const canDelete = hasPermission(subject, 'blog_delete')
   const [sortByReads, setSortByReads] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -87,6 +95,7 @@ export default function AdminBlogPage() {
   const { page, pageSize, setPage, setPageSize, pageCount, startIndex, pageItems: paginatedPosts, from, to, total } = useTablePagination(filtered)
 
   const handleDelete = async (slug: string, title: string) => {
+    if (!canDelete) return
     const ok = await confirm({
       title: "Hapus artikel",
       message: `Artikel "${title}" akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.`,
@@ -109,21 +118,34 @@ export default function AdminBlogPage() {
         title="Artikel Blog"
         description="Kelola semua artikel blog dan konten travel tips."
         action={
-          <Link href="/admin/blog/baru">
-            <Button className="gap-2"><Plus size={16} /> Buat Artikel</Button>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => setKategoriOpen(true)}>Kelola Kategori</Button>
+            {canCreate && <Button asChild className="gap-2"><Link href="/admin/blog/baru"><Plus size={16} /> Buat Artikel</Link></Button>}
+          </div>
         }
       />
+
+      {kategoriOpen && (
+        <LabelManagerDialog
+          kind={KATEGORI_BLOG}
+          open
+          onOpenChange={setKategoriOpen}
+          onChanged={() => {
+            fetchPosts()
+            fetchCategories()
+          }}
+        />
+      )}
 
       <Card>
         <CardHeader className="pb-4">
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input placeholder="Cari artikel..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} className="pl-9" />
+              <Input aria-label="Cari artikel" placeholder="Cari artikel..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} className="pl-9" />
             </div>
             <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1) }}>
-              <SelectTrigger className="w-[140px]"><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectTrigger aria-label="Filter status" className="w-full sm:w-[140px]"><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Status</SelectItem>
                 <SelectItem value="draft">Draft</SelectItem>
@@ -131,7 +153,7 @@ export default function AdminBlogPage() {
               </SelectContent>
             </Select>
             <Select value={categoryFilter} onValueChange={(v) => { setCategoryFilter(v); setPage(1) }}>
-              <SelectTrigger className="w-[160px]"><SelectValue placeholder="Kategori" /></SelectTrigger>
+              <SelectTrigger aria-label="Filter kategori" className="w-full sm:w-[160px]"><SelectValue placeholder="Kategori" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Kategori</SelectItem>
                 {categories.map((c) => (
@@ -150,7 +172,7 @@ export default function AdminBlogPage() {
               <Button variant="outline" onClick={fetchPosts} className="gap-2"><RefreshCw size={14} /> Coba lagi</Button>
             </div>
           ) : filtered.length === 0 ? (
-            <EmptyState icon={<FileText size={40} />} title="Belum ada artikel" description="Mulai buat artikel pertama Anda." />
+            <EmptyState icon={<FileText size={40} />} title={posts.length ? "Artikel tidak ditemukan" : "Belum ada artikel"} description={posts.length ? "Ubah pencarian atau filter untuk melihat artikel lain." : "Artikel yang dibuat akan muncul di sini."} />
           ) : (
             <>
               <div className="flex items-center justify-between mb-3">
@@ -204,13 +226,13 @@ export default function AdminBlogPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
-                            <Link href={`/blog/${post.slug}`} target="_blank">
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Preview"><Eye size={14} /></Button>
-                            </Link>
-                            <Link href={`/admin/blog/${post.slug}/edit`}>
-                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Edit"><Edit2 size={14} /></Button>
-                            </Link>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive" onClick={() => handleDelete(post.slug, post.title)} title="Hapus"><Trash2 size={14} /></Button>
+                            <Button asChild variant="ghost" size="sm" className="h-8 w-8 p-0" title="Pratinjau">
+                              <Link href={`/blog/${post.slug}?preview=true`} target="_blank" aria-label={`Pratinjau ${post.title}`}><Eye size={14} /></Link>
+                            </Button>
+                            {canEdit && <Button asChild variant="ghost" size="sm" className="h-8 w-8 p-0" title="Edit">
+                              <Link href={`/admin/blog/${post.slug}/edit`} aria-label={`Edit ${post.title}`}><Edit2 size={14} /></Link>
+                            </Button>}
+                            {canDelete && <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive" onClick={() => handleDelete(post.slug, post.title)} title="Hapus" aria-label={`Hapus ${post.title}`}><Trash2 size={14} /></Button>}
                           </div>
                         </TableCell>
                       </TableRow>
