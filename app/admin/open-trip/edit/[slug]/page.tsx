@@ -9,6 +9,7 @@ import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { DESTINASI, LabelEditDialog } from "@/components/admin/label-manager"
 import { NumberStepper } from "@/components/ui/number-stepper"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -23,6 +24,8 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
   const [destinations, setDestinations] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [fetchingDest, setFetchingDest] = useState(true)
+  // Tambah destinasi langsung dari form paket (dialog); null = tertutup.
+  const [destDialogKey, setDestDialogKey] = useState<number | null>(null)
   const [fetchingPkg, setFetchingPkg] = useState(true)
 
   const [formData, setFormData] = useState({
@@ -789,7 +792,16 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
               </div>
 
               <div className="space-y-2">
-                <Label>Destinasi Negara</Label>
+                <div className="flex items-center justify-between gap-2">
+                  <Label>Destinasi</Label>
+                  <button
+                    type="button"
+                    onClick={() => setDestDialogKey(Date.now())}
+                    className="text-xs font-medium text-primary hover:underline cursor-pointer"
+                  >
+                    + Destinasi baru
+                  </button>
+                </div>
                 <Select 
                   value={formData.destinasiId ? String(formData.destinasiId) : undefined} 
                   onValueChange={(val) => handleSelectChange('destinasiId', val)}
@@ -807,6 +819,18 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
                     )}
                   </SelectContent>
                 </Select>
+                {destDialogKey !== null && (
+                  <LabelEditDialog
+                    kind={DESTINASI}
+                    key={destDialogKey}
+                    open
+                    onOpenChange={(o) => !o && setDestDialogKey(null)}
+                    onSaved={(row) => {
+                      setDestinations((prev) => [...prev, row].sort((a, b) => a.nama.localeCompare(b.nama)))
+                      handleSelectChange('destinasiId', String(row.id))
+                    }}
+                  />
+                )}
               </div>
 
               <div className="space-y-2">

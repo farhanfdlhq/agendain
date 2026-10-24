@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useDeferredValue } from "react";
 import { EmptyState } from "@/components/reui/empty-state";
 import { AdminHeader } from "@/components/reui/admin-header";
+import { DESTINASI, LabelManagerDialog, useLabelManagerOpen } from "@/components/admin/label-manager";
 import Link from "next/link";
 import {
   Plus,
@@ -80,6 +81,8 @@ export default function AdminPaketPage() {
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
+
+  const [destinasiOpen, setDestinasiOpen] = useLabelManagerOpen("destinasi");
 
   const fetchPackages = async () => {
     setLoading(true);
@@ -252,6 +255,14 @@ export default function AdminPaketPage() {
         title="Manajemen Paket"
         description="Kelola semua paket wisata perjalanan Anda."
         action={
+          <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            className="rounded-full px-5 font-semibold whitespace-nowrap"
+            onClick={() => setDestinasiOpen(true)}
+          >
+            Kelola Destinasi
+          </Button>
           <Button
             asChild
             className="bg-primary hover:bg-primary/90 font-semibold rounded-full px-6 whitespace-nowrap"
@@ -262,8 +273,13 @@ export default function AdminPaketPage() {
               Tambah Paket Baru
             </Link>
           </Button>
+          </div>
         }
       />
+
+      {destinasiOpen && (
+        <LabelManagerDialog kind={DESTINASI} open onOpenChange={setDestinasiOpen} onChanged={fetchPackages} />
+      )}
 
       <Card>
         <CardHeader className="p-4 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-muted/20">

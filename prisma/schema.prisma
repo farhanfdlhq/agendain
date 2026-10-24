@@ -7,19 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Destinasi = label lokasi paket (nama ID/EN), dikelola di Admin → Paket Wisata
+// → tab Destinasi. Field foto/deskripsi/negara/bahasa/mata uang/waktu terbaik/
+// info visa dihapus Okt 2026: wajib diisi tapi tak pernah tampil di situs.
 model Destinasi {
-  id           Int     @id @default(autoincrement())
-  nama         String
-  namaEn       String?
-  slug         String  @unique
-  negara       String
-  deskripsi    String  @db.Text
-  deskripsiEn  String? @db.Text
-  foto         String
-  bahasa       String?
-  matauang     String?
-  waktuTerbaik String?
-  infoVisa     String? @db.Text
+  id        Int        @id @default(autoincrement())
+  nama      String
+  namaEn    String?
+  slug      String     @unique
   openTrips OpenTrip[]
 }
 

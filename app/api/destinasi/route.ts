@@ -46,24 +46,24 @@ export async function POST(request: Request) {
       data.slug = data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
     }
 
+    const existing = await prisma.destinasi.findUnique({ where: { slug: data.slug! } })
+    if (existing) {
+      return NextResponse.json({ error: 'Destinasi dengan nama/slug ini sudah ada.' }, { status: 409 })
+    }
+
     const newDest = await prisma.destinasi.create({
       data: {
         nama: data.nama,
         namaEn: data.namaEn || null,
         slug: data.slug!,
-        negara: data.negara,
-        deskripsi: data.deskripsi,
-        deskripsiEn: data.deskripsiEn || null,
-        foto: data.foto,
-        bahasa: data.bahasa || null,
-        matauang: data.matauang || null,
-        waktuTerbaik: data.waktuTerbaik || null,
-        infoVisa: data.infoVisa || null,
       }
     })
 
     return NextResponse.json(newDest, { status: 201 })
   } catch (error) {
+    if ((error as { code?: string })?.code === 'P2002') {
+      return NextResponse.json({ error: 'Destinasi dengan nama/slug ini sudah ada.' }, { status: 409 })
+    }
     return serverError('POST /api/destinasi', error, { req: request })
   }
 }

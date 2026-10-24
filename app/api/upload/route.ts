@@ -268,7 +268,7 @@ export async function DELETE(request: Request) {
     }
 
     const filename = url.replace("/uploads/", "");
-    if (filename.includes("..") || filename.includes("/")) {
+    if (filename.includes("..") || filename.includes("/") || filename.includes("\\")) {
       return NextResponse.json({ error: "Invalid filename" }, { status: 400 });
     }
 

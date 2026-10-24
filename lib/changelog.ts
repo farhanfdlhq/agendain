@@ -26,6 +26,20 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.5.0',
+    date: '2026-10-24',
+    title: 'Kustomisasi penuh teks Beranda via CMS dan pengelolaan destinasi terintegrasi',
+    added: [
+      'Seluruh teks tombol CTA dan label di 7 bagian beranda (Hero, Destinasi, Testimonial, Accordion, Bukti Sosial, FAQ) kini dapat diedit langsung lewat CMS Admin.',
+      'Dukungan penuh bilingual (Indonesia & English) untuk teks tombol, kutipan testimoni, dan ajakan di beranda.',
+      'Pengelolaan destinasi terintegrasi langsung dalam modal di halaman Paket Wisata.',
+    ],
+    improved: [
+      'CMS Beranda otomatis mengisi teks bawaan saat pertama kali dibuka sehingga form tidak kosong.',
+      'Penyederhanaan struktur data destinasi sebagai label lokasi paket wisata.',
+    ],
+  },
+  {
     version: '1.4.2',
     date: '2026-10-23',
     title: 'Sidebar admin lebih ringkas dan pengelolaan kategori blog',

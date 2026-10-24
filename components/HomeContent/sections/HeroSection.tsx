@@ -122,9 +122,9 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
 
         <motion.div className={styles.heroButtons} variants={rise}>
           <a href={waLink} target="_blank" rel="noopener noreferrer" className={styles.btnWhatsapp}>
-            <WhatsAppIcon size={20} /> {t('home.hero.btnWa')}
+            <WhatsAppIcon size={20} /> {gs('heroBtnWa', 'home.hero.btnWa')}
           </a>
-          <Link href="/open-trip" className={styles.btnGold}>{t('home.hero.btnPack')}</Link>
+          <Link href="/open-trip" className={styles.btnGold}>{gs('heroBtnPack', 'home.hero.btnPack')}</Link>
         </motion.div>
       </motion.div>
 

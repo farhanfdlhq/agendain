@@ -18,6 +18,39 @@ import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { MediaPicker } from "@/components/ui/media-picker"
 import { FontControls } from "@/components/ui/font-size-picker"
 import { foldLegacyRepeaters, HOME_REPEATERS } from "@/lib/i18n/localize"
+import idDict from "@/lib/i18n/locales/id"
+import enDict from "@/lib/i18n/locales/en"
+
+// Teks yang dulu tetap di kode (tombol, label kecil, poin). Field yang belum
+// pernah diisi diisikan teks yang sedang tampil saat CMS dimuat, agar admin
+// mengedit isi nyata, bukan placeholder kosong. Situs tak berubah sampai disimpan.
+function fillHomeDefaults(res: Record<string, unknown>) {
+  const texts: Record<string, string> = {
+    heroBtnWa: "home.hero.btnWa",
+    heroBtnPack: "home.hero.btnPack",
+    destEyebrow: "dest.subtitle",
+    destTitle: "home.popularDest",
+    destBtn: "home.exploreDest",
+    testiBtnGallery: "home.testi.btnGallery",
+    testiBtnWa: "home.testi.btnWa",
+    accBadge: "home.acc.badge",
+    accBtn: "home.viewAll",
+    socialQuote: "home.social.quote",
+    faqBadge: "home.faq.subtitle",
+    faqCtaText: "home.faq.ctaText",
+    faqBtnWa: "home.faq.btnWa",
+  }
+  for (const [field, key] of Object.entries(texts)) {
+    if (!String(res[field] ?? "").trim()) res[field] = idDict[key]
+    if (!String(res[`${field}_en`] ?? "").trim()) res[`${field}_en`] = enDict[key]
+  }
+  if (!Array.isArray(res.testiHighlights)) {
+    res.testiHighlights = ["home.testi.highlight1", "home.testi.highlight2", "home.testi.highlight3"].map((k) => ({
+      text: idDict[k],
+      text_en: enDict[k],
+    }))
+  }
+}
 
 export default function HomeCMSPage() {
   const [data, setData] = useState<any>({
@@ -39,6 +72,16 @@ export default function HomeCMSPage() {
     // Testimonial
     testiBadge: '', testiBadge_en: '',
     testiTitle: '', testiTitle_en: '',
+    testiHighlights: [],
+    heroBtnWa: '', heroBtnWa_en: '',
+    heroBtnPack: '', heroBtnPack_en: '',
+    accBadge: '', accBadge_en: '',
+    accBtn: '', accBtn_en: '',
+    faqBadge: '', faqBadge_en: '',
+    faqCtaText: '', faqCtaText_en: '',
+    faqBtnWa: '', faqBtnWa_en: '',
+    testiBtnGallery: '', testiBtnGallery_en: '',
+    testiBtnWa: '', testiBtnWa_en: '',
 
     // Accordion
     accTitle: '', accTitle_en: '',
@@ -47,6 +90,8 @@ export default function HomeCMSPage() {
     // Social Proof
     socialTitle: '', socialTitle_en: '',
     socialSubtitle: '', socialSubtitle_en: '',
+    socialImage: '',
+    socialQuote: '', socialQuote_en: '',
 
     // FAQ
     faqTitle: '', faqTitle_en: '',
@@ -108,6 +153,7 @@ export default function HomeCMSPage() {
           // dan array warisannya dibuang, jadi simpanan berikutnya sudah
           // memakai bentuk baru. Tanpa ini gambar/ikon tetap beku per bahasa.
           foldLegacyRepeaters(res, HOME_REPEATERS)
+          fillHomeDefaults(res)
           setData((prev: any) => ({ ...prev, ...res }))
         }
         setFetching(false)
@@ -661,6 +707,10 @@ export default function HomeCMSPage() {
               <div className="space-y-4 flex flex-col justify-start">
                 {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', true, '', true, '800')}
                 {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true, '', true, '500')}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {renderTextInput('Tombol WhatsApp', 'heroBtnWa', false, 'Hubungi Kami Gratis!')}
+                  {renderTextInput('Tombol ke Halaman Open Trip', 'heroBtnPack', false, 'Agendain Sekarang')}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -706,6 +756,7 @@ export default function HomeCMSPage() {
                 </div>
               </div>
             </div>
+            <p className="text-xs text-muted-foreground -mt-3">Catatan tata letak: Kartu 1 &amp; 2 (tile besar &amp; lebar) menampilkan deskripsi di situs. Kartu 3 &amp; 4 (tile kecil) hanya menampilkan judul.</p>
             {renderSplitArrayEditor(
               'Kartu Keunggulan (Data Mengapa Memilih Kami)', 
               'whyItems', 
@@ -738,6 +789,20 @@ export default function HomeCMSPage() {
               {renderTextInput('Badge / Tagline', 'testiBadge', false, '', true, '500')}
               {renderTextInput('Kutipan Judul (Gunakan *teks* untuk warna kuning)', 'testiTitle', false, '', true, '800')}
             </div>
+
+            <div className="space-y-4 pt-4 border-t mt-4">
+              {renderArrayEditor('Poin di Bawah Judul', 'testiHighlights', [
+                { name: 'text', label: 'Teks Poin' }
+              ])}
+            </div>
+
+            <div className="space-y-4 pt-4 border-t mt-4">
+              <Label className="font-bold text-base">Tombol</Label>
+              <div className="grid gap-6 sm:grid-cols-2">
+                {renderTextInput('Tombol di Foto Tengah (menuju halaman Open Trip)', 'testiBtnGallery', false, 'Eksplor Trip')}
+                {renderTextInput('Tombol WhatsApp (di bawah galeri)', 'testiBtnWa', false, 'Ada Pertanyaan?')}
+              </div>
+            </div>
             
             <div className="space-y-4 pt-4 border-t mt-4">
               <Label className="font-bold text-base">URL Gambar Galeri</Label>
@@ -764,6 +829,8 @@ export default function HomeCMSPage() {
               <div className="space-y-4 flex flex-col justify-start">
                 {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle', false, '', true, '800')}
                 {renderTextInput('Deskripsi Subtitle', 'accSubtitle', true, '', true, '500')}
+                {renderTextInput('Label Kecil (di atas judul)', 'accBadge', false, 'Sudut Pandang')}
+                {renderTextInput('Tombol Bawah (menuju halaman Open Trip)', 'accBtn', false, 'Lihat Semua Open Trip')}
               </div>
             </div>
             
@@ -787,10 +854,12 @@ export default function HomeCMSPage() {
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-4">
                 {renderImageInput('Gambar Latar Section (tampil buram & gelap di belakang testimoni)', 'socialBgImg', '/dest-italy.webp', '1920x1080 px (Landscape)')}
+                {renderImageInput('Foto Traveler Kartu Kiri (Default foto kutipan)', 'socialImage', '/el-rumi-syifa.webp', '1080x1080 px (Square)')}
               </div>
               <div className="space-y-4 flex flex-col justify-start">
                 {renderTextInput('Judul Sorotan Utama', 'socialTitle', true, '', true, '800')}
                 {renderTextInput('Deskripsi Subtitle', 'socialSubtitle', true, '', true, '500')}
+                {renderTextInput('Kutipan Traveler Kartu Kiri (Teks Default)', 'socialQuote', true, '', true, '500')}
               </div>
             </div>
 
@@ -799,7 +868,7 @@ export default function HomeCMSPage() {
               'testiItems', 
               { name: 'photo', label: 'Foto Pelanggan (opsional)', resolutionHint: '1080x1080 px (Square)' },
               [
-                { name: 'name', label: 'Nama Pelanggan', placeholder: 'Contoh: El Rumi' },
+                { name: 'name', label: 'Nama Pelanggan', placeholder: 'Nama asli traveler (mis. nama depan + inisial)' },
                 { name: 'text', label: 'Teks Kutipan Testimoni', isTextarea: true, placeholder: 'Tulis ulasan/testimoni pelanggan di sini...' }
               ]
             )}
@@ -814,6 +883,9 @@ export default function HomeCMSPage() {
             <div className="grid gap-6 sm:grid-cols-2">
               {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle', false, '', true, '800')}
               {renderTextInput('Teks Pendek', 'faqSubtitle', false, '', true, '500')}
+              {renderTextInput('Label Kecil (di atas judul)', 'faqBadge', false, 'FAQ')}
+              {renderTextInput('Teks Ajakan di Bawah Daftar FAQ', 'faqCtaText', false, 'Masih ada pertanyaan lain? Kawan Agendain siap menjawab!')}
+              {renderTextInput('Tombol WhatsApp (bawah FAQ)', 'faqBtnWa', false, 'Hubungi Kami')}
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2">

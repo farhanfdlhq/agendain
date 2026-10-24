@@ -197,17 +197,9 @@ export const OpenTripPatchSchema = z.object({
 });
 
 export const DestinasiSchema = z.object({
-  nama: z.string().min(1, "Nama destinasi harus diisi").max(160),
-  namaEn: z.string().max(160).nullable().optional(),
+  nama: z.string().trim().min(1, "Nama destinasi harus diisi").max(160),
+  namaEn: z.string().trim().max(160).nullable().optional(),
   slug: z.string().max(180).optional(),
-  negara: z.string().min(1, "Negara harus diisi").max(120),
-  deskripsi: z.string().min(1, "Deskripsi harus diisi").max(20000),
-  deskripsiEn: z.string().max(20000).nullable().optional(),
-  foto: z.string().min(1, "Foto harus diisi").max(500),
-  bahasa: z.string().max(200).optional().nullable(),
-  matauang: z.string().max(80).optional().nullable(),
-  waktuTerbaik: z.string().max(500).optional().nullable(),
-  infoVisa: z.string().max(20000).optional().nullable(),
 });
 
 export const BookingStatusSchema = z.object({

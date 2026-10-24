@@ -218,6 +218,9 @@ const id: Record<string, string> = {
   "home.faq.more": "Masih ada pertanyaan lain?",
   "home.faq.moreSub": "Kawan Agendain siap menjawab!",
   "home.faq.btnWa": "Hubungi Kami",
+  "home.faq.ctaText": "Masih ada pertanyaan lain? Kawan Agendain siap menjawab!",
+  "home.dest.subtitle": "Eksplor Bersama Agendain",
+  "home.acc.badge": "Sudut Pandang",
   "home.dest.startFrom": "Mulai dari",
   "home.testi.badge": "Sudut Pandang",
   "home.testi.quoteTitle1": "Satu Hari di ",
@@ -227,6 +230,7 @@ const id: Record<string, string> = {
   "home.testi.highlight2": "Kulineran makanan otentik Italia yang bikin nagih",
   "home.testi.highlight3": "Foto-foto di spot ikonik yang instagramable banget",
   "home.testi.btnWa": "Ada Pertanyaan?",
+  "home.testi.btnGallery": "Eksplor Trip",
   "home.acc.title": "Lihat, Hirup, & Simpan Memori",
   "home.acc.subtitle": "Sudut Terbaik Eropa",
   "home.acc.btnMore": "Pertanyaan Lain",
@@ -234,8 +238,12 @@ const id: Record<string, string> = {
   "home.social.title2": "Artis Sampai Netizen",
   "home.social.title3": ", ",
   "home.social.title4": "Semua Udah Gak Wacana Lagi!",
+  "home.social.quote":
+    "Biasanya kalau ngerencanain trip tuh paling pusing nyamain jadwal dan ngurusin printilannya.",
+  "home.social.prevTesti": "Testimoni sebelumnya",
+  "home.social.nextTesti": "Testimoni berikutnya",
   "home.social.subtitle":
-    "Intip cerita seru El Rumi, Syifa, dan ratusan traveler lainnya yang udah berhasil nge-realisasiin liburan impian mereka bareng Agendain.",
+    "Intip cerita seru para traveler yang udah berhasil nge-realisasiin liburan impian mereka bareng Agendain.",
   "home.testi.name1": "Netizen 1",
   "home.testi.text1":
     '"Pengalaman pertama ke Eropa dan semuanya beyond expectations. Dari hotel, makanan, sampai guide-nya — semuanya top. Ga nyesel pilih Agendain!"',

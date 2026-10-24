@@ -25,7 +25,7 @@ const HOME_EN: Record<string, string> = {
   heroSubtitle_en: "Tickets, hotels, itineraries, we've got it all covered! Just grab your friends and pack your bags!",
   accTitle_en: "Witness, Experience, & *Keep* the Memories",
   accSubtitle_en: "Europe's Finest Corners",
-  socialSubtitle_en: "Take a peek at the amazing adventures of El Rumi, Syifa, and hundreds of others who turned their dream vacations into reality with Agendain.",
+  socialSubtitle_en: "Take a peek at the stories of travelers who turned their dream vacations into reality with Agendain.",
 };
 
 async function updateSetting(key: string, mutate: (o: Record<string, unknown>) => void) {

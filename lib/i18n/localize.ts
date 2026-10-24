@@ -149,6 +149,7 @@ export const HOME_REPEATERS = {
   accItems: ['title', 'body'],
   testiItems: ['name', 'text'],
   faqItems: ['q', 'a'],
+  testiHighlights: ['text'],
 } as const
 
 export const PRIVATE_TRIP_REPEATERS = {

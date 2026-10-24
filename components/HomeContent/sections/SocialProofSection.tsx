@@ -42,8 +42,8 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
             <div className={styles.socialProofQuoteCard}>
               <AnimatePresence mode="wait">
                 <motion.div key={activeTestimonial} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
-                  <p className={styles.socialProofQuoteName}>{testiItems[activeTestimonial]?.name || gs('socialName', undefined, 'El Rumi & Syifa')}</p>
-                  <p className={styles.socialProofQuoteText}>{testiItems[activeTestimonial]?.text || gs('socialQuote', undefined, 'Biasanya kalau ngerencanain trip tuh paling pusing nyamain jadwal dan ngurusin printilannya.')}</p>
+                  <p className={styles.socialProofQuoteName}>{testiItems[activeTestimonial]?.name || gs('socialName', undefined, '')}</p>
+                  <p className={styles.socialProofQuoteText}>{testiItems[activeTestimonial]?.text || gs('socialQuote', 'home.social.quote', 'Biasanya kalau ngerencanain trip tuh paling pusing nyamain jadwal dan ngurusin printilannya.')}</p>
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -83,8 +83,8 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
                   </AnimatePresence>
                 </div>
               </div>
-              <button aria-label="Testimoni sebelumnya" className={styles.sliderBtnLeft} onClick={() => setActiveTestimonial(prev => prev === 0 ? testiItems.length - 1 : prev - 1)}><ChevronLeft size={24} color="#ffffff" /></button>
-              <button aria-label="Testimoni berikutnya" className={styles.sliderBtnRight} onClick={() => setActiveTestimonial(prev => prev === testiItems.length - 1 ? 0 : prev + 1)}><ChevronRight size={24} color="#ffffff" /></button>
+              <button aria-label={t('home.social.prevTesti')} className={styles.sliderBtnLeft} onClick={() => setActiveTestimonial(prev => prev === 0 ? testiItems.length - 1 : prev - 1)}><ChevronLeft size={24} color="#ffffff" /></button>
+              <button aria-label={t('home.social.nextTesti')} className={styles.sliderBtnRight} onClick={() => setActiveTestimonial(prev => prev === testiItems.length - 1 ? 0 : prev + 1)}><ChevronRight size={24} color="#ffffff" /></button>
             </div>
           </div>
         </FadeIn>

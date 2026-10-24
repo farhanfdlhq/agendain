@@ -41,7 +41,7 @@ export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.faqHeader}>
-            <span className={styles.faqBadge}><span className={styles.faqBadgeQ}>?</span> {t('home.faq.subtitle')}</span>
+            <span className={styles.faqBadge}><span className={styles.faqBadgeQ}>?</span> {gs('faqBadge', 'home.faq.subtitle')}</span>
             <h2 className={styles.faqTitle} style={fontStyle(gs, 'faqTitle')}>{renderHighlightedTitle(gs('faqTitle', 'home.faq.title'))}</h2>
             <p className={styles.faqSubtitle} style={fontStyle(gs, 'faqSubtitle')}>{gs('faqSubtitle', 'home.faq.moreSub')}</p>
           </div>
@@ -67,9 +67,9 @@ export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs
         </div>
         <FadeIn direction="up" delay={0.3}>
           <div className={styles.faqCta}>
-            <p className={styles.faqCtaText}>{t('home.faq.more')} {t('home.faq.moreSub')}</p>
+            <p className={styles.faqCtaText}>{gs('faqCtaText', 'home.faq.ctaText')}</p>
             <a href={waLink} target="_blank" rel="noopener noreferrer" className={styles.btnWhatsapp}>
-              <WhatsAppIcon size={18} /> {t('home.faq.btnWa')}
+              <WhatsAppIcon size={18} /> {gs('faqBtnWa', 'home.faq.btnWa')}
             </a>
           </div>
         </FadeIn>

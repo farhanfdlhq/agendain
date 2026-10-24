@@ -63,7 +63,7 @@ export default function HomeContent({
         // Tanpa paket terbit, section ini hanya judul + tombol kosong → disembunyikan.
         return packages.length > 0 ? <DestinationsSection key="destinations" gs={gs} packages={packages} /> : null
       case 'testimonial': 
-        return <TestimonialSection key="testimonial" gs={gs} t={t} waLink={waLink} />
+        return <TestimonialSection key="testimonial" gs={gs} t={t} waLink={waLink} locale={locale} homeSettings={homeSettings} />
       case 'accordion': 
         return <AccordionSection key="accordion" gs={gs} t={t} locale={locale} homeSettings={homeSettings} />
       case 'socialproof': 

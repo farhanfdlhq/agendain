@@ -686,8 +686,16 @@
   color: rgba(255,255,255,0.85);
 }
 
+/* Penanda poin: titik emas brand (pengganti emoji ✨ dekoratif). */
 .testimonialHighlights li::before {
-  content: '✨ ';
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 0.6rem;
+  border-radius: 50%;
+  background: var(--color-dominant);
+  vertical-align: middle;
 }
 
 /* Gallery Masonry */

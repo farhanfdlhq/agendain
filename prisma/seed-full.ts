@@ -75,9 +75,6 @@ async function main() {
     create: {
       nama: 'Eropa Barat',
       slug: 'eropa-barat',
-      negara: 'Prancis, Swiss, Italia',
-      deskripsi: 'Kumpulan negara eksotis di Eropa Barat.',
-      foto: '/uploads/seed/paris.png',
     }
   })
 
@@ -88,9 +85,6 @@ async function main() {
     create: {
       nama: 'Skandinavia',
       slug: 'skandinavia',
-      negara: 'Norwegia, Swedia',
-      deskripsi: 'Pesona salju dan fenomena alam di Eropa Utara.',
-      foto: '/uploads/seed/aurora.png',
     }
   })
 
@@ -101,9 +95,6 @@ async function main() {
     create: {
       nama: 'Turki',
       slug: 'turki',
-      negara: 'Turki',
-      deskripsi: 'Negara lintas benua dengan kekayaan sejarah peradaban Islam.',
-      foto: '/uploads/seed/turki.png',
     }
   })
 
@@ -327,15 +318,15 @@ async function main() {
     ],
 
     // Social Proof
-    socialName: 'El Rumi & Syifa',
-    socialName_en: 'El Rumi & Syifa',
+    socialName: '',
+    socialName_en: '',
     socialTitle: 'Dari *Artis* Sampai Netizen, Semua Udah Gak *Wacana* Lagi!',
     socialTitle_en: 'From *Celebrities* to Netizens, None of It is Just a *Dream* Anymore!',
     socialTitleWeight: '800',
     socialQuote: 'Biasanya kalau ngerencanain trip tuh paling pusing nyamain jadwal dan ngurusin printilannya.',
     socialQuote_en: 'Usually when planning a trip, synchronizing schedules and sorting out details is the biggest headache.',
-    socialSubtitle: 'Intip cerita seru El Rumi, Syifa, dan ratusan traveler lainnya yang udah berhasil nge-realisasiin liburan impian mereka bareng Agendain.',
-    socialSubtitle_en: 'Sneak a peek at the exciting stories of El Rumi, Syifa, and hundreds of other travelers who have successfully realized their dream vacation with Agendain.',
+    socialSubtitle: 'Intip cerita seru para traveler yang udah berhasil nge-realisasiin liburan impian mereka bareng Agendain.',
+    socialSubtitle_en: 'Take a peek at the stories of travelers who turned their dream vacations into reality with Agendain.',
     socialSubtitleWeight: '500',
     socialImage: '/el-rumi-syifa.webp',
     socialBgImg: '/dest-italy.webp',

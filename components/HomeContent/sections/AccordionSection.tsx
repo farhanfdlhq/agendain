@@ -38,7 +38,7 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.accordionHeaderCenter}>
-            <div className={styles.accordionEyebrowPill}>{t('home.testi.badge') || 'Sudut Pandang'}</div>
+            <div className={styles.accordionEyebrowPill}>{gs('accBadge', 'home.acc.badge')}</div>
             <h2 className={styles.accordionTitleCenter} style={fontStyle(gs, 'accTitle')}>{renderHighlightedTitle(gs('accTitle', 'home.accTitle', 'Lihat, Hirup, & Simpan Memori'))}</h2>
             <h3 className={styles.accordionSubtitleCenter} style={fontStyle(gs, 'accSubtitle')}>{gs('accSubtitle', 'home.accSubtitle', 'Sudut Terbaik Eropa')}</h3>
           </div>
@@ -64,7 +64,7 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
             ))}
             <FadeIn direction="up" delay={0.3}>
               <div className={styles.accordionBtnWrapper}>
-                <Link href="/open-trip" className={styles.accordionBottomBtn}>{t('home.viewAll')}</Link>
+                <Link href="/open-trip" className={styles.accordionBottomBtn}>{gs('accBtn', 'home.viewAll')}</Link>
               </div>
             </FadeIn>
           </div>

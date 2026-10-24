@@ -42,25 +42,27 @@ export async function PUT(
       data.slug = data.nama.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
     }
 
+    if (data.slug && data.slug !== slug) {
+      const existing = await prisma.destinasi.findUnique({ where: { slug: data.slug } })
+      if (existing) {
+        return NextResponse.json({ error: 'Destinasi dengan nama/slug ini sudah ada.' }, { status: 409 })
+      }
+    }
+
     const updatedDest = await prisma.destinasi.update({
       where: { slug },
       data: {
         nama: data.nama,
         namaEn: data.namaEn || null,
         slug: data.slug,
-        deskripsi: data.deskripsi,
-        deskripsiEn: data.deskripsiEn || null,
-        foto: data.foto,
-        negara: data.negara,
-        bahasa: data.bahasa,
-        matauang: data.matauang,
-        waktuTerbaik: data.waktuTerbaik,
-        infoVisa: data.infoVisa,
       }
     })
 
     return NextResponse.json(updatedDest)
   } catch (error) {
+    if ((error as { code?: string })?.code === 'P2002') {
+      return NextResponse.json({ error: 'Destinasi dengan nama/slug ini sudah ada.' }, { status: 409 })
+    }
     return serverError('PUT /api/destinasi/[slug]', error, { req: request })
   }
 }
@@ -74,6 +76,18 @@ export async function DELETE(
     if (gate.denied) return gate.denied
 
     const { slug } = await params
+    // Paket wajib punya destinasi (FK) — hapus akan gagal 500. Beri alasan jelas.
+    const dest = await prisma.destinasi.findUnique({
+      where: { slug },
+      select: { _count: { select: { openTrips: true } } },
+    })
+    if (!dest) return NextResponse.json({ error: 'Destinasi tidak ditemukan' }, { status: 404 })
+    if (dest._count.openTrips > 0) {
+      return NextResponse.json(
+        { error: `Masih dipakai ${dest._count.openTrips} paket. Pindahkan paketnya ke destinasi lain dulu.` },
+        { status: 409 },
+      )
+    }
     await prisma.destinasi.delete({
       where: { slug }
     })
