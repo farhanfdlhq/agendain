@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import { JsonLd, breadcrumbLd } from '@/lib/jsonld'
 import BlogContent from './BlogContent'
 import {
   blogListHref,
@@ -110,16 +111,24 @@ export default async function BlogPage({ searchParams }: { searchParams: SearchP
   }))
 
   return (
-    <BlogContent
-      blogSettings={blogSettings}
-      categories={categories}
-      posts={posts}
-      featured={featured && page === 1}
-      total={total}
-      page={page}
-      pageCount={pageCount}
-      kategori={kategori}
-      q={query.q}
-    />
+    <>
+      <JsonLd
+        data={breadcrumbLd([
+          { name: 'Beranda', path: '/' },
+          { name: 'Blog', path: '/blog' },
+        ])}
+      />
+      <BlogContent
+        blogSettings={blogSettings}
+        categories={categories}
+        posts={posts}
+        featured={featured && page === 1}
+        total={total}
+        page={page}
+        pageCount={pageCount}
+        kategori={kategori}
+        q={query.q}
+      />
+    </>
   )
 }

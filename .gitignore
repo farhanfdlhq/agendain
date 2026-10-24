@@ -70,7 +70,7 @@ _db-backup
 
 # Worktrees
 /.worktrees/
-llms.txt
+/llms.txt
 graphify-out/
 public/uploads/*
 !public/uploads/seed/

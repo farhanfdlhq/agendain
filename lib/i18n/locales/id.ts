@@ -171,16 +171,16 @@ const id: Record<string, string> = {
   "home.whyTitle": "Kenapa Agendain Travel Jadi Solusi Wacana Kamu",
   "home.why1.title": "All-in-One!",
   "home.why1.desc":
-    "Ga usah ribet ngurus sana-sini. Di Agendain, dari tiket pesawat, hotel, sampai itinerary harian semua udah kami siapin. Kamu tinggal bawa koper dan ajak teman — semuanya sudah beres!",
+    "Tiket pesawat, hotel, hingga itinerary lengkap sudah beres. Tinggal bawa koper dan nikmati liburan!",
   "home.why2.title": "Harga Terbaik",
   "home.why2.desc":
-    "Kami bekerja langsung dengan partner lokal di Eropa, jadi harga yang kamu dapat itu harga terbaik, transparan, tanpa biaya tersembunyi. Worth it banget buat pengalaman yang kamu dapat!",
+    "Bermitra langsung dengan vendor lokal di Eropa. Transparan, jujur, tanpa biaya tersembunyi.",
   "home.why3.title": "Dukungan 24/7",
   "home.why3.desc":
-    "Tim Agendain selalu stand by 24 jam selama perjalanan kamu. Mulai dari pertanyaan soal hotel, transportasi, atau darurat — kamu ga bakal sendirian. Kami ada di setiap langkah!",
+    "Tim siaga 24 jam mendampingi setiap langkah perjalanan kamu.",
   "home.why4.title": "Dokumentasi Pro",
   "home.why4.desc":
-    "Setiap momen berharga akan diabadikan secara sinematik oleh tim dokumentasi profesional kami. Pulang liburan bawa foto & video keren tanpa repot mikirin angle!",
+    "Abadikan momen sinematik terbaik tanpa perlu repot mikirin angle.",
   "home.acc1.title": "Tidur Nyenyak Berlatar Sudut Kota yang Estetik",
   "home.acc1.desc":
     "Kami pilihkan hotel-hotel terbaik di lokasi strategis, dekat dengan spot wisata utama. Bangun pagi dengan pemandangan kota Eropa yang estetik langsung dari jendela kamar kamu.",

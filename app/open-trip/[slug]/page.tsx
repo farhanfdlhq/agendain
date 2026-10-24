@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { pageMeta } from "@/lib/og";
-import { JsonLd, productLd } from "@/lib/jsonld";
+import { JsonLd, productLd, breadcrumbLd } from "@/lib/jsonld";
 import BookingForm from "@/components/BookingForm/BookingForm";
 import GalleryLightbox from "@/components/GalleryLightbox/GalleryLightbox";
 import {
@@ -250,13 +250,21 @@ export default async function PaketDetail(props: {
   return (
     <div className={styles.page}>
       <JsonLd
-        data={productLd({
-          name: nama,
-          description: deskripsi,
-          image: mainImage,
-          path: `/open-trip/${slug}`,
-          price: hargaIDRNum,
-        })}
+        data={[
+          productLd({
+            name: nama,
+            description: deskripsi,
+            image: mainImage,
+            path: `/open-trip/${slug}`,
+            price: hargaIDRNum,
+            destination: destinasiNama,
+          }),
+          breadcrumbLd([
+            { name: t("nav.home") || "Beranda", path: "/" },
+            { name: "Open Trip", path: "/open-trip" },
+            { name: nama, path: `/open-trip/${slug}` },
+          ]),
+        ]}
       />
       <div className={styles.container}>
         {/* Breadcrumb */}

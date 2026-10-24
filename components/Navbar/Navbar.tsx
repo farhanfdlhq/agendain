@@ -65,6 +65,8 @@ export default function Navbar({ settings }: { settings?: any }) {
                 src={siteLogo} 
                 alt={siteName} 
                 className={styles.logoImage} 
+                width={160}
+                height={settings?.logo_height ? Number(settings.logo_height) : 42}
                 style={{ '--logo-height': settings?.logo_height ? `${settings.logo_height}px` : undefined } as React.CSSProperties}
               />
             </div>

@@ -47,7 +47,12 @@ export function pageMeta(opts: {
   return {
     title: opts.title,
     description: opts.description,
-    alternates: { canonical: opts.path },
+    alternates: {
+      canonical: opts.path,
+      types: {
+        "application/rss+xml": `${SITE_URL}/feed.xml`,
+      },
+    },
     openGraph: {
       type: "website",
       siteName: "Agendain",

@@ -157,6 +157,11 @@ export async function generateMetadata(): Promise<Metadata> {
     verification: process.env.GOOGLE_SITE_VERIFICATION
       ? { google: process.env.GOOGLE_SITE_VERIFICATION }
       : undefined,
+    alternates: {
+      types: {
+        "application/rss+xml": `${SITE_URL}/feed.xml`,
+      },
+    },
     robots: {
       index: true,
       follow: true,

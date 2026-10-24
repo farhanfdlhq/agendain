@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import type { Metadata } from 'next'
 import { pageMeta } from '@/lib/og'
 import { PUBLISHED_OPEN_TRIP, toOpenTripCard, type OpenTripCardData } from '@/lib/open-trip-card'
-import { JsonLd, organizationLd, websiteLd } from '@/lib/jsonld'
+import { JsonLd, organizationLd, websiteLd, faqPageLd } from '@/lib/jsonld'
 import { parseFooterSettings, safeHref } from '@/lib/footer-settings'
 
 export const revalidate = 60;
@@ -39,8 +39,6 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-import { Suspense } from 'react'
-import AirplaneLoader from '@/components/ui/airplane-loader'
 import { LOGO_BLUE, siteLogoOr } from '@/lib/site-logo'
 
 async function HomeDataFetcher() {
@@ -103,25 +101,39 @@ async function buildSiteLd() {
     const footer = parseFooterSettings(map.footer_settings)
     const sameAs = footer.socials.map((s) => safeHref(s.url)).filter((u) => /^https?:\/\//i.test(u))
     let telephone: string | undefined
-    try { telephone = JSON.parse(map.home_settings || '{}')?.whatsapp_number || undefined } catch {}
-    return [organizationLd({ name, logo, sameAs, telephone }), websiteLd(name)]
+    let faqData: Record<string, unknown> | null = null
+    try {
+      const hs = JSON.parse(map.home_settings || '{}')
+      telephone = hs?.whatsapp_number || undefined
+      if (Array.isArray(hs?.faqItems) && hs.faqItems.length > 0) {
+        faqData = faqPageLd(
+          hs.faqItems.map((item: any) => ({
+            question: item?.q || item?.question || '',
+            answer: item?.a || item?.answer || '',
+          }))
+        )
+      }
+    } catch {}
+    const entries: Record<string, unknown>[] = [
+      organizationLd({ name, logo, sameAs, telephone }),
+      websiteLd(name),
+    ]
+    if (faqData) entries.push(faqData)
+    return entries
   } catch {
     return [organizationLd({ name: 'Agendain', logo: LOGO_BLUE }), websiteLd('Agendain')]
   }
 }
 
 export default async function Home() {
-  const siteLd = await buildSiteLd()
+  const [siteLd, homeContent] = await Promise.all([
+    buildSiteLd(),
+    HomeDataFetcher(),
+  ])
   return (
     <>
       <JsonLd data={siteLd} />
-      <Suspense fallback={
-        <div className="flex h-screen w-full items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-          <AirplaneLoader size={48} />
-        </div>
-      }>
-        <HomeDataFetcher />
-      </Suspense>
+      {homeContent}
     </>
   )
 }

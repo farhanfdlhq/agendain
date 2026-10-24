@@ -130,7 +130,11 @@
   display: none;
   flex-direction: column;
   gap: 5px;
-  padding: 8px;
+  padding: 12px;
+  min-width: 48px;
+  min-height: 48px;
+  justify-content: center;
+  align-items: center;
   margin-left: auto;
   background: transparent;
   border: none;

@@ -26,6 +26,25 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.5.1',
+    date: '2026-10-25',
+    title: 'Optimasi SEO Teknis, Peta Situs Gambar & Feed RSS',
+    added: [
+      'Peta situs (sitemap.xml) kini menyertakan metadata gambar Google Image untuk seluruh rute paket dan artikel blog.',
+      'Feed RSS publik resmi di /feed.xml untuk percepatan perayapan artikel baru oleh Google dan pembaca konten.',
+      'Dukungan file ringkasan AI /llms.txt serta aturan perayapan ramah mesin telusur AI modern di robots.txt.',
+      'Schema markup JSON-LD BreadcrumbList di seluruh halaman publik dan TouristTrip terstruktur pada detail paket.',
+    ],
+    improved: [
+      'Pemberian dimensi presisi pada logo navbar dan footer untuk mencegah pergeseran tata letak (CLS).',
+      'Peningkatan area sentuh tombol interaktif navbar dan footer sesuai standar aksesibilitas mesin telusur.',
+    ],
+    fixed: [
+      'Eliminasi pergeseran tata letak (CLS 0.400) pada beranda akibat pembungkus streaming data.',
+      'Pencegahan pengindeksan artikel tidak ditemukan dengan tag robot noindex otomatis.',
+    ],
+  },
+  {
     version: '1.5.0',
     date: '2026-10-24',
     title: 'Kustomisasi penuh teks Beranda via CMS dan pengelolaan destinasi terintegrasi',

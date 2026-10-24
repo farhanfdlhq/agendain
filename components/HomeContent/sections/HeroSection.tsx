@@ -79,7 +79,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
       <div className={styles.heroImageWrapper}>
         <Image
           src={gs('heroBgImage', undefined, '/hero-coastal.webp')}
-          alt="Hero"
+          alt={gs('heroTitle', 'home.hero.title') || "Agendain — Biro Perjalanan Wisata Open Trip & Private Trip Eropa"}
           fill
           priority
           className={styles.heroImage}

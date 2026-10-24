@@ -1,13 +1,16 @@
 import { prisma } from '@/lib/prisma'
 import TentangContent from './TentangContent'
+import { pageMeta } from '@/lib/og'
+import { JsonLd, breadcrumbLd } from '@/lib/jsonld'
 
 export const revalidate = 60
 
-export const metadata = {
+export const metadata = pageMeta({
   title: 'Tentang Kami | Agendain',
-  description: 'Mengenal lebih dekat Agendain, teman perjalanan Eropa Anda.',
-  alternates: { canonical: '/tentang' },
-}
+  description: 'Mengenal lebih dekat Agendain, teman perjalanan wisata Eropa Anda dengan tour guide berpengalaman.',
+  path: '/tentang',
+  image: '/tentang_hero.webp',
+})
 
 export default async function TentangPage() {
   let aboutSettings = {}
@@ -42,5 +45,15 @@ export default async function TentangPage() {
     console.error(e)
   }
 
-  return <TentangContent aboutSettings={aboutSettings} recentPosts={recentPosts} />
+  return (
+    <>
+      <JsonLd
+        data={breadcrumbLd([
+          { name: 'Beranda', path: '/' },
+          { name: 'Tentang Kami', path: '/tentang' },
+        ])}
+      />
+      <TentangContent aboutSettings={aboutSettings} recentPosts={recentPosts} />
+    </>
+  )
 }

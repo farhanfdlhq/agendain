@@ -54,7 +54,7 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
         <div className={styles.whyBento}>
           {whyItems.map((card: any, i: number) => {
             const tileClass = i === 0 ? styles.whyTileLarge : i === 1 ? styles.whyTileWide : styles.whyTileSmall
-            const showDesc = i < 2
+            // Tampilkan deskripsi saat kartu di-hover (diatur lewat CSS)
             return (
               <FadeIn key={i} direction="up" delay={i * 0.08} className={`${styles.whyTile} ${tileClass}`}>
                 <Image
@@ -68,8 +68,10 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
                 <div className={styles.whyTileContent}>
                   <span className={styles.whyTileBadge}>{String(i + 1).padStart(2, '0')}</span>
                   <h3 className={styles.whyTileTitle} style={fontStyleFrom(card.titleWeight, card.titleSize)}>{card.title}</h3>
-                  {showDesc && (
-                    <p className={styles.whyTileDesc} style={fontStyleFrom(card.descWeight, card.descSize)}>{card.desc}</p>
+                  {card.desc && (
+                    <div className={styles.whyTileDescWrapper}>
+                      <p className={styles.whyTileDesc} style={fontStyleFrom(card.descWeight, card.descSize)}>{card.desc}</p>
+                    </div>
                   )}
                 </div>
               </FadeIn>

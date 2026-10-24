@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import OpenTripContent from './OpenTripContent'
 import { pageMeta } from '@/lib/og'
 import { PUBLISHED_OPEN_TRIP, toOpenTripCard } from '@/lib/open-trip-card'
+import { JsonLd, breadcrumbLd } from '@/lib/jsonld'
 
 // Canonical menunjuk /open-trip TANPA query param: halaman ini memakai filter
 // via searchParams (?destinasi=…&durasi=…) yang menghasilkan banyak URL berisi
@@ -83,5 +84,15 @@ export default async function PaketPage({
   // Urutan tidak menyaring hasil, jadi hanya destinasi/durasi yang dihitung "filter aktif".
   const isFiltered = Boolean(destinasiFilter || durasiFilter)
 
-  return <OpenTripContent packages={packages} destList={destList} opentripSettings={opentripSettings} isFiltered={isFiltered} />
+  return (
+    <>
+      <JsonLd
+        data={breadcrumbLd([
+          { name: 'Beranda', path: '/' },
+          { name: 'Open Trip', path: '/open-trip' },
+        ])}
+      />
+      <OpenTripContent packages={packages} destList={destList} opentripSettings={opentripSettings} isFiltered={isFiltered} />
+    </>
+  )
 }

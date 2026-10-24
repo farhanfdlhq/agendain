@@ -10,6 +10,7 @@ import { getI18nSetting, getServerLocale } from "@/lib/i18n/server";
 import { generateWhatsAppLink } from "@/lib/utils";
 import { waPrivateTripGeneral } from "@/lib/whatsapp-messages";
 import { pageMeta } from "@/lib/og";
+import { JsonLd, breadcrumbLd } from "@/lib/jsonld";
 import styles from "./page.module.css";
 
 export const metadata = pageMeta({
@@ -50,6 +51,12 @@ export default async function PrivateTripPage() {
 
   return (
     <main>
+      <JsonLd
+        data={breadcrumbLd([
+          { name: "Beranda", path: "/" },
+          { name: "Private Trip", path: "/private-trip" },
+        ])}
+      />
       <PrivateTripHero privatetripSettings={privatetripSettings} />
       <PrivateTripWhy privatetripSettings={privatetripSettings} />
       <PrivateTripPricing packages={packages} privatetripSettings={privatetripSettings} />

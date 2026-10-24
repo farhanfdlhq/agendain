@@ -361,7 +361,7 @@
 .whyBento {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(200px, auto);
+  grid-template-rows: 240px 240px;
   gap: clamp(0.75rem, 1.5vw, 1.25rem);
 }
 
@@ -369,27 +369,27 @@
   position: relative;
   overflow: hidden;
   border-radius: 18px;
-  min-height: 220px;
+  height: 100%;
   display: flex;
   align-items: flex-end;
   isolation: isolate;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
 }
 
 .whyTile:hover {
   transform: translateY(-4px);
-  box-shadow: 0 24px 50px -18px rgba(6, 20, 33, 0.35);
+  box-shadow: 0 20px 40px -15px rgba(6, 20, 33, 0.35);
 }
 
-/* Tile besar = 2×2, lebar = 2×1, kecil = 1×1 → bento asimetris. */
-.whyTileLarge { grid-column: span 2; grid-row: span 2; min-height: 460px; }
-.whyTileWide  { grid-column: span 2; }
-.whyTileSmall { grid-column: span 1; }
+/* Tile besar = 2×2, lebar = 2×1, kecil = 1×1 → bento asimetris stabil tanpa pergeseran layout. */
+.whyTileLarge { grid-column: span 2; grid-row: span 2; min-height: 480px; }
+.whyTileWide  { grid-column: span 2; grid-row: span 1; }
+.whyTileSmall { grid-column: span 1; grid-row: span 1; }
 
 .whyTileImg {
   object-fit: cover;
   z-index: -2;
-  transition: transform 0.6s ease;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .whyTile:hover .whyTileImg { transform: scale(1.05); }
 
@@ -397,50 +397,81 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: linear-gradient(to top, rgba(6, 20, 33, 0.92) 0%, rgba(6, 20, 33, 0.55) 42%, rgba(6, 20, 33, 0.12) 100%);
+  background: linear-gradient(to top, rgba(6, 20, 33, 0.92) 0%, rgba(6, 20, 33, 0.5) 45%, rgba(6, 20, 33, 0.1) 100%);
+  transition: background 0.4s ease;
+}
+.whyTile:hover .whyTileScrim {
+  background: linear-gradient(to top, rgba(6, 20, 33, 0.97) 0%, rgba(6, 20, 33, 0.72) 50%, rgba(6, 20, 33, 0.2) 100%);
 }
 
 .whyTileContent {
-  padding: clamp(1.1rem, 2.2vw, 1.9rem);
+  padding: clamp(1rem, 2vw, 1.5rem);
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  justify-content: flex-end;
   color: #ffffff;
+  width: 100%;
 }
 
-/* Badge angka: kuning FILL + teks navy (pemakaian kuning yang benar). */
+/* Badge angka: kuning FILL + teks navy */
 .whyTileBadge {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 2.5rem;
-  height: 2.5rem;
+  min-width: 2.25rem;
+  height: 2.25rem;
   padding: 0 0.5rem;
   border-radius: 999px;
   background: var(--color-dominant);
   color: var(--color-primary);
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1rem;
+  font-size: 0.92rem;
   line-height: 1;
+  margin-bottom: 0.45rem;
 }
 
 .whyTileTitle {
   font-family: var(--font-display);
-  font-size: clamp(1.15rem, 2.2vw, 1.7rem);
+  font-size: clamp(1.1rem, 1.9vw, 1.5rem);
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1.2;
   color: #ffffff;
   text-wrap: balance;
 }
-.whyTileLarge .whyTileTitle { font-size: clamp(1.6rem, 3vw, 2.25rem); }
+.whyTileLarge .whyTileTitle { font-size: clamp(1.5rem, 2.8vw, 2.1rem); }
+
+/* Wrapper animasi akordion mulus dengan CSS Grid (tinggi presisi tanpa reflow) */
+.whyTileDescWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.whyTile:hover .whyTileDescWrapper,
+.whyTile:focus-within .whyTileDescWrapper {
+  grid-template-rows: 1fr;
+}
 
 .whyTileDesc {
-  font-size: clamp(0.9rem, 1.6vw, 1.02rem);
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
-  max-width: 48ch;
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(6px);
+  padding-top: 0.4rem;
+  font-size: clamp(0.82rem, 1.25vw, 0.9rem);
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 44ch;
+  transition: opacity 0.3s ease 0.06s,
+              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.06s;
+}
+
+.whyTile:hover .whyTileDesc,
+.whyTile:focus-within .whyTileDesc {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ---------- Opsi B: Sticky title + daftar alasan (editorial, text-forward) ---------- */
@@ -513,18 +544,32 @@
   .whyIntro { position: static; top: auto; }
 }
 
-@media (max-width: 900px) {
-  .whyBento { grid-template-columns: repeat(2, 1fr); }
-  .whyTileLarge { grid-column: span 2; grid-row: span 1; min-height: 300px; }
-  .whyTileWide  { grid-column: span 2; }
-  .whyTileSmall { grid-column: span 1; }
+@media (max-width: 900px), (hover: none) {
+  .whyBento {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    grid-auto-rows: minmax(230px, auto);
+  }
+  .whyTileLarge { grid-column: span 2; grid-row: span 1; min-height: 280px; }
+  .whyTileWide  { grid-column: span 2; min-height: 230px; }
+  .whyTileSmall { grid-column: span 1; min-height: 230px; }
+  .whyTileDescWrapper { grid-template-rows: 1fr; }
+  .whyTileDesc { opacity: 1; transform: none; }
 }
 
 @media (max-width: 560px) {
-  .whyBento { grid-template-columns: 1fr; }
+  .whyBento {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-auto-rows: minmax(210px, auto);
+  }
   .whyTileLarge,
   .whyTileWide,
-  .whyTileSmall { grid-column: span 1; grid-row: span 1; min-height: 240px; }
+  .whyTileSmall {
+    grid-column: span 1;
+    grid-row: span 1;
+    min-height: 210px;
+  }
 }
 
 
@@ -684,18 +729,26 @@
 .testimonialHighlights li {
   font-size: 0.9375rem;
   color: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-/* Penanda poin: titik emas brand (pengganti emoji ✨ dekoratif). */
-.testimonialHighlights li::before {
-  content: '';
+.testimonialHighlightIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.testimonialHighlightDot {
   display: inline-block;
   width: 6px;
   height: 6px;
-  margin-right: 0.6rem;
   border-radius: 50%;
   background: var(--color-dominant);
-  vertical-align: middle;
+  flex-shrink: 0;
 }
 
 /* Gallery Masonry */

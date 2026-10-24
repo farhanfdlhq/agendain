@@ -34,7 +34,7 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
             <div className={styles.socialProofImageWrapper}>
               <AnimatePresence mode="wait">
                 <motion.div key={activeTestimonial} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', inset: 0 }}>
-                  <Image src={testiItems[activeTestimonial]?.photo || gs('socialImage', undefined, '/el-rumi-syifa.webp')} alt="Social Proof" fill style={{ objectFit: 'cover' }}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
+                  <Image src={testiItems[activeTestimonial]?.photo || gs('socialImage', undefined, '/el-rumi-syifa.webp')} alt={testiItems[activeTestimonial]?.name ? `Testimoni liburan dari ${testiItems[activeTestimonial].name}` : "Testimoni pelanggan trip Agendain"} fill style={{ objectFit: 'cover' }}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
                 </motion.div>
               </AnimatePresence>
               <div className={styles.socialProofQuestionMark}>?</div>

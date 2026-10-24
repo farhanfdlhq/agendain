@@ -90,7 +90,7 @@ export function blogPostingLd(opts: {
   };
 }
 
-/** Paket open trip sebagai Product + Offer. */
+/** Paket open trip sebagai TouristTrip + Product + Offer. */
 export function productLd(opts: {
   name: string;
   description?: string | null;
@@ -98,17 +98,28 @@ export function productLd(opts: {
   path: string;
   price?: number | string | null;
   priceCurrency?: string;
+  destination?: string | null;
 }): Record<string, unknown> {
   const url = absoluteUrl(opts.path);
   const image = abs(opts.image);
   const priceNum = opts.price != null ? Number(opts.price) : NaN;
   return {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": ["Product", "TouristTrip"],
     name: opts.name,
     ...(opts.description ? { description: opts.description } : {}),
     ...(image ? { image: [image] } : {}),
     brand: { "@type": "Brand", name: "Agendain" },
+    provider: { "@id": `${SITE_URL}/#organization` },
+    ...(opts.destination
+      ? {
+          touristType: ["Traveler"],
+          itinerary: {
+            "@type": "ItemList",
+            name: opts.destination,
+          },
+        }
+      : {}),
     ...(Number.isFinite(priceNum) && priceNum > 0
       ? {
           offers: {
@@ -122,3 +133,47 @@ export function productLd(opts: {
       : {}),
   };
 }
+
+/** Remah roti (BreadcrumbList) untuk navigasi hierarki di Google Search. */
+export function breadcrumbLd(
+  items: { name: string; path: string }[]
+): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: absoluteUrl(item.path),
+    })),
+  };
+}
+
+/** Tanya Jawab (FAQPage) — memicu rich snippet akordeon di hasil pencarian Google. */
+export function faqPageLd(
+  items: { question: string; answer: string }[]
+): Record<string, unknown> | null {
+  const valid = (items || []).filter(
+    (it) =>
+      it &&
+      typeof it.question === "string" &&
+      it.question.trim() &&
+      typeof it.answer === "string" &&
+      it.answer.trim()
+  );
+  if (valid.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: valid.map((it) => ({
+      "@type": "Question",
+      name: it.question.trim(),
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: it.answer.trim(),
+      },
+    })),
+  };
+}
+

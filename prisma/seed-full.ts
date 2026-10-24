@@ -267,16 +267,16 @@ async function main() {
     whyTitleSub_en: 'Why *Agendain* Travel is Your Best Solution',
     whyTitleSubWeight: '800',
     whyItems: [
-      { number: '#1', image: '/why-hotel.webp', title: 'All-in-One!', desc: 'Ga usah ribet ngurus sana-sini. Di Agendain, dari tiket pesawat, hotel, sampai itinerary harian semua udah kami siapin. Kamu tinggal bawa koper dan ajak teman — semuanya sudah beres!', titleWeight: '800', descWeight: '500' },
-      { number: '#2', image: '/placeholder.webp', title: 'Harga Terbaik', desc: 'Kami bekerja langsung dengan partner lokal di Eropa, jadi harga yang kamu dapat itu harga terbaik, transparan, tanpa biaya tersembunyi. Worth it banget buat pengalaman yang kamu dapat!', titleWeight: '800', descWeight: '500' },
-      { number: '#3', image: '/why-support.webp', title: 'Dukungan 24/7', desc: 'Tim Agendain selalu stand by 24 jam selama perjalanan kamu. Mulai dari pertanyaan soal hotel, transportasi, atau darurat — kamu ga bakal sendirian. Kami ada di setiap langkah!', titleWeight: '800', descWeight: '500' },
-      { number: '#4', image: '/why-camera.webp', title: 'Dokumentasi Pro', desc: 'Setiap momen berharga akan diabadikan secara sinematik oleh tim dokumentasi profesional kami. Pulang liburan bawa foto & video keren tanpa repot mikirin angle!', titleWeight: '800', descWeight: '500' },
+      { number: '#1', image: '/why-hotel.webp', title: 'All-in-One!', desc: 'Tiket pesawat, hotel, hingga itinerary lengkap sudah beres. Tinggal bawa koper dan nikmati liburan!', titleWeight: '800', descWeight: '500' },
+      { number: '#2', image: '/placeholder.webp', title: 'Harga Terbaik', desc: 'Bermitra langsung dengan vendor lokal di Eropa. Transparan, jujur, tanpa biaya tersembunyi.', titleWeight: '800', descWeight: '500' },
+      { number: '#3', image: '/why-support.webp', title: 'Dukungan 24/7', desc: 'Tim siaga 24 jam mendampingi setiap langkah perjalanan kamu.', titleWeight: '800', descWeight: '500' },
+      { number: '#4', image: '/why-camera.webp', title: 'Dokumentasi Pro', desc: 'Abadikan momen sinematik terbaik tanpa perlu repot mikirin angle.', titleWeight: '800', descWeight: '500' },
     ],
     whyItems_en: [
-      { number: '#1', image: '/why-hotel.webp', title: 'All-in-One!', desc: 'No need to stress over the details. At Agendain, from flights, hotels, to daily itineraries, we have everything sorted. Just pack your bags and bring your friends — it\'s all set!', titleWeight: '800', descWeight: '500' },
-      { number: '#2', image: '/placeholder.webp', title: 'Best Price Guarantee', desc: 'We work directly with local partners in Europe, so the price you get is the best, transparent, and with no hidden fees. Definitely worth the experience you receive!', titleWeight: '800', descWeight: '500' },
-      { number: '#3', image: '/why-support.webp', title: '24/7 Support', desc: 'The Agendain team is always on standby 24 hours during your trip. From questions about hotels, transport, or emergencies — you will never be alone. We are with you every step of the way!', titleWeight: '800', descWeight: '500' },
-      { number: '#4', image: '/why-camera.webp', title: 'Pro Documentation', desc: 'Every precious moment will be captured cinematically by our professional documentation team. Go home with awesome photos & videos without worrying about the angle!', titleWeight: '800', descWeight: '500' },
+      { number: '#1', image: '/why-hotel.webp', title: 'All-in-One!', desc: 'Flights, hotels, to daily itinerary sorted. Just pack your bags and enjoy your dream holiday!', titleWeight: '800', descWeight: '500' },
+      { number: '#2', image: '/placeholder.webp', title: 'Best Price Guarantee', desc: 'Direct European local partners. Honest and transparent pricing with zero hidden fees.', titleWeight: '800', descWeight: '500' },
+      { number: '#3', image: '/why-support.webp', title: '24/7 Support', desc: 'Our team is on standby 24/7 to assist every step of your journey.', titleWeight: '800', descWeight: '500' },
+      { number: '#4', image: '/why-camera.webp', title: 'Pro Documentation', desc: 'Cinematic moments captured professionally without worrying about angles.', titleWeight: '800', descWeight: '500' },
     ],
 
     // Destinations

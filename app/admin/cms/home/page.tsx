@@ -8,7 +8,6 @@ import { Reorder } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { NumberStepper } from "@/components/ui/number-stepper"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -44,11 +43,31 @@ function fillHomeDefaults(res: Record<string, unknown>) {
     if (!String(res[field] ?? "").trim()) res[field] = idDict[key]
     if (!String(res[`${field}_en`] ?? "").trim()) res[`${field}_en`] = enDict[key]
   }
-  if (!Array.isArray(res.testiHighlights)) {
-    res.testiHighlights = ["home.testi.highlight1", "home.testi.highlight2", "home.testi.highlight3"].map((k) => ({
-      text: idDict[k],
-      text_en: enDict[k],
-    }))
+  if (Array.isArray(res.testiHighlights)) {
+    const idLines = res.testiHighlights.map((it: any) => {
+      const txt = typeof it === 'string' ? it : (it?.text || '')
+      return txt ? String(txt).trim() : ''
+    }).filter(Boolean).join('\n')
+    const enLines = res.testiHighlights.map((it: any) => {
+      const txt = typeof it === 'string' ? it : (it?.text_en || it?.text || '')
+      return txt ? String(txt).trim() : ''
+    }).filter(Boolean).join('\n')
+    res.testiHighlights = idLines
+    if (!res.testiHighlights_en) res.testiHighlights_en = enLines
+  }
+  if (!String(res.testiHighlights ?? "").trim()) {
+    res.testiHighlights = [
+      idDict["home.testi.highlight1"],
+      idDict["home.testi.highlight2"],
+      idDict["home.testi.highlight3"],
+    ].filter(Boolean).join("\n")
+  }
+  if (!String(res.testiHighlights_en ?? "").trim()) {
+    res.testiHighlights_en = [
+      enDict["home.testi.highlight1"],
+      enDict["home.testi.highlight2"],
+      enDict["home.testi.highlight3"],
+    ].filter(Boolean).join("\n")
   }
 }
 
@@ -72,7 +91,8 @@ export default function HomeCMSPage() {
     // Testimonial
     testiBadge: '', testiBadge_en: '',
     testiTitle: '', testiTitle_en: '',
-    testiHighlights: [],
+    testiHighlights: '', testiHighlights_en: '',
+    testiHighlightsWeight: '', testiHighlightsSize: '',
     heroBtnWa: '', heroBtnWa_en: '',
     heroBtnPack: '', heroBtnPack_en: '',
     accBadge: '', accBadge_en: '',
@@ -306,6 +326,99 @@ export default function HomeCMSPage() {
     );
   };
 
+  const renderCompactField = (
+    label: string, 
+    fieldName: string, 
+    options?: { 
+      isTextarea?: boolean; 
+      rows?: number; 
+      placeholder?: string; 
+      enableWeight?: boolean; 
+      defaultWeight?: string; 
+      showLivePreview?: boolean;
+    }
+  ) => {
+    const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
+    const weightField = `${fieldName}Weight`;
+    const sizeField = `${fieldName}Size`;
+    const val = data[activeFieldName] || '';
+    const fallbackVal = activeTab === 'en' ? data[fieldName] || '' : '';
+    const isTitleWithHighlight = options?.showLivePreview || label.includes('*') || (val && String(val).includes('*'));
+
+    return (
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <Label className="text-xs font-semibold">{label}</Label>
+          <span className="text-[10px] bg-primary/10 text-primary font-bold px-1.5 py-0.5 rounded uppercase tracking-wider shrink-0">
+            {activeTab}
+          </span>
+        </div>
+        {options?.isTextarea ? (
+          <Textarea
+            name={activeFieldName}
+            value={val}
+            onChange={handleChange}
+            placeholder={options?.placeholder ? (activeTab === 'en' ? fallbackVal || options.placeholder : options.placeholder) : (activeTab === 'en' ? fallbackVal : undefined)}
+            rows={options?.rows || 2}
+            className={options?.rows ? undefined : "min-h-[58px]"}
+            style={{
+              ...(options?.enableWeight && data[weightField] ? { fontWeight: Number(data[weightField]) } : {}),
+              ...(options?.enableWeight && data[sizeField] ? { fontSize: `${data[sizeField]}px` } : {})
+            }}
+          />
+        ) : (
+          <Input
+            type="text"
+            name={activeFieldName}
+            value={val}
+            onChange={handleChange}
+            placeholder={options?.placeholder ? (activeTab === 'en' ? fallbackVal || options.placeholder : options.placeholder) : (activeTab === 'en' ? fallbackVal : undefined)}
+            style={options?.enableWeight && data[weightField] ? { fontWeight: Number(data[weightField]) } : undefined}
+          />
+        )}
+
+        {/* Compact Live Preview */}
+        {isTitleWithHighlight && (val || fallbackVal) && (
+          <div className="relative mt-1 px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800/90 shadow-inner flex items-center justify-between gap-2 overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#FFC704] to-amber-600 rounded-l-lg opacity-80" />
+            <div className="flex items-center gap-2 pl-1 min-w-0 flex-1">
+              <span className="text-[9px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#FFC704]/10 text-[#FFC704] border border-[#FFC704]/20 shrink-0 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#FFC704] animate-pulse" />
+                Live Preview
+              </span>
+              <div
+                className="text-xs font-bold text-slate-100 truncate tracking-tight"
+                style={{
+                  fontWeight: Number(data[weightField] || options?.defaultWeight || 800),
+                  ...(data[sizeField] ? { fontSize: `${data[sizeField]}px` } : {})
+                }}
+              >
+                {renderLivePreview(String(val || fallbackVal))}
+              </div>
+            </div>
+            {!String(val || fallbackVal).includes('*') && (
+              <span className="text-[10px] text-slate-400 italic shrink-0 hidden sm:inline">
+                Apit <code className="text-[#FFC704]">*kata*</code> untuk kuning
+              </span>
+            )}
+          </div>
+        )}
+
+        {options?.enableWeight && (
+          <div className="pt-1">
+            <FontControls
+              weightValue={data[weightField]}
+              onWeightChange={(w) => setData((prev: any) => ({ ...prev, [weightField]: w }))}
+              sizeValue={data[sizeField]}
+              onSizeChange={(s) => setData((prev: any) => ({ ...prev, [sizeField]: s }))}
+              defaultWeight={options?.defaultWeight || "400"}
+            />
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const renderTextInput = (label: string, fieldName: string, isTextarea = false, placeholder = '', enableWeight = false, defaultWeight = "400") => {
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
     const weightField = `${fieldName}Weight`;
@@ -330,7 +443,7 @@ export default function HomeCMSPage() {
               onChange={handleChange} 
               placeholder={placeholder}
               rows={3}
-              style={enableWeight && selectedWeight ? { fontWeight: selectedWeight } : undefined}
+              style={enableWeight ? { ...(selectedWeight ? { fontWeight: selectedWeight } : {}), ...(selectedSize ? { fontSize: selectedSize } : {}) } : undefined}
             />
           ) : (
             <Input 
@@ -432,14 +545,11 @@ export default function HomeCMSPage() {
 
     return (
       <div className="space-y-4 pt-4 border-t mt-4">
-        <div className="flex items-center justify-between">
+        <div>
           <Label className="flex items-center gap-2 font-bold text-base">
             {label}
             <span className="text-[10px] bg-muted text-muted-foreground px-1.5 py-0.5 rounded font-medium uppercase tracking-wider">{activeTab}</span>
           </Label>
-          <Button type="button" variant="outline" size="sm" onClick={handleAddItem} className="rounded-full h-8 text-xs">
-            + Tambah Item
-          </Button>
         </div>
         
         {activeTab === 'en' && (
@@ -454,23 +564,24 @@ export default function HomeCMSPage() {
           </div>
         )}
 
-        <div className="space-y-4">
+        {/* 2 item per baris (2 kolom) mirip Langkah Cara Booking di Private Trip */}
+        <div className="grid gap-4 md:grid-cols-2">
           {items.map((item: any, index: number) => (
-            <div key={index} className="p-4 border rounded-xl bg-card relative shadow-sm">
+            <div key={index} className="p-4 border rounded-xl bg-card relative shadow-xs space-y-3">
               <Button 
                 type="button" 
                 variant="destructive" 
                 size="icon" 
-                className="absolute top-3 right-3 h-6 w-6 rounded-full"
+                className="absolute top-3 right-3 h-6 w-6 rounded-full cursor-pointer z-10"
                 onClick={() => handleRemoveItem(index)}
               >
-                &times;
+                <X size={13} />
               </Button>
-              <h4 className="text-sm font-semibold mb-3">Item #{index + 1}</h4>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <h4 className="text-sm font-semibold pr-8 text-slate-800">Item #{index + 1}</h4>
+              <div className="space-y-3">
                 {fields.map((f) => (
-                  <div key={f.name} className={`space-y-1.5 ${f.isTextarea ? 'sm:col-span-2' : ''}`}>
-                    <Label className="text-xs">{f.label}</Label>
+                  <div key={f.name} className="space-y-1.5">
+                    <Label className="text-xs font-medium text-slate-700">{f.label}</Label>
                     {f.resolutionHint && (
                       <p className="text-[10px] text-muted-foreground mt-0 mb-1 font-medium italic">
                         Rekomendasi: <span className="font-bold text-slate-700">{f.resolutionHint}</span>
@@ -489,7 +600,7 @@ export default function HomeCMSPage() {
                         value={item[textKey(f.name)] || ''}
                         onChange={(e) => handleItemChange(index, textKey(f.name), e.target.value)}
                         placeholder={activeTab === 'en' ? item[f.name] || '' : undefined}
-                        className="min-h-[80px]"
+                        rows={3}
                         style={f.enableWeight && item[`${f.name}Weight`] ? { fontWeight: Number(item[`${f.name}Weight`]) } : undefined}
                       />
                     ) : (
@@ -515,6 +626,12 @@ export default function HomeCMSPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div>
+          <Button type="button" variant="outline" size="sm" onClick={handleAddItem} className="rounded-full h-8 text-xs">
+            + Tambah Item
+          </Button>
         </div>
       </div>
     );
@@ -699,18 +816,37 @@ export default function HomeCMSPage() {
           <CardHeader className="p-4 border-b bg-muted/20">
             <CardTitle className="text-lg">Bagian Hero (Beranda Utama)</CardTitle>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="space-y-5 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              <div className="space-y-4">
-                {renderImageInput('URL Gambar Background', 'heroBgImage', '/hero-coastal.webp', '1920x1080 px (Landscape)')}
-              </div>
-              <div className="space-y-4 flex flex-col justify-start">
-                {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', true, '', true, '800')}
-                {renderTextInput('Teks Sub-judul (Subtitle)', 'heroSubtitle', true, '', true, '500')}
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {renderTextInput('Tombol WhatsApp', 'heroBtnWa', false, 'Hubungi Kami Gratis!')}
-                  {renderTextInput('Tombol ke Halaman Open Trip', 'heroBtnPack', false, 'Agendain Sekarang')}
+              {/* Kolom Kiri: Gambar Background */}
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs font-semibold">URL Gambar Background</Label>
+                  <p className="text-[10px] text-muted-foreground mt-0 mb-1 font-medium italic">
+                    Rekomendasi: <span className="font-bold text-slate-700">1920x1080 px (Landscape)</span>
+                  </p>
                 </div>
+                <MediaPicker 
+                  value={data.heroBgImage || ''}
+                  onChange={(url) => setData((prev: any) => ({ ...prev, heroBgImage: url }))}
+                  label="Pilih Foto/Gambar"
+                  description="Disarankan seperti: /hero-coastal.webp"
+                />
+              </div>
+
+              {/* Kolom Kanan: Judul & Subtitle */}
+              <div className="space-y-4 flex flex-col justify-start">
+                {renderCompactField('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', { enableWeight: true, defaultWeight: '800' })}
+                {renderCompactField('Teks Sub-judul (Subtitle)', 'heroSubtitle', { isTextarea: true, rows: 2, enableWeight: true, defaultWeight: '500' })}
+              </div>
+            </div>
+
+            {/* Tombol Aksi (CTA) */}
+            <div className="pt-4 border-t space-y-2.5">
+              <Label className="text-xs font-semibold">Tombol Aksi (CTA)</Label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {renderCompactField('Tombol WhatsApp', 'heroBtnWa', { placeholder: 'Hubungi Kami Gratis!' })}
+                {renderCompactField('Tombol ke Halaman Open Trip', 'heroBtnPack', { placeholder: 'Agendain Sekarang' })}
               </div>
             </div>
           </CardContent>
@@ -721,42 +857,11 @@ export default function HomeCMSPage() {
             <CardTitle className="text-lg">Bagian Mengapa Memilih Kami</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="space-y-4">
               {renderTextInput('Eyebrow (Teks Kecil Atas)', 'whyTitleMain', false, '', true, '800')}
               {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'whyTitleSub', false, '', true, '800')}
             </div>
-            <div className="grid gap-6 sm:grid-cols-2 pt-2">
-              <div className="space-y-3">
-                <Label className="flex items-center gap-2">Warna Garis Tepi Kartu (Border)</Label>
-                <div className="flex items-center gap-3">
-                  <input 
-                    type="color" 
-                    name="whyBorderColor"
-                    value={data.whyBorderColor || '#f1f5f9'} 
-                    onChange={handleChange}
-                    className="w-12 h-10 rounded border cursor-pointer"
-                  />
-                  <span className="text-sm text-slate-500 font-mono">{data.whyBorderColor || '#f1f5f9'}</span>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <Label className="flex items-center gap-2">Ketebalan Border (px)</Label>
-                <div className="flex items-center gap-3">
-                  <NumberStepper
-                    step={0.5}
-                    min={0}
-                    max={20}
-                    name="whyBorderWidth"
-                    aria-label="Ketebalan border dalam px"
-                    value={data.whyBorderWidth ? data.whyBorderWidth.replace('px', '') : '1.5'}
-                    onValueChange={(v) => setData((prev: any) => ({ ...prev, whyBorderWidth: `${v}px` }))}
-                    className="w-36"
-                  />
-                  <span className="text-sm text-slate-500 font-medium">px</span>
-                </div>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground -mt-3">Catatan tata letak: Kartu 1 &amp; 2 (tile besar &amp; lebar) menampilkan deskripsi di situs. Kartu 3 &amp; 4 (tile kecil) hanya menampilkan judul.</p>
+            <p className="text-xs text-muted-foreground">Catatan tata letak: Di situs web, keempat kartu menampilkan nomor dan judul secara default, dan deskripsi akan muncul saat kartu di-hover.</p>
             {renderSplitArrayEditor(
               'Kartu Keunggulan (Data Mengapa Memilih Kami)', 
               'whyItems', 
@@ -773,10 +878,16 @@ export default function HomeCMSPage() {
           <CardHeader className="p-4 border-b bg-muted/20">
             <CardTitle className="text-lg">Bagian Destinasi Favorit</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-6 sm:grid-cols-2 pt-6">
-            {renderTextInput('Eyebrow (Teks Kecil Atas)', 'destEyebrow', false, '', true, '500')}
-            {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'destTitle', false, '', true, '800')}
-            {renderTextInput('Teks Tombol (menuju halaman Open Trip)', 'destBtn', false, 'Lihat Semua Open Trip')}
+          <CardContent className="space-y-5 pt-6">
+            <div className="grid gap-6 sm:grid-cols-2">
+              {renderCompactField('Eyebrow (Teks Kecil Atas)', 'destEyebrow', { enableWeight: true, defaultWeight: '500' })}
+              {renderCompactField('Judul Utama (Gunakan *teks* untuk warna kuning)', 'destTitle', { enableWeight: true, defaultWeight: '800' })}
+            </div>
+            <div className="pt-4 border-t">
+              <div className="max-w-md">
+                {renderCompactField('Teks Tombol (menuju halaman Open Trip)', 'destBtn', { placeholder: 'Lihat Semua Open Trip' })}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -786,32 +897,60 @@ export default function HomeCMSPage() {
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Badge / Tagline', 'testiBadge', false, '', true, '500')}
-              {renderTextInput('Kutipan Judul (Gunakan *teks* untuk warna kuning)', 'testiTitle', false, '', true, '800')}
+              {renderCompactField('Badge / Tagline', 'testiBadge', { enableWeight: true, defaultWeight: '500' })}
+              {renderCompactField('Kutipan Judul (Gunakan *teks* untuk warna kuning)', 'testiTitle', { enableWeight: true, defaultWeight: '800' })}
             </div>
 
-            <div className="space-y-4 pt-4 border-t mt-4">
-              {renderArrayEditor('Poin di Bawah Judul', 'testiHighlights', [
-                { name: 'text', label: 'Teks Poin' }
-              ])}
+            <div className="space-y-4 pt-4 border-t">
+              {renderCompactField(
+                'Poin di Bawah Judul (Pisahkan dengan Enter)', 
+                'testiHighlights', 
+                {
+                  isTextarea: true,
+                  rows: 3,
+                  placeholder: 'Jalan-jalan di kota tua yang penuh sejarah\nKulineran makanan otentik Italia yang bikin nagih\nFoto-foto di spot ikonik yang instagramable banget',
+                  enableWeight: true,
+                  defaultWeight: '400'
+                }
+              )}
             </div>
 
-            <div className="space-y-4 pt-4 border-t mt-4">
-              <Label className="font-bold text-base">Tombol</Label>
-              <div className="grid gap-6 sm:grid-cols-2">
-                {renderTextInput('Tombol di Foto Tengah (menuju halaman Open Trip)', 'testiBtnGallery', false, 'Eksplor Trip')}
-                {renderTextInput('Tombol WhatsApp (di bawah galeri)', 'testiBtnWa', false, 'Ada Pertanyaan?')}
+            <div className="space-y-3 pt-4 border-t">
+              <Label className="text-xs font-semibold">Tombol Aksi</Label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {renderCompactField('Tombol di Foto Tengah (menuju halaman Open Trip)', 'testiBtnGallery', { placeholder: 'Eksplor Trip' })}
+                {renderCompactField('Tombol WhatsApp (di bawah galeri)', 'testiBtnWa', { placeholder: 'Ada Pertanyaan?' })}
               </div>
             </div>
             
-            <div className="space-y-4 pt-4 border-t mt-4">
-              <Label className="font-bold text-base">URL Gambar Galeri</Label>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {renderImageInput('Gambar 1 (Kiri Atas)', 'galleryImg1', '', '800x600 px (Landscape)')}
-                {renderImageInput('Gambar 2 (Kiri Bawah)', 'galleryImg2', '', '800x600 px (Landscape)')}
-                {renderImageInput('Gambar 3 (Tengah - Besar)', 'galleryImg3', '', '800x1200 px (Portrait)')}
-                {renderImageInput('Gambar 4 (Kanan Atas)', 'galleryImg4', '', '800x600 px (Landscape)')}
-                {renderImageInput('Gambar 5 (Kanan Bawah)', 'galleryImg5', '', '800x600 px (Landscape)')}
+            <div className="space-y-3 pt-4 border-t">
+              <div>
+                <Label className="text-xs font-semibold">URL Gambar Galeri (3 Kolom Mozaik)</Label>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Tersusun dalam 3 kolom mozaik seperti tampilan di situs depan (Kiri, Tengah Besar, Kanan).
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Kolom 1: Kiri Atas & Bawah */}
+                <div className="space-y-3 p-3 rounded-xl border bg-muted/10">
+                  <span className="text-[11px] font-bold text-slate-700 block">Kolom Kiri</span>
+                  {renderImageInput('Gambar 1 (Kiri Atas)', 'galleryImg1', '', '800x600 px (Landscape)')}
+                  {renderImageInput('Gambar 2 (Kiri Bawah)', 'galleryImg2', '', '800x600 px (Landscape)')}
+                </div>
+                {/* Kolom 2: Tengah - Besar */}
+                <div className="space-y-3 p-3 rounded-xl border bg-muted/10 flex flex-col justify-between">
+                  <div>
+                    <span className="text-[11px] font-bold text-slate-700 block mb-3">Kolom Tengah (Besar)</span>
+                    {renderImageInput('Gambar 3 (Tengah - Besar)', 'galleryImg3', '', '800x1200 px (Portrait)')}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground italic mt-2">Foto utama di tengah galeri.</p>
+                </div>
+                {/* Kolom 3: Kanan Atas & Bawah */}
+                <div className="space-y-3 p-3 rounded-xl border bg-muted/10">
+                  <span className="text-[11px] font-bold text-slate-700 block">Kolom Kanan</span>
+                  {renderImageInput('Gambar 4 (Kanan Atas)', 'galleryImg4', '', '800x600 px (Landscape)')}
+                  {renderImageInput('Gambar 5 (Kanan Bawah)', 'galleryImg5', '', '800x600 px (Landscape)')}
+                </div>
               </div>
             </div>
           </CardContent>
@@ -822,19 +961,24 @@ export default function HomeCMSPage() {
             <CardTitle className="text-lg">Bagian Accordion (Lihat, Hirup, Simpan)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
-            <div className="grid gap-6 sm:grid-cols-2">
+            {/* Foto Full 1 Baris */}
+            <div>
+              {renderImageInput('Gambar di Samping Daftar Item Accordion', 'accImage', '/accordion-street.webp', '800x1200 px (Portrait)')}
+            </div>
+
+            {/* Bagian Teks di Bawah Foto (2 Kolom Seimbang) */}
+            <div className="grid gap-6 sm:grid-cols-2 pt-4 border-t">
               <div className="space-y-4">
-                {renderImageInput('Gambar di Samping Daftar Item Accordion', 'accImage', '/accordion-street.webp', '800x1200 px (Portrait)')}
+                {renderCompactField('Label Kecil (di atas judul)', 'accBadge', { placeholder: 'Sudut Pandang' })}
+                {renderCompactField('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle', { enableWeight: true, defaultWeight: '800' })}
               </div>
               <div className="space-y-4 flex flex-col justify-start">
-                {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'accTitle', false, '', true, '800')}
-                {renderTextInput('Deskripsi Subtitle', 'accSubtitle', true, '', true, '500')}
-                {renderTextInput('Label Kecil (di atas judul)', 'accBadge', false, 'Sudut Pandang')}
-                {renderTextInput('Tombol Bawah (menuju halaman Open Trip)', 'accBtn', false, 'Lihat Semua Open Trip')}
+                {renderCompactField('Deskripsi Subtitle', 'accSubtitle', { isTextarea: true, rows: 2, enableWeight: true, defaultWeight: '500' })}
+                {renderCompactField('Tombol Bawah (menuju halaman Open Trip)', 'accBtn', { placeholder: 'Lihat Semua Open Trip' })}
               </div>
             </div>
             
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="grid gap-6 sm:grid-cols-2 pt-2 border-t">
               {renderGroupFont('Gaya Teks Judul Item', 'Berlaku untuk semua judul item accordion.', 'accItemTitle', '500')}
               {renderGroupFont('Gaya Teks Deskripsi Item', 'Berlaku untuk semua isi item saat dibuka.', 'accItemBody', '400')}
             </div>
@@ -854,12 +998,10 @@ export default function HomeCMSPage() {
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-4">
                 {renderImageInput('Gambar Latar Section (tampil buram & gelap di belakang testimoni)', 'socialBgImg', '/dest-italy.webp', '1920x1080 px (Landscape)')}
-                {renderImageInput('Foto Traveler Kartu Kiri (Default foto kutipan)', 'socialImage', '/el-rumi-syifa.webp', '1080x1080 px (Square)')}
               </div>
               <div className="space-y-4 flex flex-col justify-start">
-                {renderTextInput('Judul Sorotan Utama', 'socialTitle', true, '', true, '800')}
-                {renderTextInput('Deskripsi Subtitle', 'socialSubtitle', true, '', true, '500')}
-                {renderTextInput('Kutipan Traveler Kartu Kiri (Teks Default)', 'socialQuote', true, '', true, '500')}
+                {renderCompactField('Judul Sorotan Utama', 'socialTitle', { enableWeight: true, defaultWeight: '800' })}
+                {renderCompactField('Deskripsi Subtitle', 'socialSubtitle', { isTextarea: true, rows: 2, enableWeight: true, defaultWeight: '500' })}
               </div>
             </div>
 
@@ -880,15 +1022,27 @@ export default function HomeCMSPage() {
             <CardTitle className="text-lg">Bagian Tanya Jawab (FAQ)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
+            {/* Header FAQ */}
             <div className="grid gap-6 sm:grid-cols-2">
-              {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle', false, '', true, '800')}
-              {renderTextInput('Teks Pendek', 'faqSubtitle', false, '', true, '500')}
-              {renderTextInput('Label Kecil (di atas judul)', 'faqBadge', false, 'FAQ')}
-              {renderTextInput('Teks Ajakan di Bawah Daftar FAQ', 'faqCtaText', false, 'Masih ada pertanyaan lain? Kawan Agendain siap menjawab!')}
-              {renderTextInput('Tombol WhatsApp (bawah FAQ)', 'faqBtnWa', false, 'Hubungi Kami')}
+              <div className="space-y-4">
+                {renderCompactField('Label Kecil (di atas judul)', 'faqBadge', { placeholder: 'FAQ' })}
+                {renderCompactField('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle', { enableWeight: true, defaultWeight: '800' })}
+              </div>
+              <div className="space-y-4">
+                {renderCompactField('Teks Pendek (Subtitle)', 'faqSubtitle', { isTextarea: true, rows: 3, enableWeight: true, defaultWeight: '500' })}
+              </div>
             </div>
 
-            <div className="grid gap-6 sm:grid-cols-2">
+            {/* CTA Bawah FAQ */}
+            <div className="pt-4 border-t space-y-2.5">
+              <Label className="text-xs font-semibold">Ajakan & Kontak di Bawah FAQ (CTA)</Label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {renderCompactField('Teks Ajakan di Bawah Daftar FAQ', 'faqCtaText', { placeholder: 'Masih ada pertanyaan lain? Kawan Agendain siap menjawab!' })}
+                {renderCompactField('Tombol WhatsApp (bawah FAQ)', 'faqBtnWa', { placeholder: 'Hubungi Kami' })}
+              </div>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 pt-2 border-t">
               {renderGroupFont('Gaya Teks Pertanyaan', 'Berlaku untuk semua pertanyaan FAQ.', 'faqQuestion', '600')}
               {renderGroupFont('Gaya Teks Jawaban', 'Berlaku untuk semua jawaban FAQ saat dibuka.', 'faqAnswer', '400')}
             </div>
