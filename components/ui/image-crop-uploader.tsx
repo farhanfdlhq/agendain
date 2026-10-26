@@ -1,17 +1,11 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import Cropper from "react-easy-crop"
+import { useRef, useState } from "react"
 import { toast } from "react-hot-toast"
-import { ImageIcon, Minus, Plus, UploadCloud, X } from "lucide-react"
-import { getCroppedImg } from "@/lib/cropImage"
+import { ImageIcon, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import { MediaPicker } from "@/components/ui/media-picker"
-import AirplaneLoader from "@/components/ui/airplane-loader"
-
-type Area = { x: number; y: number; width: number; height: number }
+import { ImageCropDialog } from "@/components/ui/image-crop-dialog"
 
 interface Props {
   value: string
@@ -40,39 +34,10 @@ export function ImageCropUploader({
 }: Props) {
   const [imageSrc, setImageSrc] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
-  const [area, setArea] = useState<Area | null>(null)
-  const [uploading, setUploading] = useState(false)
-  // Rasio efektif: prop `aspect` bila diberi, jika tidak rasio ASLI gambar.
-  const [computedRatio, setComputedRatio] = useState(1)
-  const ratio = aspect ?? computedRatio
-  // Kotak crop MENGIKUTI rasio gambar (contain di dalam batas maks), bukan tinggi
-  // tetap — supaya logo lebar/pendek tidak menyisakan pita abu-abu di container.
-  // Dibatasi 420x300 agar avatar/foto tegak tidak jadi kepanjangan & muat dialog.
-  const CROP_MAX_W = 420
-  const CROP_MAX_H = 300
-  const cropBoxW = ratio >= CROP_MAX_W / CROP_MAX_H ? CROP_MAX_W : Math.round(CROP_MAX_H * ratio)
-  const cropBoxH = ratio >= CROP_MAX_W / CROP_MAX_H ? Math.round(CROP_MAX_W / ratio) : CROP_MAX_H
   const fileRef = useRef<HTMLInputElement>(null)
-
-  // Hitung rasio asli gambar saat mode bebas (aspect tak diberi). setState hanya
-  // di dalam callback onload (bukan sinkron di badan efek).
-  useEffect(() => {
-    if (aspect || !imageSrc) return
-    const img = new Image()
-    img.onload = () => {
-      const r = img.naturalWidth / img.naturalHeight
-      setComputedRatio(Number.isFinite(r) && r > 0 ? r : 1)
-    }
-    img.src = imageSrc
-  }, [imageSrc, aspect])
 
   const bukaCrop = (src: string) => {
     setImageSrc(src)
-    setCrop({ x: 0, y: 0 })
-    setZoom(1)
-    setArea(null)
     setOpen(true)
   }
 
@@ -89,27 +54,19 @@ export function ImageCropUploader({
     reader.readAsDataURL(file)
   }
 
-  const simpan = async () => {
-    if (!imageSrc || !area) return
-    setUploading(true)
-    try {
-      const cropped = await getCroppedImg(imageSrc, area)
-      if (!cropped) throw new Error("Gagal memotong gambar")
-      const fd = new FormData()
-      fd.append("file", cropped)
-      const res = await fetch("/api/upload", { method: "POST", body: fd })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || "Gagal mengunggah gambar")
-      onChange(data.url)
-      toast.success("Gambar berhasil diunggah")
-      setOpen(false)
-      setImageSrc(null)
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Terjadi kesalahan")
-    } finally {
-      setUploading(false)
-      if (fileRef.current) fileRef.current.value = ""
-    }
+  const unggah = async (cropped: Blob) => {
+    const fd = new FormData()
+    fd.append("file", cropped)
+    const res = await fetch("/api/upload", { method: "POST", body: fd })
+    const data = await res.json()
+    if (!res.ok) throw new Error(data.error || "Gagal mengunggah gambar")
+    onChange(data.url)
+    toast.success("Gambar berhasil diunggah")
+  }
+
+  const tutupCrop = (next: boolean) => {
+    setOpen(next)
+    if (!next && fileRef.current) fileRef.current.value = ""
   }
 
   return (
@@ -145,49 +102,14 @@ export function ImageCropUploader({
         }
       />
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Sesuaikan Gambar</DialogTitle>
-            <DialogDescription>Geser dan perbesar gambar untuk menyesuaikan posisinya.</DialogDescription>
-          </DialogHeader>
-
-          {imageSrc && (
-            <div className="relative mx-auto mt-2 rounded-xl overflow-hidden bg-muted" style={{ width: cropBoxW, height: cropBoxH }}>
-              <Cropper
-                image={imageSrc}
-                crop={crop}
-                zoom={zoom}
-                aspect={ratio}
-                cropShape={cropShape}
-                showGrid={false}
-                onCropChange={setCrop}
-                onCropComplete={(_: Area, px: Area) => setArea(px)}
-                onZoomChange={setZoom}
-              />
-            </div>
-          )}
-
-          <div className="flex items-center gap-3 py-4 px-2">
-            <span className="text-sm font-medium w-12">Zoom</span>
-            <button type="button" onClick={() => setZoom((z) => Math.max(1, z - 0.1))} className="p-1.5 hover:bg-muted rounded-full text-muted-foreground hover:text-foreground shrink-0">
-              <Minus className="h-4 w-4" />
-            </button>
-            <Input type="range" value={zoom} min={1} max={3} step={0.1} onChange={(e) => setZoom(Number(e.target.value))} className="flex-1 cursor-pointer accent-primary" />
-            <button type="button" onClick={() => setZoom((z) => Math.min(3, z + 0.1))} className="p-1.5 hover:bg-muted rounded-full text-muted-foreground hover:text-foreground shrink-0">
-              <Plus className="h-4 w-4" />
-            </button>
-          </div>
-
-          <DialogFooter className="sm:justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => { setOpen(false); if (fileRef.current) fileRef.current.value = "" }}>Batal</Button>
-            <Button type="button" onClick={simpan} disabled={uploading}>
-              {uploading ? <AirplaneLoader className="mr-2 h-4 w-4" /> : <UploadCloud className="mr-2 h-4 w-4" />}
-              {uploading ? "Mengunggah..." : "Simpan & Unggah"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ImageCropDialog
+        open={open}
+        onOpenChange={tutupCrop}
+        imageSrc={imageSrc}
+        aspect={aspect}
+        cropShape={cropShape}
+        onConfirm={unggah}
+      />
     </div>
   )
 }

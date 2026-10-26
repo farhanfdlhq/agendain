@@ -26,6 +26,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.1',
+    date: '2026-10-27',
+    title: 'Tampilan komponen lebih seragam di admin dan situs',
+    improved: [
+      'Pemilih tanggal di form booking situs kini senada dengan pemilih bulan form Private Trip, dan tanggal yang sudah lewat tidak bisa dipilih.',
+      'Animasi pesawat Agendain kini juga dipakai saat mengirim pesanan dan saat memuat filter Open Trip.',
+      'Penyesuaian foto profil admin memakai jendela crop yang sama dengan unggahan logo.',
+      'Tag artikel blog dan poin di CMS Private Trip tampil dengan gaya label yang seragam.',
+    ],
+  },
+  {
     version: '1.7.0',
     date: '2026-10-27',
     title: 'Pemilih tanggal baru di panel admin',

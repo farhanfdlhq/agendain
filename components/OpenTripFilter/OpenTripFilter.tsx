@@ -3,7 +3,8 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import type { TransitionStartFunction } from 'react'
 import { Select } from 'radix-ui'
-import { ArrowUpDown, Check, ChevronDown, Clock, Loader2, MapPin, RotateCcw, type LucideIcon } from 'lucide-react'
+import { ArrowUpDown, Check, ChevronDown, Clock, MapPin, RotateCcw, type LucideIcon } from 'lucide-react'
+import AirplaneLoader from '@/components/ui/airplane-loader'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { pickLocalized } from '@/lib/i18n/localize'
 import styles from './OpenTripFilter.module.css'
@@ -125,7 +126,7 @@ export default function OpenTripFilter({
         <p className={styles.count} aria-live="polite">
           {isPending ? (
             <span className={styles.loading}>
-              <Loader2 size={14} aria-hidden="true" className={styles.spin} />
+              <span aria-hidden="true" className={styles.loader}><AirplaneLoader size={16} /></span>
               {t('filter.loading')}
             </span>
           ) : (

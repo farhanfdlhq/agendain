@@ -2,7 +2,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, CheckCircle, Loader2 } from 'lucide-react'
+import { X, CheckCircle } from 'lucide-react'
+import AirplaneLoader from '@/components/ui/airplane-loader'
+import PublicDatePicker from '@/components/PublicDatePicker/PublicDatePicker'
 import { toast } from 'react-hot-toast'
 import { formatWhatsAppNumber } from '@/lib/utils'
 import { NumberStepper } from '@/components/ui/number-stepper'
@@ -139,13 +141,14 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
             belum diisi admin. */}
         {!fixedDeparture && (
           <div className={styles.inputGroup}>
-            <label>Tanggal Keberangkatan</label>
-            <input
-              type="date"
+            <label htmlFor="tanggal">Tanggal Keberangkatan</label>
+            <PublicDatePicker
+              id="tanggal"
               name="tanggal"
               className={styles.input}
               value={formData.tanggal}
-              onChange={handleChange}
+              onChange={(v) => setFormData((prev) => ({ ...prev, tanggal: v }))}
+              disablePast
               required
             />
           </div>
@@ -235,7 +238,7 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
                     <div className={styles.formActions}>
                       <button type="button" className={styles.btnCancel} onClick={closeDialog}>Batal</button>
                       <button type="submit" className={styles.btnSubmit} disabled={loading}>
-                        {loading ? <Loader2 className={styles.spinner} size={20} /> : 'Konfirmasi Pesanan'}
+                        {loading ? <><AirplaneLoader size={20} /> Memproses...</> : 'Konfirmasi Pesanan'}
                       </button>
                     </div>
                   </form>

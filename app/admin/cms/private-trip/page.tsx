@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import { Save, Globe, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -72,19 +73,17 @@ function BadgeInput({
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {tags.map((tag, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-1.5 bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full text-xs font-medium border border-blue-100"
-            >
+            <Badge key={idx} variant="secondary" className="gap-1 rounded-full py-1 pr-1 pl-2.5">
               {tag}
               <button
                 type="button"
+                aria-label={`Hapus ${tag}`}
                 onClick={() => removeTag(idx)}
-                className="text-blue-400 hover:text-blue-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors cursor-pointer"
+                className="rounded-full p-0.5 text-muted-foreground transition-colors hover:bg-background hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring cursor-pointer"
               >
-                <X size={14} />
+                <X size={12} />
               </button>
-            </div>
+            </Badge>
           ))}
         </div>
       )}

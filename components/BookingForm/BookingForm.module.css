@@ -213,6 +213,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   text-decoration: none;
 }
 
@@ -250,15 +251,6 @@
 
 .btnSecondary:hover {
   background: var(--color-border-strong);
-}
-
-.spinner {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
 }
 
 /* Success Step */
