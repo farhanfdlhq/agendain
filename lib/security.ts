@@ -16,7 +16,7 @@ export function isAllowedRole(
 
 export const PasswordSchema = z
   .string()
-  .min(12, "Password minimal 12 karakter")
+  .min(8, "Password minimal 8 karakter")
   .regex(/[a-z]/, "Password harus memiliki huruf kecil")
   .regex(/[A-Z]/, "Password harus memiliki huruf besar")
   .regex(/[0-9]/, "Password harus memiliki angka")

@@ -1,4 +1,10 @@
 @import "tailwindcss";
+/* CSS ini memblokir render di SETIAP halaman publik. Kode khusus admin tidak
+   dipindai di sini — admin.css mengimpor Tailwind lengkapnya sendiri — supaya
+   utilitas panel admin tidak ikut terunduh pengunjung situs. */
+@source not "./admin";
+@source not "../components/admin";
+@source not "../components/reui";
 @import './tokens.css';
 
 @layer base {

@@ -24,7 +24,11 @@ export async function POST(req: Request) {
   try {
     const result = AdminUserSchema.safeParse(await req.json())
     if (!result.success) {
-      return NextResponse.json({ error: 'Validasi gagal', details: result.error.format() }, { status: 400 })
+      // Alasan validasi password ditampilkan apa adanya (mis. "Password minimal
+      // 12 karakter"); field lain cukup pesan umum.
+      const issue = result.error.issues[0]
+      const error = issue?.path[0] === 'password' ? issue.message : 'Validasi gagal. Periksa kembali isian Anda.'
+      return NextResponse.json({ error, details: result.error.format() }, { status: 400 })
     }
 
     const data = result.data

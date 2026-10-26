@@ -4,13 +4,16 @@ interface PasswordValidatorProps {
   password?: string;
 }
 
+// Harus sama dengan PasswordSchema (lib/security.ts) yang dipakai server; dulu
+// layar menulis minimal 8 sementara server menolak di bawah 12 (lihat
+// lib/password-rules.test.ts).
 export function validatePassword(password: string) {
   return {
     length: password.length >= 8,
     lowercase: /[a-z]/.test(password),
     uppercase: /[A-Z]/.test(password),
     number: /[0-9]/.test(password),
-    symbol: /[!@#$%^&*]/.test(password),
+    symbol: /[^a-zA-Z0-9]/.test(password),
   }
 }
 
@@ -28,7 +31,7 @@ export default function PasswordValidator({ password = "" }: PasswordValidatorPr
     { label: "Terdapat minimal satu huruf kecil", met: v.lowercase },
     { label: "Terdapat minimal satu huruf besar", met: v.uppercase },
     { label: "Terdapat minimal satu angka", met: v.number },
-    { label: "Terdapat salah satu simbol: ! @ # $ % ^ & *", met: v.symbol }
+    { label: "Terdapat minimal satu simbol, mis. ! @ # $ % & *", met: v.symbol }
   ];
 
   return (

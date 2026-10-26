@@ -26,6 +26,20 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.6.1',
+    date: '2026-10-26',
+    title: 'Situs lebih cepat di ponsel dan perbaikan tambah user & ganti password',
+    improved: [
+      'Halaman situs tampil lebih cepat di ponsel: berkas tampilan yang harus diunduh sebelum halaman muncul berkurang hampir setengahnya.',
+      'Deskripsi foto utama beranda yang dibaca Google kini tanpa tanda bintang.',
+    ],
+    fixed: [
+      'Menambah user atau mengganti password tidak lagi gagal dengan "Validasi gagal" padahal semua kriteria sudah hijau; aturan di layar dan sistem kini sama (minimal 8 karakter, simbol apa pun termasuk titik).',
+      'Bila password ditolak, pesan error kini menyebut alasannya.',
+      'Daftar kriteria password tidak lagi muncul di halaman login.',
+    ],
+  },
+  {
     version: '1.6.0',
     date: '2026-10-26',
     title: 'Beranda lebih mudah ditemukan & jujur, testimoni mode foto, dan isian admin lebih aman',

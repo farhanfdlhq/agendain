@@ -13,7 +13,6 @@ import {
   DM_Sans,
   Lora,
   Cabin,
-  Gasoek_One,
 } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -64,8 +63,15 @@ const lora = Lora({ subsets: ["latin"], variable: "--font-lora", display: 'swap'
 // dari brand guide, karena Humanist 521 bukan Google Font.
 const cabin = Cabin({ subsets: ["latin"], variable: "--font-cabin", display: 'swap', preload: false });
 // Gasoek One: display tebal (poster) — hanya weight 400, cocok untuk JUDUL,
-// bukan paragraf. Inspirasi dari extendi.it.
-const gasoekOne = Gasoek_One({ subsets: ["latin"], weight: ["400"], variable: "--font-gasoek-one", display: 'swap', preload: false });
+// bukan paragraf. Inspirasi dari extendi.it. Di-self-host potongan Latin saja:
+// lewat next/font/google, font Korea ini menghasilkan 92 @font-face (±15 KB gzip
+// CSS pemblokir render di setiap halaman) walau situs hanya memakai huruf Latin.
+const gasoekOne = localFont({
+  src: [{ path: "../assets/gasoek-one/GasoekOne-Regular-latin.woff2", weight: "400", style: "normal" }],
+  variable: "--font-gasoek-one",
+  display: 'swap',
+  preload: false,
+});
 
 // Penjaga tipe: gagal compile bila nama var di atas dan di lib/fonts.ts beda.
 const _FONT_VAR_NAMES = {

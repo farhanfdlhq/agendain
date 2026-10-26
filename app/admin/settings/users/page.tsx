@@ -338,7 +338,7 @@ export default function UserManagementPage() {
                     value={formData.password} 
                     onChange={(e) => setFormData({...formData, password: e.target.value})} 
                     required={!editingId} 
-                    placeholder={editingId ? '(Kosongkan jika tidak ingin diubah)' : 'Minimal 8 karakter beserta kombinasi huruf & angka'} 
+                    placeholder={editingId ? '(Kosongkan jika tidak ingin diubah)' : 'Minimal 8 karakter: huruf besar, huruf kecil, angka & simbol'} 
                     className="pr-10"
                   />
                   <button 

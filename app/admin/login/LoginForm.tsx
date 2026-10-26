@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/reui/alert"
 import AirplaneLoader from "@/components/ui/airplane-loader"
-import PasswordValidator from "@/components/PasswordValidator/PasswordValidator"
 
 // `logoUrl` diterima dari server component (page.tsx) yang sudah membacanya dari
 // settings — jadi logo yang benar ada di HTML pertama, tanpa fetch klien dan
@@ -132,7 +131,6 @@ export default function LoginForm({ logoUrl }: { logoUrl: string }) {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                <PasswordValidator password={password} />
               </div>
 
               <Button

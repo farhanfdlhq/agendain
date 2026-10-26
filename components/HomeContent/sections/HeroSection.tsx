@@ -79,7 +79,8 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
       <div className={styles.heroImageWrapper}>
         <Image
           src={gs('heroBgImage', undefined, '/hero-coastal.webp')}
-          alt={gs('heroTitle', 'home.hero.title') || "Agendain — Biro Perjalanan Wisata Open Trip & Private Trip Eropa"}
+          // Tanda *…* = penanda sorotan kuning di CMS, bukan bagian teks.
+          alt={String(gs('heroTitle', 'home.hero.title') || "Agendain — Biro Perjalanan Wisata Open Trip & Private Trip Eropa").replace(/\*/g, '')}
           fill
           priority
           fetchPriority="high"

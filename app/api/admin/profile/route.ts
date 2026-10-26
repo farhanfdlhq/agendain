@@ -37,7 +37,9 @@ export async function PUT(req: NextRequest) {
     // Jangan bocorkan struktur skema (result.error.format()) ke klien. Detail
     // dicatat di server; klien cukup tahu validasi gagal.
     console.error('Profile PUT validation failed:', result.error.flatten())
-    return NextResponse.json({ error: 'Validasi gagal. Periksa kembali isian Anda.' }, { status: 400 })
+    const issue = result.error.issues[0]
+    const error = issue?.path[0] === 'newPassword' ? issue.message : 'Validasi gagal. Periksa kembali isian Anda.'
+    return NextResponse.json({ error }, { status: 400 })
   }
 
   const body = result.data
