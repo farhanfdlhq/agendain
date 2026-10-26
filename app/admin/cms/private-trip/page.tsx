@@ -53,14 +53,17 @@ function BadgeInput({
 }) {
   const [inputValue, setInputValue] = useState("");
 
+  const addTag = () => {
+    const val = inputValue.trim();
+    if (!val) return;
+    if (!tags.includes(val)) onChange([...tags, val]);
+    setInputValue("");
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      const val = inputValue.trim();
-      if (val && !tags.includes(val)) {
-        onChange([...tags, val]);
-      }
-      setInputValue("");
+      addTag();
     }
   };
 
@@ -109,12 +112,12 @@ function BadgeInput({
           placeholder={placeholder}
           className="w-full text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg pr-20"
         />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded border">
+        <Button type="button" variant="secondary" size="xs" className="absolute right-1.5 top-1/2 h-6 -translate-y-1/2 px-2 text-[11px]" disabled={!inputValue.trim()} onClick={addTag}>
           + Tambah
-        </span>
+        </Button>
       </div>
       <p className="text-[10px] text-muted-foreground mt-1">
-        Tekan Enter untuk menambahkan badge/chips. Bisa pilih icon di atas.
+        Klik Tambah atau tekan Enter untuk menambahkan. Bisa pilih icon di atas.
       </p>
     </div>
   );

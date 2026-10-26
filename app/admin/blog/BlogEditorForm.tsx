@@ -143,12 +143,17 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
     }
   }, [title, mode])
 
+  const addTag = () => {
+    const newTag = tagInput.trim().toLowerCase()
+    if (!newTag) return
+    if (!tags.includes(newTag)) setTags([...tags, newTag])
+    setTagInput("")
+  }
+
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if ((e.key === "Enter" || e.key === ",") && tagInput.trim()) {
       e.preventDefault()
-      const newTag = tagInput.trim().toLowerCase()
-      if (!tags.includes(newTag)) setTags([...tags, newTag])
-      setTagInput("")
+      addTag()
     }
     if (e.key === "Backspace" && !tagInput && tags.length > 0) {
       setTags(tags.slice(0, -1))
@@ -383,9 +388,11 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
                     placeholder="Ketik tag..." 
                     className="w-full text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-lg pr-20" 
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded border pointer-events-none">+ Tambah</span>
+                  <Button type="button" variant="secondary" size="xs" className="absolute right-1.5 top-1/2 h-6 -translate-y-1/2 px-2 text-[11px]" disabled={!tagInput.trim()} onClick={addTag}>
+                    + Tambah
+                  </Button>
                 </div>
-                <p className="text-[10px] text-muted-foreground mt-1">Tekan Enter atau koma (,) untuk menambahkan.</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Klik Tambah, atau tekan Enter / koma (,).</p>
               </div>
             </CardContent>
           </Card>

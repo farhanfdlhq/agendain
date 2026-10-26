@@ -26,6 +26,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.2',
+    date: '2026-10-27',
+    title: 'Tombol Tambah tag berfungsi dan pembersihan kode',
+    fixed: [
+      'Tombol "+ Tambah" di kolom Tag artikel blog dan poin CMS Private Trip kini bisa diklik untuk menambahkan isian (sebelumnya hanya hiasan).',
+    ],
+    improved: [
+      'Komponen dan teks lama yang sudah tidak dipakai di situs dibersihkan.',
+    ],
+  },
+  {
     version: '1.7.1',
     date: '2026-10-27',
     title: 'Tampilan komponen lebih seragam di admin dan situs',
