@@ -10,9 +10,9 @@ import { JsonLd, breadcrumbLd } from '@/lib/jsonld'
 // konten sama → sumber "Duplikat" di Search Console. Self-canonical ke versi
 // bersih mengonsolidasikannya jadi satu. og:image = foto hero open trip.
 export const metadata = pageMeta({
-  title: 'Open Trip Eropa | Paket Wisata Grup Hemat — Agendain',
+  title: 'Open Trip Eropa dari Indonesia | Agendain',
   description:
-    'Jelajahi Eropa bareng open trip Agendain: jadwal pasti, harga hemat, guide berpengalaman. Pilih destinasi & durasi favoritmu.',
+    'Open trip ke Eropa dengan jadwal keberangkatan tetap, didampingi tour leader orang Indonesia. Pilih destinasi dan durasi yang cocok untukmu.',
   path: '/open-trip',
   image: '/open_trip_hero.webp',
 })

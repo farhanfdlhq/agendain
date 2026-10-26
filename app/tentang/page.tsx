@@ -6,8 +6,8 @@ import { JsonLd, breadcrumbLd } from '@/lib/jsonld'
 export const revalidate = 60
 
 export const metadata = pageMeta({
-  title: 'Tentang Kami | Agendain',
-  description: 'Mengenal lebih dekat Agendain, teman perjalanan wisata Eropa Anda dengan tour guide berpengalaman.',
+  title: 'Tentang Agendain | Travel Eropa dari Indonesia',
+  description: 'Kenalan dengan Agendain: travel ke Eropa dari Indonesia yang dijalankan tour leader orang Indonesia yang tinggal di Italia.',
   path: '/tentang',
   image: '/tentang_hero.webp',
 })

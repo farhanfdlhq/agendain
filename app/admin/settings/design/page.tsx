@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import AirplaneLoader from "@/components/ui/airplane-loader"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DEFAULT_BODY_FONT, DEFAULT_HEADING_FONT, FONT_CHOICES } from "@/lib/fonts"
 
 export default function DesignSystemPage() {
@@ -149,43 +150,25 @@ export default function DesignSystemPage() {
         </Button>
       </div>
 
-      <div className="flex overflow-x-auto pb-2 border-b gap-2 scrollbar-hide">
-        <Button 
-          variant={activeTab === 'brand' ? 'secondary' : 'ghost'} 
-          onClick={() => setActiveTab('brand')}
-          className="rounded-full"
-        >
-          <Palette className="mr-2 h-4 w-4" /> Warna Brand
-        </Button>
-        <Button 
-          variant={activeTab === 'semantic' ? 'secondary' : 'ghost'} 
-          onClick={() => setActiveTab('semantic')}
-          className="rounded-full"
-        >
-          <AlertTriangle className="mr-2 h-4 w-4" /> Status
-        </Button>
-        <Button 
-          variant={activeTab === 'typography' ? 'secondary' : 'ghost'} 
-          onClick={() => setActiveTab('typography')}
-          className="rounded-full"
-        >
-          <Type className="mr-2 h-4 w-4" /> Tipografi
-        </Button>
-        <Button 
-          variant={activeTab === 'surface' ? 'secondary' : 'ghost'} 
-          onClick={() => setActiveTab('surface')}
-          className="rounded-full"
-        >
-          <Box className="mr-2 h-4 w-4" /> Latar & Bentuk
-        </Button>
-        <Button 
-          variant={activeTab === 'layout' ? 'secondary' : 'ghost'} 
-          onClick={() => setActiveTab('layout')}
-          className="rounded-full"
-        >
-          <LayoutTemplate className="mr-2 h-4 w-4" /> Navbar & Footer
-        </Button>
-      </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="w-fit flex-wrap h-auto p-[3px]">
+          <TabsTrigger value="brand" className="px-4 py-1.5 gap-2">
+            <Palette className="h-4 w-4" /> Warna Brand
+          </TabsTrigger>
+          <TabsTrigger value="semantic" className="px-4 py-1.5 gap-2">
+            <AlertTriangle className="h-4 w-4" /> Status
+          </TabsTrigger>
+          <TabsTrigger value="typography" className="px-4 py-1.5 gap-2">
+            <Type className="h-4 w-4" /> Tipografi
+          </TabsTrigger>
+          <TabsTrigger value="surface" className="px-4 py-1.5 gap-2">
+            <Box className="h-4 w-4" /> Latar & Bentuk
+          </TabsTrigger>
+          <TabsTrigger value="layout" className="px-4 py-1.5 gap-2">
+            <LayoutTemplate className="h-4 w-4" /> Navbar & Footer
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         

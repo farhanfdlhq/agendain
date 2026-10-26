@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react"
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
-import { LayoutDashboard, Package, MapPin, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, Users, UsersRound, Gem, Info, Home, Newspaper, Shield, ScrollText, History, PanelBottom, Receipt, SlidersHorizontal, Route } from "lucide-react"
+import { LayoutDashboard, Package, Settings, LogOut, CalendarDays, Palette, UserCog, Menu, ExternalLink, ChevronDown, ChevronRight, ChevronLeft, Users, UsersRound, Gem, Info, Home, Newspaper, Shield, ScrollText, History, PanelBottom, Receipt, SlidersHorizontal, Route } from "lucide-react"
 import "./admin.css"
 import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
@@ -18,6 +18,7 @@ import { APP_VERSION } from "@/lib/changelog"
 import { adminPreviewUrl } from "@/lib/admin-preview-url"
 import { LOGO_WHITE } from "@/lib/site-logo"
 import { AdminAccessContext } from "@/components/admin/admin-access"
+import { cn } from "@/lib/utils"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession()
@@ -133,7 +134,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: 'Ringkasan', href: '/admin', icon: <LayoutDashboard size={18} />, perm: [] },
         { name: 'Artikel Blog', href: '/admin/blog', icon: <ScrollText size={18} />, perm: BLOG_ANY },
         { name: 'Paket Wisata', href: '/admin/open-trip', icon: <Package size={18} />, perm: ['paket_view'] },
-        { name: 'Destinasi', href: '/admin/destinasi', icon: <MapPin size={18} />, perm: ['destinasi_view'] },
         // Booking open trip & permintaan private trip = sama-sama pesanan masuk.
         {
           name: 'Pesanan', tabName: 'Booking Open Trip', href: '/admin/booking', icon: <CalendarDays size={18} />, perm: ['booking_view'],
@@ -430,13 +430,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-zinc-50/50 dark:bg-zinc-950/50">
           <div className="mx-auto max-w-7xl">
             {sectionTabs.length > 1 && (
-              <nav aria-label={activeItem?.name} className="mb-6 flex gap-1 overflow-x-auto border-b border-border">
-                  {sectionTabs.map((tab) => (
-                    <Link key={tab.href} href={tab.href} aria-current={pathname === tab.href ? "page" : undefined}
-                      className={`shrink-0 border-b-2 px-4 py-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-ring ${pathname === tab.href ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
+              <nav aria-label={activeItem?.name} className="mb-6 inline-flex w-fit items-center justify-center rounded-lg bg-muted p-[3px] text-muted-foreground">
+                {sectionTabs.map((tab) => {
+                  const isActive = pathname === tab.href
+                  return (
+                    <Link
+                      key={tab.href}
+                      href={tab.href}
+                      aria-current={isActive ? "page" : undefined}
+                      className={cn(
+                        "relative inline-flex h-8 items-center justify-center gap-1.5 rounded-md px-4 py-1 text-sm font-medium whitespace-nowrap transition-all focus-visible:outline-2 focus-visible:outline-ring",
+                        isActive
+                          ? "bg-background text-foreground shadow-sm font-semibold"
+                          : "text-foreground/60 hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground"
+                      )}
+                    >
                       {tab.name}
                     </Link>
-                  ))}
+                  )
+                })}
               </nav>
             )}
             {pageAllowed ? children : (

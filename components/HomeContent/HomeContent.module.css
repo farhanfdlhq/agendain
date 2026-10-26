@@ -134,14 +134,15 @@
   color: #ffffff;
   font-weight: 700;
   font-size: 1rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
   border: none;
   text-decoration: none;
 }
 
 .btnWhatsapp:hover {
+  background: var(--color-whatsapp-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(37,211,102,0.3);
+  box-shadow: 0 8px 24px rgba(27,122,67,0.3);
 }
 
 .btnGold {
@@ -1279,10 +1280,6 @@
   margin-bottom: 1rem;
 }
 
-.faqBadgeQ {
-  color: #dc2626;
-  font-size: 1rem;
-}
 
 .faqTitle {
   font-family: var(--font-display);
@@ -1293,12 +1290,6 @@
   margin-bottom: 0.5rem;
 }
 
-.faqSubtitle {
-  font-size: 1rem;
-  color: var(--color-muted);
-  max-width: 550px;
-  margin: 0 auto;
-}
 
 .faqList {
   max-width: 800px;

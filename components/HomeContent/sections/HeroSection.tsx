@@ -82,14 +82,15 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
           alt={gs('heroTitle', 'home.hero.title') || "Agendain — Biro Perjalanan Wisata Open Trip & Private Trip Eropa"}
           fill
           priority
+          fetchPriority="high"
           className={styles.heroImage}
-          quality={85}
+          quality={75}
           sizes="100vw"
         />
         <div className={styles.heroOverlay} />
       </div>
 
-      <motion.div className={styles.heroContent} variants={container} initial="hidden" animate="visible">
+      <motion.div className={styles.heroContent} variants={container} initial={false} animate="visible">
         <motion.h1
           className={styles.heroTitle}
           variants={container}

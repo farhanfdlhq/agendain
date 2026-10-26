@@ -14,9 +14,9 @@ import { JsonLd, breadcrumbLd } from "@/lib/jsonld";
 import styles from "./page.module.css";
 
 export const metadata = pageMeta({
-  title: "Private Trip Eropa Eksklusif | Agendain",
+  title: "Private Trip Eropa dari Indonesia | Agendain",
   description:
-    "Rencanakan perjalanan Private Trip Eropa Anda secara khusus dengan Agendain. Itinerary fleksibel, guide berpengalaman, dan privasi penuh.",
+    "Private trip ke Eropa untuk keluarga, pasangan, atau grup. Tanggal dan itinerary sesuai permintaan, didampingi tour leader orang Indonesia.",
   path: "/private-trip",
   image: "/private_trip_hero.webp",
 });

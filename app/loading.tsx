@@ -12,8 +12,8 @@ export default function Loading() {
             jalur oleh animasi CSS .plane — gabungan gerak, bukan replay kaku. */}
         <AirplaneLoader size={24} className={styles.plane} />
       </div>
-      <h3 className={styles.title}>Sedang Memuat...</h3>
-      <p className={styles.subtitle}>Menyiapkan destinasi dan paket perjalanan terbaik untuk Anda.</p>
+      <h3 className={styles.title}>Sebentar ya...</h3>
+      <p className={styles.subtitle}>Halamannya lagi disiapin.</p>
     </div>
   )
 }

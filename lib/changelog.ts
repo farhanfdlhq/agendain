@@ -26,6 +26,26 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.6.0',
+    date: '2026-10-26',
+    title: 'Beranda lebih mudah ditemukan & jujur, testimoni mode foto, dan isian admin lebih aman',
+    added: [
+      'Sakelar baru di CMS Beranda: section testimoni bisa tampil hanya berupa foto; nama dan kutipan review baru muncul setelah sakelar dinyalakan.',
+      'Menekan F5 atau Ctrl+R saat ada isian admin yang belum disimpan kini memunculkan konfirmasi "Perubahan belum disimpan" lebih dulu.',
+    ],
+    improved: [
+      'Judul dan deskripsi halaman di hasil Google kini menyebut travel Eropa & Italia dari Indonesia dengan tour leader orang Indonesia.',
+      'Ringkasan situs untuk mesin pencari AI (llms.txt) diperbarui dan hanya memuat layanan yang benar.',
+      'Logo Agendain yang dibaca Google kini versi biru agar terlihat jelas di latar putih.',
+      'Label FAQ di beranda cukup diatur lewat satu kolom CMS dan boleh memakai emoji (mis. ❓ FAQ); tulisan "FAQ" tidak lagi muncul dua kali.',
+      'Menu Destinasi digabung ke Paket Wisata (tombol Kelola Destinasi) sehingga sidebar admin lebih ringkas.',
+      'Tab di seluruh panel admin kini seragam dengan gaya tab Audit Log.',
+      'Gambar utama beranda dimuat lebih cepat di ponsel dan teks hero langsung tampil sejak awal.',
+      'Tombol WhatsApp di beranda dan footer kini seragam, dengan efek hover yang konsisten.',
+      'Teks layar memuat dibuat lebih ringkas dan santai.',
+    ],
+  },
+  {
     version: '1.5.1',
     date: '2026-10-25',
     title: 'Optimasi SEO Teknis, Peta Situs Gambar & Feed RSS',

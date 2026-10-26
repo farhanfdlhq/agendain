@@ -28,6 +28,7 @@
 
 .footerLogoImg {
   height: var(--logo-height, 42px);
+  min-height: var(--logo-height, 42px);
   max-height: 120px;
   width: auto;
   object-fit: contain;
@@ -122,14 +123,15 @@
   padding: 0.625rem 1.25rem;
   border-radius: var(--radius-full);
   background: var(--color-whatsapp);
+  /* Teks gelap: putih di atas #25D366 hanya ~2:1 (gagal WCAG AA). */
   color: #0b2e1a;
   font-weight: 700;
   font-size: 0.9375rem;
-  transition: filter 0.2s, transform 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
 
 .waBtn:hover {
-  filter: brightness(1.06);
+  background: var(--color-whatsapp-hover);
   transform: translateY(-1px);
 }
 

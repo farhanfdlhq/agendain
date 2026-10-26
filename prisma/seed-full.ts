@@ -345,9 +345,6 @@ async function main() {
     faqTitle: 'Masih *Ragu?*',
     faqTitle_en: 'Still *Unsure?*',
     faqTitleWeight: '800',
-    faqSubtitle: 'FAQ',
-    faqSubtitle_en: 'FAQ',
-    faqSubtitleWeight: '500',
     faqItems: [
       { q: 'Bagaimana cara mendaftar dan booking trip di Agendain?', a: 'Kamu bisa langsung hubungi kami via WhatsApp atau isi form booking di website. Tim kami akan bantu proses selanjutnya dari konsultasi sampai pembayaran.' },
       { q: 'Apa bedanya layanan Open Trip dan Private Trip?', a: 'Open Trip adalah trip gabungan dengan peserta lain di tanggal yang sudah ditentukan. Private Trip adalah trip khusus untuk grup kamu sendiri dengan tanggal dan itinerary yang bisa disesuaikan.' },

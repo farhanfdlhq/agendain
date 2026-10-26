@@ -24,9 +24,9 @@ export async function generateMetadata(): Promise<Metadata> {
     }
   } catch {}
   return pageMeta({
-    title: "Agendain | Travel Agency Indonesia ke Eropa",
+    title: "Agendain | Travel Eropa & Italia dari Indonesia",
     description:
-      "Paket perjalanan terbaik dari Indonesia ke Eropa bersama Agendain. Open trip & private trip Eropa dengan guide berpengalaman.",
+      "Open trip & private trip Eropa dari Indonesia bersama tour leader orang Indonesia yang tinggal di Italia. Tiket pesawat, hotel, dan itinerary kami siapkan.",
     path: "/",
     image: hero || "/hero-coastal.webp",
     // Kartu share meniru hero beranda: foto + judul & subjudul hero (dari CMS).
@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-import { LOGO_BLUE, siteLogoOr } from '@/lib/site-logo'
+import { LOGO_BLUE } from '@/lib/site-logo'
 
 async function HomeDataFetcher() {
   // Sama persis dengan /open-trip (urutan terbaru, hanya published) supaya
@@ -97,7 +97,9 @@ async function buildSiteLd() {
     const rows = await prisma.setting.findMany()
     const map = rows.reduce((a: any, c: any) => { a[c.key] = c.value; return a }, {})
     const name = map.site_name || 'Agendain'
-    const logo = siteLogoOr(map.site_logo, LOGO_BLUE)
+    // `site_logo` = versi putih untuk navbar gelap; Google menampilkan logo
+    // organisasi di atas latar putih, jadi pakai versi biru.
+    const logo = LOGO_BLUE
     const footer = parseFooterSettings(map.footer_settings)
     const sameAs = footer.socials.map((s) => safeHref(s.url)).filter((u) => /^https?:\/\//i.test(u))
     let telephone: string | undefined

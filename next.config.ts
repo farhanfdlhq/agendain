@@ -43,6 +43,7 @@ const nextConfig: NextConfig = {
     // lunak), jadi 85 harus disebut di sini — kalau tidak, Next menolaknya
     // dan hanya menulis peringatan di log.
     qualities: [75, 85],
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: "https",

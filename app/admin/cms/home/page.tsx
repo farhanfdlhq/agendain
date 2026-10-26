@@ -8,6 +8,7 @@ import { Reorder } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -43,6 +44,13 @@ function fillHomeDefaults(res: Record<string, unknown>) {
     if (!String(res[field] ?? "").trim()) res[field] = idDict[key]
     if (!String(res[`${field}_en`] ?? "").trim()) res[`${field}_en`] = enDict[key]
   }
+  // Label FAQ lama tersimpan "FAQ" saat ikon "?" masih tetap di kode. Kini ikon
+  // ditulis sebagai emoji di label, jadi ditambahkan agar tampilan tetap sama.
+  for (const key of ["faqBadge", "faqBadge_en"]) {
+    if (String(res[key] ?? "").trim() === "FAQ") res[key] = "❓ FAQ"
+  }
+  // Field lama yang tak lagi dipakai situs; dibuang agar ikut bersih saat disimpan.
+  for (const key of ["faqSubtitle", "faqSubtitle_en", "faqSubtitleWeight", "faqSubtitleSize"]) delete res[key]
   if (Array.isArray(res.testiHighlights)) {
     const idLines = res.testiHighlights.map((it: any) => {
       const txt = typeof it === 'string' ? it : (it?.text || '')
@@ -112,10 +120,10 @@ export default function HomeCMSPage() {
     socialSubtitle: '', socialSubtitle_en: '',
     socialImage: '',
     socialQuote: '', socialQuote_en: '',
+    socialShowReviews: false,
 
     // FAQ
     faqTitle: '', faqTitle_en: '',
-    faqSubtitle: '', faqSubtitle_en: '',
 
     sectionOrder: 'hero,why,destinations,testimonial,accordion,socialproof,faq'
   })
@@ -789,26 +797,18 @@ export default function HomeCMSPage() {
         </Button>
       </div>
       
-      <div className="flex gap-2">
-        <Button 
-          type="button"
-          variant={activeTab === 'id' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('id')}
-          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
-        >
-          <img src="/flags/id.png" alt="ID" width={20} height={15} className="rounded-xs object-cover" /> 
-          Indonesia
-        </Button>
-        <Button 
-          type="button"
-          variant={activeTab === 'en' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('en')}
-          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
-        >
-          <img src="/flags/en.png" alt="EN" width={20} height={15} className="rounded-xs object-cover" /> 
-          English
-        </Button>
-      </div>
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'id' | 'en')}>
+        <TabsList className="w-fit">
+          <TabsTrigger value="id" className="gap-2 px-4">
+            <img src="/flags/id.png" alt="ID" width={20} height={15} className="rounded-xs object-cover" />
+            Indonesia
+          </TabsTrigger>
+          <TabsTrigger value="en" className="gap-2 px-4">
+            <img src="/flags/en.png" alt="EN" width={20} height={15} className="rounded-xs object-cover" />
+            English
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         
@@ -1005,6 +1005,21 @@ export default function HomeCMSPage() {
               </div>
             </div>
 
+            <div className="flex items-start justify-between gap-4 rounded-lg border p-4">
+              <div className="space-y-1">
+                <Label htmlFor="socialShowReviews" className="text-sm font-semibold">Tampilkan nama & isi testimoni</Label>
+                <p className="text-xs text-muted-foreground">
+                  Nonaktif: section hanya menampilkan foto (nama, kutipan, dan slider testimoni disembunyikan).
+                  Aktifkan setelah ada testimoni asli dari peserta beserta izinnya.
+                </p>
+              </div>
+              <Switch
+                id="socialShowReviews"
+                checked={data.socialShowReviews === true}
+                onCheckedChange={(v) => setData((prev: typeof data) => ({ ...prev, socialShowReviews: v }))}
+              />
+            </div>
+
             {renderSplitArrayEditor(
               'Kutipan Testimoni Slider (Data Pelanggan)', 
               'testiItems', 
@@ -1025,11 +1040,10 @@ export default function HomeCMSPage() {
             {/* Header FAQ */}
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-4">
-                {renderCompactField('Label Kecil (di atas judul)', 'faqBadge', { placeholder: 'FAQ' })}
-                {renderCompactField('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle', { enableWeight: true, defaultWeight: '800' })}
+                {renderCompactField('Label Kecil (di atas judul, boleh pakai emoji)', 'faqBadge', { placeholder: '❓ FAQ' })}
               </div>
               <div className="space-y-4">
-                {renderCompactField('Teks Pendek (Subtitle)', 'faqSubtitle', { isTextarea: true, rows: 3, enableWeight: true, defaultWeight: '500' })}
+                {renderCompactField('Judul Utama (Gunakan *teks* untuk warna kuning)', 'faqTitle', { enableWeight: true, defaultWeight: '800' })}
               </div>
             </div>
 

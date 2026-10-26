@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { MediaPicker } from "@/components/ui/media-picker"
 import { FontControls } from "@/components/ui/font-size-picker"
@@ -227,26 +228,18 @@ export default function BlogCMSPage() {
         </Button>
       </div>
 
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          variant={activeTab === 'id' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('id')}
-          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
-        >
-          <img src="/flags/id.png" alt="ID" width={20} height={15} className="rounded-xs object-cover" />
-          Indonesia
-        </Button>
-        <Button
-          type="button"
-          variant={activeTab === 'en' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('en')}
-          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
-        >
-          <img src="/flags/en.png" alt="EN" width={20} height={15} className="rounded-xs object-cover" />
-          English
-        </Button>
-      </div>
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'id' | 'en')}>
+        <TabsList className="w-fit">
+          <TabsTrigger value="id" className="gap-2 px-4">
+            <img src="/flags/id.png" alt="ID" width={20} height={15} className="rounded-xs object-cover" />
+            Indonesia
+          </TabsTrigger>
+          <TabsTrigger value="en" className="gap-2 px-4">
+            <img src="/flags/en.png" alt="EN" width={20} height={15} className="rounded-xs object-cover" />
+            English
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card className="border shadow-sm overflow-hidden">

@@ -35,6 +35,8 @@ export function organizationLd(opts: {
     ...(logo ? { logo, image: logo } : {}),
     ...(sameAs.length ? { sameAs } : {}),
     ...(opts.telephone ? { telephone: opts.telephone } : {}),
+    description:
+      "Travel open trip & private trip ke Eropa dari Indonesia, didampingi tour leader orang Indonesia yang tinggal di Italia.",
     areaServed: "ID",
     knowsLanguage: ["id", "en"],
   };

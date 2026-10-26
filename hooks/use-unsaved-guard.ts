@@ -15,12 +15,14 @@ const PESAN = {
 /**
  * Cegah kehilangan isian yang belum disimpan.
  *
- * Selama `isDirty` true, hook ini memasang dua penjaga:
- *  1. `beforeunload` — refresh, tutup tab, atau ketik URL baru memunculkan
- *     dialog bawaan browser.
+ * Selama `isDirty` true, hook ini memasang tiga penjaga:
+ *  1. `beforeunload` — tombol reload browser, tutup tab, atau ketik URL baru
+ *     memunculkan dialog bawaan browser (browser tidak mengizinkan dialog kustom).
  *  2. Cegat klik pada tautan internal mana pun (menu sidebar, tautan "Profil"
  *     di dalam form, tombol Kembali) — navigasi ditahan dulu, lalu dialog
  *     konfirmasi in-app (useConfirm) muncul; pindah hanya bila disetujui.
+ *  3. Refresh lewat keyboard (F5, Ctrl/Cmd+R, dengan/tanpa Shift) ditahan dan
+ *     memakai dialog in-app yang sama; muat ulang hanya bila disetujui.
  *
  * Anchor di dalam area contenteditable (mis. tautan di dalam editor TipTap),
  * yang membuka tab baru (`target=_blank`), unduhan, dan tautan eksternal
@@ -34,16 +36,34 @@ export function useUnsavedGuard(isDirty: boolean) {
   // ketikan — cukup dipasang sekali, membaca nilai terbaru saat dipicu.
   const dirtyRef = useRef(isDirty)
   dirtyRef.current = isDirty
+  // Sudah disetujui lewat dialog in-app → jangan tanya lagi lewat dialog browser.
+  const leavingRef = useRef(false)
 
   useEffect(() => {
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (!dirtyRef.current) return
+      if (!dirtyRef.current || leavingRef.current) return
       e.preventDefault()
       e.returnValue = ""
     }
     window.addEventListener("beforeunload", onBeforeUnload)
     return () => window.removeEventListener("beforeunload", onBeforeUnload)
   }, [])
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!dirtyRef.current) return
+      const isReload = e.key === "F5" || ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === "r")
+      if (!isReload) return
+      e.preventDefault()
+      void confirm(PESAN).then((ok) => {
+        if (!ok) return
+        leavingRef.current = true
+        window.location.reload()
+      })
+    }
+    window.addEventListener("keydown", onKeyDown, true)
+    return () => window.removeEventListener("keydown", onKeyDown, true)
+  }, [confirm])
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {

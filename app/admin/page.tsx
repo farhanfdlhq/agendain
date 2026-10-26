@@ -143,9 +143,9 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
               </Link>
             </Button>
             <Button variant="outline" className="justify-start h-12 text-sm font-medium rounded-lg border-border hover:bg-muted/50 hover:text-foreground transition-colors group shadow-none" asChild>
-              <Link href="/admin/destinasi/baru">
+              <Link href="/admin/open-trip?kelola=destinasi">
                 <Map className="mr-3 h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                Tambah Destinasi
+                Kelola Destinasi
               </Link>
             </Button>
           </CardContent>

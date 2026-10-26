@@ -16,6 +16,10 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
   // Foto testimoni bahasa-netral: diambil dari baris yang sama, hanya nama &
   // teksnya yang dilokalkan.
   const testiItems = localizeRepeater(homeSettings, 'testiItems', locale, HOME_REPEATERS.testiItems) ?? testimonials;
+  // Nama & kutipan baru tampil setelah admin menyalakannya di CMS (testimoni
+  // asli sudah ada). Sebelum itu section hanya menampilkan foto.
+  const showReviews = homeSettings?.socialShowReviews === true
+  const activeName = showReviews ? testiItems[activeTestimonial]?.name : ''
 
   useEffect(() => {
     if (isSliderHovered) return
@@ -34,19 +38,19 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
             <div className={styles.socialProofImageWrapper}>
               <AnimatePresence mode="wait">
                 <motion.div key={activeTestimonial} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', inset: 0 }}>
-                  <Image src={testiItems[activeTestimonial]?.photo || gs('socialImage', undefined, '/el-rumi-syifa.webp')} alt={testiItems[activeTestimonial]?.name ? `Testimoni liburan dari ${testiItems[activeTestimonial].name}` : "Testimoni pelanggan trip Agendain"} fill style={{ objectFit: 'cover' }}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
+                  <Image src={testiItems[activeTestimonial]?.photo || gs('socialImage', undefined, '/el-rumi-syifa.webp')} alt={activeName ? `Testimoni liburan dari ${activeName}` : "Foto perjalanan bersama Agendain"} fill style={{ objectFit: 'cover' }}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
                 </motion.div>
               </AnimatePresence>
               <div className={styles.socialProofQuestionMark}>?</div>
             </div>
-            <div className={styles.socialProofQuoteCard}>
+            {showReviews && <div className={styles.socialProofQuoteCard}>
               <AnimatePresence mode="wait">
                 <motion.div key={activeTestimonial} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.3 }}>
                   <p className={styles.socialProofQuoteName}>{testiItems[activeTestimonial]?.name || gs('socialName', undefined, '')}</p>
                   <p className={styles.socialProofQuoteText}>{testiItems[activeTestimonial]?.text || gs('socialQuote', 'home.social.quote', 'Biasanya kalau ngerencanain trip tuh paling pusing nyamain jadwal dan ngurusin printilannya.')}</p>
                 </motion.div>
               </AnimatePresence>
-            </div>
+            </div>}
           </div>
         </FadeIn>
         <FadeIn direction="right" delay={0.2} className={styles.socialProofRightWrapper}>
@@ -61,7 +65,7 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
               )}
             </h2>
             <p className={styles.socialProofRightSubtitle} style={fontStyle(gs, 'socialSubtitle')}>{gs('socialSubtitle', 'home.social.subtitle')}</p>
-            <div className={styles.testimonialSliderContainer} onMouseEnter={() => setIsSliderHovered(true)} onMouseLeave={() => setIsSliderHovered(false)}>
+            {showReviews && <div className={styles.testimonialSliderContainer} onMouseEnter={() => setIsSliderHovered(true)} onMouseLeave={() => setIsSliderHovered(false)}>
               <div className={styles.testimonialSlider}>
                 <div className={styles.testimonialSlides}>
                   <AnimatePresence initial={false}>
@@ -85,7 +89,7 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
               </div>
               <button aria-label={t('home.social.prevTesti')} className={styles.sliderBtnLeft} onClick={() => setActiveTestimonial(prev => prev === 0 ? testiItems.length - 1 : prev - 1)}><ChevronLeft size={24} color="#ffffff" /></button>
               <button aria-label={t('home.social.nextTesti')} className={styles.sliderBtnRight} onClick={() => setActiveTestimonial(prev => prev === testiItems.length - 1 ? 0 : prev + 1)}><ChevronRight size={24} color="#ffffff" /></button>
-            </div>
+            </div>}
           </div>
         </FadeIn>
       </div>

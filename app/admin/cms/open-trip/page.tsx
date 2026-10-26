@@ -238,26 +238,18 @@ export default function OpenTripCMSPage() {
         </Button>
       </div>
 
-      <div className="flex gap-2">
-        <Button 
-          type="button"
-          variant={activeTab === 'id' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('id')}
-          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
-        >
-          <img src="/flags/id.png" alt="ID" width={20} height={15} className="rounded-xs object-cover" /> 
-          Indonesia
-        </Button>
-        <Button 
-          type="button"
-          variant={activeTab === 'en' ? 'default' : 'outline'}
-          onClick={() => setActiveTab('en')}
-          className="gap-2 rounded-full font-medium h-9 px-5 shadow-2xs text-xs sm:text-sm cursor-pointer"
-        >
-          <img src="/flags/en.png" alt="EN" width={20} height={15} className="rounded-xs object-cover" /> 
-          English
-        </Button>
-      </div>
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'id' | 'en')}>
+        <TabsList className="w-fit">
+          <TabsTrigger value="id" className="gap-2 px-4">
+            <img src="/flags/id.png" alt="ID" width={20} height={15} className="rounded-xs object-cover" /> 
+            Indonesia
+          </TabsTrigger>
+          <TabsTrigger value="en" className="gap-2 px-4">
+            <img src="/flags/en.png" alt="EN" width={20} height={15} className="rounded-xs object-cover" /> 
+            English
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <form onSubmit={handleSubmit} className="space-y-8">
           

@@ -53,8 +53,9 @@
   --color-danger: #991b1b;
   --color-danger-surface: #fee2e2;
   --color-danger-hover-surface: #fef2f2;
-  --color-danger-hover: #dc2626;
+  /* WhatsApp — Hijau cerah identik WhatsApp (sama persis dengan tombol melayang) */
   --color-whatsapp: #25D366;
+  --color-whatsapp-hover: #20BA56;
 
   /* Admin Surface */
   --color-table-header: #f6f1ec;

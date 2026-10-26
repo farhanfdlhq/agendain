@@ -41,9 +41,8 @@ export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs
       <div className={styles.container}>
         <FadeIn direction="up">
           <div className={styles.faqHeader}>
-            <span className={styles.faqBadge}><span className={styles.faqBadgeQ}>?</span> {gs('faqBadge', 'home.faq.subtitle')}</span>
+            <span className={styles.faqBadge}>{gs('faqBadge', 'home.faq.subtitle')}</span>
             <h2 className={styles.faqTitle} style={fontStyle(gs, 'faqTitle')}>{renderHighlightedTitle(gs('faqTitle', 'home.faq.title'))}</h2>
-            <p className={styles.faqSubtitle} style={fontStyle(gs, 'faqSubtitle')}>{gs('faqSubtitle', 'home.faq.moreSub')}</p>
           </div>
         </FadeIn>
         <div className={styles.faqList}>

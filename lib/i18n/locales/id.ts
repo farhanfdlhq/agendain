@@ -197,7 +197,7 @@ const id: Record<string, string> = {
   "home.testi.subtitle":
     "Lihat bagaimana Agendain membantu mereka mewujudkan liburan impian.",
   "home.faq.title": "Masih Ragu?",
-  "home.faq.subtitle": "FAQ",
+  "home.faq.subtitle": "❓ FAQ",
   "home.faq.q1": "Bagaimana cara mendaftar dan booking trip di Agendain?",
   "home.faq.a1":
     "Kamu bisa langsung hubungi kami via WhatsApp atau isi form booking di website. Tim kami akan bantu proses selanjutnya dari konsultasi sampai pembayaran.",
@@ -216,7 +216,6 @@ const id: Record<string, string> = {
   "home.faq.a5":
     "Tentu! Banyak peserta kami yang berangkat solo dan justru menemukan teman baru. Tim guide kami selalu memastikan semua peserta nyaman dan aman selama perjalanan.",
   "home.faq.more": "Masih ada pertanyaan lain?",
-  "home.faq.moreSub": "Kawan Agendain siap menjawab!",
   "home.faq.btnWa": "Hubungi Kami",
   "home.faq.ctaText": "Masih ada pertanyaan lain? Kawan Agendain siap menjawab!",
   "home.dest.subtitle": "Eksplor Bersama Agendain",
