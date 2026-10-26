@@ -26,6 +26,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.6.2',
+    date: '2026-10-26',
+    title: 'Kriteria simbol password lebih ringkas',
+    improved: [
+      'Kriteria simbol di form password kini ringkas dalam satu baris dan menyebut bahwa titik juga boleh dipakai.',
+    ],
+  },
+  {
     version: '1.6.1',
     date: '2026-10-26',
     title: 'Situs lebih cepat di ponsel dan perbaikan tambah user & ganti password',

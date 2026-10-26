@@ -31,7 +31,7 @@ export default function PasswordValidator({ password = "" }: PasswordValidatorPr
     { label: "Terdapat minimal satu huruf kecil", met: v.lowercase },
     { label: "Terdapat minimal satu huruf besar", met: v.uppercase },
     { label: "Terdapat minimal satu angka", met: v.number },
-    { label: "Terdapat minimal satu simbol, mis. ! @ # $ % & *", met: v.symbol }
+    { label: "Terdapat minimal satu simbol (! @ # . dll.)", met: v.symbol }
   ];
 
   return (
