@@ -26,6 +26,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.3',
+    date: '2026-10-27',
+    title: 'Kolom Qty invoice tidak lagi terpotong',
+    fixed: [
+      'Angka Qty di item invoice kini selalu terlihat di layar laptop/desktop; sebelumnya kolomnya terlalu sempit saat sidebar terbuka sehingga angka terpotong.',
+    ],
+  },
+  {
     version: '1.7.2',
     date: '2026-10-27',
     title: 'Tombol Tambah tag berfungsi dan pembersihan kode',

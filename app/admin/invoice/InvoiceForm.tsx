@@ -281,8 +281,8 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
 
               {/* Header kolom — hanya desktop; di mobile tiap baris punya labelnya sendiri. */}
               <div className="hidden sm:grid grid-cols-12 gap-2 px-3 pb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                <div className="col-span-5">Deskripsi</div>
-                <div className="col-span-2">Qty</div>
+                <div className="col-span-4">Deskripsi</div>
+                <div className="col-span-3">Qty</div>
                 <div className="col-span-3">Harga satuan</div>
                 <div className="col-span-2 text-right">Jumlah</div>
               </div>
@@ -307,12 +307,14 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
 
                   {/* Baris utama: yang wajib diisi. */}
                   <div className="grid grid-cols-12 gap-2 items-end">
-                    <div className="col-span-12 sm:col-span-5 space-y-1">
+                    <div className="col-span-12 sm:col-span-4 space-y-1">
                       <Label className="text-xs text-muted-foreground sm:hidden">Deskripsi</Label>
                       <Input placeholder="mis. Tiket masuk Colosseum" value={it.deskripsi}
                         onChange={e => ubahItem(i, "deskripsi", e.target.value)} />
                     </div>
-                    <div className="col-span-4 sm:col-span-2 space-y-1">
+                    {/* Qty 3/12: di 2/12 stepper −/+ menyisakan ±4px untuk angka pada layar
+                        sempit (sidebar terbuka / skala tampilan 125%), angka terpotong. */}
+                    <div className="col-span-4 sm:col-span-3 space-y-1">
                       <Label className="text-xs text-muted-foreground sm:hidden">Qty</Label>
                       <NumberStepper min={0.01} step="any" buttonStep={1} value={it.qty} aria-label={`Qty item ${i + 1}`}
                         onValueChange={v => ubahItem(i, "qty", v)} />
