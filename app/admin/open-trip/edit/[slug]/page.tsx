@@ -8,6 +8,7 @@ import { ArrowLeft, Save, Image as ImageIcon, X, Plus } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Label } from "@/components/ui/label"
 import { DESTINASI, LabelEditDialog } from "@/components/admin/label-manager"
 import { NumberStepper } from "@/components/ui/number-stepper"
@@ -109,7 +110,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
         const informasiPentingText = joinLines(data.informasiPenting)
         const kebijakanPembatalanText = joinLines(data.kebijakanPembatalan)
         const fileDokumenList = Array.isArray(data.fileDokumen) ? data.fileDokumen : []
-        // <input type="date"> hanya menerima YYYY-MM-DD; DB mengirim ISO penuh.
+        // DatePicker (seperti <input type="date">) memakai YYYY-MM-DD; DB mengirim ISO penuh.
         const tanggalKeberangkatan = data.tanggalKeberangkatan
           ? String(data.tanggalKeberangkatan).slice(0, 10)
           : ""
@@ -841,12 +842,11 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
 
               <div className="space-y-2">
                 <Label htmlFor="tanggalKeberangkatan">Tanggal Keberangkatan</Label>
-                <Input
-                  type="date"
+                <DatePicker
                   id="tanggalKeberangkatan"
                   name="tanggalKeberangkatan"
                   value={formData.tanggalKeberangkatan}
-                  onChange={handleChange}
+                  onChange={v => setField('tanggalKeberangkatan', v)}
                   aria-invalid={!!errors.tanggalKeberangkatan}
                   required
                 />

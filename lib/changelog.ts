@@ -26,6 +26,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.0',
+    date: '2026-10-27',
+    title: 'Pemilih tanggal baru di panel admin',
+    added: [
+      'Pemilih tanggal berbahasa Indonesia (minggu dimulai Senin, tombol Hari ini & Hapus) di form Invoice, Itinerary, dan Paket Wisata, menggantikan kalender bawaan browser yang tampilannya berbeda-beda.',
+    ],
+    improved: [
+      'Jatuh Tempo invoice tidak bisa dipilih sebelum Tanggal Invoice.',
+    ],
+  },
+  {
     version: '1.6.3',
     date: '2026-10-26',
     title: 'Halaman tidak lagi bergeser saat dimuat di ponsel & pesan login lebih aman',

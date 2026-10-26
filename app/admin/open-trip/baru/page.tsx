@@ -8,6 +8,7 @@ import { ArrowLeft, Save, Image as ImageIcon, X, Plus } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Label } from "@/components/ui/label"
 import { DESTINASI, LabelEditDialog } from "@/components/admin/label-manager"
 import { NumberStepper } from "@/components/ui/number-stepper"
@@ -731,12 +732,11 @@ export default function TambahPaketPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="tanggalKeberangkatan">Tanggal Keberangkatan</Label>
-                <Input
-                  type="date"
+                <DatePicker
                   id="tanggalKeberangkatan"
                   name="tanggalKeberangkatan"
                   value={formData.tanggalKeberangkatan}
-                  onChange={handleChange}
+                  onChange={v => setField('tanggalKeberangkatan', v)}
                   aria-invalid={!!errors.tanggalKeberangkatan}
                   required
                 />

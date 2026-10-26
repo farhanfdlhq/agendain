@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast"
 import { ArrowLeft, Save, Plus, Trash2, Lightbulb } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Label } from "@/components/ui/label"
 import { NumberStepper } from "@/components/ui/number-stepper"
 import { Textarea } from "@/components/ui/textarea"
@@ -405,14 +406,14 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
               </div>
               <div className="space-y-2">
                 <Label htmlFor="tanggal">Tanggal Invoice *</Label>
-                <Input id="tanggal" type="date" value={form.tanggal}
+                <DatePicker id="tanggal" value={form.tanggal}
                   aria-invalid={!!errors.tanggal}
-                  onChange={e => { set("tanggal", e.target.value); clearError("tanggal") }} />
+                  onChange={v => { set("tanggal", v); clearError("tanggal") }} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="jatuhTempo">Jatuh Tempo</Label>
-                <Input id="jatuhTempo" type="date" value={form.jatuhTempo}
-                  onChange={e => set("jatuhTempo", e.target.value)} />
+                <DatePicker id="jatuhTempo" value={form.jatuhTempo} min={form.tanggal || undefined}
+                  onChange={v => set("jatuhTempo", v)} />
               </div>
             </CardContent>
           </Card>

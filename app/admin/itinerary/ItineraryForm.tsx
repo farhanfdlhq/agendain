@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast"
 import { ArrowLeft, Save, Plus, Trash2, Clock, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { DatePicker } from "@/components/ui/date-picker"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
@@ -230,8 +231,9 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
                   <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
                     <div className="space-y-2">
                       <CardTitle>Hari {di + 1}</CardTitle>
-                      <Input type="date" value={h.tanggal} className="w-44"
-                        onChange={e => ubahHari(di, { tanggal: e.target.value })} />
+                      <div className="w-44">
+                        <DatePicker value={h.tanggal} onChange={v => ubahHari(di, { tanggal: v })} />
+                      </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-sm text-muted-foreground flex items-center gap-1">
@@ -340,9 +342,9 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
               </div>
               <div className="space-y-2">
                 <Label htmlFor="tanggalDok">Tanggal Dokumen *</Label>
-                <Input id="tanggalDok" type="date" value={form.tanggalDok}
+                <DatePicker id="tanggalDok" value={form.tanggalDok}
                   aria-invalid={!!errors.tanggalDok}
-                  onChange={e => { set("tanggalDok", e.target.value); clearError("tanggalDok") }} />
+                  onChange={v => { set("tanggalDok", v); clearError("tanggalDok") }} />
               </div>
               <div className="space-y-2">
                 <Label>Status</Label>
