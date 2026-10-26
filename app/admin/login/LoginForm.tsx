@@ -1,5 +1,6 @@
 "use client"
 
+import { loginErrorMessage } from "@/lib/auth-messages"
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
@@ -36,7 +37,7 @@ export default function LoginForm({ logoUrl }: { logoUrl: string }) {
       })
 
       if (res?.error) {
-        setError(res.error)
+        setError(loginErrorMessage(res.error))
       } else {
         router.push("/admin")
       }
@@ -89,7 +90,7 @@ export default function LoginForm({ logoUrl }: { logoUrl: string }) {
             {error && (
               <Alert variant="destructive">
                 <AlertCircle />
-                <AlertDescription>{error}</AlertDescription>
+                <AlertDescription className="break-words">{error}</AlertDescription>
               </Alert>
             )}
 

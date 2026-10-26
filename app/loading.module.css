@@ -7,7 +7,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh;
+  /* Satu layar penuh, bukan 60vh: halaman dikirim bertahap (streaming), jadi
+     loader + footer tampil dulu sebelum konten. Dengan 60vh footer ikut
+     terlihat lalu terdorong ke bawah saat konten masuk — CLS 0,4 di
+     PageSpeed mobile. Footer di luar layar tidak dihitung sebagai pergeseran. */
+  min-height: 100vh;
+  min-height: 100dvh;
   gap: 1.25rem;
   padding: 2.5rem 1rem;
 }

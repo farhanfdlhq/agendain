@@ -1,4 +1,5 @@
 import { NextAuthOptions } from "next-auth";
+import { LOGIN_ERRORS } from "./auth-messages";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
@@ -39,7 +40,7 @@ export const authOptions: NextAuthOptions = {
             ip,
             userAgent,
           });
-          throw new Error("Email dan password harus diisi");
+          throw new Error(LOGIN_ERRORS.empty);
         }
 
         const email = credentials.email.toLowerCase().trim();
@@ -61,7 +62,7 @@ export const authOptions: NextAuthOptions = {
               ip,
               userAgent,
             });
-            throw new Error("Terlalu banyak percobaan login. Coba lagi nanti.");
+            throw new Error(LOGIN_ERRORS.rateLimited);
           }
         }
 
@@ -74,12 +75,17 @@ export const authOptions: NextAuthOptions = {
             ip,
             userAgent,
           });
-          throw new Error("Terlalu banyak percobaan login. Coba lagi nanti.");
+          throw new Error(LOGIN_ERRORS.rateLimited);
         }
 
-        const user = await prisma.adminUser.findUnique({
-          where: { email },
-        });
+        // Error Prisma memuat path & detail server; jangan sampai ke layar login.
+        let user;
+        try {
+          user = await prisma.adminUser.findUnique({ where: { email } });
+        } catch (e) {
+          console.error("Login: gagal membaca adminUser", e);
+          throw new Error(LOGIN_ERRORS.unavailable);
+        }
 
         if (!user) {
           await logAudit({
@@ -89,7 +95,7 @@ export const authOptions: NextAuthOptions = {
             ip,
             userAgent,
           });
-          throw new Error("Email atau password salah");
+          throw new Error(LOGIN_ERRORS.invalid);
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -106,7 +112,7 @@ export const authOptions: NextAuthOptions = {
             ip,
             userAgent,
           });
-          throw new Error("Email atau password salah");
+          throw new Error(LOGIN_ERRORS.invalid);
         }
 
         await logAudit({

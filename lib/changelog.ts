@@ -26,6 +26,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.6.3',
+    date: '2026-10-26',
+    title: 'Halaman tidak lagi bergeser saat dimuat di ponsel & pesan login lebih aman',
+    fixed: [
+      'Footer tidak lagi sempat muncul lalu terdorong ke bawah saat halaman dimuat, sehingga tampilan awal di ponsel lebih stabil.',
+      'Saat server database bermasalah, halaman login kini menampilkan pesan singkat yang rapi, bukan detail error teknis server.',
+    ],
+  },
+  {
     version: '1.6.2',
     date: '2026-10-26',
     title: 'Kriteria simbol password lebih ringkas',
