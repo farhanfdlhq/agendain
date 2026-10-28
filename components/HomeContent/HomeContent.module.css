@@ -128,8 +128,8 @@
   gap: 0.5rem;
   padding: 0.875rem 1.75rem;
   border-radius: var(--radius-full);
-  background: #0f8a5f; /* Accessible WhatsApp green (4.54:1 contrast dengan putih) */
-  color: #ffffff;
+  background: var(--color-whatsapp); /* Hijau terang identik dengan WhatsApp di pojok */
+  color: #0b2e1a; /* Teks hijau hutan gelap: kontras 7.6:1 (lulus WCAG AAA) di atas #25D366 */
   font-weight: 700;
   font-size: 1rem;
   transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
@@ -138,9 +138,10 @@
 }
 
 .btnWhatsapp:hover {
-  background: #0b734f;
+  background: var(--color-whatsapp-hover);
+  color: #051b0f;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(15,138,95,0.3);
+  box-shadow: 0 8px 24px rgba(37,211,102,0.35);
 }
 
 .btnGold {

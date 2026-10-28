@@ -26,6 +26,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.6',
+    date: '2026-10-28',
+    title: 'Harmonisasi warna tombol WhatsApp hero dan kontras WCAG AAA',
+    improved: [
+      'Tombol WhatsApp hero diselaraskan kembali ke warna hijau terang asli khas WhatsApp (#25D366) dengan teks hijau hutan gelap berstandar kontras WCAG AAA (7.6:1).',
+    ],
+  },
+  {
     version: '1.7.5',
     date: '2026-10-28',
     title: 'Optimasi performa PageSpeed, aksesibilitas, dan validasi pesanan',
