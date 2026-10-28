@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
-import { useUnsavedGuard } from "@/hooks/use-unsaved-guard"
+import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import { toast } from "react-hot-toast"
 import { Save, Eye, ArrowLeft, ChevronDown, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -75,13 +75,11 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
   // Deteksi perubahan belum-disimpan: bandingkan snapshot kini vs baseline yang
   // ditetapkan setelah data awal termuat. `null` = baseline belum siap (jangan
   // anggap dirty). Lihat NILAI_KOSONG untuk urutan key.
-  const baselineRef = useRef<string | null>(null)
-  const snapshot = () => serialize({
+  const currentSnapshot = serialize({
     title, titleEn, formSlug, excerpt, excerptEn, content, contentEn,
     thumbnail, categoryId, tags, status, metaTitle, metaDescription, ogImage, author,
   })
-  const isDirty = baselineRef.current !== null && snapshot() !== baselineRef.current
-  useUnsavedGuard(isDirty)
+  const { setBaseline } = useUnsavedGuardSnapshot(currentSnapshot)
 
   // Pre-fill penulis dengan nama admin yang login (hanya saat membuat baru).
   useEffect(() => {
@@ -91,9 +89,9 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
       .then(d => {
         const nama = d?.nama || ""
         if (nama) setAuthor(nama)
-        baselineRef.current = serialize({ ...NILAI_KOSONG, author: nama })
+        setBaseline(serialize({ ...NILAI_KOSONG, author: nama }))
       })
-      .catch(() => { baselineRef.current = serialize(NILAI_KOSONG) })
+      .catch(() => { setBaseline(serialize(NILAI_KOSONG)) })
   }, [mode])
 
   useEffect(() => {
@@ -121,7 +119,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
           setOgImage(post.ogImage || "")
           setAuthor(post.author || "")
           // Baseline = kondisi artikel saat baru dimuat (belum ada perubahan).
-          baselineRef.current = serialize({
+          setBaseline(serialize({
             title: post.title || "", titleEn: post.titleEn || "", formSlug: post.slug || "",
             excerpt: post.excerpt || "", excerptEn: post.excerptEn || "",
             content: post.content || "", contentEn: post.contentEn || "",
@@ -129,7 +127,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
             tags: Array.isArray(post.tags) ? post.tags : [], status: post.status || "draft",
             metaTitle: post.metaTitle || "", metaDescription: post.metaDescription || "",
             ogImage: post.ogImage || "", author: post.author || "",
-          })
+          }))
           setLoading(false)
         })
         .catch(() => { toast.error("Gagal memuat artikel"); router.push("/admin/blog") })
@@ -214,7 +212,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
 
       // Tandai bersih agar penjaga unsaved-changes tidak menghalangi navigasi
       // pindah setelah berhasil simpan.
-      baselineRef.current = snapshot()
+      setBaseline(currentSnapshot)
       toast.success(mode === "create" ? "Artikel berhasil dibuat!" : "Artikel berhasil diperbarui!")
       router.push("/admin/blog")
     } catch (e: any) {

@@ -26,6 +26,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.4',
+    date: '2026-10-28',
+    title: 'Garis timeline Log Versi rapi dan stabilisasi form artikel blog',
+    fixed: [
+      'Garis timeline di tab Log Versi Audit Log kini menyambung rapi antar-rilis dan tidak lagi menembus lingkaran versi.',
+      'Deteksi perubahan pada formulir editor artikel blog diselaraskan dengan standar React 19 agar status simpan selalu konsisten.',
+    ],
+  },
+  {
     version: '1.7.3',
     date: '2026-10-27',
     title: 'Kolom Qty invoice tidak lagi terpotong',

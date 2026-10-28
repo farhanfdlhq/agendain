@@ -16,17 +16,22 @@ function Release({ entry, isCurrent }: { entry: ChangelogEntry; isCurrent: boole
   return (
     <li className="group relative pl-8 pb-8 last:pb-0">
       {/* Garis & titik timeline */}
-      <span aria-hidden="true" className="absolute left-[6.5px] top-2 bottom-0 w-0.5 rounded-full bg-primary/20 group-last:hidden" />
+      <span aria-hidden="true" className="absolute left-[6.5px] top-3 -bottom-3 w-0.5 bg-primary/20 group-last:hidden" />
       <span
         aria-hidden="true"
         // Versi saat ini: navy penuh + cincin gold brand. Versi yang sudah
-        // dilewati: navy lembut (bukan putih polos) agar alurnya tetap terbaca.
-        className={`absolute left-0 top-1.5 h-[15px] w-[15px] rounded-full border-2 ${
+        // dilewati: navy lembut (bukan putih polos) berlatar solid agar alurnya
+        // tetap terbaca tanpa tertembus garis timeline.
+        className={`absolute left-0 top-1.5 z-10 h-[15px] w-[15px] rounded-full border-2 ${
           isCurrent
             ? "border-primary bg-primary ring-4 ring-[#FFC704]/40"
-            : "border-primary/50 bg-primary/25"
+            : "border-primary/50 bg-white dark:bg-zinc-900"
         }`}
-      />
+      >
+        {!isCurrent && (
+          <span className="block h-full w-full rounded-full bg-primary/25" />
+        )}
+      </span>
 
       <div className="flex flex-wrap items-center gap-2">
         <h4 className="text-lg font-bold tracking-tight text-foreground">v{entry.version}</h4>

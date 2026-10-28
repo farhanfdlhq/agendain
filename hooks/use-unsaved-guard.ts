@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useConfirm } from "@/components/Providers/ConfirmProvider"
 
@@ -117,11 +117,8 @@ export function useUnsavedGuard(isDirty: boolean) {
  * Selama baseline belum diset, form dianggap belum siap (tidak pernah dirty).
  */
 export function useUnsavedGuardSnapshot(currentSnapshot: string) {
-  const baselineRef = useRef<string | null>(null)
-  const setBaseline = useCallback((snap: string) => {
-    baselineRef.current = snap
-  }, [])
-  const isDirty = baselineRef.current !== null && currentSnapshot !== baselineRef.current
+  const [baseline, setBaseline] = useState<string | null>(null)
+  const isDirty = baseline !== null && currentSnapshot !== baseline
   useUnsavedGuard(isDirty)
   return { setBaseline }
 }
