@@ -11,6 +11,7 @@ import {
   matchesFileSignature,
   OpenTripSchema,
   PaymentAccountSchema,
+  PrivateTripSchema,
   rateLimit,
   sanitizeHtml,
   sanitizeSettingsPayload,
@@ -411,5 +412,46 @@ describe("InvoiceSchema", () => {
     expect(r.success).toBe(true);
     // `total` TIDAK boleh ikut: angka uang selalu dihitung ulang di server.
     expect(Object.keys(r.success ? r.data : {})).not.toContain("total");
+  });
+});
+
+describe("PrivateTripSchema", () => {
+  const valid = {
+    nama: "Budi Traveler",
+    email: "budi@example.com",
+    noWa: "081234567890",
+    destinasi: "Labuan Bajo 3D2N",
+    tanggal: "2026-11-20",
+    pax: 4,
+    budget: "5-10 Juta",
+    catatan: "Include airport transfer",
+  };
+
+  it("menerima data pengajuan valid", () => {
+    const res = PrivateTripSchema.safeParse(valid);
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.data.pax).toBe(4);
+    }
+  });
+
+  it("menolak email dan nomor WA tidak valid", () => {
+    expect(PrivateTripSchema.safeParse({ ...valid, email: "bukan-email" }).success).toBe(false);
+    expect(PrivateTripSchema.safeParse({ ...valid, noWa: "123" }).success).toBe(false);
+  });
+
+  it("menolak tanggal tidak valid (mencegah error 500 pada prisma)", () => {
+    expect(PrivateTripSchema.safeParse({ ...valid, tanggal: "bukan-tanggal" }).success).toBe(false);
+    expect(PrivateTripSchema.safeParse({ ...valid, tanggal: "" }).success).toBe(false);
+  });
+
+  it("menolak pax non-positif atau nol", () => {
+    expect(PrivateTripSchema.safeParse({ ...valid, pax: 0 }).success).toBe(false);
+    expect(PrivateTripSchema.safeParse({ ...valid, pax: -2 }).success).toBe(false);
+  });
+
+  it("menolak nama dan destinasi kosong", () => {
+    expect(PrivateTripSchema.safeParse({ ...valid, nama: "   " }).success).toBe(false);
+    expect(PrivateTripSchema.safeParse({ ...valid, destinasi: " " }).success).toBe(false);
   });
 });

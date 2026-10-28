@@ -262,11 +262,11 @@
   padding: 1.25rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   font-size: 0.8125rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .bottomLink {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.75);
   display: inline-flex;
   align-items: center;
   min-height: 48px;
@@ -275,7 +275,7 @@
 }
 
 .bottomLink:hover {
-  color: var(--color-dominant);
+  color: #ffffff;
 }
 
 /* Tablet: brand selebar penuh, Navigasi & Hubungi berdampingan di bawahnya. */

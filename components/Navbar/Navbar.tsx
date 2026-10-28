@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -61,12 +62,13 @@ export default function Navbar({ settings }: { settings?: any }) {
         <Link href="/" className={styles.logo}>
           {siteLogo ? (
             <div className={styles.logoImageContainer}>
-              <img 
+              <Image 
                 src={siteLogo} 
                 alt={siteName} 
                 className={styles.logoImage} 
                 width={160}
                 height={settings?.logo_height ? Number(settings.logo_height) : 42}
+                priority
                 style={{ '--logo-height': settings?.logo_height ? `${settings.logo_height}px` : undefined } as React.CSSProperties}
               />
             </div>

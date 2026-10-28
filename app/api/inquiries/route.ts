@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/rbac'
-import { PrivateTripStatusUpdateSchema, serverError } from '@/lib/security'
+import { PrivateTripStatusUpdateSchema, getClientIp, serverError } from '@/lib/security'
+import { logAudit } from '@/lib/audit'
 
 export async function GET() {
   try {
@@ -30,15 +31,36 @@ export async function PUT(request: Request) {
     }
     const { id, status } = result.data
 
-    // updateMany, bukan update: baris yang sudah dihapus admin lain tidak
-    // melempar P2025 tapi mengembalikan count 0 → dijawab 404 yang jelas.
-    const updated = await prisma.privateTrip.updateMany({
+    const existing = await prisma.privateTrip.findUnique({
+      where: { id },
+      select: { id: true, nama: true, status: true, destinasi: true },
+    })
+
+    if (!existing) {
+      return NextResponse.json({ error: 'Permintaan tidak ditemukan' }, { status: 404 })
+    }
+
+    await prisma.privateTrip.update({
       where: { id },
       data: { status },
     })
 
-    if (updated.count === 0) {
-      return NextResponse.json({ error: 'Permintaan tidak ditemukan' }, { status: 404 })
+    if (existing.status !== status) {
+      await logAudit({
+        action: 'inquiry.status_change',
+        actorId: gate.actor.userId,
+        actorEmail: gate.actor.email,
+        targetType: 'PrivateTrip',
+        targetId: id,
+        detail: {
+          pelanggan: existing.nama,
+          destinasi: existing.destinasi,
+          dari: existing.status,
+          ke: status,
+        },
+        ip: getClientIp(request),
+        userAgent: request.headers.get('user-agent'),
+      })
     }
 
     return NextResponse.json({ success: true, status })

@@ -12,7 +12,7 @@ export default function LanguageToggle() {
       <button
         className={`${styles.toggleBtn} ${locale === 'id' ? styles.activeText : ''}`}
         onClick={() => setLocale('id')}
-        aria-label="Bahasa Indonesia"
+        aria-label="ID — Bahasa Indonesia"
       >
         {locale === 'id' && (
           <motion.div layoutId="activeLangBg" className={styles.activeBg} transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
@@ -24,7 +24,7 @@ export default function LanguageToggle() {
       <button
         className={`${styles.toggleBtn} ${locale === 'en' ? styles.activeText : ''}`}
         onClick={() => setLocale('en')}
-        aria-label="English"
+        aria-label="EN — English"
       >
         {locale === 'en' && (
           <motion.div layoutId="activeLangBg" className={styles.activeBg} transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />

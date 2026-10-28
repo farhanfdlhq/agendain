@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/rbac'
-import { BookingStatusSchema } from '@/lib/security'
+import { BookingStatusSchema, getClientIp } from '@/lib/security'
 import { BookingError, remainingTripSeats } from '@/lib/booking'
 import { revalidateOpenTrips } from '@/lib/revalidate-open-trips'
+import { logAudit } from '@/lib/audit'
 
 export async function PATCH(
   request: Request,
@@ -22,8 +23,12 @@ export async function PATCH(
     const bookingId = Number(id)
 
     if (!Number.isSafeInteger(bookingId) || bookingId <= 0) {
-        return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
     }
+
+    let previousStatus = ''
+    let bookingCustomer = ''
+    let tripTitle = ''
 
     const updatedBooking = await prisma.$transaction(async (tx) => {
       const locked = await tx.$queryRaw<Array<{ id: number }>>
@@ -31,9 +36,15 @@ export async function PATCH(
          WHERE b.id = ${bookingId} FOR UPDATE`
       if (!locked.length) throw new BookingError('Booking tidak ditemukan', 404)
       const booking = await tx.booking.findUnique({
-        where: { id: bookingId }, include: { openTrip: true },
+        where: { id: bookingId },
+        include: { openTrip: true },
       })
       if (!booking) throw new BookingError('Booking tidak ditemukan', 404)
+
+      previousStatus = booking.status
+      bookingCustomer = booking.nama
+      tripTitle = booking.openTrip?.nama ?? `Trip #${booking.openTripId}`
+
       if (data.status === 'paid' && booking.status !== 'paid') {
         const paid = await tx.booking.aggregate({
           where: { openTripId: booking.openTripId, status: 'paid', id: { not: bookingId } },
@@ -46,6 +57,24 @@ export async function PATCH(
       }
       return tx.booking.update({ where: { id: bookingId }, data: { status: data.status } })
     })
+
+    if (previousStatus !== updatedBooking.status) {
+      await logAudit({
+        action: 'booking.status_change',
+        actorId: gate.actor.userId,
+        actorEmail: gate.actor.email,
+        targetType: 'Booking',
+        targetId: bookingId,
+        detail: {
+          pelanggan: bookingCustomer,
+          paket: tripTitle,
+          dari: previousStatus,
+          ke: updatedBooking.status,
+        },
+        ip: getClientIp(request),
+        userAgent: request.headers.get('user-agent'),
+      })
+    }
 
     revalidateOpenTrips()
     return NextResponse.json(updatedBooking)
@@ -70,11 +99,36 @@ export async function DELETE(
     const bookingId = parseInt(id)
 
     if (isNaN(bookingId)) {
-        return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
+    }
+
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: { openTrip: { select: { nama: true } } },
+    })
+
+    if (!booking) {
+      return NextResponse.json({ error: 'Booking tidak ditemukan' }, { status: 404 })
     }
 
     await prisma.booking.delete({
-      where: { id: bookingId }
+      where: { id: bookingId },
+    })
+
+    await logAudit({
+      action: 'booking.delete',
+      actorId: gate.actor.userId,
+      actorEmail: gate.actor.email,
+      targetType: 'Booking',
+      targetId: bookingId,
+      detail: {
+        pelanggan: booking.nama,
+        paket: booking.openTrip?.nama,
+        total: booking.total,
+        status: booking.status,
+      },
+      ip: getClientIp(request),
+      userAgent: request.headers.get('user-agent'),
     })
 
     revalidateOpenTrips()

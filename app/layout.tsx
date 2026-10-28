@@ -55,7 +55,7 @@ const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: 
 // disebut eksplisit. Rentangnya menutup 800 yang dipakai .heroTitle.
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800", "900"], variable: "--font-poppins", display: 'swap', preload: false });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: 'swap', preload: false });
-const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-plus-jakarta", display: 'swap', preload: true });
+const plusJakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-plus-jakarta", display: 'swap', preload: false });
 const roboto = Roboto({ subsets: ["latin"], variable: "--font-roboto", display: 'swap', preload: false });
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans", display: 'swap', preload: false });
 const lora = Lora({ subsets: ["latin"], variable: "--font-lora", display: 'swap', preload: false });

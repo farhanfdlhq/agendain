@@ -215,6 +215,26 @@ export const PrivateTripStatusUpdateSchema = z.object({
   status: z.enum(PRIVATE_TRIP_STATUSES),
 });
 
+// Formulir pengajuan Private Trip dari halaman depan. Tanggal divalidasi
+// agar tidak melempar Invalid Date ke Prisma (menghindari error 500).
+export const PrivateTripSchema = z.object({
+  nama: z.string().trim().min(1, "Nama harus diisi").max(100),
+  email: z.string().trim().email("Email tidak valid"),
+  noWa: z
+    .string()
+    .trim()
+    .min(8, "Nomor WA terlalu pendek")
+    .max(20, "Nomor WA terlalu panjang"),
+  destinasi: z.string().trim().min(2, "Destinasi harus diisi").max(200),
+  tanggal: z
+    .string()
+    .min(1, "Tanggal harus diisi")
+    .refine((v) => !Number.isNaN(new Date(v).getTime()), "Format tanggal tidak valid"),
+  pax: z.coerce.number().int().positive("Jumlah pax harus lebih dari 0").max(500),
+  budget: z.string().trim().min(2, "Budget harus diisi").max(100),
+  catatan: z.string().trim().max(1000).optional().nullable(),
+});
+
 // Akun pembayaran yang tercetak di invoice. SATU bentuk menampung rekening
 // lokal (nomor) maupun internasional (IBAN/BIC) — admin membedakannya lewat
 // `label` bergaya "WISE EUR" / "BCA IDR", bukan lewat tipe terpisah. Key tak

@@ -26,6 +26,20 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.5',
+    date: '2026-10-28',
+    title: 'Optimasi performa PageSpeed, aksesibilitas, dan validasi pesanan',
+    improved: [
+      'Peningkatan kecepatan visual loading beranda (Speed Index & LCP): eliminasi animasi berat berkelanjutan pada foto hero dan penataan prioritas unduhan aset.',
+      'Aksesibilitas web diselaraskan dengan standar WCAG AAA: perbaikan rasio kontras warna tombol WhatsApp, footer, serta label pada tombol ganti bahasa.',
+      'Pencatatan Audit Log kini otomatis merekam setiap perubahan status dan penghapusan pesanan open trip serta status pengajuan private trip.',
+      'Aksesibilitas tombol aksi dan pilihan status pada tabel pesanan ditingkatkan dengan label deskriptif.',
+    ],
+    fixed: [
+      'Pengajuan private trip kini memvalidasi format tanggal di awal untuk mencegah kegagalan sistem saat tanggal tidak valid.',
+    ],
+  },
+  {
     version: '1.7.4',
     date: '2026-10-28',
     title: 'Garis timeline Log Versi rapi dan stabilisasi form artikel blog',

@@ -32,9 +32,7 @@
 .heroImage {
   object-fit: cover;
   object-position: center;
-  /* Ken Burns: zoom + pan sangat lambat & mengendap (kesan film travel). */
-  animation: heroKenBurns 40s ease-out forwards;
-  will-change: transform;
+
 }
 
 @keyframes heroKenBurns {
@@ -130,7 +128,7 @@
   gap: 0.5rem;
   padding: 0.875rem 1.75rem;
   border-radius: var(--radius-full);
-  background: var(--color-whatsapp);
+  background: #0f8a5f; /* Accessible WhatsApp green (4.54:1 contrast dengan putih) */
   color: #ffffff;
   font-weight: 700;
   font-size: 1rem;
@@ -140,9 +138,9 @@
 }
 
 .btnWhatsapp:hover {
-  background: var(--color-whatsapp-hover);
+  background: #0b734f;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(27,122,67,0.3);
+  box-shadow: 0 8px 24px rgba(15,138,95,0.3);
 }
 
 .btnGold {
@@ -214,9 +212,23 @@
    permintaan klien. (Kuning di putih kontrasnya rendah = getaran halus, tapi ini
    keputusan brand — dipakai HANYA pada 1 kata sebagai aksen, bukan blok teks.) */
 /* "Agendain" = teks kuning (keputusan klien). Dasar heading tetap biru. */
+/* Kata sorotan di heading berlatar terang (Why, Accordion, Destinasi, FAQ)
+   dibuat CHIP kuning (fill + teks navy) agar kontras 8.2:1 (lulus WCAG AAA),
+   menghindari teks kuning tipis di atas putih yang hanya berkontras ~1.5:1. */
 .whyTitleSub .textYellow,
-.whyTitleSub .heroTitleGold {
-  color: var(--color-dominant);
+.whyTitleSub .heroTitleGold,
+.accordionTitleCenter .textYellow,
+.accordionTitleCenter .heroTitleGold,
+.destTitle .textYellow,
+.destTitle .heroTitleGold,
+.faqTitle .textYellow,
+.faqTitle .heroTitleGold {
+  display: inline-block;
+  background: var(--color-dominant);
+  color: var(--color-primary);
+  padding: 0.05em 0.35em;
+  border-radius: 6px;
+  line-height: 1.2;
 }
 
 /* Eyebrow (pill terang): kata ber-*teks* jadi CHIP kuning (fill + teks navy),

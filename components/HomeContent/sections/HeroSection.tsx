@@ -41,7 +41,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
   // Kaskade halus antar-elemen hero.
   const container: Variants = {
     hidden: {},
-    visible: { transition: { staggerChildren: reduce ? 0 : 0.09, delayChildren: 0.15 } },
+    visible: { transition: { staggerChildren: reduce ? 0 : 0.04, delayChildren: 0 } },
   }
   // Hanya menganimasikan transform (y/scale) — di-composite GPU & TIDAK menahan
   // cat pertama. `opacity` sengaja TETAP 1: judul & subtitle adalah konten
@@ -86,7 +86,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
           fetchPriority="high"
           className={styles.heroImage}
           quality={75}
-          sizes="100vw"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
         />
         <div className={styles.heroOverlay} />
       </div>
@@ -136,11 +136,11 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
         aria-hidden="true"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: reduce ? 0.3 : 1.1, duration: 0.6 }}
+        transition={{ delay: 0.3, duration: 0.4 }}
       >
         <motion.span
           animate={reduce ? undefined : { y: [0, 8, 0] }}
-          transition={reduce ? undefined : { repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+          transition={reduce ? undefined : { repeat: 1, duration: 1.0, ease: 'easeInOut' }}
         >
           <ChevronDown size={30} />
         </motion.span>

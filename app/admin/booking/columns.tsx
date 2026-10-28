@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge"
 import { CalendarDays, Trash2, Eye } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { toast } from "react-hot-toast"
 
 export type Booking = {
   id: number
@@ -133,7 +132,10 @@ export const createColumns = (
           value={b.status} 
           onValueChange={(val) => handleStatusChange(b.id, val)}
         >
-          <SelectTrigger className={`h-8 min-w-[130px] border-none font-medium ${getStatusColor(b.status)}`}>
+          <SelectTrigger 
+            className={`h-8 min-w-[130px] border-none font-medium ${getStatusColor(b.status)}`}
+            aria-label={`Ubah status pesanan ${b.nama}`}
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -158,6 +160,7 @@ export const createColumns = (
             className="h-8 w-8 text-muted-foreground hover:text-foreground"
             onClick={() => handleViewDetails(b)}
             title="Lihat Detail"
+            aria-label={`Lihat detail pesanan ${b.nama}`}
           >
             <Eye className="h-4 w-4" />
           </Button>
@@ -167,6 +170,7 @@ export const createColumns = (
             className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:border-transparent"
             onClick={() => handleDelete(b.id)}
             title="Hapus"
+            aria-label={`Hapus pesanan ${b.nama}`}
           >
             <Trash2 className="h-4 w-4" />
           </Button>

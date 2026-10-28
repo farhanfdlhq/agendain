@@ -1,22 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
-import { z } from "zod";
-import { rateLimit, checkCSRF, getClientIp } from "@/lib/security";
-
-const PrivateTripSchema = z.object({
-  nama: z.string().min(1, "Nama harus diisi").max(100),
-  email: z.string().email("Email tidak valid"),
-  noWa: z
-    .string()
-    .min(8, "Nomor WA terlalu pendek")
-    .max(20, "Nomor WA terlalu panjang"),
-  destinasi: z.string().min(2, "Destinasi harus diisi"),
-  tanggal: z.string().datetime().or(z.string().min(1)),
-  pax: z.coerce.number().int().positive().max(500),
-  budget: z.string().min(2, "Budget harus diisi"),
-  catatan: z.string().max(1000).optional().nullable(),
-});
+import { rateLimit, checkCSRF, getClientIp, PrivateTripSchema } from "@/lib/security";
 
 export async function POST(req: Request) {
   // 1. CSRF Protection
