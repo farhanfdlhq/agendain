@@ -26,6 +26,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.7',
+    date: '2026-10-30',
+    title: 'Pembaruan keamanan, tombol Coba Lagi yang andal, dan sorotan judul Beranda',
+    improved: [
+      'Pembaruan keamanan sistem website: dua celah keamanan tingkat tinggi pada komponen pendukung sudah ditutup.',
+      'Tombol Coba Lagi di halaman error kini memuat ulang data lebih dulu, lalu memuat ulang halaman bila masih gagal, lengkap dengan tanda sedang memuat.',
+      'Kata sorotan di judul Destinasi, Cerita, dan FAQ Beranda kembali berupa teks kuning; judul Mengapa Agendain memakai sorotan sapuan kuas kuning.',
+      'Logo di menu atas langsung tampil dengan ukuran tetap sehingga tampilan tidak bergeser saat halaman dimuat.',
+    ],
+  },
+  {
     version: '1.7.6',
     date: '2026-10-28',
     title: 'Harmonisasi warna tombol WhatsApp hero dan kontras WCAG AAA',

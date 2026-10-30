@@ -63,7 +63,18 @@ export default function GlobalError({
             Ada gangguan di sistem kami saat memuat halaman. Coba lagi sebentar; bila masih terjadi, kembali ke Beranda.
           </p>
           <div className="ge-actions">
-            <button type="button" className="ge-btn ge-primary" onClick={() => retry()}>
+            <button
+              type="button"
+              className="ge-btn ge-primary"
+              onClick={() => {
+                try {
+                  retry()
+                } catch {
+                  // ignore
+                }
+                window.location.reload()
+              }}
+            >
               Coba lagi
             </button>
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- sengaja full reload; root layout sedang gagal */}

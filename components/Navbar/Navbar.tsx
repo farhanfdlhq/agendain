@@ -66,10 +66,15 @@ export default function Navbar({ settings }: { settings?: any }) {
                 src={siteLogo} 
                 alt={siteName} 
                 className={styles.logoImage} 
-                width={160}
+                width={193}
                 height={settings?.logo_height ? Number(settings.logo_height) : 42}
                 priority
-                style={{ '--logo-height': settings?.logo_height ? `${settings.logo_height}px` : undefined } as React.CSSProperties}
+                style={{ 
+                  width: 'auto',
+                  height: settings?.logo_height ? `${settings.logo_height}px` : '42px',
+                  aspectRatio: '689 / 150',
+                  '--logo-height': settings?.logo_height ? `${settings.logo_height}px` : undefined 
+                } as React.CSSProperties}
               />
             </div>
           ) : (

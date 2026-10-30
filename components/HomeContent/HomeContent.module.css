@@ -213,23 +213,49 @@
    permintaan klien. (Kuning di putih kontrasnya rendah = getaran halus, tapi ini
    keputusan brand — dipakai HANYA pada 1 kata sebagai aksen, bukan blok teks.) */
 /* "Agendain" = teks kuning (keputusan klien). Dasar heading tetap biru. */
-/* Kata sorotan di heading berlatar terang (Why, Accordion, Destinasi, FAQ)
-   dibuat CHIP kuning (fill + teks navy) agar kontras 8.2:1 (lulus WCAG AAA),
-   menghindari teks kuning tipis di atas putih yang hanya berkontras ~1.5:1. */
-.whyTitleSub .textYellow,
-.whyTitleSub .heroTitleGold,
+/* Gambar 1, 2, 3: kata sorotan di heading Destinasi, Accordion Story, dan FAQ
+   hanya berupa teks kuning (tanpa background). */
 .accordionTitleCenter .textYellow,
 .accordionTitleCenter .heroTitleGold,
 .destTitle .textYellow,
 .destTitle .heroTitleGold,
 .faqTitle .textYellow,
 .faqTitle .heroTitleGold {
+  color: var(--color-dominant);
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  display: inline;
+}
+
+/* Gambar 4: kata sorotan di heading Why Us ("Agendain") memakai efek
+   sapuan kuas (brush stroke/highlighter) organik dinamis — tidak kotak kaku. */
+.whyTitleSub .textYellow,
+.whyTitleSub .heroTitleGold {
+  position: relative;
   display: inline-block;
-  background: var(--color-dominant);
   color: var(--color-primary);
-  padding: 0.05em 0.35em;
-  border-radius: 6px;
-  line-height: 1.2;
+  padding: 0.08em 0.45em;
+  line-height: 1.15;
+  z-index: 1;
+  white-space: nowrap;
+}
+
+.whyTitleSub .textYellow::before,
+.whyTitleSub .heroTitleGold::before {
+  content: "";
+  position: absolute;
+  inset: -10% -6% -10% -6%;
+  background: var(--color-dominant);
+  z-index: -1;
+  border-radius: 255px 25px 225px 25px/25px 225px 25px 255px;
+  transform: rotate(-1.5deg);
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20600%20140'%20preserveAspectRatio='none'%3E%3Cpath%20d='M15,65%20C12,45%2028,32%2055,28%20C120,20%20200,28%20290,22%20C380,16%20460,24%20535,28%20C565,30%20588,40%20585,62%20C582,82%20560,105%20525,112%20C445,124%20350,114%20260,120%20C170,126%2085,120%2040,112%20C18,108%205,95%208,76%20C9,68%2012,66%2015,65%20Z'%20fill='%23000'/%3E%3Cpath%20d='M45,26%20C120,18%20220,24%20330,16%20C410,12%20480,20%20545,22%20C560,23%20570,28%20565,33%20C545,31%20480,24%20410,21%20C310,28%20200,24%2095,30%20C65,32%2045,30%2045,26%20Z'%20fill='%23000'/%3E%3Cpath%20d='M30,114%20C75,122%20165,128%20260,122%20C360,116%20450,124%20530,112%20C542,110%20550,115%20540,118%20C470,128%20380,122%20280,126%20C190,130%20100,126%2035,120%20C25,118%2025,113%2030,114%20Z'%20fill='%23000'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20600%20140'%20preserveAspectRatio='none'%3E%3Cpath%20d='M15,65%20C12,45%2028,32%2055,28%20C120,20%20200,28%20290,22%20C380,16%20460,24%20535,28%20C565,30%20588,40%20585,62%20C582,82%20560,105%20525,112%20C445,124%20350,114%20260,120%20C170,126%2085,120%2040,112%20C18,108%205,95%208,76%20C9,68%2012,66%2015,65%20Z'%20fill='%23000'/%3E%3Cpath%20d='M45,26%20C120,18%20220,24%20330,16%20C410,12%20480,20%20545,22%20C560,23%20570,28%20565,33%20C545,31%20480,24%20410,21%20C310,28%20200,24%2095,30%20C65,32%2045,30%2045,26%20Z'%20fill='%23000'/%3E%3Cpath%20d='M30,114%20C75,122%20165,128%20260,122%20C360,116%20450,124%20530,112%20C542,110%20550,115%20540,118%20C470,128%20380,122%20280,126%20C190,130%20100,126%2035,120%20C25,118%2025,113%2030,114%20Z'%20fill='%23000'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 
 /* Eyebrow (pill terang): kata ber-*teks* jadi CHIP kuning (fill + teks navy),

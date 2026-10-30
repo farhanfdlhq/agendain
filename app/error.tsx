@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
 import { AlertOctagon, RefreshCcw, Home } from "lucide-react"
 
 export default function Error({
@@ -10,15 +11,36 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+  const [attempts, setAttempts] = useState(0)
+
   useEffect(() => {
     console.error("Application Error:", error)
   }, [error])
+
+  const handleRetry = () => {
+    if (attempts > 0) {
+      window.location.reload()
+      return
+    }
+    setAttempts((prev) => prev + 1)
+    try {
+      startTransition(() => {
+        router.refresh()
+        reset()
+      })
+    } catch {
+      window.location.reload()
+    }
+  }
 
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', 
       minHeight: '70vh', padding: '0 1rem', textAlign: 'center', fontFamily: 'var(--font-body, system-ui, sans-serif)'
     }}>
+      <style dangerouslySetInnerHTML={{ __html: `@keyframes errorRetrySpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }` }} />
       <div style={{ position: 'relative', marginBottom: '2rem' }}>
         <div style={{ 
           position: 'absolute', inset: 0, backgroundColor: 'var(--color-error, #ef4444)', 
@@ -45,16 +67,20 @@ export default function Error({
       
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'center' }}>
         <button
-          onClick={() => reset()}
+          type="button"
+          onClick={handleRetry}
+          disabled={isPending}
           style={{
             display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', borderRadius: '0.75rem',
-            fontWeight: 600, backgroundColor: 'var(--color-error, #ef4444)', color: '#ffffff', border: 'none', cursor: 'pointer',
+            fontWeight: 600, backgroundColor: 'var(--color-error, #ef4444)', color: '#ffffff', border: 'none',
+            cursor: isPending ? 'wait' : 'pointer', opacity: isPending ? 0.8 : 1,
             transition: 'opacity 0.2s', boxShadow: '0 10px 25px -5px rgba(239, 68, 68, 0.3)'
           }}
-          onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
-          onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+          onMouseOver={(e) => { if (!isPending) e.currentTarget.style.opacity = '0.9' }}
+          onMouseOut={(e) => { if (!isPending) e.currentTarget.style.opacity = '1' }}
         >
-          <RefreshCcw size={18} /> Coba Lagi
+          <RefreshCcw size={18} style={{ animation: isPending ? 'errorRetrySpin 1s linear infinite' : 'none' }} />
+          {isPending ? 'Memuat Ulang...' : 'Coba Lagi'}
         </button>
         <a 
           href="/"

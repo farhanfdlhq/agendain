@@ -3,7 +3,7 @@ import path from "path";
 
 export default defineConfig({
   test: {
-    exclude: ["**/node_modules/**", "**/.claude/**", "**/.worktrees/**", "**/.next/**"],
+    exclude: ["**/node_modules/**", "**/.claude/**", "**/.worktrees/**", "**/.next/**", "**/.agents/**"],
   },
   resolve: {
     alias: {
