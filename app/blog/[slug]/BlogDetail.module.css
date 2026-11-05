@@ -181,6 +181,72 @@
   text-underline-offset: 4px;
 }
 
+/* Ajakan ke Private/Open Trip di akhir artikel. Latar tint emas (bukan strip
+   tepi) membedakannya dari isi artikel; satu tombol utama navy, satu sekunder. */
+.tripCta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-top: 3rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-dominant-tint);
+}
+
+.tripCtaLabel {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.tripCtaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.tripCtaPrimary,
+.tripCtaSecondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.tripCtaPrimary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.tripCtaPrimary:hover {
+  background: var(--color-primary-active);
+}
+
+.tripCtaSecondary {
+  border: 1px solid var(--color-primary);
+  background: var(--color-surface-card);
+  color: var(--color-primary);
+}
+
+.tripCtaSecondary:hover {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.tripCtaPrimary:focus-visible,
+.tripCtaSecondary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .relatedGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

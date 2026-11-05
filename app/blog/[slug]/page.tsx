@@ -5,6 +5,7 @@ import BlogDetailContent from './BlogDetailContent'
 import { pageMeta } from '@/lib/og'
 import { JsonLd, blogPostingLd, breadcrumbLd } from '@/lib/jsonld'
 import { LOGO_BLUE } from '@/lib/site-logo'
+import { RELATED_LIMIT, fillRelated } from '@/lib/blog-list'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -27,13 +28,23 @@ export default async function BlogDetailPage({ params }: Props) {
   const post = await prisma.blogPost.findUnique({ where: { slug }, include: { category: true } })
   if (!post || post.status !== 'published') notFound()
 
-  // Related posts: same category, exclude current, max 3
-  const related = await prisma.blogPost.findMany({
-    where: { categoryId: post.categoryId, status: 'published', slug: { not: slug } },
-    take: 3,
-    orderBy: { publishedAt: 'desc' },
-    include: { category: true }
-  })
+  // Artikel terkait: kategori sama dulu, kekurangannya diisi artikel terbaru lain.
+  const others = { status: 'published', slug: { not: slug } }
+  const [sameCategory, latest] = await Promise.all([
+    prisma.blogPost.findMany({
+      where: { ...others, categoryId: post.categoryId },
+      take: RELATED_LIMIT,
+      orderBy: { publishedAt: 'desc' },
+      include: { category: true },
+    }),
+    prisma.blogPost.findMany({
+      where: { ...others, categoryId: { not: post.categoryId } },
+      take: RELATED_LIMIT,
+      orderBy: { publishedAt: 'desc' },
+      include: { category: true },
+    }),
+  ])
+  const related = fillRelated(sameCategory, latest)
 
   return (
     <>

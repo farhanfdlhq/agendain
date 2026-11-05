@@ -62,3 +62,22 @@ export function readMinutes(html: string | null | undefined): number {
   if (!text) return 1
   return Math.max(1, Math.ceil(text.split(/\s+/).length / 200))
 }
+
+export const RELATED_LIMIT = 3
+
+/**
+ * Artikel terkait: kategori yang sama dulu, lalu diisi artikel terbaru dari
+ * kategori lain sampai `limit`. Kategori yang isinya sedikit tetap menautkan
+ * artikel lain — tautan internal membantu Google menemukan & menilai artikel.
+ */
+export function fillRelated<T extends { id: number }>(sameCategory: T[], latest: T[], limit = RELATED_LIMIT): T[] {
+  const picked = sameCategory.slice(0, limit)
+  const seen = new Set(picked.map((p) => p.id))
+  for (const post of latest) {
+    if (picked.length >= limit) break
+    if (seen.has(post.id)) continue
+    picked.push(post)
+    seen.add(post.id)
+  }
+  return picked
+}

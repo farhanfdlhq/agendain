@@ -4,6 +4,7 @@ import {
   blogListHref,
   blogPageCount,
   blogPageWindow,
+  fillRelated,
   hasFeatured,
   parseBlogQuery,
   readMinutes,
@@ -79,5 +80,18 @@ describe("readMinutes", () => {
     expect(readMinutes("")).toBe(1)
     expect(readMinutes("<p>halo</p>")).toBe(1)
     expect(readMinutes(`<p>${"kata ".repeat(401)}</p>`)).toBe(3)
+  })
+})
+
+describe("fillRelated", () => {
+  const p = (id: number) => ({ id })
+  it("kategori sama dulu, kekurangan diisi artikel terbaru lain tanpa duplikat", () => {
+    expect(fillRelated([p(1)], [p(1), p(5), p(6), p(7)]).map((x) => x.id)).toEqual([1, 5, 6])
+  })
+  it("kategori sama sudah cukup: tidak ditambah", () => {
+    expect(fillRelated([p(1), p(2), p(3), p(4)], [p(9)]).map((x) => x.id)).toEqual([1, 2, 3])
+  })
+  it("artikel di blog lebih sedikit dari batas: kembalikan yang ada", () => {
+    expect(fillRelated([], [p(2)]).map((x) => x.id)).toEqual([2])
   })
 })

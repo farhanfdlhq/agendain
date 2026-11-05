@@ -26,6 +26,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.0',
+    date: '2026-11-05',
+    title: 'Ajakan trip dan artikel terkait yang selalu terisi di halaman artikel blog',
+    added: [
+      'Di akhir setiap artikel blog kini ada ajakan "Mau Berangkat?" dengan tombol ke halaman Private Trip dan jadwal Open Trip.',
+    ],
+    improved: [
+      'Bagian Artikel Terkait selalu menampilkan 3 artikel: dari kategori yang sama lebih dulu, lalu dilengkapi artikel terbaru lainnya.',
+    ],
+  },
+  {
     version: '1.7.8',
     date: '2026-11-05',
     title: 'Ikon tab situs memakai alamat tetap',

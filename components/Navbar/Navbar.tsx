@@ -10,7 +10,7 @@ import { generateWhatsAppLink } from '@/lib/utils'
 import styles from './Navbar.module.css'
 import { siteLogoOr } from "@/lib/site-logo"
 
-export default function Navbar({ settings }: { settings?: any }) {
+export default function Navbar({ settings }: { settings?: Record<string, string | undefined> }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)

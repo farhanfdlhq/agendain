@@ -82,6 +82,9 @@ export default function Error({
           <RefreshCcw size={18} style={{ animation: isPending ? 'errorRetrySpin 1s linear infinite' : 'none' }} />
           {isPending ? 'Memuat Ulang...' : 'Coba Lagi'}
         </button>
+        {/* Sengaja <a>, bukan <Link>: setelah error, muat ulang penuh ke Beranda
+            supaya state aplikasi yang rusak ikut bersih. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
         <a 
           href="/"
           style={{

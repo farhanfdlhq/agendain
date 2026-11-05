@@ -30,7 +30,7 @@ type BlogPost = {
   publishedAt: Date | string | null
   createdAt: Date | string
   updatedAt: Date | string
-  tags: any
+  tags: unknown
   readCount?: number
   category: BlogCategory
 }
@@ -140,6 +140,18 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
             </div>
           </FadeIn>
         )}
+
+        {/* Ajakan ke halaman produk: tautan internal artikel → Private/Open Trip.
+            Teks memakai kunci i18n yang sudah ada (CTA Beranda & Open Trip). */}
+        <FadeIn direction="up" delay={0.35}>
+          <div className={styles.tripCta}>
+            <p className={styles.tripCtaLabel}>{t('openTrip.cta.label')}</p>
+            <div className={styles.tripCtaActions}>
+              <Link href="/private-trip" className={styles.tripCtaPrimary}>{t('home.ctaPrimary')}</Link>
+              <Link href="/open-trip" className={styles.tripCtaSecondary}>{t('openTrip.cta.btnSecondary')}</Link>
+            </div>
+          </div>
+        </FadeIn>
 
         {/* Related Posts */}
         {related.length > 0 && (
