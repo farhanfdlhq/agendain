@@ -26,6 +26,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.3',
+    date: '2026-11-05',
+    title: 'Halaman pemeliharaan ikut memakai favicon baru',
+    fixed: [
+      'Halaman "sedang diperbarui" yang tampil saat website dipasang ulang kini memakai favicon baru bila favicon di Pengaturan dikosongkan.',
+    ],
+  },
+  {
     version: '1.8.2',
     date: '2026-11-05',
     title: 'Favicon baru dari huruf "g" logo agendain.id',

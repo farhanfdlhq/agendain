@@ -13,6 +13,7 @@ import { readFile, writeFile } from "node:fs/promises"
 import path from "node:path"
 import { PrismaClient } from "@prisma/client"
 import { MAX_BRAND_BYTES, injectBrand, mimeFromPath, publicRelativePath, toDataUri } from "../lib/error-page-brand"
+import { BRAND_ICONS, customFavicon } from "../lib/site-icons"
 
 const PUBLIC_DIR = path.join(process.cwd(), "public")
 const PAGE = path.join(PUBLIC_DIR, "error-page.html")
@@ -44,7 +45,8 @@ async function main() {
     const rows = await prisma.setting.findMany({ where: { key: { in: ["site_logo", "site_favicon"] } } })
     const map = Object.fromEntries(rows.map((r) => [r.key, r.value]))
     const logo = await asDataUri(map.site_logo, "logo")
-    const favicon = await asDataUri(map.site_favicon, "favicon")
+    // Favicon CMS kosong = situs memakai favicon brand, halaman error ikut sama.
+    const favicon = await asDataUri(customFavicon(map.site_favicon) ?? BRAND_ICONS.ico, "favicon")
     const html = await readFile(PAGE, "utf8")
     await writeFile(PAGE, injectBrand(html, { logo, favicon }))
   } finally {
