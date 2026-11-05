@@ -62,12 +62,12 @@ export function pageMeta(opts: {
       locale: "id_ID",
       images: [{ url: img, width: 1200, height: 630, alt: opts.title }],
     },
+    // Tanpa `site`/`creator`: Agendain belum punya akun X (sosial resmi: Instagram,
+    // Threads, YouTube). Handle @agendain dulu menunjuk akun pihak lain.
     twitter: {
       card: "summary_large_image",
       title: opts.title,
       description: opts.description,
-      site: "@agendain",
-      creator: "@agendain",
       images: [{ url: img, alt: opts.title }],
     },
   };

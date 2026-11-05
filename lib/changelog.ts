@@ -26,6 +26,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.1',
+    date: '2026-11-05',
+    title: 'Ajakan di artikel blog senada dengan banner situs',
+    improved: [
+      'Kotak "Mau Berangkat?" di akhir artikel kini bergaya sama dengan banner ajakan di halaman Open Trip dan Private Trip: latar biru-navy dan tombol kuning seperti tombol "Agendain aja!".',
+    ],
+    fixed: [
+      'Pratinjau tautan di X (Twitter) tidak lagi mencantumkan akun @agendain, karena akun itu bukan milik Agendain.',
+    ],
+  },
+  {
     version: '1.8.0',
     date: '2026-11-05',
     title: 'Ajakan trip dan artikel terkait yang selalu terisi di halaman artikel blog',

@@ -195,12 +195,11 @@ export async function generateMetadata(): Promise<Metadata> {
         },
       ],
     },
+    // Tanpa `site`/`creator`: Agendain belum punya akun X (lihat lib/og.ts).
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      site: "@agendain",
-      creator: "@agendain",
       images: [
         { url: `${SITE_URL}/og-image.jpg`, alt: `${siteName} — Open Trip & Private Trip Eropa` },
       ],
