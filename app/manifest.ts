@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
-import { LOGO_BLUE } from "@/lib/site-logo";
+import { BRAND_ICONS } from "@/lib/site-icons";
 
 // Web App Manifest → Next menyajikannya di /manifest.webmanifest dan otomatis
 // menambah <link rel="manifest">. Mengaktifkan "Add to Home Screen" (Android)
-// & melengkapi identitas PWA. Ikon memakai logo yang sudah ada di /public.
+// & melengkapi identitas PWA. Ikon persegi dari set favicon brand (lib/site-icons).
 export const dynamic = "force-static";
 
 export default function manifest(): MetadataRoute.Manifest {
@@ -16,6 +16,10 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#F5A623",
-    icons: [{ src: LOGO_BLUE, sizes: "any", type: "image/png" }],
+    icons: [
+      { src: BRAND_ICONS.png192, sizes: "192x192", type: "image/png" },
+      { src: BRAND_ICONS.png512, sizes: "512x512", type: "image/png" },
+      { src: BRAND_ICONS.maskable512, sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
   };
 }

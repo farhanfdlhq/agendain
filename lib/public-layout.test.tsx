@@ -46,9 +46,10 @@ it("RootLayout hanya menserialisasi identitas publik dan footer CMS ke Client Co
 // Dulu favicon diberi `?t=<waktu render>` sehingga Google menemukan URL baru di
 // tiap kunjungan (31 URL favicon "Di-crawl, tidak diindeks" di Search Console).
 it("URL favicon stabil antar-render, tanpa parameter waktu", async () => {
-  const first = (await generateMetadata()).icons as { icon: string };
+  const first = JSON.stringify((await generateMetadata()).icons);
   await new Promise(r => setTimeout(r, 5));
-  const second = (await generateMetadata()).icons as { icon: string };
-  expect(first.icon).toBe("/favicon.ico");
-  expect(second.icon).toBe(first.icon);
+  const second = JSON.stringify((await generateMetadata()).icons);
+  expect(first).toContain("/icons/favicon.svg");
+  expect(first).not.toMatch(/\?t=/);
+  expect(second).toBe(first);
 });

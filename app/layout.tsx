@@ -15,6 +15,7 @@ import {
   Cabin,
 } from "next/font/google";
 import localFont from "next/font/local";
+import { siteIcons } from "@/lib/site-icons";
 import "./globals.css";
 import {
   DEFAULT_BODY_FONT,
@@ -141,11 +142,6 @@ export const viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const settingsObj = await getSettings()
   const siteName = settingsObj.site_name || "Agendain"
-  // URL favicon harus stabil. Dulu diberi `?t=${Date.now()}` sehingga tiap render
-  // memunculkan URL baru — Search Console mencatat puluhan URL favicon
-  // "Di-crawl, tidak diindeks". Unggahan sudah bernama unik per file (api/upload),
-  // jadi favicon baru otomatis berganti URL tanpa parameter tambahan.
-  const siteFavicon = settingsObj.site_favicon || "/favicon.ico"
   
   const title = `${siteName} | Travel Eropa & Italia dari Indonesia`
   const description = `Open trip & private trip Eropa dari Indonesia bersama tour leader orang Indonesia yang tinggal di Italia. Tiket pesawat, hotel, dan itinerary kami siapkan.`
@@ -204,11 +200,9 @@ export async function generateMetadata(): Promise<Metadata> {
         { url: `${SITE_URL}/og-image.jpg`, alt: `${siteName} — Open Trip & Private Trip Eropa` },
       ],
     },
-    icons: {
-      icon: siteFavicon,
-      shortcut: siteFavicon,
-      apple: siteFavicon,
-    },
+    // URL ikon harus stabil (tanpa `?t=${Date.now()}` seperti dulu, yang membuat
+    // Search Console mencatat puluhan URL favicon). Lihat lib/site-icons.ts.
+    icons: siteIcons(settingsObj.site_favicon),
   }
 }
 

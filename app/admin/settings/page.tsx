@@ -252,6 +252,13 @@ export default function SettingsPage() {
                   <MediaPicker
                     value={formData.site_favicon || ""}
                     onChange={(url) => {
+                      // Tombol X MediaPicker mengirim "" → kosongkan favicon
+                      // (situs kembali ke set favicon brand di public/icons),
+                      // jangan buka dialog crop tanpa gambar.
+                      if (!url) {
+                        setFormData((prev) => ({ ...prev, site_favicon: "" }));
+                        return;
+                      }
                       // ICO tidak bisa dilewatkan cropper — getCroppedImg
                       // meng-encode PNG via canvas sehingga ICO akan hilang.
                       // Untuk .ico, terapkan langsung tanpa membuka dialog crop.

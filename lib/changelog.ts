@@ -26,6 +26,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.2',
+    date: '2026-11-05',
+    title: 'Favicon baru dari huruf "g" logo agendain.id',
+    added: [
+      'Set favicon baru: huruf "g" logo agendain.id berwarna putih di kotak navy, tajam di tab browser (SVG dan PNG), di layar utama iPhone, dan saat situs dipasang di Android.',
+    ],
+    fixed: [
+      'Tombol X pada Favicon di Pengaturan Sistem kini benar-benar mengosongkan favicon (sebelumnya membuka jendela crop kosong). Saat dikosongkan, situs memakai favicon baru bawaan.',
+    ],
+  },
+  {
     version: '1.8.1',
     date: '2026-11-05',
     title: 'Ajakan di artikel blog senada dengan banner situs',

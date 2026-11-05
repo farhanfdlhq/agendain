@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSiteSettings } from "@/lib/get-settings";
-import { LOGO_BLUE } from "@/lib/site-logo";
+import { BRAND_ICONS, customFavicon } from "@/lib/site-icons";
 
 // /favicon.ico dilayani route ini (bukan file statis) supaya tab non-HTML —
 // terutama tab "Lihat PDF" (/api/invoice/pdf/[token], /api/itinerary/pdf/...)
@@ -11,9 +11,9 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const s = await getSiteSettings();
-  const fav = typeof s.site_favicon === "string" ? s.site_favicon.trim() : "";
-  // Fallback aset brand (bukan ikon default lama) bila favicon CMS belum diset.
-  const target = fav && (fav.startsWith("/") || /^https?:\/\//i.test(fav)) ? fav : LOGO_BLUE;
+  const fav = customFavicon(s.site_favicon) ?? "";
+  // Fallback favicon brand (public/icons) bila favicon CMS belum diset.
+  const target = fav && (fav.startsWith("/") || /^https?:\/\//i.test(fav)) ? fav : BRAND_ICONS.ico;
   // Location RELATIF, bukan `new URL(target, req.url)`: di balik nginx req.url
   // adalah alamat internal, sehingga redirect dulu mengarah ke
   // https://localhost:3005/... dan favicon rusak di production.
