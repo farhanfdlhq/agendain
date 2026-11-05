@@ -24,7 +24,7 @@ vi.mock("@/components/FrontLayout/FrontLayout", () => ({ default: "public-layout
 vi.mock("@/components/Providers/Providers", () => ({ Providers: "providers" }));
 vi.mock("@/components/ui/offline-detector", () => ({ default: "offline-detector" }));
 
-import RootLayout from "../app/layout";
+import RootLayout, { generateMetadata } from "../app/layout";
 
 function settingsAtBoundary(node: ReactNode): Record<string, string> | undefined {
   if (Array.isArray(node)) {
@@ -41,4 +41,14 @@ function settingsAtBoundary(node: ReactNode): Record<string, string> | undefined
 it("RootLayout hanya menserialisasi identitas publik dan footer CMS ke Client Component", async () => {
   const settings = settingsAtBoundary(await RootLayout({ children: null }));
   expect(settings).toEqual(Object.fromEntries(rows.slice(0, 5).map(r => [r.key, r.value])));
+});
+
+// Dulu favicon diberi `?t=<waktu render>` sehingga Google menemukan URL baru di
+// tiap kunjungan (31 URL favicon "Di-crawl, tidak diindeks" di Search Console).
+it("URL favicon stabil antar-render, tanpa parameter waktu", async () => {
+  const first = (await generateMetadata()).icons as { icon: string };
+  await new Promise(r => setTimeout(r, 5));
+  const second = (await generateMetadata()).icons as { icon: string };
+  expect(first.icon).toBe("/favicon.ico");
+  expect(second.icon).toBe(first.icon);
 });

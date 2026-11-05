@@ -26,6 +26,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.8',
+    date: '2026-11-05',
+    title: 'Ikon tab situs memakai alamat tetap',
+    fixed: [
+      'Ikon tab (favicon) kini memakai alamat yang sama di setiap kunjungan, sehingga Google tidak lagi mencatat puluhan alamat ikon yang isinya sama sebagai halaman yang tidak diindeks.',
+    ],
+  },
+  {
     version: '1.7.7',
     date: '2026-10-30',
     title: 'Pembaruan keamanan, tombol Coba Lagi yang andal, dan sorotan judul Beranda',

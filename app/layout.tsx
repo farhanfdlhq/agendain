@@ -141,8 +141,11 @@ export const viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const settingsObj = await getSettings()
   const siteName = settingsObj.site_name || "Agendain"
-  const rawFavicon = settingsObj.site_favicon || "/favicon.ico"
-  const siteFavicon = rawFavicon.includes("?") ? rawFavicon : `${rawFavicon}?t=${Date.now()}`
+  // URL favicon harus stabil. Dulu diberi `?t=${Date.now()}` sehingga tiap render
+  // memunculkan URL baru — Search Console mencatat puluhan URL favicon
+  // "Di-crawl, tidak diindeks". Unggahan sudah bernama unik per file (api/upload),
+  // jadi favicon baru otomatis berganti URL tanpa parameter tambahan.
+  const siteFavicon = settingsObj.site_favicon || "/favicon.ico"
   
   const title = `${siteName} | Travel Eropa & Italia dari Indonesia`
   const description = `Open trip & private trip Eropa dari Indonesia bersama tour leader orang Indonesia yang tinggal di Italia. Tiket pesawat, hotel, dan itinerary kami siapkan.`
