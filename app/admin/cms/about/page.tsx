@@ -302,7 +302,7 @@ export default function AboutCMSPage() {
             <CardContent className="pt-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-4">
-                  {renderImageInput('Foto Lead Guide', 'guideImage', '/why-camera.webp', '800x1200 px (Portrait)')}
+                  {renderImageInput('Foto Lead Guide', 'guideImage', '/why-camera.webp', '800x800 px (Persegi)')}
                 </div>
                 <div className="space-y-4 flex flex-col justify-start">
                   {renderTextInput('Label Kecil Atas', 'guidePill', false, 'Dibalik Agendain')}

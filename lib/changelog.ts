@@ -26,6 +26,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.5',
+    date: '2026-11-06',
+    title: 'Foto Lead Guide berbingkai persegi',
+    improved: [
+      'Foto Lead Guide di halaman Tentang Kami kini berbingkai persegi di semua layar, sehingga foto bawaan tampil utuh tanpa terpotong. Saran ukuran foto di CMS Tentang Kami ikut menjadi 800x800 px.',
+    ],
+  },
+  {
     version: '1.8.4',
     date: '2026-11-06',
     title: 'Foto Lead Guide di Tentang Kami tidak lagi terpotong',
