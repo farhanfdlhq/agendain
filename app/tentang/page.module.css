@@ -293,9 +293,12 @@
 }
 
 .guideImageWrapper {
+  /* Rasio tetap 4:5 (potret), bukan tinggi tetap: dulu 500px/350px sehingga
+     bingkai jadi gepeng di tablet (641x350) dan foto terpotong separuh. 4:5
+     cocok untuk foto persegi bawaan maupun potret 800x1200 saran CMS. */
   position: relative;
-  height: 500px;
   width: 100%;
+  aspect-ratio: 4 / 5;
 }
 
 .guideImageInner {
@@ -335,7 +338,8 @@
   }
   
   .guideImageWrapper {
-    height: 350px;
+    max-width: 420px;
+    margin: 0 auto;
   }
 }
 

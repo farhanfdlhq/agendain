@@ -26,6 +26,14 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.4',
+    date: '2026-11-06',
+    title: 'Foto Lead Guide di Tentang Kami tidak lagi terpotong',
+    fixed: [
+      'Foto Lead Guide di halaman Tentang Kami kini selalu berbingkai potret yang sama di desktop, tablet, dan HP. Sebelumnya di tablet bingkainya terlalu lebar sehingga setengah foto terpotong.',
+    ],
+  },
+  {
     version: '1.8.3',
     date: '2026-11-05',
     title: 'Halaman pemeliharaan ikut memakai favicon baru',

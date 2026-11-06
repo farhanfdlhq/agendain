@@ -144,7 +144,7 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
                   src={getSetting('guideImage') || "/why-camera.webp"} 
                   alt="Lead Guide"
                   fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 900px) min(100vw, 420px), 40vw"
                   style={{ objectFit: 'cover' }}
                 />
               </div>
