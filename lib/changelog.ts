@@ -26,6 +26,18 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.7',
+    date: '2026-11-09',
+    title: 'Angka Open Trip terbaca Google, gambar share Tentang Kami, penulis artikel atas nama Agendain',
+    improved: [
+      'Data artikel untuk Google kini mencatat penulis dan penerbit sebagai Agendain secara seragam. Nama penulis di halaman artikel tetap tampil seperti biasa.',
+    ],
+    fixed: [
+      'Link halaman Tentang Kami yang dibagikan (WhatsApp, Facebook, dll) kini menampilkan foto hero halaman itu, bukan gambar umum situs.',
+      'Angka statistik di halaman Open Trip kini terbaca utuh oleh Google (mis. 94% Tingkat Kepuasan, bukan 56%). Animasi hitung naik dari 0 tetap ada saat angka terlihat.',
+    ],
+  },
+  {
     version: '1.8.6',
     date: '2026-11-09',
     title: 'Hitungan dibaca artikel saat dibuka, ikon & gambar bawaan lebih cepat dimuat',

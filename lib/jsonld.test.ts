@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { breadcrumbLd, faqPageLd, productLd } from './jsonld'
+import { blogPostingLd, breadcrumbLd, faqPageLd, productLd } from './jsonld'
 
 describe('jsonld structured data helpers', () => {
   it('breadcrumbLd generates correct schema.org BreadcrumbList', () => {
@@ -55,5 +55,18 @@ describe('jsonld structured data helpers', () => {
       priceCurrency: 'IDR',
       availability: 'https://schema.org/InStock',
     })
+  })
+})
+
+describe('blogPostingLd author', () => {
+  const base = { title: 'Judul', path: '/blog/x', publisherName: 'Agendain' }
+  it('penulis selalu organisasi Agendain yang sama dengan entitas beranda', () => {
+    const a = blogPostingLd(base).author as Record<string, unknown>
+    expect(a['@type']).toBe('Organization')
+    expect(a.name).toBe('Agendain')
+    expect(a['@id']).toMatch(/#organization$/)
+  })
+  it('publisher menunjuk entitas organisasi beranda', () => {
+    expect((blogPostingLd(base).publisher as Record<string, unknown>)['@id']).toMatch(/#organization$/)
   })
 })

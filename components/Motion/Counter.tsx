@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useInView, useMotionValue, useSpring } from "framer-motion";
+import { animate, useInView, useReducedMotion } from "framer-motion";
 
 interface CounterProps {
   value: number;
@@ -9,41 +9,37 @@ interface CounterProps {
   duration?: number; // in seconds
 }
 
+const format = (n: number) => Intl.NumberFormat("en-US").format(Math.floor(n));
+
+/**
+ * Angka statistik dengan efek hitung naik.
+ *
+ * HTML awal (server) berisi NILAI AKHIR, mis. "94%", supaya Google, pratinjau
+ * link, dan pembaca tanpa JavaScript membaca angka yang benar. Dulu render awal
+ * 60% nilai ("56%"), dan angka itu yang tertangkap crawler. Saat blok masuk
+ * layar, angka sekilas kembali ke 0 lalu dihitung naik ke nilai akhir.
+ * Pengguna "kurangi animasi" langsung melihat nilai akhir tanpa hitungan.
+ */
 export default function Counter({ value, suffix = "", duration = 2 }: CounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
-
-  const format = (n: number) => Intl.NumberFormat("en-US").format(Math.floor(n));
-
-  // Mulai dari ~60% nilai final, BUKAN 0. Sebelum masuk viewport (mis. stats di
-  // bawah lipatan), angka tetap terlihat wajar — bukan "0+ 0+ 0K+" yang terkesan
-  // kosong/rusak. Count-up tetap menghidupkan saat blok terlihat.
-  const floor = Math.max(0, Math.round(value * 0.6));
-
-  const [displayValue, setDisplayValue] = useState(() => format(floor));
-
-  const motionValue = useMotionValue(floor);
-  const springValue = useSpring(motionValue, {
-    duration: duration * 1000,
-    bounce: 0,
-  });
+  const reduceMotion = useReducedMotion();
+  // null = belum/tidak dianimasikan → tampilkan nilai akhir.
+  const [animated, setAnimated] = useState<number | null>(null);
 
   useEffect(() => {
-    if (isInView) {
-      motionValue.set(value);
-    }
-  }, [isInView, value, motionValue]);
-
-  useEffect(() => {
-    const unsub = springValue.on("change", (latest) => {
-      setDisplayValue(format(latest));
+    if (!isInView || reduceMotion) return;
+    const controls = animate(0, value, {
+      duration,
+      ease: "easeOut",
+      onUpdate: (latest) => setAnimated(latest),
     });
-    return () => unsub();
-  }, [springValue]);
+    return () => controls.stop();
+  }, [isInView, reduceMotion, value, duration]);
 
   return (
     <span ref={ref}>
-      {displayValue}
+      {format(animated ?? value)}
       {suffix}
     </span>
   );

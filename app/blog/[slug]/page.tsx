@@ -57,7 +57,6 @@ export default async function BlogDetailPage({ params }: Props) {
             path: `/blog/${slug}`,
             datePublished: post.publishedAt,
             dateModified: post.updatedAt,
-            authorName: post.author,
             publisherName: 'Agendain',
             publisherLogo: LOGO_BLUE,
           }),

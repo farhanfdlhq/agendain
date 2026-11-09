@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { prisma } from '@/lib/prisma'
 import TentangContent from './TentangContent'
 import { pageMeta } from '@/lib/og'
@@ -5,12 +6,22 @@ import { JsonLd, breadcrumbLd } from '@/lib/jsonld'
 
 export const revalidate = 60
 
-export const metadata = pageMeta({
-  title: 'Tentang Agendain | Travel Eropa dari Indonesia',
-  description: 'Kenalan dengan Agendain: travel ke Eropa dari Indonesia yang dijalankan tour leader orang Indonesia yang tinggal di Italia.',
-  path: '/tentang',
-  image: '/tentang_hero.webp',
-})
+// og:image = foto hero Tentang Kami yang sedang tayang (CMS `about_settings.heroImage`,
+// bawaan /dest-swiss.webp seperti di TentangContent). Dulu menunjuk /tentang_hero.webp
+// yang tidak ada, jadi kartu share jatuh ke gambar OG umum.
+export async function generateMetadata(): Promise<Metadata> {
+  let hero: string | undefined
+  try {
+    const row = await prisma.setting.findUnique({ where: { key: 'about_settings' } })
+    if (row) hero = JSON.parse(row.value)?.heroImage || undefined
+  } catch {}
+  return pageMeta({
+    title: 'Tentang Agendain | Travel Eropa dari Indonesia',
+    description: 'Kenalan dengan Agendain: travel ke Eropa dari Indonesia yang dijalankan tour leader orang Indonesia yang tinggal di Italia.',
+    path: '/tentang',
+    image: hero || '/dest-swiss.webp',
+  })
+}
 
 export default async function TentangPage() {
   let aboutSettings = {}

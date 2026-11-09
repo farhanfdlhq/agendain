@@ -54,7 +54,12 @@ export function websiteLd(name: string): Record<string, unknown> {
   };
 }
 
-/** Artikel blog. */
+/**
+ * Artikel blog. Penulis di data Google = organisasi Agendain (keputusan USER,
+ * 9 Nov 2026), merujuk entitas `#organization` di beranda. Nama penulis
+ * per artikel tetap tampil di halaman; dulu nama itu dipakai sebagai
+ * "Organization" (mis. Organization "Dita"), yang tidak tepat.
+ */
 export function blogPostingLd(opts: {
   title: string;
   description?: string | null;
@@ -62,7 +67,6 @@ export function blogPostingLd(opts: {
   path: string;
   datePublished?: string | Date | null;
   dateModified?: string | Date | null;
-  authorName?: string | null;
   publisherName: string;
   publisherLogo?: string | null;
 }): Record<string, unknown> {
@@ -83,9 +87,10 @@ export function blogPostingLd(opts: {
     ...(image ? { image: [image] } : {}),
     ...(iso(opts.datePublished) ? { datePublished: iso(opts.datePublished) } : {}),
     ...(iso(opts.dateModified) ? { dateModified: iso(opts.dateModified) } : {}),
-    author: { "@type": "Organization", name: opts.authorName || opts.publisherName, url: SITE_URL },
+    author: { "@type": "Organization", "@id": `${SITE_URL}/#organization`, name: opts.publisherName, url: SITE_URL },
     publisher: {
       "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
       name: opts.publisherName,
       ...(logo ? { logo: { "@type": "ImageObject", url: logo } } : {}),
     },
