@@ -26,6 +26,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.6',
+    date: '2026-11-09',
+    title: 'Hitungan dibaca artikel saat dibuka, ikon & gambar bawaan lebih cepat dimuat',
+    improved: [
+      'Artikel blog kini terhitung "dibaca" begitu dibuka dan halamannya terlihat (dulu harus bertahan 15 detik atau menggulir separuh artikel). Tetap sekali per browser per 24 jam, bot dan admin yang login tidak dihitung.',
+      'Favicon, ikon, dan gambar bawaan situs kini disimpan di Cloudflare selama sehari, sehingga lebih cepat dimuat pengunjung baru.',
+    ],
+  },
+  {
     version: '1.8.5',
     date: '2026-11-06',
     title: 'Foto Lead Guide berbingkai persegi',

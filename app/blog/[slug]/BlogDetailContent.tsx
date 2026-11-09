@@ -67,7 +67,7 @@ export default function BlogDetailContent({ post, related }: { post: BlogPost; r
   return (
     <div className={`${styles.page} [timeline-scope:--article]`}>
       <ReadingProgress targetId="isi-artikel" />
-      <ReadTracker slug={post.slug} targetId="isi-artikel" />
+      <ReadTracker slug={post.slug} />
       <div className="container max-w-4xl mx-auto px-4 sm:px-6">
 
         {/* Breadcrumb */}

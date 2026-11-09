@@ -1,13 +1,11 @@
 /**
  * Hitungan "dibaca" artikel blog — logika murni (dipakai klien, API, dan tes).
  *
- * Satu "baca" = pengunjung bertahan READ_DWELL_MS selama tab terlihat ATAU
- * menggulir sampai READ_SCROLL_RATIO artikel; dihitung 1x per browser per
- * READ_DEDUPE_MS. Angka publik baru tampil setelah READ_PUBLIC_MIN agar artikel
+ * Satu "baca" = artikel dibuka dengan tab terlihat (sejak 9 Nov 2026; dulu
+ * syaratnya bertahan 15 detik atau menggulir separuh artikel); dihitung 1x per
+ * browser per READ_DEDUPE_MS. Angka publik baru tampil setelah READ_PUBLIC_MIN agar artikel
  * baru tidak terlihat sepi; admin selalu melihat angka asli.
  */
-export const READ_DWELL_MS = 15_000
-export const READ_SCROLL_RATIO = 0.5
 export const READ_DEDUPE_MS = 24 * 60 * 60 * 1000
 export const READ_PUBLIC_MIN = 50
 

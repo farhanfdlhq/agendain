@@ -87,6 +87,24 @@ const nextConfig: NextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' },
         ],
       },
+      // Ikon/favicon dan gambar bawaan di akar /public. Tanpa ini Cloudflare
+      // mengecek ulang ke VPS (Mumbai) di setiap permintaan (REVALIDATED,
+      // ±100 ms lebih lambat dari HIT edge). Nama file tetap bisa diganti
+      // isinya, jadi sehari + stale-while-revalidate, bukan immutable.
+      // Pola akar hanya satu segmen berekstensi gambar: /_next/*, /og, dan
+      // route /favicon.ico (redirect dinamis, tanpa file) tidak ikut kena.
+      {
+        source: '/icons/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' },
+        ],
+      },
+      {
+        source: '/:file([^/]+\\.(?:webp|png|jpe?g|svg))',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=86400, stale-while-revalidate=604800' },
+        ],
+      },
     ]
   },
 };
