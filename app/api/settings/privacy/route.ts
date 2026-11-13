@@ -3,6 +3,7 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import { prisma } from '@/lib/prisma'
 import { sanitizeSettingsPayload, serverError } from '@/lib/security'
 import { requirePermission } from '@/lib/rbac'
+import { keepPolicyDate, policyContentChanged, stampPolicyDate } from '@/lib/policy-updated'
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +14,25 @@ export async function POST(req: Request) {
     if (!parsed.ok) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
-    const jsonValue = parsed.serialized
+    // Baris "Terakhir Diperbarui" diisi otomatis: bila isi dokumen (ID/EN)
+    // berbeda dari yang tersimpan, bulan-tahunnya ditulis ulang ke bulan ini.
+    // Simpan ulang tanpa mengubah isi (atau hanya mengganti hero) tidak
+    // menggeser tanggal. Lihat lib/policy-updated.ts.
+    const next = parsed.data as Record<string, unknown>
+    let stored: Record<string, unknown> | null = null
+    try {
+      const row = await prisma.setting.findUnique({ where: { key: 'privacy_settings' } })
+      if (row) stored = JSON.parse(row.value)
+    } catch {}
+    if (policyContentChanged(stored, next)) {
+      const now = new Date()
+      next.privacyContent = stampPolicyDate(next.privacyContent as string, now, 'id')
+      next.privacyContent_en = stampPolicyDate(next.privacyContent_en as string, now, 'en')
+    } else if (stored) {
+      next.privacyContent = keepPolicyDate(next.privacyContent as string, stored.privacyContent as string)
+      next.privacyContent_en = keepPolicyDate(next.privacyContent_en as string, stored.privacyContent_en as string)
+    }
+    const jsonValue = JSON.stringify(next)
 
     await prisma.setting.upsert({
       where: { key: 'privacy_settings' },
@@ -27,7 +46,13 @@ export async function POST(req: Request) {
     revalidateTag('settings', { expire: 0 })
     revalidatePath('/', 'layout')
 
-    return NextResponse.json({ success: true, message: 'Kebijakan Privasi berhasil diperbarui' })
+    // Isi dikembalikan supaya editor CMS langsung menampilkan tanggal baru.
+    return NextResponse.json({
+      success: true,
+      message: 'Kebijakan Privasi berhasil diperbarui',
+      privacyContent: next.privacyContent ?? '',
+      privacyContent_en: next.privacyContent_en ?? '',
+    })
   } catch (error: any) {
     return serverError('settings/privacy', error)
   }

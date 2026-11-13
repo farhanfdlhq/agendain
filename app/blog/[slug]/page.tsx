@@ -5,7 +5,7 @@ import BlogDetailContent from './BlogDetailContent'
 import { pageMeta } from '@/lib/og'
 import { JsonLd, blogPostingLd, breadcrumbLd } from '@/lib/jsonld'
 import { LOGO_BLUE } from '@/lib/site-logo'
-import { RELATED_LIMIT, fillRelated } from '@/lib/blog-list'
+import { RELATED_LIMIT, blogMetaTitle, fillRelated } from '@/lib/blog-list'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // og:image = thumbnail/OG artikel itu sendiri (dilewatkan /og → JPG 1200x630).
   return pageMeta({
-    title: post.metaTitle || `${post.title} | Agendain Blog`,
+    title: blogMetaTitle(post.title, post.metaTitle),
     description: post.metaDescription || post.excerpt,
     path: `/blog/${slug}`,
     image: post.ogImage || post.thumbnail,

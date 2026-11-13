@@ -11,7 +11,7 @@ describe('jsonld structured data helpers', () => {
 
     expect(ld['@context']).toBe('https://schema.org')
     expect(ld['@type']).toBe('BreadcrumbList')
-    const items = ld.itemListElement as any[]
+    const items = ld.itemListElement as Record<string, unknown>[]
     expect(items).toHaveLength(3)
     expect(items[0]).toMatchObject({ position: 1, name: 'Beranda' })
     expect(items[1]).toMatchObject({ position: 2, name: 'Open Trip' })
@@ -27,7 +27,7 @@ describe('jsonld structured data helpers', () => {
     expect(ld).not.toBeNull()
     expect(ld?.['@context']).toBe('https://schema.org')
     expect(ld?.['@type']).toBe('FAQPage')
-    const mainEntity = (ld?.mainEntity || []) as any[]
+    const mainEntity = (ld?.mainEntity || []) as { name: string; acceptedAnswer: { text: string } }[]
     expect(mainEntity).toHaveLength(2)
     expect(mainEntity[0].name).toBe('Berapa biaya trip?')
     expect(mainEntity[0].acceptedAnswer.text).toBe('Mulai dari 20 jutaan.')

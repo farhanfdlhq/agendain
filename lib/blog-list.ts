@@ -81,3 +81,20 @@ export function fillRelated<T extends { id: number }>(sameCategory: T[], latest:
   }
   return picked
 }
+
+/**
+ * Judul <title> artikel. Google memotong judul di sekitar 60 karakter, jadi
+ * akhiran merek hanya dipakai selama masih muat: "… | Agendain Blog", lalu
+ * "… | Agendain", lalu judul saja. Meta Title dari CMS dipakai apa adanya.
+ */
+export const BLOG_TITLE_MAX = 60
+
+export function blogMetaTitle(title: string, metaTitle?: string | null): string {
+  const custom = (metaTitle ?? "").trim()
+  if (custom) return custom
+  const base = title.trim()
+  for (const suffix of [" | Agendain Blog", " | Agendain"]) {
+    if (base.length + suffix.length <= BLOG_TITLE_MAX) return base + suffix
+  }
+  return base
+}

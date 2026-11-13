@@ -23,6 +23,27 @@ export async function generateMetadata(): Promise<Metadata> {
   })
 }
 
+// Semua artikel terbit untuk kartu di halaman Tentang (tipe diturunkan dari query).
+const fetchRecentPosts = () =>
+  prisma.blogPost.findMany({
+    where: { status: 'published' },
+    orderBy: { publishedAt: 'desc' },
+    // Semua artikel terbit; halaman Tentang memecahnya 2 per halaman di klien.
+    // Hanya field yang dipakai kartu (tanpa isi artikel) agar payload kecil.
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      titleEn: true,
+      excerpt: true,
+      excerptEn: true,
+      thumbnail: true,
+      publishedAt: true,
+      createdAt: true,
+      category: { select: { nama: true, namaEn: true } },
+    },
+  })
+
 export default async function TentangPage() {
   let aboutSettings = {}
   try {
@@ -32,26 +53,9 @@ export default async function TentangPage() {
     console.error(e)
   }
 
-  let recentPosts: any[] = []
+  let recentPosts: Awaited<ReturnType<typeof fetchRecentPosts>> = []
   try {
-    recentPosts = await prisma.blogPost.findMany({
-      where: { status: 'published' },
-      orderBy: { publishedAt: 'desc' },
-      // Semua artikel terbit; halaman Tentang memecahnya 2 per halaman di klien.
-      // Hanya field yang dipakai kartu (tanpa isi artikel) agar payload kecil.
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        titleEn: true,
-        excerpt: true,
-        excerptEn: true,
-        thumbnail: true,
-        publishedAt: true,
-        createdAt: true,
-        category: { select: { nama: true, namaEn: true } },
-      },
-    })
+    recentPosts = await fetchRecentPosts()
   } catch (e) {
     console.error(e)
   }

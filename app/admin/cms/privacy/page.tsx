@@ -41,6 +41,11 @@ export default function PrivacyCMSPage() {
   snapRef.current = snapshot
   const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
   useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
+  // Sesaat setelah simpan, editor bisa menormalkan isi balasan server (mis. spasi
+  // ganda jadi satu) lalu memancarkan onChange. Itu bukan suntingan pengguna,
+  // jadi baseline ikut menyesuaikan selama jendela singkat ini.
+  const settlingRef = useRef(false)
+  useEffect(() => { if (settlingRef.current) setBaseline(snapshot) }, [snapshot, setBaseline])
   const topHeaderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -78,7 +83,18 @@ export default function PrivacyCMSPage() {
         body: JSON.stringify(data)
       })
       if (res.ok) {
-        setBaseline(snapRef.current) // tandai bersih setelah simpan
+        // Server menulis ulang tanggal "Terakhir Diperbarui" bila isi dokumen
+        // berubah; pakai isi balasannya supaya editor menampilkan tanggal baru.
+        const saved = await res.json().catch(() => null)
+        const next = {
+          ...data,
+          ...(typeof saved?.privacyContent === 'string' ? { privacyContent: saved.privacyContent } : {}),
+          ...(typeof saved?.privacyContent_en === 'string' ? { privacyContent_en: saved.privacyContent_en } : {}),
+        }
+        setData(next)
+        setBaseline(JSON.stringify(next)) // tandai bersih setelah simpan
+        settlingRef.current = true
+        window.setTimeout(() => { settlingRef.current = false }, 400)
         toast.success('Konten berhasil diperbarui!')
       } else {
         toast.error('Gagal menyimpan.')
@@ -306,7 +322,7 @@ export default function PrivacyCMSPage() {
         <Card className="border-0 shadow-sm ring-1 ring-slate-100 bg-white/50">
           <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
             <CardTitle className="text-lg font-bold text-slate-800">Isi Dokumen</CardTitle>
-            <CardDescription>Gunakan editor teks di bawah untuk menyusun format dokumen Anda.</CardDescription>
+            <CardDescription>Gunakan editor teks di bawah untuk menyusun format dokumen Anda. Tanggal &quot;Terakhir Diperbarui&quot; diisi otomatis setiap kali isi dokumen diubah lalu disimpan.</CardDescription>
           </CardHeader>
           <CardContent className="p-6">
             {renderTextareaInput('Dokumen Kebijakan Privasi', 'privacyContent')}

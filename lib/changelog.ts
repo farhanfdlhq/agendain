@@ -26,6 +26,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.8',
+    date: '2026-11-13',
+    title: 'Tanggal Kebijakan Privasi otomatis, judul artikel tidak terpotong di Google',
+    improved: [
+      'Tanggal "Terakhir Diperbarui" di Kebijakan Privasi kini terisi otomatis (bulan dan tahun) setiap kali isi dokumen diubah lalu disimpan di CMS, untuk versi Indonesia dan Inggris. Menyimpan tanpa mengubah isi tidak menggeser tanggal.',
+      'Judul artikel blog di hasil pencarian Google lebih jarang terpotong: akhiran "| Agendain Blog" otomatis dipendekkan atau dibuang bila judul sudah panjang. Meta Title yang diisi di CMS tetap dipakai apa adanya.',
+    ],
+  },
+  {
     version: '1.8.7',
     date: '2026-11-09',
     title: 'Angka Open Trip terbaca Google, gambar share Tentang Kami, penulis artikel atas nama Agendain',

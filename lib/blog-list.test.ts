@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest"
 import {
   BLOG_GRID_SIZE,
+  BLOG_TITLE_MAX,
   blogListHref,
+  blogMetaTitle,
   blogPageCount,
   blogPageWindow,
   fillRelated,
@@ -93,5 +95,22 @@ describe("fillRelated", () => {
   })
   it("artikel di blog lebih sedikit dari batas: kembalikan yang ada", () => {
     expect(fillRelated([], [p(2)]).map((x) => x.id)).toEqual([2])
+  })
+})
+
+describe("blogMetaTitle", () => {
+  it("judul pendek memakai akhiran lengkap", () => {
+    expect(blogMetaTitle("Kenapa Pizza Jadi Ikon Italia?")).toBe("Kenapa Pizza Jadi Ikon Italia? | Agendain Blog")
+  })
+  it("akhiran dipendekkan lalu dibuang agar tidak lewat 60 karakter", () => {
+    const t48 = "a".repeat(48)
+    expect(blogMetaTitle(t48)).toBe(`${t48} | Agendain`)
+    const t55 = "a".repeat(55)
+    expect(blogMetaTitle(t55)).toBe(t55)
+    expect(blogMetaTitle("a".repeat(44)).length).toBe(BLOG_TITLE_MAX)
+  })
+  it("Meta Title dari CMS dipakai apa adanya", () => {
+    expect(blogMetaTitle("Judul", "  Judul SEO Khusus  ")).toBe("Judul SEO Khusus")
+    expect(blogMetaTitle(" Judul ", "  ")).toBe("Judul | Agendain Blog")
   })
 })
