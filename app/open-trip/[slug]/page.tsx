@@ -28,6 +28,11 @@ import { pickLocalized } from "@/lib/i18n/localize";
 import { safeHref } from "@/lib/footer-settings";
 import { getOpenTripForViewer } from "@/lib/open-trip-access";
 import { isPublishedOpenTrip } from "@/lib/open-trip-card";
+import type { AkomodasiRow, DokumenRow, ItineraryRow, PenerbanganRow } from "@/lib/open-trip-fields";
+import type { PrivateTripPackage } from "@prisma/client";
+
+// Foto paket berbentuk objek resolusi (data lama) selain string URL.
+type FotoObj = { full?: string; medium?: string; thumb?: string };
 
 export const revalidate = 3600; // Cache for 1 hour
 
@@ -53,9 +58,9 @@ export async function generateMetadata(props: {
       ? first
       : first && typeof first === "object"
         ? String(
-            (first as any).full ||
-              (first as any).medium ||
-              (first as any).thumb ||
+            (first as FotoObj).full ||
+              (first as FotoObj).medium ||
+              (first as FotoObj).thumb ||
               "",
           ) || undefined
         : undefined;
@@ -78,17 +83,17 @@ export default async function PaketDetail(props: {
   const [pkg, settingsArr, rates, locale, t, privatePackages] =
     await Promise.all([
       getOpenTripForViewer(slug),
-      prisma.$queryRaw`SELECT * FROM Setting`.catch(() => [] as any[]),
+      prisma.$queryRaw<{ key: string; value: string }[]>`SELECT * FROM Setting`.catch(() => [] as { key: string; value: string }[]),
       fetchExchangeRates(),
       getServerLocale(),
       getServerT(),
       // Rekomendasi di bawah halaman. Gagal di sini tidak boleh menjatuhkan
       // seluruh halaman paket, jadi errornya ditelan jadi daftar kosong.
-      prisma.privateTripPackage.findMany({ take: 3 }).catch(() => [] as any[]),
+      prisma.privateTripPackage.findMany({ take: 3 }).catch(() => [] as PrivateTripPackage[]),
     ]);
 
-  let settingsObj = (settingsArr as any[]).reduce(
-    (acc: any, curr: any) => ({ ...acc, [curr.key]: curr.value }),
+  const settingsObj = settingsArr.reduce<Record<string, string>>(
+    (acc, curr) => ({ ...acc, [curr.key]: curr.value }),
     {},
   );
 
@@ -118,7 +123,7 @@ export default async function PaketDetail(props: {
 
   // Parse custom info/policy or fallback to global settings
   let finalInfoPenting = [];
-  const infoPenting = pickLocalized<any[]>(pkg, "informasiPenting", locale);
+  const infoPenting = pickLocalized<string[]>(pkg, "informasiPenting", locale);
   if (Array.isArray(infoPenting) && infoPenting.length > 0) {
     finalInfoPenting = infoPenting;
   } else if (gset("global_informasi_penting")) {
@@ -134,7 +139,7 @@ export default async function PaketDetail(props: {
   }
 
   let finalKebijakan = [];
-  const kebijakan = pickLocalized<any[]>(pkg, "kebijakanPembatalan", locale);
+  const kebijakan = pickLocalized<string[]>(pkg, "kebijakanPembatalan", locale);
   if (Array.isArray(kebijakan) && kebijakan.length > 0) {
     finalKebijakan = kebijakan;
   } else if (gset("global_kebijakan_pembatalan")) {
@@ -150,19 +155,19 @@ export default async function PaketDetail(props: {
     ];
   }
 
-  let finalFileDokumen: any[] = [];
+  let finalFileDokumen: DokumenRow[] = [];
   if (Array.isArray(pkg.fileDokumen) && pkg.fileDokumen.length > 0) {
-    finalFileDokumen = pkg.fileDokumen;
+    finalFileDokumen = pkg.fileDokumen as DokumenRow[];
   }
 
   // Akomodasi & Penerbangan menggantikan Opsi Penjemputan. Keduanya opsional:
   // bagiannya tidak dirender sama sekali bila admin belum mengisi, supaya
   // paket lama tidak menampilkan kotak kosong.
   const akomodasi = (
-    pickLocalized<any[]>(pkg, "akomodasi", locale) || []
+    pickLocalized<AkomodasiRow[]>(pkg, "akomodasi", locale) || []
   ).filter(Boolean);
   const penerbangan = (
-    pickLocalized<any[]>(pkg, "penerbangan", locale) || []
+    pickLocalized<PenerbanganRow[]>(pkg, "penerbangan", locale) || []
   ).filter(Boolean);
 
   // Sisa kursi = kuota − terisi manual − booking Lunas otomatis. Hibrida:
@@ -211,15 +216,15 @@ export default async function PaketDetail(props: {
   let gallery: string[] = [];
 
   if (Array.isArray(pkg?.foto) && pkg.foto.length > 0) {
-    gallery = pkg.foto.map((f: any) => {
+    gallery = pkg.foto.map((f) => {
       if (typeof f === "string") return f;
       if (typeof f === "object" && f !== null)
-        return f.full || f.medium || f.thumb || "/placeholder.webp";
+        return (f as FotoObj).full || (f as FotoObj).medium || (f as FotoObj).thumb || "/placeholder.webp";
       return "/placeholder.webp";
     });
     mainImage = gallery[0];
   } else if (pkg?.foto && typeof pkg.foto === "object") {
-    const fotos = pkg.foto as any;
+    const fotos = pkg.foto as FotoObj & { large?: string; gallery?: string[] };
     mainImage =
       fotos.full || fotos.large || fotos.medium || "/placeholder.webp";
     if (Array.isArray(fotos.gallery) && fotos.gallery.length > 0) {
@@ -240,7 +245,7 @@ export default async function PaketDetail(props: {
   // ditelusuri pembaca, bukan muncul entah dari mana.
   const kursEurIdr = formatIDR(Math.round(rates.eurIdr));
 
-  const itinerary = pickLocalized<any[]>(pkg, "itinerary", locale) || [];
+  const itinerary = pickLocalized<ItineraryRow[]>(pkg, "itinerary", locale) || [];
   const fasilitas = pickLocalized<string[]>(pkg, "fasilitas", locale) || [];
   const termasuk = pickLocalized<string[]>(pkg, "termasuk", locale) || [];
   const tidakTermasuk =
@@ -478,7 +483,7 @@ export default async function PaketDetail(props: {
                   {t("openTrip.detail.files")}
                 </h3>
                 <div className={styles.docBadgeList}>
-                  {finalFileDokumen.map((doc: any, idx: number) => {
+                  {finalFileDokumen.map((doc, idx) => {
                     if (typeof doc === "object" && doc !== null && doc.name) {
                       return (
                         <a
@@ -498,7 +503,7 @@ export default async function PaketDetail(props: {
                     return (
                       <div key={idx} className={styles.docBadge}>
                         <FileText size={16} className={styles.docBadgeIcon} />
-                        <span>{doc}</span>
+                        <span>{typeof doc === "string" ? doc : null}</span>
                       </div>
                     );
                   })}
@@ -515,7 +520,7 @@ export default async function PaketDetail(props: {
                       {t("openTrip.detail.accommodation")}
                     </h3>
                     <ul className={styles.logisticsList}>
-                      {akomodasi.map((item: any, idx: number) => (
+                      {akomodasi.map((item, idx) => (
                         <li key={idx}>
                           {typeof item === "string" ? (
                             item
@@ -542,7 +547,7 @@ export default async function PaketDetail(props: {
                       {t("openTrip.detail.flight")}
                     </h3>
                     <ul className={styles.logisticsList}>
-                      {penerbangan.map((item: any, idx: number) => (
+                      {penerbangan.map((item, idx) => (
                         <li key={idx}>
                           {typeof item === "string" ? (
                             item
@@ -678,7 +683,7 @@ export default async function PaketDetail(props: {
               {t("openTrip.detail.privateRecommendationDesc")}
             </p>
             <div className={styles.recommendGrid}>
-              {privatePackages.map((tier: any) => (
+              {privatePackages.map((tier) => (
                 <Link
                   key={tier.id}
                   href="/private-trip"

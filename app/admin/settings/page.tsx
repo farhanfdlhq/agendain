@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { errorMessage } from "@/lib/error-message"
 import {
   Settings,
   Save,
@@ -35,7 +36,7 @@ import { useRequirePermission } from "@/hooks/use-require-permission";
 import { Alert, AlertTitle, AlertDescription } from "@/components/reui/alert";
 import { MediaPicker } from "@/components/ui/media-picker";
 import { formatWhatsAppNumber } from "@/lib/utils";
-import Cropper from "react-easy-crop";
+import Cropper, { type Area } from "react-easy-crop";
 import { getCroppedImg } from "@/lib/cropImage";
 import { Minus, Plus, UploadCloud } from "lucide-react";
 
@@ -71,11 +72,11 @@ export default function SettingsPage() {
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const [uploadingCropped, setUploadingCropped] = useState(false);
 
   const onCropComplete = useCallback(
-    (croppedArea: any, croppedAreaPixels: any) => {
+    (_croppedArea: Area, croppedAreaPixels: Area) => {
       setCroppedAreaPixels(croppedAreaPixels);
     },
     [],
@@ -104,8 +105,8 @@ export default function SettingsPage() {
       toast.success("Favicon berhasil dipotong");
       setCropDialogOpen(false);
       setImageToCrop(null);
-    } catch (error: any) {
-      toast.error(error.message || "Terjadi kesalahan saat memotong gambar");
+    } catch (error) {
+      toast.error(errorMessage(error, "Terjadi kesalahan saat memotong gambar"));
     } finally {
       setUploadingCropped(false);
     }

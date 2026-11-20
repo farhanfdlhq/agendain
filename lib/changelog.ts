@@ -26,6 +26,21 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.9',
+    date: '2026-11-20',
+    title: 'Pembaruan keamanan, halaman tidak ditemukan terbaca benar oleh Google, perbaikan Peran & Izin',
+    fixed: [
+      'Pembaruan keamanan mesin situs (Next.js) untuk menutup celah yang diumumkan November 2026, termasuk pada optimasi gambar dan cache halaman.',
+      'Alamat artikel blog atau paket Open Trip yang salah atau sudah dihapus kini dijawab sebagai "halaman tidak ditemukan" yang sebenarnya (404), sehingga Google tidak lagi menganggapnya halaman aktif.',
+      'Peran & Izin: setelah menambah role ditolak karena namanya sudah ada, mengganti nama lalu menyimpan kini langsung berhasil (dulu tetap ditolak sampai dialog dibuka ulang).',
+      'Pengguna & Akses: pilihan role kini terkunci saat mengedit akun sendiri.',
+    ],
+    improved: [
+      'Editor artikel dan CMS lebih ringan saat mengetik: tombol toolbar tidak lagi dimuat ulang di setiap ketikan.',
+      'Slug artikel baru langsung mengikuti judul saat diketik, dan menu admin di HP otomatis tertutup setelah pindah halaman.',
+    ],
+  },
+  {
     version: '1.8.8',
     date: '2026-11-13',
     title: 'Tanggal Kebijakan Privasi otomatis, judul artikel tidak terpotong di Google',

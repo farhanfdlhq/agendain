@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, type ReactNode } from 'react'
+import { useState, useRef, useSyncExternalStore, type ReactNode } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Check, Copy, Mail, Link2, Share2 } from 'lucide-react'
 import {
@@ -28,6 +28,8 @@ const PATH = {
 
 type Target = { key: string; label: string; color: string; href: string; icon: ReactNode }
 
+const noSubscribe = () => () => {}
+
 export default function ShareModal({
   open,
   onOpenChange,
@@ -41,18 +43,14 @@ export default function ShareModal({
 }) {
   const en = language === 'en'
   const reduce = useReducedMotion()
-  const [url, setUrl] = useState('')
   const [copied, setCopied] = useState(false)
   const [copyFailed, setCopyFailed] = useState(false)
-  const [canNativeShare, setCanNativeShare] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // URL & kemampuan native share hanya diketahui di klien (hindari mismatch SSR).
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    setUrl(window.location.href)
-    setCanNativeShare(typeof navigator !== 'undefined' && !!navigator.share)
-  }, [open])
+  // URL & kemampuan native share hanya diketahui di klien; di server kosong/false
+  // (tanpa mismatch hidrasi), dibaca ulang tiap render di klien.
+  const url = useSyncExternalStore(noSubscribe, () => window.location.href, () => '')
+  const canNativeShare = useSyncExternalStore(noSubscribe, () => !!navigator.share, () => false)
 
   const enc = encodeURIComponent
   const shareText = `${title}`
@@ -66,7 +64,7 @@ export default function ShareModal({
   ]
 
   const openShare = (t: Target) => {
-    if (t.key === 'email') { window.location.href = t.href; return }
+    if (t.key === 'email') { window.location.assign(t.href); return }
     window.open(t.href, '_blank', 'noopener,noreferrer,width=600,height=600')
   }
 

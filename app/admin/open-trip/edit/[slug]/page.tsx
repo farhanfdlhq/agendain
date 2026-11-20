@@ -20,10 +20,13 @@ import AirplaneLoader from "@/components/ui/airplane-loader"
 import { MediaPickerMultiple } from "@/components/ui/media-picker-multiple"
 import { parseAkomodasi, parsePenerbangan, stringifyAkomodasi, stringifyPenerbangan } from "@/lib/open-trip-fields"
 
+// Baris itinerary dari API (data lama memakai `desc`).
+type ItinRow = { judul?: string; deskripsi?: string; desc?: string }
+
 export default function EditPaketPage(props: { params: Promise<{ slug: string }> }) {
   const params = use(props.params)
   const router = useRouter()
-  const [destinations, setDestinations] = useState<any[]>([])
+  const [destinations, setDestinations] = useState<{ id: number; nama: string }[]>([])
   const [loading, setLoading] = useState(false)
   const [fetchingDest, setFetchingDest] = useState(true)
   // Tambah destinasi langsung dari form paket (dialog); null = tertutup.
@@ -64,24 +67,17 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
   })
 
   // Penjaga perubahan belum-disimpan (baseline ditetapkan setelah data termuat).
-  const formRef = useRef(formData)
-  formRef.current = formData
-  const { setBaseline } = useUnsavedGuardSnapshot(JSON.stringify(formData))
+  const { setBaseline, markClean } = useUnsavedGuardSnapshot(JSON.stringify(formData))
 
   // Tab bahasa: field bahasa-netral (foto, harga, durasi, slug, dokumen, status)
   // hanya muncul di tab ID karena nilainya dipakai bersama kedua bahasa.
   const [activeTab, setActiveTab] = useState<'id' | 'en'>('id')
   const tf = (name: string) => (activeTab === 'en' ? `${name}En` : name)
-  const fv = (name: string) => ((formData as any)[tf(name)] ?? '') as string
+  const fv = (name: string) => String((formData as Record<string, unknown>)[tf(name)] ?? '')
   // Di tab EN, nilai Indonesia dipasang sebagai placeholder: itulah yang akan
   // dipakai halaman publik bila field EN dibiarkan kosong.
   const ph = (name: string, idPlaceholder: string) =>
-    activeTab === 'en' ? ((formData as any)[name] || idPlaceholder) : idPlaceholder
-
-  useEffect(() => {
-    fetchDestinations()
-    fetchPackageData()
-  }, [])
+    activeTab === 'en' ? String((formData as Record<string, unknown>)[name] || idPlaceholder) : idPlaceholder
 
   const fetchDestinations = async () => {
     try {
@@ -103,7 +99,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
       if (res.ok) {
         const data = await res.json()
 
-        const joinLines = (v: any) => Array.isArray(v) ? v.join('\n') : ''
+        const joinLines = (v: unknown) => Array.isArray(v) ? v.join('\n') : ''
         const fasilitasText = joinLines(data.fasilitas)
         const termasukText = joinLines(data.termasuk)
         const tidakTermasukText = joinLines(data.tidakTermasuk)
@@ -121,10 +117,10 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
 
         // Itinerary ID & EN digabung baris demi baris ke satu array agar jumlah hari
         // kedua bahasa selalu sama.
-        const itinEn: any[] = Array.isArray(data.itineraryEn) ? data.itineraryEn : []
+        const itinEn: ItinRow[] = Array.isArray(data.itineraryEn) ? data.itineraryEn : []
         let initialItinerary = []
         if (Array.isArray(data.itinerary) && data.itinerary.length > 0) {
-          initialItinerary = data.itinerary.map((i: any, idx: number) => ({
+          initialItinerary = data.itinerary.map((i: ItinRow, idx: number) => ({
             judul: i.judul || '',
             deskripsi: i.deskripsi || i.desc || '',
             judulEn: itinEn[idx]?.judul || '',
@@ -179,6 +175,11 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
       setFetchingPkg(false)
     }
   }
+
+  useEffect(() => {
+    fetchDestinations()
+    fetchPackageData()
+  }, [])
 
   // Image upload and removal is now handled internally by MediaPickerMultiple.
 
@@ -375,7 +376,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
       })
 
       if (res.ok) {
-        setBaseline(JSON.stringify(formRef.current)); // tandai bersih sebelum pindah
+        markClean(); // tandai bersih sebelum pindah
         toast.success("Paket berhasil diperbarui!");
         router.push("/admin/open-trip")
         router.refresh()

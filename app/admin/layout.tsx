@@ -84,9 +84,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return () => controller.abort()
   }, [status, userId, accessAttempt])
 
-  useEffect(() => {
+  // Pindah halaman → tutup menu mobile. Disesuaikan saat render (pola React
+  // "menyesuaikan state saat prop berubah"), bukan lewat effect.
+  const [menuPath, setMenuPath] = useState(pathname)
+  if (menuPath !== pathname) {
+    setMenuPath(pathname)
     setIsMobileMenuOpen(false)
-  }, [pathname])
+  }
 
   if (pathname === "/admin/login") {
     return <>{children}</>

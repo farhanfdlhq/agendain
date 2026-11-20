@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { errorMessage } from "@/lib/error-message"
 import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import { ImageCropDialog } from "@/components/ui/image-crop-dialog"
 
@@ -48,17 +49,11 @@ export default function ProfilePage() {
 
   // Penjaga perubahan belum-disimpan (identitas akun + isian kata sandi).
   const snapshot = JSON.stringify({ accountData, passwordData })
-  const snapRef = useRef(snapshot)
-  snapRef.current = snapshot
-  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
-  useEffect(() => { if (!loading) setBaseline(snapRef.current) }, [loading, setBaseline])
+  const { markClean } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!loading) markClean() }, [loading, markClean])
   // Ditandai bersih setelah simpan; setTimeout agar snapshot terbaca sesudah
   // state (mis. field kata sandi dikosongkan / avatar diperbarui) ter-render.
-  const tandaiBersih = () => setTimeout(() => setBaseline(snapRef.current), 0)
-
-  useEffect(() => {
-    fetchProfile()
-  }, [])
+  const tandaiBersih = () => setTimeout(() => markClean(), 0)
 
   const fetchProfile = async () => {
     try {
@@ -76,6 +71,10 @@ export default function ProfilePage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    fetchProfile()
+  }, [])
 
   const handleAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -101,8 +100,8 @@ export default function ProfilePage() {
       
       tandaiBersih()
       toast.success("Profil berhasil diperbarui")
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error) {
+      toast.error(errorMessage(error))
     } finally {
       setSavingAccount(false)
     }
@@ -142,8 +141,8 @@ export default function ProfilePage() {
       toast.success("Kata sandi berhasil diperbarui")
       setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
       tandaiBersih()
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error) {
+      toast.error(errorMessage(error))
     } finally {
       setSavingPassword(false)
     }

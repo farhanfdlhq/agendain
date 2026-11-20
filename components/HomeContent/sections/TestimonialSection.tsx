@@ -1,5 +1,6 @@
 'use client'
 import { fontStyle } from '@/lib/font-style'
+import type { Gs, Tr, HomeSettings } from '../types'
 import Image from 'next/image'
 import Link from 'next/link'
 import FadeIn from '@/components/Motion/FadeIn'
@@ -7,7 +8,7 @@ import styles from '../HomeContent.module.css'
 import { WhatsAppIcon, renderHighlightedTitle, GALLERY_IMAGES } from '../shared'
 import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
 
-export default function TestimonialSection({ gs, t, waLink, locale, homeSettings }: { gs: any, t: any, waLink: string, locale: string, homeSettings: Record<string, unknown> | null }) {
+export default function TestimonialSection({ gs, t, waLink, locale, homeSettings }: { gs: Gs, t: Tr, waLink: string, locale: string, homeSettings: HomeSettings }) {
   // Poin di bawah judul dari CMS (satu poin per baris / Enter); mendukung juga bentuk array warisan.
   const rawHighlights = locale === 'en'
     ? (homeSettings?.testiHighlights_en || homeSettings?.testiHighlights)
@@ -17,7 +18,7 @@ export default function TestimonialSection({ gs, t, waLink, locale, homeSettings
   if (typeof rawHighlights === 'string' && rawHighlights.trim()) {
     highlights = rawHighlights.split('\n').map((s) => s.trim()).filter(Boolean)
   } else if (Array.isArray(rawHighlights)) {
-    highlights = rawHighlights.map((h) => String((h && typeof h === 'object' && 'text' in h) ? (h as any).text : h ?? '').trim()).filter(Boolean)
+    highlights = rawHighlights.map((h) => String((h && typeof h === 'object' && 'text' in h) ? (h as { text?: unknown }).text : h ?? '').trim()).filter(Boolean)
   } else {
     const cmsHighlights = localizeRepeater(homeSettings, 'testiHighlights', locale, HOME_REPEATERS.testiHighlights)
     highlights = cmsHighlights

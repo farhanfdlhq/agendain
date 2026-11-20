@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     revalidatePath('/', 'layout')
 
     return NextResponse.json({ success: true, message: 'Header halaman Blog berhasil diperbarui' })
-  } catch (error: any) {
+  } catch (error) {
     return serverError('settings/blog', error)
   }
 }
@@ -44,7 +44,7 @@ export async function GET() {
     }
 
     return NextResponse.json(JSON.parse(setting.value))
-  } catch (error: any) {
+  } catch (error) {
     return serverError('settings/blog', error)
   }
 }

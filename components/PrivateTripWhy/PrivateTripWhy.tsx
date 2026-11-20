@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { cmsLocalText, cmsText } from "@/lib/types/cms";
 import FadeIn from "@/components/Motion/FadeIn";
 import DynamicIcon from "@/components/DynamicIcon/DynamicIcon";
 import styles from "./PrivateTripWhy.module.css";
@@ -32,22 +33,13 @@ const whyItems = [
 export default function PrivateTripWhy({
   privatetripSettings,
 }: {
-  privatetripSettings?: any;
+  privatetripSettings?: Record<string, unknown>;
 }) {
   const { t, locale } = useTranslation();
 
   const gs = (key: string, fallbackText: string) => {
-    const dataKey = locale === "en" ? `${key}_en` : key;
-    if (
-      privatetripSettings?.[dataKey] &&
-      privatetripSettings[dataKey].trim() !== ""
-    ) {
-      return privatetripSettings[dataKey];
-    }
-    if (privatetripSettings?.[key] && privatetripSettings[key].trim() !== "") {
-      return privatetripSettings[key];
-    }
-    return fallbackText;
+    const v = cmsLocalText(privatetripSettings, key, locale === "en");
+    return v.trim() ? v : fallbackText;
   };
 
   // Ikon bahasa-netral: satu array untuk kedua bahasa, hanya teks yang punya
@@ -77,7 +69,7 @@ export default function PrivateTripWhy({
                     "Eksplorasi Eropa bareng ahlinya, *semua sudut aman terkendali*",
                   ),
                   styles,
-                  privatetripSettings?.whyTitleWeight || "800",
+                  cmsText(privatetripSettings, "whyTitleWeight") || "800",
                 )}
               </h2>
               <p className={styles.description}>
@@ -89,11 +81,11 @@ export default function PrivateTripWhy({
             </FadeIn>
 
             <div className={styles.features}>
-              {items.map((item: any, index: number) => (
+              {items.map((item, index) => (
                 <FadeIn key={index} direction="up" delay={0.1 * (index + 1)}>
                   <div className={styles.featureItem}>
                     <div className={styles.iconBox}>
-                      <DynamicIcon name={item.icon} size={32} />
+                      <DynamicIcon name={item.icon ?? ""} size={32} />
                     </div>
                     <div className={styles.featureContent}>
                       <h3>{item.title}</h3>
@@ -112,7 +104,7 @@ export default function PrivateTripWhy({
               className={styles.imageWrapper}
             >
               <Image
-                src={privatetripSettings?.whyImage || "/private_trip_why.png"}
+                src={cmsText(privatetripSettings, "whyImage") || "/private_trip_why.png"}
                 alt="Private Trip di Eropa"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -123,7 +115,7 @@ export default function PrivateTripWhy({
             <FadeIn direction="up" delay={0.4} className={styles.ctaWrapper}>
               <a
                 href={generateWhatsAppLink(
-                  privatetripSettings?.whatsapp_number,
+                  cmsText(privatetripSettings, "whatsapp_number"),
                   waPrivateTripGeneral(locale === "en"),
                 )}
                 target="_blank"

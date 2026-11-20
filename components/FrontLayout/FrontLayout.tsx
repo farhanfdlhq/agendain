@@ -8,7 +8,7 @@ import { LanguageProvider } from "@/lib/i18n/LanguageContext"
 import { formatWhatsAppNumber } from "@/lib/utils"
 import { waFloating } from "@/lib/whatsapp-messages"
 
-export default function FrontLayout({ children, settings, initialLocale = 'id' }: { children: React.ReactNode, settings?: any, initialLocale?: 'id' | 'en' }) {
+export default function FrontLayout({ children, settings, initialLocale = 'id' }: { children: React.ReactNode, settings?: Record<string, string>, initialLocale?: 'id' | 'en' }) {
   const pathname = usePathname()
   
   // Hide global Navbar and Footer on admin routes.

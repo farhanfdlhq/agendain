@@ -1,8 +1,10 @@
 import styles from './page.module.css'
+import type { Prisma } from "@prisma/client"
+import type { CmsFields } from "@/lib/types/cms"
 import { prisma } from '@/lib/prisma'
 import OpenTripContent from './OpenTripContent'
 import { pageMeta } from '@/lib/og'
-import { PUBLISHED_OPEN_TRIP, toOpenTripCard } from '@/lib/open-trip-card'
+import { PUBLISHED_OPEN_TRIP, toOpenTripCard, type OpenTripCardData } from '@/lib/open-trip-card'
 import { JsonLd, breadcrumbLd } from '@/lib/jsonld'
 
 // Canonical menunjuk /open-trip TANPA query param: halaman ini memakai filter
@@ -28,7 +30,7 @@ export default async function PaketPage({
   const urutkanFilter = params?.urutkan as string
   
   // Build query
-  const where: any = { ...PUBLISHED_OPEN_TRIP }
+  const where: Prisma.OpenTripWhereInput = { ...PUBLISHED_OPEN_TRIP }
   if (destinasiFilter) {
     where.destinasi = {
       nama: {
@@ -47,16 +49,16 @@ export default async function PaketPage({
     }
   }
 
-  let orderBy: any = { createdAt: 'desc' }
+  let orderBy: Prisma.OpenTripOrderByWithRelationInput = { createdAt: 'desc' }
   if (urutkanFilter === 'termurah') {
     orderBy = { harga: 'asc' }
   } else if (urutkanFilter === 'termahal') {
     orderBy = { harga: 'desc' }
   }
   
-  let packages: any[] = []
+  let packages: OpenTripCardData[] = []
   let destList: { nama: string; namaEn?: string | null }[] = []
-  let opentripSettings: any = {}
+  let opentripSettings: CmsFields = {}
 
   try {
     const setting = await prisma.setting.findUnique({ where: { key: 'opentrip_settings' } })

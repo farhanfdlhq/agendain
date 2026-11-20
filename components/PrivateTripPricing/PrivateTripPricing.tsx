@@ -1,5 +1,6 @@
 "use client";
 import { fontStyleFrom } from '@/lib/font-style'
+import { cmsLocalText, cmsText } from "@/lib/types/cms";
 import Image from "next/image";
 import FadeIn from "@/components/Motion/FadeIn";
 import styles from "./PrivateTripPricing.module.css";
@@ -16,13 +17,13 @@ interface PrivateTripPackageData {
   subtitle: string;
   image: string;
   locationTab: string;
-  chips: any;
-  features: any;
+  chips: unknown;
+  features: unknown;
 }
 
 interface PrivateTripPricingProps {
   packages: PrivateTripPackageData[];
-  privatetripSettings?: any;
+  privatetripSettings?: Record<string, unknown>;
 }
 
 const DEFAULT_PACKAGES: PrivateTripPackageData[] = [
@@ -75,12 +76,7 @@ export default function PrivateTripPricing({
     !packages || packages.length === 0 ? DEFAULT_PACKAGES : packages;
   const { locale } = useTranslation();
   const isEn = locale === "en";
-  const getSetting = (key: string) => {
-    const val = isEn
-      ? privatetripSettings[`${key}_en`] || privatetripSettings[key]
-      : privatetripSettings[key];
-    return val;
-  };
+  const getSetting = (key: string) => cmsLocalText(privatetripSettings, key, isEn);
 
   const renderChipIcon = (index: number) => {
     if (index === 0) {
@@ -255,7 +251,7 @@ export default function PrivateTripPricing({
                   <div className={styles.actionRow}>
                     <a
                       href={generateWhatsAppLink(
-                        privatetripSettings?.whatsapp_number,
+                        cmsText(privatetripSettings, "whatsapp_number"),
                         waPrivateTripPackage(
                           isEn,
                           tier.title,

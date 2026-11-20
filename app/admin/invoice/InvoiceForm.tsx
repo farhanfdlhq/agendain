@@ -49,14 +49,12 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
 
   // Penjaga perubahan belum-disimpan. Baseline ditetapkan setelah data awal
   // termuat (edit) atau prefill sempat masuk (create), dan setelah simpan sukses.
-  const formRef = useRef(form)
-  formRef.current = form
-  const { setBaseline } = useUnsavedGuardSnapshot(JSON.stringify(form))
+  const { setBaseline, markClean } = useUnsavedGuardSnapshot(JSON.stringify(form))
   useEffect(() => {
     if (mode !== "create") return
-    const t = setTimeout(() => setBaseline(JSON.stringify(formRef.current)), 700)
+    const t = setTimeout(() => markClean(), 700)
     return () => clearTimeout(t)
-  }, [mode, setBaseline])
+  }, [mode, markClean])
 
   // Akun pembayaran + nilai bawaan dari Pengaturan Invoice.
   useEffect(() => {
@@ -183,7 +181,7 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
       })
       const data = await res.json()
       if (res.ok) {
-        setBaseline(JSON.stringify(formRef.current)) // tandai bersih sebelum pindah
+        markClean() // tandai bersih sebelum pindah
         toast.success(mode === "create" ? "Invoice dibuat!" : "Invoice diperbarui!")
         router.push("/admin/invoice")
         router.refresh()

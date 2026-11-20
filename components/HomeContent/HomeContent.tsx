@@ -1,6 +1,9 @@
 'use client'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { generateWhatsAppLink } from '@/lib/utils'
+import type { OpenTripCardData } from '@/lib/open-trip-card'
+import type { CmsRow } from '@/lib/types/cms'
+import type { Gs, HomeSettings, Tr } from './types'
 
 import HeroSection from './sections/HeroSection'
 import WhySection from './sections/WhySection'
@@ -10,7 +13,7 @@ import AccordionSection from './sections/AccordionSection'
 import SocialProofSection from './sections/SocialProofSection'
 import FaqSection from './sections/FaqSection'
 
-const getTestimonials = (t: any) => [
+const getTestimonials = (t: Tr): CmsRow[] => [
   {
     name: t('home.testi.name1'),
     text: t('home.testi.text1'),
@@ -32,26 +35,27 @@ export default function HomeContent({
   packages,
   homeSettings,
 }: {
-  packages: any[]
-  homeSettings: any
+  packages: OpenTripCardData[]
+  homeSettings: HomeSettings
 }) {
   const { t, locale } = useTranslation()
   const testimonials = getTestimonials(t)
-  const waLink = generateWhatsAppLink(homeSettings?.whatsapp_number, homeSettings?.whatsapp_message)
+  // Nilai teks dari setting; selain string dianggap kosong.
+  const str = (k: string) => {
+    const v = homeSettings?.[k]
+    return typeof v === 'string' ? v : typeof v === 'number' ? String(v) : ''
+  }
+  const waLink = generateWhatsAppLink(str('whatsapp_number'), str('whatsapp_message'))
 
-  const gs = (key: string, fallbackTKey?: string, defaultStatic?: string) => {
+  const gs: Gs = (key, fallbackTKey, defaultStatic) => {
     const dataKey = locale === 'en' ? `${key}_en` : key;
-    if (homeSettings?.[dataKey] && homeSettings[dataKey].trim() !== '') {
-      return homeSettings[dataKey];
-    }
-    if (homeSettings?.[key] && homeSettings[key].trim() !== '') {
-      return homeSettings[key];
-    }
+    if (str(dataKey).trim() !== '') return str(dataKey);
+    if (str(key).trim() !== '') return str(key);
     if (fallbackTKey) return t(fallbackTKey);
     return defaultStatic || '';
   }
 
-  const orderArray = (homeSettings?.sectionOrder || 'hero,why,destinations,testimonial,accordion,socialproof,faq').split(',')
+  const orderArray = (str('sectionOrder') || 'hero,why,destinations,testimonial,accordion,socialproof,faq').split(',')
 
   const renderSection = (key: string) => {
     switch (key.trim()) {

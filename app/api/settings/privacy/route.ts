@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       privacyContent: next.privacyContent ?? '',
       privacyContent_en: next.privacyContent_en ?? '',
     })
-  } catch (error: any) {
+  } catch (error) {
     return serverError('settings/privacy', error)
   }
 }
@@ -69,7 +69,7 @@ export async function GET() {
     }
     
     return NextResponse.json(JSON.parse(setting.value))
-  } catch (error: any) {
+  } catch (error) {
     return serverError('settings/privacy', error)
   }
 }

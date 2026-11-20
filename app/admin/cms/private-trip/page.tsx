@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { cmsList, cmsText, type CmsData, type CmsItem, type CmsPackageItem } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard";
 import { toast } from "react-hot-toast";
 import { Save, Globe, X } from "lucide-react";
@@ -124,7 +125,7 @@ function BadgeInput({
 }
 
 export default function PrivateTripCMSPage() {
-  const [data, setData] = useState<any>({
+  const [data, setData] = useState<CmsData>({
     heroTitle: "",
     heroTitle_en: "",
     heroTitleWeight: "800",
@@ -177,10 +178,8 @@ export default function PrivateTripCMSPage() {
 
   // Penjaga perubahan belum-disimpan (baseline saat data awal termuat & setelah simpan).
   const snapshot = JSON.stringify(data);
-  const snapRef = useRef(snapshot);
-  snapRef.current = snapshot;
-  const { setBaseline } = useUnsavedGuardSnapshot(snapshot);
-  useEffect(() => { if (!fetching) setBaseline(snapRef.current); }, [fetching, setBaseline]);
+  const { markClean } = useUnsavedGuardSnapshot(snapshot);
+  useEffect(() => { if (!fetching) markClean(); }, [fetching, markClean]);
   const topHeaderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -206,7 +205,7 @@ export default function PrivateTripCMSPage() {
           // sehingga simpanan berikutnya memakai bentuk baru (migrasi lazy).
           foldLegacyRepeaters(res, PRIVATE_TRIP_REPEATERS);
           fillFormDefaults(res);
-          setData((prev: any) => ({ ...prev, ...res }));
+          setData((prev) => ({ ...prev, ...res }));
         }
         setFetching(false);
       })
@@ -226,7 +225,7 @@ export default function PrivateTripCMSPage() {
         body: JSON.stringify(data),
       });
       if (res.ok) {
-        setBaseline(snapRef.current); // tandai bersih setelah simpan
+        markClean(); // tandai bersih setelah simpan
         toast.success("Konten berhasil diperbarui!");
       } else {
         toast.error("Gagal menyimpan.");
@@ -243,7 +242,7 @@ export default function PrivateTripCMSPage() {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
   ) => {
-    setData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
+    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const renderLivePreview = (text: string) => {
@@ -290,9 +289,9 @@ export default function PrivateTripCMSPage() {
           </p>
         )}
         <MediaPicker
-          value={data[activeFieldName] || ""}
+          value={cmsText(data, activeFieldName)}
           onChange={(url) =>
-            setData((prev: any) => ({ ...prev, [activeFieldName]: url }))
+            setData((prev) => ({ ...prev, [activeFieldName]: url }))
           }
           label="Pilih Gambar"
           description={
@@ -314,15 +313,15 @@ export default function PrivateTripCMSPage() {
     const activeFieldName = activeTab === "en" ? `${fieldName}_en` : fieldName;
     const weightField = `${fieldName}Weight`;
     const sizeField = `${fieldName}Size`;
-    const selectedWeight = data[weightField]
-      ? Number(data[weightField])
+    const selectedWeight = cmsText(data, weightField)
+      ? Number(cmsText(data, weightField))
       : undefined;
-    const selectedSize = data[sizeField] ? Number(data[sizeField]) : undefined;
+    const selectedSize = cmsText(data, sizeField) ? Number(cmsText(data, sizeField)) : undefined;
     const isTitleOrHighlight =
       label.includes("*") ||
       label.toLowerCase().includes("kuning") ||
       fieldName.includes("Title") ||
-      (data[activeFieldName] && String(data[activeFieldName]).includes("*"));
+      (cmsText(data, activeFieldName) && String(cmsText(data, activeFieldName)).includes("*"));
 
     return (
       <div className="@container space-y-3 p-3.5 rounded-xl border border-border/60 bg-muted/10 shadow-xs">
@@ -345,7 +344,7 @@ export default function PrivateTripCMSPage() {
           {isTextarea ? (
             <Textarea
               name={activeFieldName}
-              value={data[activeFieldName] || ""}
+              value={cmsText(data, activeFieldName)}
               onChange={handleChange}
               placeholder={placeholder}
               rows={3}
@@ -359,7 +358,7 @@ export default function PrivateTripCMSPage() {
             <Input
               type="text"
               name={activeFieldName}
-              value={data[activeFieldName] || ""}
+              value={cmsText(data, activeFieldName)}
               onChange={handleChange}
               placeholder={placeholder}
               style={
@@ -374,13 +373,13 @@ export default function PrivateTripCMSPage() {
         {enableWeight && (
           <div className="pt-2 border-t border-border/40 @3xl:col-span-2 @3xl:pt-0 @3xl:border-t-0">
             <FontControls
-              weightValue={data[weightField]}
+              weightValue={cmsText(data, weightField)}
               onWeightChange={(val) =>
-                setData((prev: any) => ({ ...prev, [weightField]: val }))
+                setData((prev) => ({ ...prev, [weightField]: val }))
               }
-              sizeValue={data[sizeField]}
+              sizeValue={cmsText(data, sizeField)}
               onSizeChange={(val) =>
-                setData((prev: any) => ({ ...prev, [sizeField]: val }))
+                setData((prev) => ({ ...prev, [sizeField]: val }))
               }
               defaultWeight={defaultWeight}
             />
@@ -388,7 +387,7 @@ export default function PrivateTripCMSPage() {
         )}
         </div>
 
-        {isTitleOrHighlight && data[activeFieldName] && (
+        {isTitleOrHighlight && cmsText(data, activeFieldName) && (
           <div className="relative mt-2 p-3 rounded-lg bg-slate-950 border border-slate-800/80 shadow-inner flex items-center justify-between gap-3 overflow-hidden">
             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#FFC704] to-amber-600 rounded-l-lg opacity-80" />
             <div className="flex flex-col gap-1 w-full pl-1">
@@ -397,7 +396,7 @@ export default function PrivateTripCMSPage() {
                   <span className="w-1.5 h-1.5 rounded-full bg-[#FFC704] animate-pulse"></span>
                   Live Preview
                 </span>
-                {!String(data[activeFieldName]).includes("*") && (
+                {!String(cmsText(data, activeFieldName)).includes("*") && (
                   <span className="text-[11px] text-slate-400 italic">
                     Tips: Apit kata dengan{" "}
                     <code className="text-[#FFC704] bg-slate-900 px-1 py-0.5 rounded font-bold">
@@ -418,7 +417,7 @@ export default function PrivateTripCMSPage() {
                     : undefined
                 }
               >
-                {renderLivePreview(String(data[activeFieldName]))}
+                {renderLivePreview(String(cmsText(data, activeFieldName)))}
               </div>
             </div>
           </div>
@@ -429,16 +428,16 @@ export default function PrivateTripCMSPage() {
 
   const renderArrayEditor = (
     fieldKey: string,
-    template: any,
+    template: CmsItem,
     fields: { key: string; label: string; isTextArea?: boolean; isIconPicker?: boolean }[],
   ) => {
     // Satu array untuk kedua bahasa. Ikon dan field bahasa-netral lain hidup di
     // kunci polos; hanya teks yang punya sibling `_en`. Lihat lib/i18n/localize.
-    const items = data[fieldKey] || [];
+    const items = cmsList(data, fieldKey);
     const textKey = (name: string) => (activeTab === "en" ? `${name}_en` : name);
 
     const handleAdd = () => {
-      setData((prev: any) => ({
+      setData((prev) => ({
         ...prev,
         [fieldKey]: [...items, { ...template }],
       }));
@@ -447,13 +446,13 @@ export default function PrivateTripCMSPage() {
     const handleRemove = (index: number) => {
       const newItems = [...items];
       newItems.splice(index, 1);
-      setData((prev: any) => ({ ...prev, [fieldKey]: newItems }));
+      setData((prev) => ({ ...prev, [fieldKey]: newItems }));
     };
 
     const handleChange = (index: number, key: string, val: string) => {
       const newItems = [...items];
       newItems[index] = { ...newItems[index], [key]: val };
-      setData((prev: any) => ({ ...prev, [fieldKey]: newItems }));
+      setData((prev) => ({ ...prev, [fieldKey]: newItems }));
     };
 
     return (
@@ -471,7 +470,7 @@ export default function PrivateTripCMSPage() {
         )}
         {/* 2 item per baris di layar lebar agar tak boros ruang vertikal. */}
         <div className="grid gap-4 xl:grid-cols-2">
-          {items.map((item: any, index: number) => (
+          {items.map((item, index) => (
             <div
               key={index}
               className="p-4 border rounded-xl bg-muted/10 relative shadow-sm space-y-3"
@@ -544,7 +543,7 @@ export default function PrivateTripCMSPage() {
 
   const renderPackageEditor = () => {
     const activeFieldName = "packages"; // No translation for packages yet or we can just use one list.
-    const items = data[activeFieldName] || [];
+    const items = cmsList<CmsPackageItem>(data, activeFieldName);
 
     const handleAddItem = () => {
       const newItem = {
@@ -555,7 +554,7 @@ export default function PrivateTripCMSPage() {
         chips: [],
         features: [],
       };
-      setData((prev: any) => ({
+      setData((prev) => ({
         ...prev,
         [activeFieldName]: [...items, newItem],
       }));
@@ -564,13 +563,13 @@ export default function PrivateTripCMSPage() {
     const handleRemoveItem = (index: number) => {
       const newItems = [...items];
       newItems.splice(index, 1);
-      setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
+      setData((prev) => ({ ...prev, [activeFieldName]: newItems }));
     };
 
-    const handleItemChange = (index: number, field: string, val: any) => {
+    const handleItemChange = (index: number, field: string, val: string | string[]) => {
       const newItems = [...items];
       newItems[index] = { ...newItems[index], [field]: val };
-      setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
+      setData((prev) => ({ ...prev, [activeFieldName]: newItems }));
     };
 
     const handleArrayStringChange = (
@@ -586,7 +585,7 @@ export default function PrivateTripCMSPage() {
         // hilang ("Bisa request" → "Bisarequest"). Pembersihan dilakukan server.
         [field]: text.split("\n"),
       };
-      setData((prev: any) => ({ ...prev, [activeFieldName]: newItems }));
+      setData((prev) => ({ ...prev, [activeFieldName]: newItems }));
     };
 
     return (
@@ -611,7 +610,7 @@ export default function PrivateTripCMSPage() {
             </div>
           )}
           <div className="space-y-6">
-            {items.map((item: any, index: number) => (
+            {items.map((item, index) => (
               <div
                 key={index}
                 className="p-4 border rounded-xl bg-muted/10 relative shadow-sm"
@@ -633,7 +632,7 @@ export default function PrivateTripCMSPage() {
                     <div className="space-y-2">
                       <Label className="text-xs">Gambar Cover</Label>
                       <MediaPicker
-                        value={item.image || ""}
+                        value={typeof item.image === "string" ? item.image : ""}
                         onChange={(url) =>
                           handleItemChange(index, "image", url)
                         }
@@ -821,7 +820,7 @@ export default function PrivateTripCMSPage() {
         <Card className="border shadow-sm overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b pb-4">
             <CardTitle className="text-lg text-primary">
-              Teks Bagian "Mengapa Memilih Kami"
+              Teks Bagian &quot;Mengapa Memilih Kami&quot;
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6 grid gap-6">
@@ -905,7 +904,7 @@ export default function PrivateTripCMSPage() {
         <Card className="border shadow-sm overflow-hidden">
           <CardHeader className="bg-slate-50/50 border-b pb-4">
             <CardTitle className="text-lg text-primary">
-              Teks Bagian "Cara Booking"
+              Teks Bagian &quot;Cara Booking&quot;
             </CardTitle>
           </CardHeader>
           <CardContent className="@container pt-6 grid gap-6">

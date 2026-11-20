@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { cmsLocalText } from "@/lib/types/cms";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { CheckCircle } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -35,7 +36,7 @@ const EMPTY_FORM = {
 export default function PrivateTripForm({
   privatetripSettings,
 }: {
-  privatetripSettings?: any;
+  privatetripSettings?: Record<string, unknown>;
 }) {
   const { t, locale } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -43,17 +44,8 @@ export default function PrivateTripForm({
   const [whatsappNumber, setWhatsappNumber] = useState("6281995264565");
 
   const gs = (key: string, fallbackText: string) => {
-    const dataKey = locale === "en" ? `${key}_en` : key;
-    if (
-      privatetripSettings?.[dataKey] &&
-      privatetripSettings[dataKey].trim() !== ""
-    ) {
-      return privatetripSettings[dataKey];
-    }
-    if (privatetripSettings?.[key] && privatetripSettings[key].trim() !== "") {
-      return privatetripSettings[key];
-    }
-    return fallbackText;
+    const v = cmsLocalText(privatetripSettings, key, locale === "en");
+    return v.trim() ? v : fallbackText;
   };
 
   useEffect(() => {

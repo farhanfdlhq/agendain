@@ -1,12 +1,13 @@
 "use client"
 import FadeIn from "@/components/Motion/FadeIn";
+import { cmsLocalText } from "@/lib/types/cms";
 import styles from "./PrivateTripWorkflow.module.css";
 import { useTranslation } from "@/lib/i18n/useTranslation";
 import { parseGoldText } from "@/lib/utils/textFormatting";
 import { fontStyleFrom } from "@/lib/font-style";
 import { localizeRepeater, PRIVATE_TRIP_REPEATERS } from "@/lib/i18n/localize";
 
-const getWorkflowSteps = (t: any) => [
+const getWorkflowSteps = (t: (key: string) => string) => [
   {
     title: t('pt.workflow.step1.title'),
     desc: t('pt.workflow.step1.desc'),
@@ -25,18 +26,12 @@ const getWorkflowSteps = (t: any) => [
   },
 ];
 
-export default function PrivateTripWorkflow({ privatetripSettings }: { privatetripSettings?: any }) {
+export default function PrivateTripWorkflow({ privatetripSettings }: { privatetripSettings?: Record<string, unknown> }) {
   const { t, locale } = useTranslation();
   
   const gs = (key: string, fallbackText: string) => {
-    const dataKey = locale === 'en' ? `${key}_en` : key;
-    if (privatetripSettings?.[dataKey] && privatetripSettings[dataKey].trim() !== '') {
-      return privatetripSettings[dataKey];
-    }
-    if (privatetripSettings?.[key] && privatetripSettings[key].trim() !== '') {
-      return privatetripSettings[key];
-    }
-    return fallbackText;
+    const v = cmsLocalText(privatetripSettings, key, locale === "en");
+    return v.trim() ? v : fallbackText;
   };
 
   const localizedSteps = localizeRepeater(privatetripSettings, 'workflowSteps', locale, PRIVATE_TRIP_REPEATERS.workflowSteps);

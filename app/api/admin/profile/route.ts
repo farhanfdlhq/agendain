@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { Prisma } from "@prisma/client"
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -48,7 +49,7 @@ export async function PUT(req: NextRequest) {
   const user = await prisma.adminUser.findUnique({ where: { email: session.user.email } })
   if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
-  const updateData: any = {}
+  const updateData: Prisma.AdminUserUpdateInput = {}
   if (nama) updateData.nama = nama
   if (avatar !== undefined) updateData.avatar = avatar
   if (email && email !== user.email) {

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import type { Prisma } from "@prisma/client"
 import { prisma } from '@/lib/prisma'
 import { getRolesConfig, requirePermission } from "@/lib/rbac"
 import bcrypt from 'bcryptjs'
@@ -46,7 +47,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ error: 'Role Super Admin tidak dapat diubah' }, { status: 403 })
     }
 
-    const updateData: any = {
+    const updateData: Prisma.AdminUserUpdateInput = {
       nama: data.nama,
       email: data.email,
       role: data.role

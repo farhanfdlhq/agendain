@@ -1,5 +1,6 @@
 'use client'
 import { fontStyle } from '@/lib/font-style'
+import type { Gs, HomeSettings, Tr } from '../types'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
@@ -10,7 +11,7 @@ import styles from '../HomeContent.module.css'
 import { renderHighlightedTitle } from '../shared'
 import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
 
-const getAccordionItems = (t: any) => [
+const getAccordionItems = (t: Tr) => [
   {
     title: t('home.acc1.title'),
     body: t('home.acc1.desc'),
@@ -29,7 +30,7 @@ const getAccordionItems = (t: any) => [
   },
 ]
 
-export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: any, t: any, locale: string, homeSettings: any }) {
+export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: Gs, t: Tr, locale: string, homeSettings: HomeSettings }) {
   const [activeAccordion, setActiveAccordion] = useState(0)
   const accItems = localizeRepeater(homeSettings, 'accItems', locale, HOME_REPEATERS.accItems) ?? getAccordionItems(t);
 
@@ -45,7 +46,7 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
         </FadeIn>
         <div className={styles.accordionLayout}>
           <div className={styles.accordionLeft}>
-            {accItems.map((item: any, i: number) => (
+            {accItems.map((item, i) => (
               <FadeIn key={i} direction="up" delay={i * 0.05}>
                 <div className={activeAccordion === i ? styles.accordionItemActive : styles.accordionItem}>
                   <button className={styles.accordionTrigger} onClick={() => setActiveAccordion(activeAccordion === i ? -1 : i)} aria-expanded={activeAccordion === i}>

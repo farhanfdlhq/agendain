@@ -58,6 +58,12 @@ export function toOpenTripData(data: OpenTripInput, mode: "create" | "update") {
   };
 }
 
+/** Baris JSON paket. Data lama bisa berupa string polos (lihat parser di bawah). */
+export type AkomodasiRow = string | { kota?: string; nama?: string; hotel?: string }
+export type PenerbanganRow = string | { rute?: string; detail?: string; maskapai?: string }
+export type ItineraryRow = { hari?: number | string; judul?: string; deskripsi?: string; desc?: string }
+export type DokumenRow = string | { name?: string; url?: string }
+
 /**
  * Akomodasi & Penerbangan diketik satu baris per entri di form admin, dengan
  * kolom dipisah `|`. Dipakai bersama form "baru" dan "edit" supaya keduanya
@@ -99,14 +105,14 @@ export function parsePenerbangan(text: string) {
 export function stringifyAkomodasi(value: unknown): string {
   if (!Array.isArray(value)) return "";
   return value
-    .map((v: any) => (typeof v === "string" ? v : [v?.kota, v?.nama].filter(Boolean).join(" | ")))
+    .map((v: AkomodasiRow | null) => (typeof v === "string" ? v : [v?.kota, v?.nama].filter(Boolean).join(" | ")))
     .join("\n");
 }
 
 export function stringifyPenerbangan(value: unknown): string {
   if (!Array.isArray(value)) return "";
   return value
-    .map((v: any) =>
+    .map((v: PenerbanganRow | null) =>
       typeof v === "string" ? v : [v?.rute, v?.detail, v?.maskapai].filter(Boolean).join(" | "),
     )
     .join("\n");

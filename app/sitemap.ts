@@ -6,18 +6,20 @@ import { SITE_URL, absoluteUrl } from "@/lib/site";
 // tanpa perlu build ulang.
 export const revalidate = 3600;
 
+type FotoObj = { full?: unknown; large?: unknown; medium?: unknown; thumb?: unknown };
+
 function extractFotoUrl(foto: unknown): string | null {
   if (typeof foto === "string" && foto.trim()) return foto.trim();
   if (Array.isArray(foto) && foto.length > 0) {
     const first = foto[0];
     if (typeof first === "string" && first.trim()) return first.trim();
     if (first && typeof first === "object") {
-      const obj = first as any;
+      const obj = first as FotoObj;
       const url = obj.full || obj.large || obj.medium || obj.thumb;
       if (typeof url === "string" && url.trim()) return url.trim();
     }
   } else if (foto && typeof foto === "object") {
-    const obj = foto as any;
+    const obj = foto as FotoObj;
     const url = obj.full || obj.large || obj.medium || obj.thumb;
     if (typeof url === "string" && url.trim()) return url.trim();
   }

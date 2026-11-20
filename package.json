@@ -1,6 +1,6 @@
 {
   "name": "agendain-temp",
-  "version": "1.8.8",
+  "version": "1.8.9",
   "private": true,
   "//browserslist": "Target browser modern agar Next tidak menyertakan polyfill/transpile 'legacy JavaScript' untuk peramban lawas (audit Lighthouse). Cakupan ini menutup >97% pengguna global per 2026.",
   "browserslist": [
@@ -44,7 +44,7 @@
     "isomorphic-dompurify": "^3.19.0",
     "lucide-react": "^1.17.0",
     "motion": "^12.42.2",
-    "next": "^16.4.2",
+    "next": "^16.4.6",
     "next-auth": "^4.24.14",
     "pdf-parse": "^2.4.5",
     "postcss": "^8.5.15",
@@ -70,7 +70,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9",
-    "eslint-config-next": "^16.3.8",
+    "eslint-config-next": "^16.4.6",
     "jsdom": "^29.1.1",
     "tsx": "^4.23.1",
     "typescript": "^5",

@@ -1,5 +1,6 @@
 "use client";
 import { fontStyleFrom } from '@/lib/font-style'
+import { cmsLocalText, cmsText } from "@/lib/types/cms";
 import Image from "next/image";
 import styles from "./PrivateTripHero.module.css";
 import { Badge } from "@/components/ui/badge";
@@ -12,16 +13,11 @@ import { waPrivateTripGeneral } from "@/lib/whatsapp-messages";
 export default function PrivateTripHero({
   privatetripSettings = {},
 }: {
-  privatetripSettings?: any;
+  privatetripSettings?: Record<string, unknown>;
 }) {
   const { locale } = useTranslation();
   const isEn = locale === "en";
-  const getSetting = (key: string) => {
-    const val = isEn
-      ? privatetripSettings[`${key}_en`] || privatetripSettings[key]
-      : privatetripSettings[key];
-    return val;
-  };
+  const getSetting = (key: string) => cmsLocalText(privatetripSettings, key, isEn);
   return (
     <div className={styles.heroSection}>
       <Image
@@ -74,7 +70,7 @@ export default function PrivateTripHero({
           </a>
           <a
             href={generateWhatsAppLink(
-              privatetripSettings?.whatsapp_number,
+              cmsText(privatetripSettings, "whatsapp_number"),
               waPrivateTripGeneral(isEn),
             )}
             target="_blank"

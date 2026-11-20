@@ -1,5 +1,6 @@
 'use client'
 import { fontStyleFrom } from '@/lib/font-style'
+import type { CmsFields } from "@/lib/types/cms"
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -30,7 +31,7 @@ type BlogPost = {
 }
 
 type BlogContentProps = {
-  blogSettings?: any
+  blogSettings?: CmsFields
   categories: BlogCategory[]
   posts: BlogPost[]
   /** Artikel terbaru tampil besar di atas (hanya halaman 1 tanpa filter). */

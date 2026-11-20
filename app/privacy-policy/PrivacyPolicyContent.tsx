@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
+import type { CmsFields } from "@/lib/types/cms"
 import { fontStyleFrom } from '@/lib/font-style'
 import styles from './page.module.css'
 import HeroHeader from '@/components/HeroHeader/HeroHeader'
@@ -17,7 +18,7 @@ const labeledLi = (text: string) => {
   return rest.length ? `<li><strong>${esc(head)}:</strong>${esc(rest.join(':'))}</li>` : `<li>${esc(text)}</li>`
 }
 
-export default function PrivacyPolicyContent({ privacySettings = {} }: { privacySettings?: any }) {
+export default function PrivacyPolicyContent({ privacySettings = {} }: { privacySettings?: CmsFields }) {
   const { t, locale } = useTranslation()
   const isEn = locale === 'en'
 

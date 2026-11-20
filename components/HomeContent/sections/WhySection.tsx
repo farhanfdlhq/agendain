@@ -1,12 +1,14 @@
 'use client'
 import { fontStyle, fontStyleFrom } from '@/lib/font-style'
+import type { Gs, HomeSettings, Tr } from '../types'
+import type { CmsRow } from '@/lib/types/cms'
 import Image from 'next/image'
 import FadeIn from '@/components/Motion/FadeIn'
 import styles from '../HomeContent.module.css'
 import { renderHighlightedTitle } from '../shared'
 import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
 
-const getWhyCards = (t: any) => [
+const getWhyCards = (t: Tr): CmsRow[] => [
   {
     number: '#1',
     title: t('home.why1.title'),
@@ -33,7 +35,7 @@ const getWhyCards = (t: any) => [
   },
 ]
 
-export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t: any, locale: string, homeSettings: any }) {
+export default function WhySection({ gs, t, locale, homeSettings }: { gs: Gs, t: Tr, locale: string, homeSettings: HomeSettings }) {
   // Satu array untuk kedua bahasa: gambar & bobot huruf ikut dari baris yang
   // sama, hanya teksnya yang dilokalkan. Dulu array EN diambil bulat-bulat
   // sehingga gambar versi Inggris membeku pada nilai lama.
@@ -52,14 +54,14 @@ export default function WhySection({ gs, t, locale, homeSettings }: { gs: any, t
             tile foto ber-scrim gelap dengan teks putih & badge angka (kuning
             fill). Ritme ukuran yang beragam menghindari kesan "kartu seragam". */}
         <div className={styles.whyBento}>
-          {whyItems.map((card: any, i: number) => {
+          {whyItems.map((card, i) => {
             const tileClass = i === 0 ? styles.whyTileLarge : i === 1 ? styles.whyTileWide : styles.whyTileSmall
             // Tampilkan deskripsi saat kartu di-hover (diatur lewat CSS)
             return (
               <FadeIn key={i} direction="up" delay={i * 0.08} className={`${styles.whyTile} ${tileClass}`}>
                 <Image
                   src={card.image || card.foto || '/placeholder.webp'}
-                  alt={card.title}
+                  alt={card.title ?? ''}
                   fill
                   className={styles.whyTileImg}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"

@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import type { CmsFields } from "@/lib/types/cms"
 import PrivacyPolicyContent from './PrivacyPolicyContent'
 import { prisma } from '@/lib/prisma'
 import { pageMeta } from '@/lib/og'
@@ -13,7 +14,7 @@ export const metadata: Metadata = pageMeta({
 export const revalidate = 60;
 
 export default async function PrivacyPolicyPage() {
-  let privacySettings = {};
+  let privacySettings: CmsFields = {};
   try {
     const setting = await prisma.setting.findUnique({ where: { key: 'privacy_settings' } });
     if (setting) {

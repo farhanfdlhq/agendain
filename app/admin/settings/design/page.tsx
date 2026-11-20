@@ -40,10 +40,8 @@ export default function DesignSystemPage() {
 
   // Penjaga perubahan belum-disimpan (baseline saat tema termuat & setelah simpan).
   const snapshot = JSON.stringify(theme)
-  const snapRef = useRef(snapshot)
-  snapRef.current = snapshot
-  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
-  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
+  const { markClean } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) markClean() }, [fetching, markClean])
 
   // Satu sumber daftar font: lib/fonts.ts. Loader next/font di app/layout.tsx
   // dan validasi di POST /api/settings/theme memakai daftar yang sama, jadi
@@ -85,7 +83,7 @@ export default function DesignSystemPage() {
       })
       const data = await res.json()
       if (res.ok) {
-        setBaseline(snapRef.current) // tandai bersih setelah simpan
+        markClean() // tandai bersih setelah simpan
         toast.success('Desain berhasil diperbarui.')
       } else {
         toast.error(data.error || 'Terjadi kesalahan saat menyimpan.')

@@ -83,13 +83,13 @@ describe("localizeRepeater", () => {
 
 describe("foldLegacyRepeaters", () => {
   it("folds legacy EN text into the base rows and drops the legacy array", () => {
-    const data: any = {
+    const data: Record<string, unknown> = {
       whyItems: [{ image: "/a.webp", title: "Judul", desc: "Isi" }],
       whyItems_en: [{ image: "/b.webp", title: "Title", desc: "Body" }],
     };
     foldLegacyRepeaters(data, { whyItems: TEXT });
     expect(data.whyItems_en).toBeUndefined();
-    expect(data.whyItems[0]).toEqual({
+    expect((data.whyItems as unknown[])[0]).toEqual({
       image: "/a.webp",
       title: "Judul",
       title_en: "Title",
@@ -99,7 +99,7 @@ describe("foldLegacyRepeaters", () => {
   });
 
   it("promotes the EN array when only that one was ever filled", () => {
-    const data: any = { whyItems_en: [{ image: "/b.webp", title: "Title" }] };
+    const data: Record<string, unknown> = { whyItems_en: [{ image: "/b.webp", title: "Title" }] };
     foldLegacyRepeaters(data, { whyItems: TEXT });
     expect(data.whyItems_en).toBeUndefined();
     expect(data.whyItems).toEqual([
@@ -108,16 +108,16 @@ describe("foldLegacyRepeaters", () => {
   });
 
   it("does not overwrite an already-migrated row", () => {
-    const data: any = {
+    const data: Record<string, unknown> = {
       whyItems: [{ title: "Judul", title_en: "Kept" }],
       whyItems_en: [{ title: "Stale" }],
     };
     foldLegacyRepeaters(data, { whyItems: TEXT });
-    expect(data.whyItems[0].title_en).toBe("Kept");
+    expect((data.whyItems as Record<string, unknown>[])[0].title_en).toBe("Kept");
   });
 
   it("is a no-op without a legacy array", () => {
-    const data: any = { whyItems: [{ title: "Judul" }] };
+    const data: Record<string, unknown> = { whyItems: [{ title: "Judul" }] };
     foldLegacyRepeaters(data, { whyItems: TEXT });
     expect(data).toEqual({ whyItems: [{ title: "Judul" }] });
   });

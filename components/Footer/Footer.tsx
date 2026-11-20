@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import type { LucideIcon } from "lucide-react"
 import Image from 'next/image'
 import { Globe, Link2, Mail, MessageCircle, Music2, Phone } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
@@ -40,7 +41,7 @@ const INLINE_SVGS: Record<string, (props: { className?: string }) => React.React
 
 // Platform tanpa aset SVG sendiri memakai lucide agar tetap ada ikonnya.
 // lucide tidak lagi menyediakan ikon merek, jadi dipakai padanan generik.
-const LUCIDE_ICONS: Record<string, any> = {
+const LUCIDE_ICONS: Record<string, LucideIcon> = {
   facebook: Globe,
   whatsapp: MessageCircle,
   tiktok: Music2,
@@ -60,7 +61,7 @@ function SocialIcon({ platform }: { platform: string }) {
 // Platform "kontak" tampil sebagai baris ikon+label+nilai di kolom Hubungi;
 // sisanya (sosial media) jadi tombol ikon bulat di baris atas footer.
 const CONTACT_PLATFORMS = new Set(['email', 'whatsapp', 'phone'])
-const CONTACT_ICONS: Record<string, any> = { email: Mail, whatsapp: MessageCircle, phone: Phone }
+const CONTACT_ICONS: Record<string, LucideIcon> = { email: Mail, whatsapp: MessageCircle, phone: Phone }
 
 // 6281995264565 → 0819-9526-4565 (tampilan saja; tautan tetap wa.me/62…).
 function displayPhone(num: string): string {
@@ -68,7 +69,7 @@ function displayPhone(num: string): string {
   return local.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3')
 }
 
-export default function Footer({ settings }: { settings?: any }) {
+export default function Footer({ settings }: { settings?: Record<string, string> }) {
   const { t, locale } = useTranslation()
   const siteName = settings?.site_name || "agendain"
   const siteLogo = siteLogoOr(settings?.site_logo)
@@ -78,7 +79,7 @@ export default function Footer({ settings }: { settings?: any }) {
   const footer = parseFooterSettings(settings?.footer_settings)
   const isEn = locale === 'en'
   const fs = (key: string): string =>
-    ((isEn ? (footer.raw[`${key}_en`] || footer.raw[key]) : footer.raw[key]) || '').toString().trim()
+    String((isEn ? (footer.raw[`${key}_en`] || footer.raw[key]) : footer.raw[key]) || '').trim()
 
   const eyebrow = fs('eyebrow') || t('footer.eyebrow')
   // `*teks*` = kata kuning (sama dengan CMS lain); `<strong>` lama tetap didukung.

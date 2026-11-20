@@ -42,6 +42,7 @@ import AirplaneLoader from "@/components/ui/airplane-loader";
 import { PageSizeSelect } from "@/components/ui/page-size-select";
 import { TablePagination } from "@/components/ui/table-pagination";
 import { useTablePagination } from "@/lib/use-table-pagination";
+import { useOffline } from "@/hooks/use-offline";
 
 // Dipetakan per status, bukan ternary "published atau bukan". Dengan ternary,
 // status apa pun selain `published` — termasuk `archived` dan nilai kosong —
@@ -53,34 +54,26 @@ const STATUS_TRIGGER_CLASS: Record<string, string> = {
   unknown: "bg-zinc-100 text-zinc-500 border-zinc-200 dark:bg-zinc-500/10 dark:text-zinc-400 dark:border-zinc-500/20",
 };
 
+// Baris daftar paket dari GET /api/open-trip (JSON: Decimal harga → string).
+type PaketRow = {
+  id: number;
+  slug: string;
+  nama: string;
+  durasi: number;
+  harga: number | string;
+  status: string;
+  destinasi: { nama: string };
+};
+
 export default function AdminPaketPage() {
   const { confirm } = useConfirm();
-  const [packages, setPackages] = useState<any[]>([]);
+  const [packages, setPackages] = useState<PaketRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
   const [statusFilter, setStatusFilter] = useState("all");
   const [error, setError] = useState<string | null>(null);
-  const [isOffline, setIsOffline] = useState(false);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOffline(false);
-    const handleOffline = () => setIsOffline(true);
-
-    if (typeof navigator !== "undefined") {
-      setIsOffline(!navigator.onLine);
-    }
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    fetchPackages();
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
+  const isOffline = useOffline();
 
   const [destinasiOpen, setDestinasiOpen] = useLabelManagerOpen("destinasi");
 
@@ -102,6 +95,10 @@ export default function AdminPaketPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPackages();
+  }, []);
 
   const handleStatusChange = async (slug: string, newStatus: string) => {
     try {
@@ -165,7 +162,7 @@ export default function AdminPaketPage() {
 
   const showPagination = !loading && !error && !isOffline && filteredPackages.length > 0;
 
-  const formatPrice = (price: any) => {
+  const formatPrice = (price: number | string) => {
     return formatIDR(Number(price));
   };
 

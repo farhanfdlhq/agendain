@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     revalidatePath('/', 'layout')
 
     return NextResponse.json({ success: true, message: 'Footer berhasil diperbarui' })
-  } catch (error: any) {
+  } catch (error) {
     return serverError('settings/footer', error)
   }
 }
@@ -58,7 +58,7 @@ export async function GET() {
     }
 
     return NextResponse.json(JSON.parse(setting.value))
-  } catch (error: any) {
+  } catch (error) {
     return serverError('settings/footer', error)
   }
 }

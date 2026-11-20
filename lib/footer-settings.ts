@@ -50,7 +50,7 @@ export const DEFAULT_PAYMENT_BADGES = [
 
 export type ParsedFooterSettings = {
   /** Field teks apa adanya (`tagline`, `tagline_en`, `menuTitle`, dst). */
-  raw: Record<string, any>;
+  raw: Record<string, unknown>;
   socials: FooterSocial[];
   paymentBadges: string[];
 };
@@ -60,7 +60,7 @@ export type ParsedFooterSettings = {
  * Nilai rusak / bukan objek tidak melempar — jatuh ke bawaan.
  */
 export function parseFooterSettings(value: unknown): ParsedFooterSettings {
-  let raw: Record<string, any> = {};
+  let raw: Record<string, unknown> = {};
 
   if (typeof value === "string" && value.trim()) {
     try {
@@ -70,13 +70,17 @@ export function parseFooterSettings(value: unknown): ParsedFooterSettings {
       raw = {};
     }
   } else if (value && typeof value === "object" && !Array.isArray(value)) {
-    raw = value as Record<string, any>;
+    raw = value as Record<string, unknown>;
   }
 
+  type RawSocial = { platform?: unknown; label?: unknown; url: string };
   const socials = Array.isArray(raw.socials)
-    ? raw.socials
-        .filter((s: any) => s && typeof s === "object" && typeof s.url === "string" && s.url.trim())
-        .map((s: any) => ({
+    ? (raw.socials as unknown[])
+        .filter(
+          (s): s is RawSocial =>
+            !!s && typeof s === "object" && typeof (s as RawSocial).url === "string" && !!(s as RawSocial).url.trim(),
+        )
+        .map((s) => ({
           platform: typeof s.platform === "string" ? s.platform : "link",
           label: typeof s.label === "string" ? s.label : "",
           url: String(s.url).trim(),
@@ -84,7 +88,7 @@ export function parseFooterSettings(value: unknown): ParsedFooterSettings {
     : [];
 
   const paymentBadges = Array.isArray(raw.paymentBadges)
-    ? raw.paymentBadges.map((b: any) => String(b ?? "").trim()).filter(Boolean)
+    ? (raw.paymentBadges as unknown[]).map((b) => String(b ?? "").trim()).filter(Boolean)
     : [];
 
   return {

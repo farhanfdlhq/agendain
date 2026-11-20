@@ -52,7 +52,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
 
   // Disimpan di ref, bukan state: resolver-nya tidak ikut menentukan tampilan
   // dan menaruhnya di state akan memicu render ekstra.
-  const resolverRef = useRef<((value: any) => void) | null>(null);
+  const resolverRef = useRef<((value: boolean | string | null) => void) | null>(null);
 
   const settle = useCallback((value: boolean | string | null) => {
     resolverRef.current?.(value);
@@ -66,7 +66,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
     resolverRef.current?.(next.kind === 'prompt' ? null : false);
 
     return new Promise<T>((resolve) => {
-      resolverRef.current = resolve as (value: any) => void;
+      resolverRef.current = resolve as (value: boolean | string | null) => void;
       setInputValue(initialInput);
       setState(next);
       setIsOpen(true);

@@ -57,13 +57,13 @@ import { PageSizeSelect } from "@/components/ui/page-size-select";
 
 export default function AdminBookingPage() {
   const { confirm } = useConfirm();
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
   const [statusFilter, setStatusFilter] = useState("all");
   const [error, setError] = useState<string | null>(null);
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
@@ -154,7 +154,7 @@ export default function AdminBookingPage() {
     [fetchBookings, confirm],
   );
 
-  const formatPrice = (price: any) => {
+  const formatPrice = (price: number | string) => {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
@@ -172,7 +172,7 @@ export default function AdminBookingPage() {
 
   const filteredBookings = useMemo(
     () =>
-      bookings.filter((b: any) => {
+      bookings.filter((b) => {
         const searchLower = deferredSearch.toLowerCase();
         const matchesSearch =
           b.nama.toLowerCase().includes(searchLower) ||

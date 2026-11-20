@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useDeferredValue } from "react"
+import { errorMessage } from "@/lib/error-message"
 import { EmptyState } from "@/components/reui/empty-state"
 import { AdminHeader } from "@/components/reui/admin-header"
 import { KATEGORI_BLOG, LabelManagerDialog, useLabelManagerOpen } from "@/components/admin/label-manager"
@@ -59,8 +60,8 @@ export default function AdminBlogPage() {
       if (!res.ok) throw new Error("Gagal memuat artikel")
       const data = await res.json()
       setPosts(data.posts || [])
-    } catch (e: any) {
-      setError(e.message)
+    } catch (e) {
+      setError(errorMessage(e))
     } finally {
       setLoading(false)
     }

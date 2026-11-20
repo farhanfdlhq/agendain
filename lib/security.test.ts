@@ -236,13 +236,13 @@ describe("OpenTripSchema", () => {
   it("strips prototype-pollution keys instead of storing them", () => {
     const r = OpenTripSchema.safeParse({
       ...base,
-      itinerary: [{ hari: 1, judul: "ok", __proto__: { polluted: true } } as any],
+      itinerary: [{ hari: 1, judul: "ok", __proto__: { polluted: true } }],
     });
     expect(r.success).toBe(true);
     if (r.success) {
-      const item = (r.data.itinerary as any[])[0];
+      const item = (r.data.itinerary as unknown[])[0] as object;
       expect(Object.prototype.hasOwnProperty.call(item, "polluted")).toBe(false);
-      expect(({} as any).polluted).toBeUndefined();
+      expect(({} as Record<string, unknown>).polluted).toBeUndefined();
     }
   });
 
@@ -296,7 +296,7 @@ describe("PaymentAccountSchema", () => {
       label: "BCA IDR",
       bank: "BCA",
       sembarang: 1,
-    } as any);
+    });
     expect(r.success).toBe(true);
     expect(Object.keys(r.success ? r.data : {})).not.toContain("sembarang");
   });
@@ -355,7 +355,7 @@ describe("InvoiceSettingsSchema", () => {
   });
 
   it("membuang key tak dikenal", () => {
-    const r = InvoiceSettingsSchema.safeParse({ namaLegal: "PT X", sembarang: 1 } as any);
+    const r = InvoiceSettingsSchema.safeParse({ namaLegal: "PT X", sembarang: 1 });
     expect(r.success).toBe(true);
     expect(Object.keys(r.success ? r.data : {})).not.toContain("sembarang");
   });
@@ -408,7 +408,7 @@ describe("InvoiceSchema", () => {
   });
 
   it("membuang key tak dikenal", () => {
-    const r = InvoiceSchema.safeParse({ ...valid, total: 999999999, sembarang: 1 } as any);
+    const r = InvoiceSchema.safeParse({ ...valid, total: 999999999, sembarang: 1 });
     expect(r.success).toBe(true);
     // `total` TIDAK boleh ikut: angka uang selalu dihitung ulang di server.
     expect(Object.keys(r.success ? r.data : {})).not.toContain("total");

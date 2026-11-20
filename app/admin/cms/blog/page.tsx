@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
+import type { CmsFields } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
 import { Save } from 'lucide-react'
@@ -15,7 +16,7 @@ import { MediaPicker } from "@/components/ui/media-picker"
 import { FontControls } from "@/components/ui/font-size-picker"
 
 export default function BlogCMSPage() {
-  const [data, setData] = useState<any>({
+  const [data, setData] = useState<CmsFields>({
     heroImage: '',
     heroTitle: '', heroTitle_en: '', heroTitleWeight: '800',
     heroSubtitle: '', heroSubtitle_en: '', heroSubtitleWeight: '500',
@@ -27,10 +28,8 @@ export default function BlogCMSPage() {
 
   // Penjaga perubahan belum-disimpan (baseline saat data awal termuat & setelah simpan).
   const snapshot = JSON.stringify(data)
-  const snapRef = useRef(snapshot)
-  snapRef.current = snapshot
-  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
-  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
+  const { markClean } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) markClean() }, [fetching, markClean])
   const topHeaderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -48,7 +47,7 @@ export default function BlogCMSPage() {
       .then(res => res.json())
       .then(res => {
         if (!res.error) {
-          setData((prev: any) => ({ ...prev, ...res }))
+          setData((prev) => ({ ...prev, ...res }))
         }
         setFetching(false)
       })
@@ -68,7 +67,7 @@ export default function BlogCMSPage() {
         body: JSON.stringify(data)
       })
       if (res.ok) {
-        setBaseline(snapRef.current) // tandai bersih setelah simpan
+        markClean() // tandai bersih setelah simpan
         toast.success('Header halaman Blog berhasil diperbarui!')
       } else {
         toast.error('Gagal menyimpan.')
@@ -81,7 +80,7 @@ export default function BlogCMSPage() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }))
+    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '') => (
@@ -94,7 +93,7 @@ export default function BlogCMSPage() {
       )}
       <MediaPicker
         value={data[fieldName] || ''}
-        onChange={(url) => setData((prev: any) => ({ ...prev, [fieldName]: url }))}
+        onChange={(url) => setData((prev) => ({ ...prev, [fieldName]: url }))}
         label="Pilih Gambar"
         description={placeholder ? `Disarankan seperti: ${placeholder}` : undefined}
       />
@@ -191,9 +190,9 @@ export default function BlogCMSPage() {
           <div className="pt-2 border-t border-border/40">
             <FontControls
               weightValue={data[weightField]}
-              onWeightChange={(val) => setData((prev: any) => ({ ...prev, [weightField]: val }))}
+              onWeightChange={(val) => setData((prev) => ({ ...prev, [weightField]: val }))}
               sizeValue={data[sizeField]}
-              onSizeChange={(val) => setData((prev: any) => ({ ...prev, [sizeField]: val }))}
+              onSizeChange={(val) => setData((prev) => ({ ...prev, [sizeField]: val }))}
               defaultWeight={defaultWeight}
             />
           </div>

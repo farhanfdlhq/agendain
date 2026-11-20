@@ -1,5 +1,6 @@
 "use client";
 import { useTransition } from "react";
+import type { CmsFields } from "@/lib/types/cms"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { fontStyleFrom } from '@/lib/font-style'
 import Image from "next/image";
@@ -21,7 +22,7 @@ import { resolveOpenTripStats } from "@/lib/open-trip-stats";
 interface OpenTripContentProps {
   packages: OpenTripCardData[];
   destList: DestOption[];
-  opentripSettings?: any;
+  opentripSettings?: CmsFields;
   /** Ada filter destinasi/durasi aktif → pesan kosong menyarankan ubah filter. */
   isFiltered?: boolean;
 }

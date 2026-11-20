@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { Prisma } from "@prisma/client"
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
       if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const where: any = {}
+    const where: Prisma.BlogPostWhereInput = {}
     if (!admin) where.status = 'published'
     if (category) where.category = { slug: category }
     if (search) {

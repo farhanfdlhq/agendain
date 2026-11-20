@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import type { Prisma } from "@prisma/client"
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/auth"
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
     const destinasi = searchParams.get('destinasi')
     
     // Login saja tidak memberikan hak untuk membaca draft.
-    const where: any = {}
+    const where: Prisma.OpenTripWhereInput = {}
     if (!hasPermission(actor, 'paket_view', 'paket_edit')) {
       where.status = PUBLISHED_OPEN_TRIP.status
     }
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
       data: {
         ...toOpenTripData(data, 'create'),
         slug: generatedSlug,
-      } as any
+      } as Prisma.OpenTripUncheckedCreateInput
     })
 
     revalidateOpenTrips()

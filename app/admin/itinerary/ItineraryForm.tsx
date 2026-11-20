@@ -41,14 +41,12 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
   const set = (k: string, v: unknown) => setForm(p => ({ ...p, [k]: v }))
 
   // Penjaga perubahan belum-disimpan.
-  const formRef = useRef(form)
-  formRef.current = form
-  const { setBaseline } = useUnsavedGuardSnapshot(JSON.stringify(form))
+  const { setBaseline, markClean } = useUnsavedGuardSnapshot(JSON.stringify(form))
   useEffect(() => {
     if (mode !== "create") return
-    const t = setTimeout(() => setBaseline(JSON.stringify(formRef.current)), 700)
+    const t = setTimeout(() => markClean(), 700)
     return () => clearTimeout(t)
-  }, [mode, setBaseline])
+  }, [mode, markClean])
 
   useEffect(() => {
     if (mode !== "edit" || !id) return
@@ -149,7 +147,7 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
       })
       const data = await res.json()
       if (res.ok) {
-        setBaseline(JSON.stringify(formRef.current)) // tandai bersih sebelum pindah
+        markClean() // tandai bersih sebelum pindah
         toast.success(mode === "create" ? "Itinerary dibuat!" : "Itinerary diperbarui!")
         router.push("/admin/itinerary")
         router.refresh()

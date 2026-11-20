@@ -1,5 +1,6 @@
 'use client'
 import { fontStyle } from '@/lib/font-style'
+import type { Gs, HomeSettings, Tr } from '../types'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import FadeIn from '@/components/Motion/FadeIn'
@@ -8,7 +9,7 @@ import styles from '../HomeContent.module.css'
 import { WhatsAppIcon, renderHighlightedTitle } from '../shared'
 import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
 
-const getFaqItems = (t: any) => [
+const getFaqItems = (t: Tr) => [
   {
     q: t('home.faq.q1'),
     a: t('home.faq.a1'),
@@ -31,7 +32,7 @@ const getFaqItems = (t: any) => [
   },
 ]
 
-export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs: any, t: any, locale: string, homeSettings: any, waLink: string }) {
+export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs: Gs, t: Tr, locale: string, homeSettings: HomeSettings, waLink: string }) {
   const [activeFaq, setActiveFaq] = useState<number | null>(null)
   
   const faqItems = localizeRepeater(homeSettings, 'faqItems', locale, HOME_REPEATERS.faqItems) ?? getFaqItems(t);
@@ -46,7 +47,7 @@ export default function FaqSection({ gs, t, locale, homeSettings, waLink }: { gs
           </div>
         </FadeIn>
         <div className={styles.faqList}>
-          {faqItems.map((item: any, i: number) => (
+          {faqItems.map((item, i) => (
             <FadeIn key={i} direction="up" delay={i * 0.05}>
               <div className={styles.faqItem}>
                 <button className={styles.faqTrigger} onClick={() => setActiveFaq(activeFaq === i ? null : i)} aria-expanded={activeFaq === i}>

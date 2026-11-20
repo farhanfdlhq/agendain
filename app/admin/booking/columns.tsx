@@ -15,7 +15,8 @@ export type Booking = {
   jumlahPax: number
   total: number
   status: string
-  openTrip?: { nama: string }
+  openTrip?: { nama: string } | null
+  catatan?: string | null
 }
 
 const formatDate = (dateString: string) => {
@@ -27,7 +28,7 @@ const formatDate = (dateString: string) => {
   }).format(date)
 }
 
-const formatPrice = (price: any) => {
+const formatPrice = (price: number | string | null | undefined) => {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',

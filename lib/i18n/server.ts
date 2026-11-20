@@ -37,16 +37,19 @@ export async function getServerT(): Promise<(key: string) => string> {
 /**
  * Helper untuk mengambil nilai setting dari CMS berdasarkan locale saat ini.
  */
-export async function getI18nSetting(settings: Record<string, any> | undefined | null, key: string): Promise<any> {
+export async function getI18nSetting(settings: Record<string, unknown> | undefined | null, key: string): Promise<string | undefined> {
   if (!settings) return undefined;
   
   const locale = await getServerLocale()
   
+  // Nilai teks; angka (mis. bobot huruf) dijadikan teks, selain itu kosong.
+  const text = (v: unknown) => (typeof v === 'string' ? v : typeof v === 'number' ? String(v) : undefined)
+
   // Jika bahasa Inggris dan data versi en tersedia, gunakan itu.
   if (locale === 'en' && settings[`${key}_en`]) {
-    return settings[`${key}_en`]
+    return text(settings[`${key}_en`])
   }
-  
+
   // Fallback ke bahasa Indonesia (default)
-  return settings[key]
+  return text(settings[key])
 }

@@ -43,10 +43,8 @@ export default function PengaturanInvoicePage() {
 
   // Penjaga perubahan belum-disimpan (baseline saat data awal termuat & setelah simpan).
   const snapshot = JSON.stringify(form)
-  const snapRef = useRef(snapshot)
-  snapRef.current = snapshot
-  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
-  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
+  const { markClean } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) markClean() }, [fetching, markClean])
 
   useEffect(() => {
     fetch("/api/settings/invoice")
@@ -75,7 +73,7 @@ export default function PengaturanInvoicePage() {
         }),
       })
       const data = await res.json()
-      if (res.ok) { setBaseline(snapRef.current); toast.success("Pengaturan invoice tersimpan") }
+      if (res.ok) { markClean(); toast.success("Pengaturan invoice tersimpan") }
       else toast.error(data.error || "Gagal menyimpan")
     } catch {
       toast.error("Gagal terhubung ke server.")

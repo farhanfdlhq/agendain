@@ -76,7 +76,7 @@ export async function POST(req: Request) {
     await purgeCloudflareCache()
 
     return NextResponse.json({ success: true, message: 'Tema berhasil diperbarui' })
-  } catch (error: any) {
+  } catch (error) {
     return serverError('settings/theme', error)
   }
 }
@@ -110,7 +110,7 @@ export async function GET() {
       })
     }
     return NextResponse.json(JSON.parse(setting.value))
-  } catch (error: any) {
+  } catch (error) {
     return serverError('settings/theme', error)
   }
 }

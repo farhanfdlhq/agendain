@@ -11,7 +11,7 @@ import { fontStyleFrom } from '@/lib/font-style';
  * @param fontWeight Optional font weight to apply to the text
  * @returns ReactNode
  */
-export function parseGoldText(text: string | undefined | null, styles: any, fontWeight?: string, fontSize?: string | number): ReactNode {
+export function parseGoldText(text: string | undefined | null, styles: { readonly [key: string]: string }, fontWeight?: unknown, fontSize?: unknown): ReactNode {
   if (!text) return null;
 
   const parts = text.split(/(\*[^*]+\*)/g);

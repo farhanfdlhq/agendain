@@ -57,7 +57,7 @@ async function HomeDataFetcher() {
     console.error('DB fetch failed (home packages)', error)
   }
 
-  let homeSettings: any = {
+  let homeSettings: Record<string, unknown> = {
     heroTitle: 'Jangan Cuma Jadi Wacana, Agendain Aja!',
     heroSubtitle: 'Dari tiket, hotel, sampai itinerary, semua udah kami siapkan. Kamu tinggal ajak teman dan siap berangkat.',
     sectionOrder: 'hero,why,destinations,testimonial,accordion,socialproof,faq',
@@ -95,7 +95,7 @@ async function HomeDataFetcher() {
 async function buildSiteLd() {
   try {
     const rows = await prisma.setting.findMany()
-    const map = rows.reduce((a: any, c: any) => { a[c.key] = c.value; return a }, {})
+    const map = rows.reduce<Record<string, string>>((a, c) => { a[c.key] = c.value; return a }, {})
     const name = map.site_name || 'Agendain'
     // `site_logo` = versi putih untuk navbar gelap; Google menampilkan logo
     // organisasi di atas latar putih, jadi pakai versi biru.
@@ -109,7 +109,7 @@ async function buildSiteLd() {
       telephone = hs?.whatsapp_number || undefined
       if (Array.isArray(hs?.faqItems) && hs.faqItems.length > 0) {
         faqData = faqPageLd(
-          hs.faqItems.map((item: any) => ({
+          hs.faqItems.map((item: { q?: string; question?: string; a?: string; answer?: string } | null) => ({
             question: item?.q || item?.question || '',
             answer: item?.a || item?.answer || '',
           }))

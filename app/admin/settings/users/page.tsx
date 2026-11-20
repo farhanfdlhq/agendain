@@ -53,6 +53,22 @@ export default function UserManagementPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      const [usersRes, rolesRes] = await Promise.all([
+        fetch("/api/admin/users"),
+        fetch("/api/admin/roles")
+      ])
+      if (usersRes.ok) setUsers(await usersRes.json())
+      if (rolesRes.ok) setRoles(await rolesRes.json())
+    } catch (error) {
+      toast.error("Terjadi kesalahan jaringan")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (!session) return
     let cancelled = false
@@ -76,22 +92,6 @@ export default function UserManagementPage() {
     return () => { cancelled = true }
   }, [session, router])
 
-  const fetchData = async () => {
-    setLoading(true)
-    try {
-      const [usersRes, rolesRes] = await Promise.all([
-        fetch("/api/admin/users"),
-        fetch("/api/admin/roles")
-      ])
-      if (usersRes.ok) setUsers(await usersRes.json())
-      if (rolesRes.ok) setRoles(await rolesRes.json())
-    } catch (error) {
-      toast.error("Terjadi kesalahan jaringan")
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleOpenDialog = (user?: AdminUser) => {
     if (user) {
       setEditingId(user.id)
@@ -111,9 +111,9 @@ export default function UserManagementPage() {
       const url = editingId ? `/api/admin/users/${editingId}` : '/api/admin/users'
       const method = editingId ? 'PUT' : 'POST'
       
-      const payload = { ...formData }
+      const payload: Partial<typeof formData> = { ...formData }
       if (editingId && !payload.password) {
-        delete (payload as any).password
+        delete payload.password
       } else {
         // Enforce password validation before submitting
         if (!isPasswordValid(payload.password as string)) {
@@ -246,7 +246,7 @@ export default function UserManagementPage() {
               </TableHeader>
               <TableBody>
                 {pageItems.map((u, i) => {
-                  const isYou = (session?.user as any)?.id == u.id
+                  const isYou = session?.user?.id === String(u.id)
                   return (
                     <TableRow key={u.id} className={`border-b-0 ${isYou ? 'bg-primary/5 dark:bg-primary/10' : ''}`}>
                       <TableCell className="text-muted-foreground tabular-nums">{startIndex + i + 1}</TableCell>
@@ -353,7 +353,7 @@ export default function UserManagementPage() {
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="role">Peran Akses (Role)</Label>
-                <Select value={formData.role} onValueChange={(val) => setFormData({...formData, role: val})} disabled={editingId ? users.find(u => u.id === editingId)?.id === (session?.user as any)?.id : false}>
+                <Select value={formData.role} onValueChange={(val) => setFormData({...formData, role: val})} disabled={editingId ? users.find(u => u.id === editingId)?.id === Number(session?.user?.id) : false}>
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih Role" />
                   </SelectTrigger>

@@ -124,6 +124,18 @@ export default function RolesPermissionsPage() {
   const [formData, setFormData] = useState<Role>({ id: '', name: '', description: '', permissions: ['profile_manage'] })
   const [isSaving, setIsSaving] = useState(false)
 
+  const fetchRoles = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch("/api/admin/roles")
+      if (res.ok) setRoles(await res.json())
+    } catch (e) {
+      toast.error("Gagal memuat roles")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (!session) return
     let cancelled = false
@@ -148,18 +160,6 @@ export default function RolesPermissionsPage() {
 
     return () => { cancelled = true }
   }, [session, router])
-
-  const fetchRoles = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch("/api/admin/roles")
-      if (res.ok) setRoles(await res.json())
-    } catch (e) {
-      toast.error("Gagal memuat roles")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleOpenDialog = (role?: Role) => {
     if (role) {
@@ -214,19 +214,21 @@ export default function RolesPermissionsPage() {
     setIsSaving(true)
     try {
       let newRoles = [...roles]
-      if (!formData.id) {
-        formData.id = formData.name.toLowerCase().replace(/[^a-z0-9]/g, '_')
-      }
-      
+      // Salinan, bukan mutasi state: dulu `formData.id` diisi langsung, jadi
+      // setelah ditolak "sudah ada" lalu nama diganti, ID lama ikut tersimpan.
+      const role: Role = formData.id
+        ? formData
+        : { ...formData, id: formData.name.toLowerCase().replace(/[^a-z0-9]/g, '_') }
+
       if (editingId) {
-        newRoles = newRoles.map(r => r.id === editingId ? formData : r)
+        newRoles = newRoles.map(r => r.id === editingId ? role : r)
       } else {
-        if (newRoles.some(r => r.id === formData.id)) {
+        if (newRoles.some(r => r.id === role.id)) {
           toast.error("Role dengan nama ini sudah ada")
           setIsSaving(false)
           return
         }
-        newRoles.push(formData)
+        newRoles.push(role)
       }
 
       const res = await fetch("/api/admin/roles", {

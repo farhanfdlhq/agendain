@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { errorMessage } from "@/lib/error-message"
 import { useRouter } from "next/navigation"
 import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import { toast } from "react-hot-toast"
@@ -134,12 +135,13 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
     }
   }, [mode, slug, router])
 
-  // Auto-generate slug from title
-  useEffect(() => {
-    if (mode === "create" && title) {
-      setFormSlug(title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, ""))
+  // Artikel baru: slug mengikuti judul saat judul diketik.
+  const changeTitle = (value: string) => {
+    setTitle(value)
+    if (mode === "create" && value) {
+      setFormSlug(value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, ""))
     }
-  }, [title, mode])
+  }
 
   const addTag = () => {
     const newTag = tagInput.trim().toLowerCase()
@@ -215,8 +217,8 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
       setBaseline(currentSnapshot)
       toast.success(mode === "create" ? "Artikel berhasil dibuat!" : "Artikel berhasil diperbarui!")
       router.push("/admin/blog")
-    } catch (e: any) {
-      toast.error(e.message)
+    } catch (e) {
+      toast.error(errorMessage(e))
     } finally {
       setSaving(false)
     }
@@ -260,7 +262,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
             <TabsContent value="id" className="space-y-4 mt-4">
               <div className="space-y-2">
                 <Label>Judul</Label>
-                <Input value={title} onChange={(e) => { setTitle(e.target.value); clearError('title') }} placeholder="Judul artikel..." aria-invalid={!!errors.title} />
+                <Input value={title} onChange={(e) => { changeTitle(e.target.value); clearError('title') }} placeholder="Judul artikel..." aria-invalid={!!errors.title} />
               </div>
               <div className="space-y-2">
                 <Label>Slug</Label>

@@ -112,7 +112,7 @@ import { unstable_cache } from "next/cache"
 
 const fetchSettings = unstable_cache(async () => {
   const settingsArr = await prisma.setting.findMany()
-  return settingsArr.reduce((acc: any, curr: { key: string, value: string }) => ({ ...acc, [curr.key]: curr.value }), {})
+  return settingsArr.reduce<Record<string, string>>((acc, curr) => ({ ...acc, [curr.key]: curr.value }), {})
 }, ['global-settings'], { tags: ['settings'], revalidate: 3600 })
 
 // try/catch WAJIB di luar unstable_cache. Kalau di dalam, objek kosong hasil
@@ -122,7 +122,7 @@ const fetchSettings = unstable_cache(async () => {
 // bawaan, bukan yang dari CMS) sampai sejam ke depan walau DB sudah pulih.
 // Dengan dilempar keluar, kegagalan tidak pernah masuk cache dan request
 // berikutnya langsung mencoba lagi.
-async function getSettings(): Promise<any> {
+async function getSettings(): Promise<Record<string, string>> {
   try {
     return await fetchSettings()
   } catch (e) {

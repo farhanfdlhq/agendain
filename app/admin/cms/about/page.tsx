@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
+import type { CmsFields } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
 import { Save, Globe } from 'lucide-react'
@@ -15,7 +16,7 @@ import { MediaPicker } from "@/components/ui/media-picker"
 import { FontControls } from "@/components/ui/font-size-picker"
 
 export default function AboutCMSPage() {
-  const [data, setData] = useState<any>({
+  const [data, setData] = useState<CmsFields>({
     heroTitle: '', heroTitle_en: '', heroTitleWeight: '800',
     heroSubtitle: '', heroSubtitle_en: '', heroSubtitleWeight: '500',
     heroImage: '',
@@ -36,10 +37,8 @@ export default function AboutCMSPage() {
 
   // Penjaga perubahan belum-disimpan (baseline saat data awal termuat & setelah simpan).
   const snapshot = JSON.stringify(data)
-  const snapRef = useRef(snapshot)
-  snapRef.current = snapshot
-  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
-  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
+  const { markClean } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) markClean() }, [fetching, markClean])
   const topHeaderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -57,7 +56,7 @@ export default function AboutCMSPage() {
       .then(res => res.json())
       .then(res => {
         if (!res.error) {
-          setData((prev: any) => ({ ...prev, ...res }))
+          setData((prev) => ({ ...prev, ...res }))
         }
         setFetching(false)
       })
@@ -77,7 +76,7 @@ export default function AboutCMSPage() {
         body: JSON.stringify(data)
       })
       if (res.ok) {
-        setBaseline(snapRef.current) // tandai bersih setelah simpan
+        markClean() // tandai bersih setelah simpan
         toast.success('Konten berhasil diperbarui!')
       } else {
         toast.error('Gagal menyimpan.')
@@ -90,7 +89,7 @@ export default function AboutCMSPage() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }))
+    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '') => {
@@ -107,7 +106,7 @@ export default function AboutCMSPage() {
         )}
         <MediaPicker 
           value={data[activeFieldName] || ''}
-          onChange={(url) => setData((prev: any) => ({ ...prev, [activeFieldName]: url }))}
+          onChange={(url) => setData((prev) => ({ ...prev, [activeFieldName]: url }))}
           label="Pilih Gambar"
           description={placeholder ? `Disarankan seperti: ${placeholder}` : undefined}
         />
@@ -205,9 +204,9 @@ export default function AboutCMSPage() {
           <div className="pt-2 border-t border-border/40">
             <FontControls
               weightValue={data[weightField]}
-              onWeightChange={(val) => setData((prev: any) => ({ ...prev, [weightField]: val }))}
+              onWeightChange={(val) => setData((prev) => ({ ...prev, [weightField]: val }))}
               sizeValue={data[sizeField]}
-              onSizeChange={(val) => setData((prev: any) => ({ ...prev, [sizeField]: val }))}
+              onSizeChange={(val) => setData((prev) => ({ ...prev, [sizeField]: val }))}
               defaultWeight={defaultWeight}
             />
           </div>

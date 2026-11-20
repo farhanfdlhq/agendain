@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import type { Prisma } from "@prisma/client"
 import { prisma } from '@/lib/prisma'
 import { requirePermission } from '@/lib/rbac'
 import { OpenTripPatchSchema, OpenTripSchema } from "@/lib/security"
@@ -82,7 +83,7 @@ export async function PUT(
       data: {
         ...toOpenTripData(data, 'update'),
         slug: data.slug,
-      } as any
+      } as Prisma.OpenTripUncheckedUpdateInput
     })
 
     revalidateOpenTrips()

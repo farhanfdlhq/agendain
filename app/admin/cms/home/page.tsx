@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
+import { cmsList, cmsText, type CmsData, type CmsItem } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
 import { ArrowUp, ArrowDown, GripVertical, Save, Globe, Type, FolderOpen, Trash2, X, Plus } from 'lucide-react'
@@ -52,11 +53,11 @@ function fillHomeDefaults(res: Record<string, unknown>) {
   // Field lama yang tak lagi dipakai situs; dibuang agar ikut bersih saat disimpan.
   for (const key of ["faqSubtitle", "faqSubtitle_en", "faqSubtitleWeight", "faqSubtitleSize"]) delete res[key]
   if (Array.isArray(res.testiHighlights)) {
-    const idLines = res.testiHighlights.map((it: any) => {
+    const idLines = res.testiHighlights.map((it: string | { text?: string; text_en?: string } | null) => {
       const txt = typeof it === 'string' ? it : (it?.text || '')
       return txt ? String(txt).trim() : ''
     }).filter(Boolean).join('\n')
-    const enLines = res.testiHighlights.map((it: any) => {
+    const enLines = res.testiHighlights.map((it: string | { text?: string; text_en?: string } | null) => {
       const txt = typeof it === 'string' ? it : (it?.text_en || it?.text || '')
       return txt ? String(txt).trim() : ''
     }).filter(Boolean).join('\n')
@@ -80,7 +81,7 @@ function fillHomeDefaults(res: Record<string, unknown>) {
 }
 
 export default function HomeCMSPage() {
-  const [data, setData] = useState<any>({
+  const [data, setData] = useState<CmsData>({
     // Hero
     heroTitle: '', heroTitle_en: '',
     heroSubtitle: '', heroSubtitle_en: '',
@@ -134,10 +135,8 @@ export default function HomeCMSPage() {
 
   // Penjaga perubahan belum-disimpan (baseline saat data awal termuat & setelah simpan).
   const snapshot = JSON.stringify(data)
-  const snapRef = useRef(snapshot)
-  snapRef.current = snapshot
-  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
-  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
+  const { markClean } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) markClean() }, [fetching, markClean])
   const topHeaderRef = useRef<HTMLDivElement>(null)
 
   const { showConfirm } = useConfirm()
@@ -182,7 +181,7 @@ export default function HomeCMSPage() {
           // memakai bentuk baru. Tanpa ini gambar/ikon tetap beku per bahasa.
           foldLegacyRepeaters(res, HOME_REPEATERS)
           fillHomeDefaults(res)
-          setData((prev: any) => ({ ...prev, ...res }))
+          setData((prev) => ({ ...prev, ...res }))
         }
         setFetching(false)
       })
@@ -193,7 +192,7 @@ export default function HomeCMSPage() {
   }, [])
 
   const handleMoveSection = (index: number, direction: 'up' | 'down') => {
-    const order = (data.sectionOrder || 'hero,why,destinations,testimonial,accordion,socialproof,faq').split(',')
+    const order = (cmsText(data, 'sectionOrder') || 'hero,why,destinations,testimonial,accordion,socialproof,faq').split(',')
     if (direction === 'up' && index > 0) {
       const temp = order[index - 1]
       order[index - 1] = order[index]
@@ -203,7 +202,7 @@ export default function HomeCMSPage() {
       order[index + 1] = order[index]
       order[index] = temp
     }
-    setData((prev: any) => ({ ...prev, sectionOrder: order.join(',') }))
+    setData((prev) => ({ ...prev, sectionOrder: order.join(',') }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -216,7 +215,7 @@ export default function HomeCMSPage() {
         body: JSON.stringify(data)
       })
       if (res.ok) {
-        setBaseline(snapRef.current) // tandai bersih setelah simpan
+        markClean() // tandai bersih setelah simpan
         toast.success('Konten berhasil diperbarui!')
       } else {
         toast.error('Gagal menyimpan.')
@@ -229,7 +228,7 @@ export default function HomeCMSPage() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }))
+    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '') => {
@@ -246,8 +245,8 @@ export default function HomeCMSPage() {
           </p>
         )}
         <MediaPicker 
-          value={data[activeFieldName] || ''}
-          onChange={(url) => setData((prev: any) => ({ ...prev, [activeFieldName]: url }))}
+          value={cmsText(data, activeFieldName)}
+          onChange={(url) => setData((prev) => ({ ...prev, [activeFieldName]: url }))}
           label="Pilih Gambar"
           description={placeholder ? `Disarankan seperti: ${placeholder}` : undefined}
         />
@@ -256,10 +255,10 @@ export default function HomeCMSPage() {
   }
 
   const renderSectionOrder = () => {
-    const orderArray = (data.sectionOrder || 'hero,why,destinations,testimonial,accordion,socialproof,faq').split(',')
+    const orderArray = (cmsText(data, 'sectionOrder') || 'hero,why,destinations,testimonial,accordion,socialproof,faq').split(',')
     
     const handleReorder = (newOrder: string[]) => {
-      setData((prev: any) => ({ ...prev, sectionOrder: newOrder.join(',') }))
+      setData((prev) => ({ ...prev, sectionOrder: newOrder.join(',') }))
     }
 
     return (
@@ -349,8 +348,8 @@ export default function HomeCMSPage() {
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
     const weightField = `${fieldName}Weight`;
     const sizeField = `${fieldName}Size`;
-    const val = data[activeFieldName] || '';
-    const fallbackVal = activeTab === 'en' ? data[fieldName] || '' : '';
+    const val = cmsText(data, activeFieldName);
+    const fallbackVal = activeTab === 'en' ? cmsText(data, fieldName) : '';
     const isTitleWithHighlight = options?.showLivePreview || label.includes('*') || (val && String(val).includes('*'));
 
     return (
@@ -370,8 +369,8 @@ export default function HomeCMSPage() {
             rows={options?.rows || 2}
             className={options?.rows ? undefined : "min-h-[58px]"}
             style={{
-              ...(options?.enableWeight && data[weightField] ? { fontWeight: Number(data[weightField]) } : {}),
-              ...(options?.enableWeight && data[sizeField] ? { fontSize: `${data[sizeField]}px` } : {})
+              ...(options?.enableWeight && cmsText(data, weightField) ? { fontWeight: Number(cmsText(data, weightField)) } : {}),
+              ...(options?.enableWeight && cmsText(data, sizeField) ? { fontSize: `${cmsText(data, sizeField)}px` } : {})
             }}
           />
         ) : (
@@ -381,7 +380,7 @@ export default function HomeCMSPage() {
             value={val}
             onChange={handleChange}
             placeholder={options?.placeholder ? (activeTab === 'en' ? fallbackVal || options.placeholder : options.placeholder) : (activeTab === 'en' ? fallbackVal : undefined)}
-            style={options?.enableWeight && data[weightField] ? { fontWeight: Number(data[weightField]) } : undefined}
+            style={options?.enableWeight && cmsText(data, weightField) ? { fontWeight: Number(cmsText(data, weightField)) } : undefined}
           />
         )}
 
@@ -397,8 +396,8 @@ export default function HomeCMSPage() {
               <div
                 className="text-xs font-bold text-slate-100 truncate tracking-tight"
                 style={{
-                  fontWeight: Number(data[weightField] || options?.defaultWeight || 800),
-                  ...(data[sizeField] ? { fontSize: `${data[sizeField]}px` } : {})
+                  fontWeight: Number(cmsText(data, weightField) || options?.defaultWeight || 800),
+                  ...(cmsText(data, sizeField) ? { fontSize: `${cmsText(data, sizeField)}px` } : {})
                 }}
               >
                 {renderLivePreview(String(val || fallbackVal))}
@@ -415,10 +414,10 @@ export default function HomeCMSPage() {
         {options?.enableWeight && (
           <div className="pt-1">
             <FontControls
-              weightValue={data[weightField]}
-              onWeightChange={(w) => setData((prev: any) => ({ ...prev, [weightField]: w }))}
-              sizeValue={data[sizeField]}
-              onSizeChange={(s) => setData((prev: any) => ({ ...prev, [sizeField]: s }))}
+              weightValue={cmsText(data, weightField)}
+              onWeightChange={(w) => setData((prev) => ({ ...prev, [weightField]: w }))}
+              sizeValue={cmsText(data, sizeField)}
+              onSizeChange={(s) => setData((prev) => ({ ...prev, [sizeField]: s }))}
               defaultWeight={options?.defaultWeight || "400"}
             />
           </div>
@@ -431,9 +430,9 @@ export default function HomeCMSPage() {
     const activeFieldName = activeTab === 'en' ? `${fieldName}_en` : fieldName;
     const weightField = `${fieldName}Weight`;
     const sizeField = `${fieldName}Size`;
-    const selectedWeight = data[weightField] ? Number(data[weightField]) : undefined;
-    const selectedSize = data[sizeField] ? Number(data[sizeField]) : undefined;
-    const isTitleOrHighlight = label.includes('*') || label.toLowerCase().includes('kuning') || fieldName.includes('Title') || (data[activeFieldName] && String(data[activeFieldName]).includes('*'));
+    const selectedWeight = cmsText(data, weightField) ? Number(cmsText(data, weightField)) : undefined;
+    const selectedSize = cmsText(data, sizeField) ? Number(cmsText(data, sizeField)) : undefined;
+    const isTitleOrHighlight = label.includes('*') || label.toLowerCase().includes('kuning') || fieldName.includes('Title') || (cmsText(data, activeFieldName) && String(cmsText(data, activeFieldName)).includes('*'));
 
     return (
       <div className="space-y-3 p-3.5 rounded-xl border border-border/60 bg-muted/10 shadow-xs">
@@ -447,7 +446,7 @@ export default function HomeCMSPage() {
           {isTextarea ? (
             <Textarea 
               name={activeFieldName} 
-              value={data[activeFieldName] || ''} 
+              value={cmsText(data, activeFieldName)} 
               onChange={handleChange} 
               placeholder={placeholder}
               rows={3}
@@ -457,7 +456,7 @@ export default function HomeCMSPage() {
             <Input 
               type="text" 
               name={activeFieldName} 
-              value={data[activeFieldName] || ''} 
+              value={cmsText(data, activeFieldName)} 
               onChange={handleChange} 
               placeholder={placeholder}
               style={enableWeight && selectedWeight ? { fontWeight: selectedWeight } : undefined}
@@ -465,7 +464,7 @@ export default function HomeCMSPage() {
           )}
         </div>
         
-        {isTitleOrHighlight && data[activeFieldName] && (
+        {isTitleOrHighlight && cmsText(data, activeFieldName) && (
           <div className="relative mt-2 p-3 rounded-lg bg-slate-950 border border-slate-800/80 shadow-inner flex items-center justify-between gap-3 overflow-hidden">
             <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#FFC704] to-amber-600 rounded-l-lg opacity-80" />
             <div className="flex flex-col gap-1 w-full pl-1">
@@ -474,7 +473,7 @@ export default function HomeCMSPage() {
                   <span className="w-1.5 h-1.5 rounded-full bg-[#FFC704] animate-pulse"></span>
                   Live Preview
                 </span>
-                {!String(data[activeFieldName]).includes('*') && (
+                {!String(cmsText(data, activeFieldName)).includes('*') && (
                   <span className="text-[11px] text-slate-400 italic">
                     Tips: Apit kata dengan <code className="text-[#FFC704] bg-slate-900 px-1 py-0.5 rounded font-bold">*bintang*</code> untuk warna kuning
                   </span>
@@ -484,7 +483,7 @@ export default function HomeCMSPage() {
                 className="text-base font-bold text-slate-100 mt-1 pl-1 pr-2 tracking-tight leading-relaxed break-words"
                 style={enableWeight ? { ...(selectedWeight ? { fontWeight: selectedWeight } : {}), ...(selectedSize ? { fontSize: selectedSize } : {}) } : undefined}
               >
-                {renderLivePreview(String(data[activeFieldName]))}
+                {renderLivePreview(String(cmsText(data, activeFieldName)))}
               </div>
             </div>
           </div>
@@ -493,10 +492,10 @@ export default function HomeCMSPage() {
         {enableWeight && (
           <div className="pt-2 border-t border-border/40">
             <FontControls
-              weightValue={data[weightField]}
-              onWeightChange={(val) => setData((prev: any) => ({ ...prev, [weightField]: val }))}
-              sizeValue={data[sizeField]}
-              onSizeChange={(val) => setData((prev: any) => ({ ...prev, [sizeField]: val }))}
+              weightValue={cmsText(data, weightField)}
+              onWeightChange={(val) => setData((prev) => ({ ...prev, [weightField]: val }))}
+              sizeValue={cmsText(data, sizeField)}
+              onSizeChange={(val) => setData((prev) => ({ ...prev, [sizeField]: val }))}
               defaultWeight={defaultWeight}
             />
           </div>
@@ -515,10 +514,10 @@ export default function HomeCMSPage() {
         <p className="text-xs text-muted-foreground mt-0.5">{hint}</p>
       </div>
       <FontControls
-        weightValue={data[`${fieldName}Weight`]}
-        onWeightChange={(val) => setData((prev: Record<string, unknown>) => ({ ...prev, [`${fieldName}Weight`]: val }))}
-        sizeValue={data[`${fieldName}Size`]}
-        onSizeChange={(val) => setData((prev: Record<string, unknown>) => ({ ...prev, [`${fieldName}Size`]: val }))}
+        weightValue={cmsText(data, `${fieldName}Weight`)}
+        onWeightChange={(val) => setData((prev) => ({ ...prev, [`${fieldName}Weight`]: val }))}
+        sizeValue={cmsText(data, `${fieldName}Size`)}
+        onSizeChange={(val) => setData((prev) => ({ ...prev, [`${fieldName}Size`]: val }))}
         defaultWeight={defaultWeight}
       />
     </div>
@@ -532,23 +531,23 @@ export default function HomeCMSPage() {
     // Satu array dipakai kedua bahasa. Hanya nilai TEKS yang ikut tab aktif
     // (`title` / `title_en`); gambar & bobot huruf memakai kunci polos supaya
     // sekali diubah langsung berlaku di ID maupun EN. Lihat lib/i18n/localize.ts.
-    const items = data[fieldName] || [];
+    const items = cmsList(data, fieldName);
     const textKey = (name: string) => (activeTab === 'en' ? `${name}_en` : name);
 
     const handleItemChange = (index: number, field: string, value: string) => {
       const newItems = [...items];
       newItems[index] = { ...newItems[index], [field]: value };
-      setData((prev: any) => ({ ...prev, [fieldName]: newItems }));
+      setData((prev) => ({ ...prev, [fieldName]: newItems }));
     };
 
     const handleAddItem = () => {
       const newItem = fields.reduce((acc, f) => ({ ...acc, [f.name]: '' }), {});
-      setData((prev: any) => ({ ...prev, [fieldName]: [...items, newItem] }));
+      setData((prev) => ({ ...prev, [fieldName]: [...items, newItem] }));
     };
 
     const handleRemoveItem = (index: number) => {
-      const newItems = items.filter((_: any, i: number) => i !== index);
-      setData((prev: any) => ({ ...prev, [fieldName]: newItems }));
+      const newItems = items.filter((_, i) => i !== index);
+      setData((prev) => ({ ...prev, [fieldName]: newItems }));
     };
 
     return (
@@ -574,7 +573,7 @@ export default function HomeCMSPage() {
 
         {/* 2 item per baris (2 kolom) mirip Langkah Cara Booking di Private Trip */}
         <div className="grid gap-4 md:grid-cols-2">
-          {items.map((item: any, index: number) => (
+          {items.map((item, index) => (
             <div key={index} className="p-4 border rounded-xl bg-card relative shadow-xs space-y-3">
               <Button 
                 type="button" 
@@ -652,13 +651,13 @@ export default function HomeCMSPage() {
     textFields: { name: string; label: string; isTextarea?: boolean; enableWeight?: boolean; placeholder?: string }[]
   ) => {
     // Satu array untuk kedua bahasa — lihat catatan di renderArrayEditor.
-    const items = data[fieldName] || [];
+    const items = cmsList(data, fieldName);
     const textKey = (name: string) => (activeTab === 'en' ? `${name}_en` : name);
 
     const handleAddItem = () => {
-      const newItem: any = { [imageField.name]: '' };
+      const newItem: CmsItem = { [imageField.name]: '' };
       textFields.forEach(f => { newItem[f.name] = ''; });
-      setData((prev: any) => ({
+      setData((prev) => ({
         ...prev,
         [fieldName]: [...items, newItem]
       }));
@@ -667,16 +666,16 @@ export default function HomeCMSPage() {
     const handleRemoveItem = (index: number) => {
       const newItems = [...items];
       newItems.splice(index, 1);
-      setData((prev: any) => ({
+      setData((prev) => ({
         ...prev,
         [fieldName]: newItems
       }));
     };
 
-    const handleItemChange = (index: number, field: string, val: any) => {
+    const handleItemChange = (index: number, field: string, val: string) => {
       const newItems = [...items];
       newItems[index] = { ...newItems[index], [field]: val };
-      setData((prev: any) => ({
+      setData((prev) => ({
         ...prev,
         [fieldName]: newItems
       }));
@@ -704,7 +703,7 @@ export default function HomeCMSPage() {
           </div>
         )}
         <div className="space-y-4">
-          {items.map((item: any, index: number) => (
+          {items.map((item, index) => (
             <div key={index} className="p-4 border rounded-xl bg-card relative shadow-sm">
               <Button 
                 type="button" 
@@ -827,8 +826,8 @@ export default function HomeCMSPage() {
                   </p>
                 </div>
                 <MediaPicker 
-                  value={data.heroBgImage || ''}
-                  onChange={(url) => setData((prev: any) => ({ ...prev, heroBgImage: url }))}
+                  value={cmsText(data, 'heroBgImage')}
+                  onChange={(url) => setData((prev) => ({ ...prev, heroBgImage: url }))}
                   label="Pilih Foto/Gambar"
                   description="Disarankan seperti: /hero-coastal.webp"
                 />
@@ -1016,7 +1015,7 @@ export default function HomeCMSPage() {
               <Switch
                 id="socialShowReviews"
                 checked={data.socialShowReviews === true}
-                onCheckedChange={(v) => setData((prev: typeof data) => ({ ...prev, socialShowReviews: v }))}
+                onCheckedChange={(v) => setData((prev) => ({ ...prev, socialShowReviews: v }))}
               />
             </div>
 

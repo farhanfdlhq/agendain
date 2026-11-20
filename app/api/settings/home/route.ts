@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       success: true,
       message: "Konten beranda berhasil diperbarui",
     });
-  } catch (error: any) {
+  } catch (error) {
     return serverError("settings/home", error);
   }
 }
@@ -83,7 +83,7 @@ export async function GET() {
     }
 
     return NextResponse.json(JSON.parse(setting.value));
-  } catch (error: any) {
+  } catch (error) {
     return serverError("settings/home", error);
   }
 }

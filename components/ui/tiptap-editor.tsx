@@ -24,6 +24,17 @@ interface TiptapEditorProps {
   placeholder?: string
 }
 
+// Di luar TiptapEditor: komponen yang didefinisikan di dalam render dianggap
+// tipe baru tiap render, sehingga seluruh tombol toolbar dibongkar-pasang
+// setiap ketikan.
+function ToolBtn({ active, onClick, children, title }: { active: boolean; onClick: () => void; children: React.ReactNode; title: string }) {
+  return (
+    <Button type="button" variant={active ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" onClick={onClick} title={title}>
+      {children}
+    </Button>
+  )
+}
+
 export function TiptapEditor({ value, onChange, placeholder = 'Mulai menulis...' }: TiptapEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -144,12 +155,6 @@ export function TiptapEditor({ value, onChange, placeholder = 'Mulai menulis...'
     if (el && pilihLinkDi(el)) editor.chain().focus().unsetLink().run()
     setLinkPop(null)
   }
-
-  const ToolBtn = ({ active, onClick, children, title }: { active: boolean; onClick: () => void; children: React.ReactNode; title: string }) => (
-    <Button type="button" variant={active ? 'default' : 'ghost'} size="sm" className="h-8 w-8 p-0" onClick={onClick} title={title}>
-      {children}
-    </Button>
-  )
 
   return (
     <div className="border rounded-lg overflow-hidden">

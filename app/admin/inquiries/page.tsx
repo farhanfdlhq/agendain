@@ -14,7 +14,7 @@ import {
 import { DataGrid, DataGridContainer } from "@/components/reui/data-grid/data-grid"
 import { DataGridTable } from "@/components/reui/data-grid/data-grid-table"
 import { DataGridPagination } from "@/components/reui/data-grid/data-grid-pagination"
-import { createTripColumns } from "./columns"
+import { createTripColumns, type PrivateTrip } from "./columns"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { PageSizeSelect } from "@/components/ui/page-size-select"
 import {
@@ -23,7 +23,7 @@ import {
 } from "@/lib/private-trip-status"
 
 export default function AdminInquiriesPage() {
-  const [privateTrips, setPrivateTrips] = useState<any[]>([])
+  const [privateTrips, setPrivateTrips] = useState<PrivateTrip[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const deferredSearch = useDeferredValue(search)
@@ -102,7 +102,7 @@ export default function AdminInquiriesPage() {
 
   const filteredTrips = useMemo(() => {
     const searchLower = deferredSearch.toLowerCase()
-    return privateTrips.filter((t: any) =>
+    return privateTrips.filter((t) =>
       t.nama.toLowerCase().includes(searchLower) ||
       t.email.toLowerCase().includes(searchLower) ||
       t.destinasi.toLowerCase().includes(searchLower)

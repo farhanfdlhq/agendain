@@ -1,5 +1,7 @@
 'use client'
 import { fontStyleFrom } from '@/lib/font-style'
+import type { CmsFields } from "@/lib/types/cms"
+import type { RecentPost } from "./page"
 import { useRef, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -14,7 +16,7 @@ import Pagination from '@/components/Pagination/Pagination'
 
 const POSTS_PER_PAGE = 2
 
-export default function TentangContent({ aboutSettings = {}, recentPosts = [] }: { aboutSettings?: any, recentPosts?: any[] }) {
+export default function TentangContent({ aboutSettings = {}, recentPosts = [] }: { aboutSettings?: CmsFields, recentPosts?: RecentPost[] }) {
   const { t, locale } = useTranslation()
   const isEn = locale === 'en'
   const [postPage, setPostPage] = useState(1)

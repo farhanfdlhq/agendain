@@ -1,5 +1,7 @@
 import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
+import { parseSlugPath, slugIsServable } from "@/lib/slug-gate"
 
 /**
  * Proxy (nama Next 16 untuk middleware) HANYA mengurus AUTENTIKASI.
@@ -21,10 +23,35 @@ import { NextResponse } from "next/server"
  *
  * Jangan hidupkan lagi pengecekan role/permission di sini: satu mesin
  * otorisasi saja, dan mesin itu butuh DB yang tak boleh dibaca tiap request.
+ *
+ * Satu pengecualian yang membaca DB: gerbang slug /blog/:slug dan
+ * /open-trip/:slug (lib/slug-gate.ts) — satu query kolom unik `slug` agar
+ * slug yang tidak ada dijawab 404 sungguhan, bukan 200 + noindex.
  */
 export default withAuth(
-  function proxy(req) {
+  async function proxy(req) {
     const path = req.nextUrl.pathname
+
+    const target = parseSlugPath(path)
+    if (target) {
+      let status: string | null
+      try {
+        const where = { where: { slug: target.slug }, select: { status: true } }
+        const row =
+          target.kind === "blog"
+            ? await prisma.blogPost.findUnique(where)
+            : await prisma.openTrip.findUnique(where)
+        status = row?.status ?? null
+      } catch {
+        return // DB bermasalah: serahkan ke halaman (fail open)
+      }
+      if (!slugIsServable(target.kind, status, !!req.nextauth.token)) {
+        // Path yang tak punya route → app/not-found.tsx dengan status 404;
+        // URL di browser tetap.
+        return NextResponse.rewrite(new URL("/__not-found", req.url))
+      }
+      return
+    }
 
     // Belum login → lempar ke halaman login. Halaman /admin adalah client
     // component, jadi tanpa penjagaan di tepi ini shell-nya sempat tampil
@@ -46,5 +73,5 @@ export default withAuth(
 // log. Mencantumkannya di sini berarti menyalin daftar "method mana yang
 // publik" ke tempat kedua — sumber bug sebelumnya.
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/blog/:slug", "/open-trip/:slug"],
 }

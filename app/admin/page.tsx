@@ -1,4 +1,8 @@
 import { getServerSession } from "next-auth/next"
+import type { Session } from "next-auth"
+import type { PrivateTrip, Prisma } from "@prisma/client"
+
+type RecentBooking = Prisma.BookingGetPayload<{ include: { openTrip: true } }>
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { resolveActor, hasPermission } from "@/lib/rbac"
@@ -11,7 +15,7 @@ import { Badge } from "@/components/reui/badge"
 import { Suspense } from 'react'
 import AirplaneLoader from '@/components/ui/airplane-loader'
 
-async function AdminDashboardDataFetcher({ session }: { session: any }) {
+async function AdminDashboardDataFetcher({ session }: { session: Session | null }) {
   // Gerbang SERVER-SIDE. Halaman ini server component, jadi tanpa cek di sini
   // datanya sudah ter-render & terkirim SEBELUM redirect klien di layout.tsx
   // jalan — omset + PII pelanggan bisa bocor ke role rendah (mis. editor).
@@ -28,14 +32,14 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
     canInquiry ? prisma.privateTrip.count({ where: { status: 'new' } }) : Promise.resolve(0),
     canInquiry
       ? prisma.privateTrip.findMany({ take: 5, orderBy: { createdAt: 'desc' } })
-      : Promise.resolve([] as any[]),
+      : Promise.resolve([] as PrivateTrip[]),
     canBooking ? prisma.booking.count({ where: { status: 'pending' } }) : Promise.resolve(0),
     canBooking
       ? prisma.booking.aggregate({ where: { status: 'paid' }, _sum: { total: true } })
-      : Promise.resolve({ _sum: { total: 0 } } as any),
+      : Promise.resolve({ _sum: { total: 0 } }),
     canBooking
       ? prisma.booking.findMany({ take: 4, orderBy: { createdAt: 'desc' }, include: { openTrip: true } })
-      : Promise.resolve([] as any[]),
+      : Promise.resolve([] as RecentBooking[]),
   ])
 
   const totalOmset = Number(paidBookings._sum?.total || 0)
@@ -43,8 +47,8 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
 
   // Combine and sort recent activities
   const recentActivity = [
-    ...recentPrivateTrips.map((p: any) => ({ ...p, type: 'privatetrip' })),
-    ...recentBookings.map((b: any) => ({ ...b, type: 'booking' }))
+    ...recentPrivateTrips.map((p) => ({ ...p, type: 'privatetrip' as const })),
+    ...recentBookings.map((b) => ({ ...b, type: 'booking' as const }))
   ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
    .slice(0, 5)
 
@@ -166,7 +170,7 @@ async function AdminDashboardDataFetcher({ session }: { session: any }) {
           <CardContent className="p-0">
             {recentActivity.length > 0 ? (
               <div className="flex flex-col">
-                {recentActivity.map((b: any, i: number) => (
+                {recentActivity.map((b, i) => (
                   <div key={`${b.type}-${b.id}`} className={`flex items-start gap-4 p-5 hover:bg-muted/30 transition-colors ${i !== recentActivity.length - 1 ? 'border-b border-border' : ''}`}>
                     <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 bg-muted/50 text-muted-foreground`}>
                       {b.type === 'privatetrip' && <Map className="h-4 w-4" />}

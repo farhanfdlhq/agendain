@@ -1,5 +1,7 @@
 'use client'
 import { fontStyle } from '@/lib/font-style'
+import type { Gs, HomeSettings, Tr } from '../types'
+import type { CmsRow } from '@/lib/types/cms'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
@@ -9,7 +11,7 @@ import styles from '../HomeContent.module.css'
 import { renderHighlightedTitle } from '../shared'
 import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
 
-export default function SocialProofSection({ gs, t, locale, homeSettings, testimonials }: { gs: any, t: any, locale: string, homeSettings: any, testimonials: any[] }) {
+export default function SocialProofSection({ gs, t, locale, homeSettings, testimonials }: { gs: Gs, t: Tr, locale: string, homeSettings: HomeSettings, testimonials: CmsRow[] }) {
   const [activeTestimonial, setActiveTestimonial] = useState(0)
   const [isSliderHovered, setIsSliderHovered] = useState(false)
 
@@ -69,7 +71,7 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
               <div className={styles.testimonialSlider}>
                 <div className={styles.testimonialSlides}>
                   <AnimatePresence initial={false}>
-                    {testiItems.map((tItem: any, idx: number) => {
+                    {testiItems.map((tItem, idx) => {
                       const prevIdx = activeTestimonial === 0 ? testiItems.length - 1 : activeTestimonial - 1
                       const nextIdx = activeTestimonial === testiItems.length - 1 ? 0 : activeTestimonial + 1
                       let positionClass = styles.testimonialSlideHidden

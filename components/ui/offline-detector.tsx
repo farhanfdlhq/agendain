@@ -1,28 +1,20 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { WifiOff, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useOffline } from '@/hooks/use-offline'
 
 export default function OfflineDetector() {
-  const [isOffline, setIsOffline] = useState(false)
-
-  useEffect(() => {
-    if (!navigator.onLine) {
-      setIsOffline(true)
-    }
-
-    const handleOnline = () => setIsOffline(false)
-    const handleOffline = () => setIsOffline(true)
-
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  }, [])
+  const offline = useOffline()
+  // Tombol tutup menyembunyikan peringatan sampai koneksi putus lagi.
+  const [dismissed, setDismissed] = useState(false)
+  const [prevOffline, setPrevOffline] = useState(offline)
+  if (prevOffline !== offline) {
+    setPrevOffline(offline)
+    setDismissed(false)
+  }
+  const isOffline = offline && !dismissed
 
   return (
     <AnimatePresence>
@@ -45,7 +37,7 @@ export default function OfflineDetector() {
             <span style={{ fontSize: '0.75rem', opacity: 0.9 }}>Periksa jaringan internet Anda</span>
           </div>
           <button 
-            onClick={() => setIsOffline(false)} 
+            onClick={() => setDismissed(true)}
             style={{ marginLeft: '0.5rem', padding: '0.25rem', background: 'transparent', border: 'none', color: 'inherit', cursor: 'pointer', borderRadius: '50%', display: 'flex' }}
             aria-label="Tutup"
             onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)'}

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { CmsFields } from "@/lib/types/cms"
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { JsonLd, breadcrumbLd } from '@/lib/jsonld'
@@ -37,7 +38,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 export default async function BlogPage({ searchParams }: { searchParams: SearchParams }) {
   const query = parseBlogQuery(await searchParams)
 
-  let blogSettings = {}
+  let blogSettings: CmsFields = {}
   try {
     const res = await prisma.setting.findUnique({ where: { key: 'blog_settings' } })
     if (res) blogSettings = JSON.parse(res.value)

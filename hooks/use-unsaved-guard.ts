@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useConfirm } from "@/components/Providers/ConfirmProvider"
 
@@ -35,7 +35,9 @@ export function useUnsavedGuard(isDirty: boolean) {
   // isDirty disimpan di ref supaya listener tidak perlu dipasang ulang tiap
   // ketikan — cukup dipasang sekali, membaca nilai terbaru saat dipicu.
   const dirtyRef = useRef(isDirty)
-  dirtyRef.current = isDirty
+  useEffect(() => {
+    dirtyRef.current = isDirty
+  }, [isDirty])
   // Sudah disetujui lewat dialog in-app → jangan tanya lagi lewat dialog browser.
   const leavingRef = useRef(false)
 
@@ -120,5 +122,16 @@ export function useUnsavedGuardSnapshot(currentSnapshot: string) {
   const [baseline, setBaseline] = useState<string | null>(null)
   const isDirty = baseline !== null && currentSnapshot !== baseline
   useUnsavedGuard(isDirty)
-  return { setBaseline }
+
+  // Snapshot terakhir yang sudah ter-render. Diperbarui di effect (bukan saat
+  // render); effect ini dideklarasikan sebelum effect pemanggil, jadi sudah
+  // terbaru ketika effect/handler pemanggil memanggil markClean().
+  const latestRef = useRef(currentSnapshot)
+  useEffect(() => {
+    latestRef.current = currentSnapshot
+  })
+  /** Jadikan isi form saat ini acuan "belum berubah" (setelah muat/simpan). */
+  const markClean = useCallback(() => setBaseline(latestRef.current), [])
+
+  return { setBaseline, markClean }
 }

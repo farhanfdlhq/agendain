@@ -61,7 +61,7 @@ export async function POST(req: Request) {
     revalidatePath('/', 'layout')
 
     return NextResponse.json({ success: true, message: 'Pengaturan Private Trip berhasil diperbarui' })
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof SyntaxError) {
       return NextResponse.json({ error: 'Payload tidak valid.' }, { status: 400 })
     }
@@ -76,10 +76,10 @@ export async function GET() {
     })
     const packages = await prisma.privateTripPackage.findMany({ orderBy: { id: 'asc' } });
     
-    let result = setting ? JSON.parse(setting.value) : {};
+    const result = setting ? JSON.parse(setting.value) : {};
     result.packages = packages;
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error) {
     return serverError('settings/private-trip', error)
   }
 }

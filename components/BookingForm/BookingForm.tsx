@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { errorMessage } from "@/lib/error-message"
 import { useRouter } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, CheckCircle } from 'lucide-react'
@@ -110,8 +111,8 @@ export default function BookingForm({ openTripId, paketNama, hargaString, whatsa
       }
       
       setStep(2) // Success
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err) {
+      setError(errorMessage(err))
     } finally {
       setLoading(false)
     }

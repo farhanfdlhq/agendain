@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { CmsFields } from "@/lib/types/cms"
 import { prisma } from '@/lib/prisma'
 import TentangContent from './TentangContent'
 import { pageMeta } from '@/lib/og'
@@ -44,8 +45,11 @@ const fetchRecentPosts = () =>
     },
   })
 
+/** Kartu artikel di halaman Tentang (dipakai TentangContent). */
+export type RecentPost = Awaited<ReturnType<typeof fetchRecentPosts>>[number]
+
 export default async function TentangPage() {
-  let aboutSettings = {}
+  let aboutSettings: CmsFields = {}
   try {
     const res = await prisma.setting.findUnique({ where: { key: 'about_settings' } })
     if (res) aboutSettings = JSON.parse(res.value)
@@ -53,7 +57,7 @@ export default async function TentangPage() {
     console.error(e)
   }
 
-  let recentPosts: Awaited<ReturnType<typeof fetchRecentPosts>> = []
+  let recentPosts: RecentPost[] = []
   try {
     recentPosts = await fetchRecentPosts()
   } catch (e) {

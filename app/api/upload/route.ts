@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     const gate = await requirePermission(request, "GET /api/upload", ...MEDIA_WRITE);
     if (gate.denied) return gate.denied;
 
-    let files: { url: string; name: string; created_at: string }[] = [];
+    const files: { url: string; name: string; created_at: string }[] = [];
     const uploadDir = path.join(process.cwd(), "public/uploads");
 
     try {
@@ -139,7 +139,7 @@ export async function POST(request: Request) {
     }
 
     const bytes = await file.arrayBuffer();
-    let fileBuffer: any = Buffer.from(bytes);
+    let fileBuffer: Buffer = Buffer.from(bytes);
 
     // Verifikasi konten nyata (magic bytes), bukan hanya file.type yang
     // dikirim client. Mencegah unggahan berbahaya yang menyamar sebagai PDF/DOCX.
@@ -276,9 +276,9 @@ export async function DELETE(request: Request) {
     await unlink(filepath);
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error deleting file:", error);
-    if (error.code === "ENOENT") {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") {
       reportUploadRejected({
         route: "DELETE /api/upload", status: 404, code: "file_not_found", req: request,
       });

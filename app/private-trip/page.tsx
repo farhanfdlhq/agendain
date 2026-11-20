@@ -12,6 +12,7 @@ import { waPrivateTripGeneral } from "@/lib/whatsapp-messages";
 import { pageMeta } from "@/lib/og";
 import { JsonLd, breadcrumbLd } from "@/lib/jsonld";
 import styles from "./page.module.css";
+import { cmsText } from "@/lib/types/cms";
 
 export const metadata = pageMeta({
   title: "Private Trip Eropa dari Indonesia | Agendain",
@@ -26,7 +27,7 @@ export const revalidate = 60;
 export default async function PrivateTripPage() {
   const packages = await prisma.privateTripPackage.findMany();
   
-  let privatetripSettings: any = {};
+  let privatetripSettings: Record<string, unknown> = {};
   try {
     const setting = await prisma.setting.findUnique({ where: { key: 'privatetrip_settings' } });
     if (setting) {
@@ -74,7 +75,7 @@ export default async function PrivateTripPage() {
         description={ctaSubtitle}
         primaryBtnText={ctaBtnText}
         primaryBtnLink={generateWhatsAppLink(
-          privatetripSettings?.whatsapp_number,
+          cmsText(privatetripSettings, "whatsapp_number"),
           waPrivateTripGeneral(isEn),
         )}
         secondaryBtnText={secBtnText}

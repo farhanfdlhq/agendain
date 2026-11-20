@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
+import type { CmsFields } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
 import { Save, Globe } from 'lucide-react'
@@ -24,7 +25,7 @@ const TiptapEditor = ({ value, onChange }: { value: string, onChange: (val: stri
 )
 
 export default function PrivacyCMSPage() {
-  const [data, setData] = useState<any>({
+  const [data, setData] = useState<CmsFields>({
     heroImage: '',
     heroTitle: '', heroTitle_en: '', heroTitleWeight: '800',
     heroSubtitle: '', heroSubtitle_en: '', heroSubtitleWeight: '500',
@@ -37,10 +38,8 @@ export default function PrivacyCMSPage() {
 
   // Penjaga perubahan belum-disimpan (baseline saat data awal termuat & setelah simpan).
   const snapshot = JSON.stringify(data)
-  const snapRef = useRef(snapshot)
-  snapRef.current = snapshot
-  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
-  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
+  const { setBaseline, markClean } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) markClean() }, [fetching, markClean])
   // Sesaat setelah simpan, editor bisa menormalkan isi balasan server (mis. spasi
   // ganda jadi satu) lalu memancarkan onChange. Itu bukan suntingan pengguna,
   // jadi baseline ikut menyesuaikan selama jendela singkat ini.
@@ -63,7 +62,7 @@ export default function PrivacyCMSPage() {
       .then(res => res.json())
       .then(res => {
         if (!res.error) {
-          setData((prev: any) => ({ ...prev, ...res }))
+          setData((prev) => ({ ...prev, ...res }))
         }
         setFetching(false)
       })
@@ -107,12 +106,12 @@ export default function PrivacyCMSPage() {
   }
 
   const handleQuillChange = (value: string, activeFieldName: string) => {
-    setData((prev: any) => ({ ...prev, [activeFieldName]: value }))
+    setData((prev) => ({ ...prev, [activeFieldName]: value }))
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
-    setData((prev: any) => ({ ...prev, [name]: value }))
+    setData((prev) => ({ ...prev, [name]: value }))
   }
 
   const renderLivePreview = (text: string) => {
@@ -152,7 +151,7 @@ export default function PrivacyCMSPage() {
         )}
         <MediaPicker 
           value={data[activeFieldName] || ''}
-          onChange={(url) => setData((prev: any) => ({ ...prev, [activeFieldName]: url }))}
+          onChange={(url) => setData((prev) => ({ ...prev, [activeFieldName]: url }))}
           label="Pilih Gambar"
           description={placeholder ? `Disarankan seperti: ${placeholder}` : undefined}
         />
@@ -227,9 +226,9 @@ export default function PrivacyCMSPage() {
           <div className="pt-2 border-t border-border/40">
             <FontControls
               weightValue={data[weightField]}
-              onWeightChange={(val) => setData((prev: any) => ({ ...prev, [weightField]: val }))}
+              onWeightChange={(val) => setData((prev) => ({ ...prev, [weightField]: val }))}
               sizeValue={data[sizeField]}
-              onSizeChange={(val) => setData((prev: any) => ({ ...prev, [sizeField]: val }))}
+              onSizeChange={(val) => setData((prev) => ({ ...prev, [sizeField]: val }))}
               defaultWeight={defaultWeight}
             />
           </div>

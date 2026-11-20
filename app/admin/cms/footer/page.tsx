@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from 'react'
+import type { CmsFields } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
 import { Save, Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react'
@@ -24,7 +25,7 @@ import {
 } from "@/lib/footer-settings"
 
 export default function FooterCMSPage() {
-  const [data, setData] = useState<any>({
+  const [data, setData] = useState<CmsFields>({
     eyebrow: '', eyebrow_en: '',
     tagline: '', tagline_en: '',
     desc: '', desc_en: '',
@@ -45,10 +46,8 @@ export default function FooterCMSPage() {
 
   // Penjaga perubahan belum-disimpan (data + sosial + badge pembayaran).
   const snapshot = JSON.stringify({ data, socials, badges })
-  const snapRef = useRef(snapshot)
-  snapRef.current = snapshot
-  const { setBaseline } = useUnsavedGuardSnapshot(snapshot)
-  useEffect(() => { if (!fetching) setBaseline(snapRef.current) }, [fetching, setBaseline])
+  const { markClean } = useUnsavedGuardSnapshot(snapshot)
+  useEffect(() => { if (!fetching) markClean() }, [fetching, markClean])
   const topHeaderRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -71,7 +70,7 @@ export default function FooterCMSPage() {
           for (const k of ['tagline', 'tagline_en']) {
             if (typeof rest[k] === 'string') rest[k] = taglineToStars(rest[k])
           }
-          setData((prev: any) => ({ ...prev, ...rest }))
+          setData((prev) => ({ ...prev, ...rest }))
           if (Array.isArray(s) && s.length) setSocials(s)
           if (Array.isArray(b) && b.length) setBadges(b)
         }
@@ -100,7 +99,7 @@ export default function FooterCMSPage() {
         body: JSON.stringify(payload)
       })
       if (res.ok) {
-        setBaseline(snapRef.current) // tandai bersih setelah simpan
+        markClean() // tandai bersih setelah simpan
         toast.success('Footer berhasil diperbarui!')
       } else {
         const body = await res.json().catch(() => ({}))
@@ -114,7 +113,7 @@ export default function FooterCMSPage() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setData((prev: any) => ({ ...prev, [e.target.name]: e.target.value }))
+    setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   // Pola sama dengan CMS Beranda/Tentang: badge bahasa aktif, Font Weight +
@@ -172,9 +171,9 @@ export default function FooterCMSPage() {
         <div className="pt-2 border-t border-border/40">
           <FontControls
             weightValue={data[weightField]}
-            onWeightChange={(val) => setData((prev: Record<string, unknown>) => ({ ...prev, [weightField]: val }))}
+            onWeightChange={(val) => setData((prev) => ({ ...prev, [weightField]: val }))}
             sizeValue={data[sizeField]}
-            onSizeChange={(val) => setData((prev: Record<string, unknown>) => ({ ...prev, [sizeField]: val }))}
+            onSizeChange={(val) => setData((prev) => ({ ...prev, [sizeField]: val }))}
             defaultWeight={defaultWeight}
           />
         </div>

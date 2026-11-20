@@ -20,6 +20,10 @@
  * dipakai Server Component maupun Client Component.
  */
 
+import type { CmsRow } from '@/lib/types/cms'
+
+type Row = Record<string, unknown>
+
 const hasValue = (v: unknown): boolean => {
   if (v == null) return false
   if (typeof v === 'string') return v.trim() !== ''
@@ -36,17 +40,18 @@ const hasValue = (v: unknown): boolean => {
  *
  * Urutan prioritas tiap field teks: `row[field_en]` → `en[i][field]` → `row[field]`.
  */
-export function localizeRows(
-  base: any[],
-  en: any[] | null | undefined,
+export function localizeRows<T>(
+  base: T[],
+  en: readonly unknown[] | null | undefined,
   textFields: readonly string[],
   locale: string,
-): any[] {
+): T[] {
   if (locale !== 'en') return base
-  const fallback = Array.isArray(en) ? en : []
-  return base.map((row, i) => {
-    if (!row || typeof row !== 'object') return row
-    const out: Record<string, any> = { ...row }
+  const fallback = (Array.isArray(en) ? en : []) as (Row | null | undefined)[]
+  return base.map((item, i) => {
+    if (!item || typeof item !== 'object') return item
+    const row = item as Row
+    const out: Row = { ...row }
     for (const f of textFields) {
       const own = row[`${f}_en`]
       if (hasValue(own)) {
@@ -57,7 +62,7 @@ export function localizeRows(
       if (hasValue(legacy)) out[f] = legacy
       // else: biarkan nilai ID-nya (fallback terakhir)
     }
-    return out
+    return out as T
   })
 }
 
@@ -71,15 +76,16 @@ export function localizeRows(
  * ulang) tetap dipakai sebagai sumber teks — jadi tidak ada teks Inggris yang
  * hilang saat rilis.
  */
-export function localizeRepeater(
-  settings: Record<string, any> | null | undefined,
+export function localizeRepeater<T = CmsRow>(
+  settings: Record<string, unknown> | null | undefined,
   key: string,
   locale: string,
   textFields: readonly string[],
-): any[] | null {
+): T[] | null {
   const base = settings?.[key]
   if (!Array.isArray(base)) return null
-  return localizeRows(base, settings?.[`${key}_en`], textFields, locale)
+  const en = settings?.[`${key}_en`]
+  return localizeRows(base as T[], Array.isArray(en) ? en : null, textFields, locale)
 }
 
 /**
@@ -91,7 +97,7 @@ export function localizeRepeater(
  * yang baru diambil, seperti blok perbaikan data warisan yang sudah ada).
  */
 export function foldLegacyRepeaters(
-  data: Record<string, any> | null | undefined,
+  data: Record<string, unknown> | null | undefined,
   map: Record<string, readonly string[]>,
 ): void {
   if (!data) return
@@ -100,12 +106,14 @@ export function foldLegacyRepeaters(
     const legacyKey = `${key}_en`
     const legacy = data[legacyKey]
     if (!Array.isArray(legacy)) continue
+    const legacyRows = legacy as (Row | null | undefined)[]
 
     const base = data[key]
     if (Array.isArray(base)) {
-      base.forEach((row, i) => {
-        if (!row || typeof row !== 'object') return
-        const old = legacy[i]
+      ;(base as unknown[]).forEach((item, i) => {
+        if (!item || typeof item !== 'object') return
+        const row = item as Row
+        const old = legacyRows[i]
         if (!old || typeof old !== 'object') return
         for (const f of textFields) {
           if (!hasValue(row[`${f}_en`]) && hasValue(old[f])) row[`${f}_en`] = old[f]
@@ -114,9 +122,9 @@ export function foldLegacyRepeaters(
     } else if (legacy.length > 0) {
       // Hanya versi EN yang pernah diisi. Pakai baris EN sebagai basis supaya
       // isinya tidak hilang saat legacyKey dibuang.
-      data[key] = legacy.map((row: any) => {
+      data[key] = legacyRows.map((row) => {
         if (!row || typeof row !== 'object') return row
-        const out: Record<string, any> = { ...row }
+        const out: Row = { ...row }
         for (const f of textFields) if (hasValue(row[f])) out[`${f}_en`] = row[f]
         return out
       })
@@ -130,17 +138,18 @@ export function foldLegacyRepeaters(
  * Ambil satu field dari baris DB yang punya kolom EN bersuffix `En`
  * (mis. `nama` / `namaEn`). Kosong atau null → jatuh ke versi Indonesia.
  */
-export function pickLocalized<T = any>(
-  row: Record<string, any> | null | undefined,
+export function pickLocalized<T = string>(
+  row: object | null | undefined,
   field: string,
   locale: string,
 ): T {
   if (!row) return undefined as T
+  const r = row as Row
   if (locale === 'en') {
-    const en = row[`${field}En`]
+    const en = r[`${field}En`]
     if (hasValue(en)) return en as T
   }
-  return row[field] as T
+  return r[field] as T
 }
 
 /** Peta field teks tiap repeater. Satu sumber untuk CMS dan renderer. */
