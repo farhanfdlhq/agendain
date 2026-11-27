@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { cmsList, cmsText, type CmsData, type CmsItem } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
-import { ArrowUp, ArrowDown, GripVertical, Save, Globe, Type, FolderOpen, Trash2, X, Plus } from 'lucide-react'
+import { ArrowUp, ArrowDown, GripVertical, Save, X, Plus } from 'lucide-react'
 import { Reorder } from 'framer-motion'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,11 +12,10 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
-import { useConfirm } from "@/components/Providers/ConfirmProvider"
 import { MediaPicker } from "@/components/ui/media-picker"
+import { ImageFrameEditor } from "@/components/admin/image-frame-editor"
 import { FontControls } from "@/components/ui/font-size-picker"
 import { foldLegacyRepeaters, HOME_REPEATERS } from "@/lib/i18n/localize"
 import idDict from "@/lib/i18n/locales/id"
@@ -139,7 +138,6 @@ export default function HomeCMSPage() {
   useEffect(() => { if (!fetching) markClean() }, [fetching, markClean])
   const topHeaderRef = useRef<HTMLDivElement>(null)
 
-  const { showConfirm } = useConfirm()
 
   useEffect(() => {
     const el = topHeaderRef.current
@@ -231,9 +229,11 @@ export default function HomeCMSPage() {
     setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '') => {
+  // frameAspect: bila diisi, tampil tombol "Atur posisi & zoom" (bingkai disimpan di `${fieldName}Frame`).
+  const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '', frameAspect?: number) => {
     // Sharing the exact same field across both languages for images
-    const activeFieldName = fieldName; 
+    const activeFieldName = fieldName;
+    const frameField = `${fieldName}Frame`
     return (
       <div className="space-y-3">
         <Label className="flex items-center gap-2">
@@ -246,10 +246,24 @@ export default function HomeCMSPage() {
         )}
         <MediaPicker 
           value={cmsText(data, activeFieldName)}
-          onChange={(url) => setData((prev) => ({ ...prev, [activeFieldName]: url }))}
+          onChange={(url) => setData((prev) => ({
+            ...prev,
+            [activeFieldName]: url,
+            // Gambar diganti → bingkai lama tidak relevan lagi, kembali ke tengah.
+            ...(frameAspect ? { [frameField]: '' } : {}),
+          }))}
           label="Pilih Gambar"
           description={placeholder ? `Disarankan seperti: ${placeholder}` : undefined}
         />
+        {frameAspect && (
+          <ImageFrameEditor
+            src={cmsText(data, activeFieldName) || placeholder}
+            value={cmsText(data, frameField)}
+            onChange={(v) => setData((prev) => ({ ...prev, [frameField]: v }))}
+            aspect={frameAspect}
+            label={label}
+          />
+        )}
       </div>
     )
   }
@@ -647,7 +661,7 @@ export default function HomeCMSPage() {
   const renderSplitArrayEditor = (
     label: string,
     fieldName: string,
-    imageField: { name: string; label: string; resolutionHint: string },
+    imageField: { name: string; label: string; resolutionHint: string; frameAspect?: number },
     textFields: { name: string; label: string; isTextarea?: boolean; enableWeight?: boolean; placeholder?: string }[]
   ) => {
     // Satu array untuk kedua bahasa — lihat catatan di renderArrayEditor.
@@ -726,9 +740,23 @@ export default function HomeCMSPage() {
                   )}
                   <MediaPicker 
                     value={item[imageField.name] || ''}
-                    onChange={(url) => handleItemChange(index, imageField.name, url)}
+                    onChange={(url) => {
+                      // Ganti foto → bingkai item ini kembali ke tengah.
+                      const newItems = [...items];
+                      newItems[index] = { ...newItems[index], [imageField.name]: url, [`${imageField.name}Frame`]: '' };
+                      setData((prev) => ({ ...prev, [fieldName]: newItems }));
+                    }}
                     label="Pilih Foto/Gambar"
                   />
+                  {imageField.frameAspect && item[imageField.name] && (
+                    <ImageFrameEditor
+                      src={item[imageField.name]}
+                      value={item[`${imageField.name}Frame`] || ''}
+                      onChange={(v) => handleItemChange(index, `${imageField.name}Frame`, v)}
+                      aspect={imageField.frameAspect}
+                      label={`${imageField.label} #${index + 1}`}
+                    />
+                  )}
                 </div>
                 
                 <div className="space-y-4 flex flex-col justify-start">
@@ -827,9 +855,17 @@ export default function HomeCMSPage() {
                 </div>
                 <MediaPicker 
                   value={cmsText(data, 'heroBgImage')}
-                  onChange={(url) => setData((prev) => ({ ...prev, heroBgImage: url }))}
+                  onChange={(url) => setData((prev) => ({ ...prev, heroBgImage: url, heroBgImageFrame: '' }))}
                   label="Pilih Foto/Gambar"
                   description="Disarankan seperti: /hero-coastal.webp"
+                />
+                <ImageFrameEditor
+                  src={cmsText(data, 'heroBgImage') || '/hero-coastal.webp'}
+                  value={cmsText(data, 'heroBgImageFrame')}
+                  onChange={(v) => setData((prev) => ({ ...prev, heroBgImageFrame: v }))}
+                  aspect={16 / 9}
+                  label="Gambar Background Hero"
+                  hint="Di HP hero tampil lebih tegak: bagian tengah bingkai tetap terlihat, sisi kiri-kanan terpotong."
                 />
               </div>
 
@@ -860,11 +896,10 @@ export default function HomeCMSPage() {
               {renderTextInput('Eyebrow (Teks Kecil Atas)', 'whyTitleMain', false, '', true, '800')}
               {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'whyTitleSub', false, '', true, '800')}
             </div>
-            <p className="text-xs text-muted-foreground">Catatan tata letak: Di situs web, keempat kartu menampilkan nomor dan judul secara default, dan deskripsi akan muncul saat kartu di-hover.</p>
-            {renderSplitArrayEditor(
-              'Kartu Keunggulan (Data Mengapa Memilih Kami)', 
-              'whyItems', 
-              { name: 'image', label: 'URL Ikon/Gambar (Kiri)', resolutionHint: '512x512 px (Square)' },
+            <p className="text-xs text-muted-foreground">Catatan tata letak: empat kartu pertama mengikuti rute pesawat di peta Eropa: kartu 1 di titik London, 2 di Roma, 3 di Istanbul, dan 4 di Stockholm. Di desktop kartu tampil di sekeliling peta; di tablet/HP satu kartu tampil di bawah peta, berganti mengikuti titik. Deskripsi sebaiknya singkat (± 15 kata) agar kartu tidak menutupi peta. Kartu ke-5 dan seterusnya tampil sebagai daftar di bawah peta.</p>
+            {renderArrayEditor(
+              'Kartu Keunggulan (Data Mengapa Memilih Kami)',
+              'whyItems',
               [
                 { name: 'title', label: 'Judul', enableWeight: true },
                 { name: 'desc', label: 'Deskripsi Singkat', isTextarea: true, enableWeight: true }
@@ -933,22 +968,28 @@ export default function HomeCMSPage() {
                 {/* Kolom 1: Kiri Atas & Bawah */}
                 <div className="space-y-3 p-3 rounded-xl border bg-muted/10">
                   <span className="text-[11px] font-bold text-slate-700 block">Kolom Kiri</span>
-                  {renderImageInput('Gambar 1 (Kiri Atas)', 'galleryImg1', '', '800x600 px (Landscape)')}
-                  {renderImageInput('Gambar 2 (Kiri Bawah)', 'galleryImg2', '', '800x600 px (Landscape)')}
+                  {renderImageInput('Gambar 1 (Kiri Atas)', 'galleryImg1', '', '800x600 px (Landscape)', 4 / 3)}
+                  {/* Pemisah antar gambar dalam satu kolom */}
+                  <div className="border-t border-dashed pt-4 mt-4">
+                    {renderImageInput('Gambar 2 (Kiri Bawah)', 'galleryImg2', '', '800x600 px (Landscape)', 4 / 3)}
+                  </div>
                 </div>
                 {/* Kolom 2: Tengah - Besar */}
                 <div className="space-y-3 p-3 rounded-xl border bg-muted/10 flex flex-col justify-between">
                   <div>
                     <span className="text-[11px] font-bold text-slate-700 block mb-3">Kolom Tengah (Besar)</span>
-                    {renderImageInput('Gambar 3 (Tengah - Besar)', 'galleryImg3', '', '800x1200 px (Portrait)')}
+                    {renderImageInput('Gambar 3 (Tengah - Besar)', 'galleryImg3', '', '800x1200 px (Portrait)', 3 / 4)}
                   </div>
                   <p className="text-[10px] text-muted-foreground italic mt-2">Foto utama di tengah galeri.</p>
                 </div>
                 {/* Kolom 3: Kanan Atas & Bawah */}
                 <div className="space-y-3 p-3 rounded-xl border bg-muted/10">
                   <span className="text-[11px] font-bold text-slate-700 block">Kolom Kanan</span>
-                  {renderImageInput('Gambar 4 (Kanan Atas)', 'galleryImg4', '', '800x600 px (Landscape)')}
-                  {renderImageInput('Gambar 5 (Kanan Bawah)', 'galleryImg5', '', '800x600 px (Landscape)')}
+                  {renderImageInput('Gambar 4 (Kanan Atas)', 'galleryImg4', '', '800x600 px (Landscape)', 4 / 3)}
+                  {/* Pemisah antar gambar dalam satu kolom */}
+                  <div className="border-t border-dashed pt-4 mt-4">
+                    {renderImageInput('Gambar 5 (Kanan Bawah)', 'galleryImg5', '', '800x600 px (Landscape)', 4 / 3)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -962,7 +1003,7 @@ export default function HomeCMSPage() {
           <CardContent className="space-y-6 pt-6">
             {/* Foto Full 1 Baris */}
             <div>
-              {renderImageInput('Gambar di Samping Daftar Item Accordion', 'accImage', '/accordion-street.webp', '800x1200 px (Portrait)')}
+              {renderImageInput('Gambar di Samping Daftar Item Accordion', 'accImage', '/accordion-street.webp', '800x1200 px (Portrait)', 1)}
             </div>
 
             {/* Bagian Teks di Bawah Foto (2 Kolom Seimbang) */}
@@ -1022,7 +1063,7 @@ export default function HomeCMSPage() {
             {renderSplitArrayEditor(
               'Kutipan Testimoni Slider (Data Pelanggan)', 
               'testiItems', 
-              { name: 'photo', label: 'Foto Pelanggan (opsional)', resolutionHint: '1080x1080 px (Square)' },
+              { name: 'photo', label: 'Foto Pelanggan (opsional)', resolutionHint: '1080x1080 px (Square)', frameAspect: 4 / 5 },
               [
                 { name: 'name', label: 'Nama Pelanggan', placeholder: 'Nama asli traveler (mis. nama depan + inisial)' },
                 { name: 'text', label: 'Teks Kutipan Testimoni', isTextarea: true, placeholder: 'Tulis ulasan/testimoni pelanggan di sini...' }

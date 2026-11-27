@@ -110,6 +110,7 @@ export default function BlogContent({
     <div className={styles.page}>
       <HeroHeader
         backgroundImage={heroImage}
+        imageFrame={String(blogSettings.heroImageFrame || '')}
         title={heroTitle
           ? parseGoldText(heroTitle, styles, blogSettings.heroTitleWeight, blogSettings.heroTitleSize)
           : <>{language === 'en' ? 'Agendain' : 'Jurnal'} <span className={styles.textGold}>{language === 'en' ? 'Journal' : 'Agendain'}</span></>}
@@ -189,7 +190,7 @@ export default function BlogContent({
                       src={featuredPost.thumbnail} 
                       alt={getTitle(featuredPost)}
                       fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      sizes="(max-width: 1024px) 100vw, 55vw"
                       priority={true}
                       className={styles.featuredImage}
                     />
@@ -228,7 +229,7 @@ export default function BlogContent({
                           src={post.thumbnail} 
                           alt={getTitle(post)}
                           fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
                           className={styles.postImage}
                         />
                         <span className={styles.postCategoryBadge}>{getCategoryName(post.category)}</span>

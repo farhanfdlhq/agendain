@@ -1,5 +1,4 @@
 import React from "react";
-import { Separator } from "@/components/ui/separator"; // Using standard shadcn or simple border
 
 interface AdminHeaderProps {
   title: string;

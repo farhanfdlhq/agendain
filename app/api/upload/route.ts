@@ -199,7 +199,9 @@ export async function POST(request: Request) {
         } else {
           fileBuffer = await sharp(fileBuffer)
             .resize({ width: 1920, withoutEnlargement: true })
-            .webp({ quality: 80, effort: 4 })
+            // quality 90: nyaris tak terbedakan dari asli (teks/garis halus tetap
+            // tajam), ukuran file masih wajar. Dinaikkan dari 80 atas permintaan USER.
+            .webp({ quality: 90, effort: 4 })
             .toBuffer();
           outType = "image/webp";
         }

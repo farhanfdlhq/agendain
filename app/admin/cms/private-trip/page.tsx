@@ -4,16 +4,17 @@ import { useState, useEffect, useRef } from "react";
 import { cmsList, cmsText, type CmsData, type CmsItem, type CmsPackageItem } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard";
 import { toast } from "react-hot-toast";
-import { Save, Globe, X } from "lucide-react";
+import { Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AirplaneLoader from "@/components/ui/airplane-loader";
 import { MediaPicker } from "@/components/ui/media-picker";
+import { ImageFrameEditor } from "@/components/admin/image-frame-editor";
 import { FontControls } from "@/components/ui/font-size-picker";
 import DynamicIcon, { AVAILABLE_ICONS } from "@/components/DynamicIcon/DynamicIcon";
 import { foldLegacyRepeaters, PRIVATE_TRIP_REPEATERS } from "@/lib/i18n/localize";
@@ -277,8 +278,12 @@ export default function PrivateTripCMSPage() {
     fieldName: string,
     placeholder = "",
     resolutionHint = "",
+    frameAspect?: number,
+    frameHint?: string,
   ) => {
+    // frameAspect: bila diisi, tampil tombol "Atur posisi & zoom" (bingkai di `${fieldName}Frame`).
     const activeFieldName = fieldName;
+    const frameField = `${fieldName}Frame`;
     return (
       <div className="space-y-3">
         <Label className="flex items-center gap-2">{label}</Label>
@@ -291,13 +296,28 @@ export default function PrivateTripCMSPage() {
         <MediaPicker
           value={cmsText(data, activeFieldName)}
           onChange={(url) =>
-            setData((prev) => ({ ...prev, [activeFieldName]: url }))
+            setData((prev) => ({
+              ...prev,
+              [activeFieldName]: url,
+              // Gambar diganti → bingkai lama tidak relevan lagi, kembali ke tengah.
+              ...(frameAspect ? { [frameField]: "" } : {}),
+            }))
           }
           label="Pilih Gambar"
           description={
             placeholder ? `Disarankan seperti: ${placeholder}` : undefined
           }
         />
+        {frameAspect && (
+          <ImageFrameEditor
+            src={cmsText(data, activeFieldName) || placeholder}
+            value={cmsText(data, frameField)}
+            onChange={(v) => setData((prev) => ({ ...prev, [frameField]: v }))}
+            aspect={frameAspect}
+            label={label}
+            hint={frameHint}
+          />
+        )}
       </div>
     );
   };
@@ -793,6 +813,8 @@ export default function PrivateTripCMSPage() {
                   "heroImage",
                   "/private_trip_hero.png",
                   "1920x1080 px (Landscape)",
+                  16 / 9,
+                  "Di HP hero tampil lebih tegak: bagian tengah bingkai tetap terlihat, sisi kiri-kanan terpotong.",
                 )}
               </div>
               <div className="space-y-4 flex flex-col justify-start">
@@ -851,6 +873,8 @@ export default function PrivateTripCMSPage() {
               "whyImage",
               "/private_trip_why.png",
               "1200x900 px (Landscape 4:3; di HP dipotong persegi)",
+              4 / 3,
+              "Di tablet gambar tampil 16:10: bagian tengah bingkai tetap terlihat.",
             )}
             <div className="space-y-4 border-t pt-4">
               <Label className="text-base font-semibold">

@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
-import { Label } from "@/components/ui/label"
 import { useConfirm } from "@/components/Providers/ConfirmProvider"
 
 interface MediaPickerMultipleProps {
@@ -52,6 +51,7 @@ export function MediaPickerMultiple({ values, onChange, label = "Klik untuk memi
 
   useEffect(() => {
     if (open && activeTab === "bank") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- muat media saat dialog dibuka; status loading di-set disengaja
       fetchMedia()
     }
   }, [open, activeTab])
@@ -85,7 +85,7 @@ export function MediaPickerMultiple({ values, onChange, label = "Klik untuk memi
         onChange([...values, ...uploadedUrls])
         toast.success("Gambar berhasil diupload!")
       }
-    } catch (err) {
+    } catch {
       toast.error("Terjadi kesalahan saat upload gambar.")
     } finally {
       setUploading(false)
@@ -117,7 +117,7 @@ export function MediaPickerMultiple({ values, onChange, label = "Klik untuk memi
             const data = await res.json()
             toast.error("Gagal menghapus: " + data.error)
           }
-        } catch (err) {
+        } catch {
           toast.error("Terjadi kesalahan server saat menghapus.")
         } finally {
           setDeletingFile(null)

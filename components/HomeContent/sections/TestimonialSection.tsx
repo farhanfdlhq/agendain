@@ -7,6 +7,7 @@ import FadeIn from '@/components/Motion/FadeIn'
 import styles from '../HomeContent.module.css'
 import { WhatsAppIcon, renderHighlightedTitle, GALLERY_IMAGES } from '../shared'
 import { localizeRepeater, HOME_REPEATERS } from '@/lib/i18n/localize'
+import { frameStyle, parseFrame } from '@/lib/image-frame'
 
 export default function TestimonialSection({ gs, t, waLink, locale, homeSettings }: { gs: Gs, t: Tr, waLink: string, locale: string, homeSettings: HomeSettings }) {
   // Poin di bawah judul dari CMS (satu poin per baris / Enter); mendukung juga bentuk array warisan.
@@ -71,18 +72,18 @@ export default function TestimonialSection({ gs, t, waLink, locale, homeSettings
         <FadeIn direction="up" delay={0.2}>
           <div className={styles.galleryMasonry}>
             <div className={styles.galleryCol}>
-              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg1', undefined, GALLERY_IMAGES.leftTop)} alt="Momen liburan seru peserta open trip Agendain di destinasi Eropa" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
-              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg2', undefined, GALLERY_IMAGES.leftBottom)} alt="Pengalaman berfoto di spot ikonik kota-kota Eropa bersama Agendain" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
+              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg1', undefined, GALLERY_IMAGES.leftTop)} alt="Momen liburan seru peserta open trip Agendain di destinasi Eropa" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" style={frameStyle(parseFrame(gs('galleryImg1Frame')))}/></div>
+              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg2', undefined, GALLERY_IMAGES.leftBottom)} alt="Pengalaman berfoto di spot ikonik kota-kota Eropa bersama Agendain" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" style={frameStyle(parseFrame(gs('galleryImg2Frame')))}/></div>
             </div>
             <div className={styles.galleryCol}>
               <div className={styles.galleryItemTall}>
-                <Image src={gs('galleryImg3', undefined, GALLERY_IMAGES.center)} alt="Dokumentasi perjalanan wisata Eropa bersama kawan traveler Agendain" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
+                <Image src={gs('galleryImg3', undefined, GALLERY_IMAGES.center)} alt="Dokumentasi perjalanan wisata Eropa bersama kawan traveler Agendain" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" style={frameStyle(parseFrame(gs('galleryImg3Frame')))}/>
                 <Link href="/open-trip" className={styles.galleryOverlayBtn}>{gs('testiBtnGallery', 'home.testi.btnGallery')}</Link>
               </div>
             </div>
             <div className={styles.galleryCol}>
-              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg4', undefined, GALLERY_IMAGES.rightTop)} alt="Pemandangan indah pegunungan dan panorama Eropa dalam trip Agendain" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
-              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg5', undefined, GALLERY_IMAGES.rightBottom)} alt="Kenangan tak terlupakan kawan Agendain saat menjelajahi benua Eropa" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
+              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg4', undefined, GALLERY_IMAGES.rightTop)} alt="Pemandangan indah pegunungan dan panorama Eropa dalam trip Agendain" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" style={frameStyle(parseFrame(gs('galleryImg4Frame')))}/></div>
+              <div className={styles.galleryItemSmall}><Image src={gs('galleryImg5', undefined, GALLERY_IMAGES.rightBottom)} alt="Kenangan tak terlupakan kawan Agendain saat menjelajahi benua Eropa" fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" style={frameStyle(parseFrame(gs('galleryImg5Frame')))}/></div>
             </div>
           </div>
         </FadeIn>

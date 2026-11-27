@@ -97,6 +97,7 @@ export default function AdminPaketPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- muat data saat mount; status loading di-set disengaja
     fetchPackages();
   }, []);
 
@@ -137,7 +138,7 @@ export default function AdminPaketPage() {
       } else {
         toast.error("Gagal menghapus paket");
       }
-    } catch (e) {
+    } catch {
       toast.error("Terjadi kesalahan server");
     }
   };

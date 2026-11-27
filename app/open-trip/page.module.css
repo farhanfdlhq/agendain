@@ -31,6 +31,8 @@
 .heroImage {
   object-fit: cover;
   object-position: center;
+  /* Zoom bingkai dari CMS (lib/image-frame); posisi lewat style inline. */
+  transform: scale(var(--frame-zoom, 1));
 }
 
 .heroOverlay {

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getClientIp, serverError } from "@/lib/security"
 import { logAudit } from "@/lib/audit"
+import { forbiddenRoleGrants } from "@/lib/user-management"
 import {
   DEFAULT_ROLES,
   PERMISSION_IDS,
@@ -84,6 +85,15 @@ export async function POST(req: Request) {
   try {
     const parsed = sanitizeRoles(await req.json())
     if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 })
+
+    // Sama seperti Kelola User: tidak boleh memberi izin yang tidak dimiliki.
+    const denied = forbiddenRoleGrants(gate.actor, await getRolesConfig(), parsed.roles)
+    if (denied.length) {
+      return NextResponse.json(
+        { error: `Tidak diizinkan menambahkan izin yang tidak Anda miliki: ${denied.join(', ')}.` },
+        { status: 403 },
+      )
+    }
 
     const value = JSON.stringify(parsed.roles)
 

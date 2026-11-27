@@ -179,7 +179,7 @@
   display: inline-block;
   padding: 0.75rem 2rem;
   background: white;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-hairline);
   border-radius: 99px;
   color: var(--color-ink);
   font-weight: 600;
@@ -237,16 +237,16 @@
 }
 
 /* ---------- GUIDE SECTION ---------- */
+/* Hero TANPA card (gaya ciaragan.com). Section tetap di dalam .container (teks
+   kiri sejajar konten lain); hanya PASPOR yang membludak ke tepi kanan layar —
+   lihat .guidePassport margin-right. */
 .guideSection {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  background: white;
-  border-radius: var(--radius-xl);
-  padding: 4rem;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
-  margin-bottom: 5rem;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 3rem;
   align-items: center;
+  padding: 2rem 0;
+  margin-bottom: 4rem;
 }
 
 .guidePill {
@@ -269,10 +269,35 @@
   margin-bottom: 1.5rem;
 }
 
+/* Kutipan tour leader (paragraf 1 CMS) ditonjolkan: lebih besar + miring, tanda
+   petik bawaan teks diberi warna emas. Paragraf 2 (perkenalan) lebih tenang. */
+.guideQuote {
+  color: var(--color-ink);
+  font-size: 1.1875rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+}
+
+.guideQuoteMark,
+.guideQuoteEnd {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: normal;
+  color: var(--color-dominant);
+}
+
+.guideQuoteMark {
+  font-size: 2.6em;
+  line-height: 0;
+  vertical-align: -0.4em;
+  margin-right: 0.06em;
+}
+
 .guideDesc {
   color: var(--color-body);
-  font-size: 1.0625rem;
-  line-height: 1.7;
+  font-size: 1rem;
+  line-height: 1.75;
   margin-bottom: 2.5rem;
 }
 
@@ -292,21 +317,47 @@
   background: var(--color-primary-active);
 }
 
-.guideImageWrapper {
-  /* Bingkai persegi (keputusan USER), bukan tinggi tetap: dulu 500px/350px
-     sehingga bingkai gepeng di tablet (641x350) dan foto terpotong separuh.
-     Foto bawaan 1024x1024 tampil utuh; saran CMS ikut 800x800 (persegi). */
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
+/* Paspor tour leader (gaya ciaragan.com): PNG potret diunggah via CMS
+   (field guideImage). Miring ~6deg dengan bayangan mengambang; saat hover
+   menegak lurus + membesar halus. Lihat .guidePassport:hover. */
+.guidePassportWrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
-.guideImageInner {
+.guidePassport {
   position: relative;
   width: 100%;
-  height: 100%;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
+  max-width: 640px;
+  /* Rasio menyamai gambar paspor (≈ persegi, 1234x1274) agar terisi penuh
+     tanpa bingkai kosong (objectFit: contain). Ganti bila gambar CMS beda rasio. */
+  aspect-ratio: 1234 / 1274;
+  /* Kemiringan & zoom hover disamakan PERSIS dengan ciaragan.com/about:
+     diam 16°, hover tetap 16° + scale 1.42 (lihat :hover). */
+  transform: rotate(16deg);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  /* drop-shadow (bukan box-shadow) agar bayangan mengikuti bentuk PNG. */
+  filter: drop-shadow(0 20px 38px rgba(0, 0, 0, 0.22));
+  will-change: transform;
+  /* Membludak sampai tepi KANAN layar (menembus .container), lalu dipotong oleh
+     html{overflow-x:hidden}. min(0) agar di layar sempit tak terdorong masuk.
+     1100px & 1.5rem = max-width & --space-lg milik .container. */
+  margin-right: min(0px, calc((1100px - 100vw) / 2 - 1.5rem));
+}
+
+/* Zoom + tegak hanya di perangkat ber-hover (mouse), bukan layar sentuh. */
+@media (hover: hover) {
+  .guidePassport:hover {
+    transform: rotate(16deg) scale(1.42);
+  }
+}
+
+/* Kurangi gerakan: tanpa animasi transisi (perubahan jadi instan, bukan gerak). */
+@media (prefers-reduced-motion: reduce) {
+  .guidePassport {
+    transition: none;
+  }
 }
 
 /* ---------- RESPONSIVE ---------- */
@@ -332,14 +383,26 @@
     grid-template-columns: 1fr;
   }
   
+  /* HP: batalkan full-bleed → kembali mengalir normal dalam .container, bertumpuk. */
   .guideSection {
-    padding: 2rem;
+    width: auto;
+    left: auto;
+    margin-left: 0;
+    padding: 1rem 0 0;
     gap: 2rem;
   }
-  
-  .guideImageWrapper {
-    max-width: 420px;
-    margin: 0 auto;
+
+  .guidePassportWrap {
+    justify-content: center;
+  }
+
+  .guidePassport {
+    max-width: 300px;
+    transform: rotate(16deg);
+  }
+
+  .guideQuote {
+    font-size: 1.0625rem;
   }
 }
 

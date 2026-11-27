@@ -137,7 +137,7 @@
   /* Label = aksen gold HEMAT & kecil (gold fill + teks navy) — satu highlight
      saja, sengaja lebih kecil dari judul agar judul tetap hero. */
   display: inline-block;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 800;
   color: #14577d;
   background: #ffc704;

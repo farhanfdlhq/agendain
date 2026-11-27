@@ -132,6 +132,7 @@ function DataGridProvider<TData extends object>({
   // Keep resize mode aligned with the DataGrid contract every render so
   // consumer-level useReactTable options cannot flip it back between drags.
   if (props.tableLayout?.columnsResizable) {
+    // eslint-disable-next-line react-hooks/immutability -- selaraskan mode resize tiap render (lihat komentar di atas)
     table.options.columnResizeMode = resolvedColumnsResizeMode
   }
 
@@ -157,9 +158,9 @@ function DataGridProvider<TData extends object>({
       props.emptyMessage,
       props.onRowClick,
       props.className,
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
       JSON.stringify(props.tableLayout),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
       JSON.stringify(props.tableClassNames),
       tableState.sorting,
       tableState.pagination,

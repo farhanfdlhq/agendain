@@ -32,6 +32,8 @@
 .heroImage {
   object-fit: cover;
   object-position: center;
+  /* Zoom bingkai dari CMS (lib/image-frame); posisi lewat style inline. */
+  transform: scale(var(--frame-zoom, 1));
 
 }
 
@@ -398,123 +400,324 @@
 }
 
 /* ---------- BENTO "Kenapa Agendain" ---------- */
-.whyBento {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: 240px 240px;
-  gap: clamp(0.75rem, 1.5vw, 1.25rem);
-}
 
-.whyTile {
+/* Peta "Kenapa Agendain": mode cerita (desktop) = trek tinggi dengan panggung
+   sticky; peta naik, rute tergambar, kartu muncul mengikuti progres scroll. */
+.whyTrack {
   position: relative;
-  overflow: hidden;
-  border-radius: 18px;
-  height: 100%;
-  display: flex;
-  align-items: flex-end;
-  isolation: isolate;
-  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  height: 290vh;
+  --why-sticky-top: 84px;
 }
 
-.whyTile:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -15px rgba(6, 20, 33, 0.35);
-}
-
-/* Tile besar = 2×2, lebar = 2×1, kecil = 1×1 → bento asimetris stabil tanpa pergeseran layout. */
-.whyTileLarge { grid-column: span 2; grid-row: span 2; min-height: 480px; }
-.whyTileWide  { grid-column: span 2; grid-row: span 1; }
-.whyTileSmall { grid-column: span 1; grid-row: span 1; }
-
-.whyTileImg {
-  object-fit: cover;
-  z-index: -2;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.whyTile:hover .whyTileImg { transform: scale(1.05); }
-
-.whyTileScrim {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(to top, rgba(6, 20, 33, 0.92) 0%, rgba(6, 20, 33, 0.5) 45%, rgba(6, 20, 33, 0.1) 100%);
-  transition: background 0.4s ease;
-}
-.whyTile:hover .whyTileScrim {
-  background: linear-gradient(to top, rgba(6, 20, 33, 0.97) 0%, rgba(6, 20, 33, 0.72) 50%, rgba(6, 20, 33, 0.2) 100%);
-}
-
-.whyTileContent {
-  padding: clamp(1rem, 2vw, 1.5rem);
+.whySticky {
+  position: sticky;
+  top: var(--why-sticky-top, 84px);
+  height: calc(100svh - var(--why-sticky-top, 84px));
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  color: #ffffff;
-  width: 100%;
+  overflow: hidden;
 }
 
-/* Badge angka: kuning FILL + teks navy */
-.whyTileBadge {
-  align-self: flex-start;
-  display: inline-flex;
+.whySticky .whySectionHeader {
+  margin-bottom: clamp(0.75rem, 2vh, 1.5rem);
+}
+
+.whyStage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 2.25rem;
-  height: 2.25rem;
-  padding: 0 0.5rem;
+  padding-bottom: clamp(0.5rem, 3vh, 2rem);
+}
+
+.whyStageStatic {
+  margin-bottom: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+.whyMapBox {
+  position: relative;
+  aspect-ratio: 2000 / 1116;
+  width: min(100%, 1100px);
+  margin-inline: auto;
+  transform-origin: 50% 100%;
+  /* Kartu, huruf, dan titik mengikuti lebar peta (unit cqw), bukan layar. */
+  container-type: inline-size;
+}
+
+.whyStage .whyMapBox {
+  width: min(92%, 1100px, calc((100svh - var(--why-sticky-top, 84px) - 11.5rem) * 1.792));
+}
+
+.whyMapImg {
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
+.whyRoute {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Jejak pesawat: titik-titik bulat (dash 0 + ujung bulat) yang terbuka
+   bertahap lewat masker garis utuh. Lebar dalam piksel layar. */
+.whyRouteDots {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 5px;
+  stroke-linecap: round;
+  stroke-dasharray: 0 12px;
+  vector-effect: non-scaling-stroke;
+}
+
+.whyRouteMask {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 40;
+  stroke-linecap: round;
+}
+
+.whyPin,
+.whyPlane {
+  position: absolute;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--color-primary);
+}
+
+.whyPin {
+  width: clamp(24px, 3.4cqw, 40px);
+  height: clamp(24px, 3.4cqw, 40px);
+  background: var(--color-dominant);
+  border: 3px solid var(--color-surface-card);
+  box-shadow: 0 6px 16px rgb(5 69 105 / 0.22);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(0.75rem, 1.5cqw, 1.05rem);
+}
+
+/* Denyut halus di sekitar titik bernomor, seperti penanda lokasi di peta. */
+.whyPin::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 2px solid var(--color-dominant);
+  opacity: 0;
+  animation: whyPinPulse 2.6s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes whyPinPulse {
+  0% { transform: scale(1); opacity: 0.55; }
+  70%, 100% { transform: scale(1.9); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whyPin::after { animation: none; }
+}
+
+.whyPlane {
+  translate: none;
+  width: clamp(26px, 3.2cqw, 36px);
+  height: clamp(26px, 3.2cqw, 36px);
+  background: var(--color-surface-card);
+  box-shadow: 0 4px 12px rgb(5 69 105 / 0.2);
+  opacity: 0;
+  z-index: 2;
+}
+
+.whyMapCard {
+  position: absolute;
+  width: clamp(150px, 25cqw, 290px);
+  translate: 0 -50%;
+  padding: clamp(0.55rem, 1.4cqw, 1.1rem) clamp(0.7rem, 1.7cqw, 1.3rem);
+  background: var(--color-surface-card);
+  border-radius: 16px;
+  box-shadow: 0 14px 34px rgb(5 69 105 / 0.14), 0 2px 6px rgb(5 69 105 / 0.06);
+  z-index: 3;
+}
+
+.whyCardHead {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.45rem, 0.9cqw, 0.65rem);
+  margin-bottom: clamp(0.3rem, 0.6cqw, 0.45rem);
+}
+
+.whyCardNum {
+  flex: none;
+  width: clamp(22px, 2.6cqw, 30px);
+  height: clamp(22px, 2.6cqw, 30px);
+  display: grid;
+  place-items: center;
   border-radius: 999px;
   background: var(--color-dominant);
   color: var(--color-primary);
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.92rem;
+  font-size: clamp(0.72rem, 1.3cqw, 0.9rem);
   line-height: 1;
-  margin-bottom: 0.45rem;
 }
 
-.whyTileTitle {
+.whyMapCardTitle {
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1.9vw, 1.5rem);
+  font-size: clamp(0.85rem, 1.75cqw, 1.2rem);
   font-weight: 800;
-  line-height: 1.2;
-  color: #ffffff;
-  text-wrap: balance;
+  line-height: 1.25;
+  color: var(--color-primary);
+  margin: 0;
 }
-.whyTileLarge .whyTileTitle { font-size: clamp(1.5rem, 2.8vw, 2.1rem); }
 
-/* Wrapper animasi akordion mulus dengan CSS Grid (tinggi presisi tanpa reflow) */
-.whyTileDescWrapper {
+.whyMapCardDesc {
+  font-size: clamp(0.75rem, 1.25cqw, 0.9rem);
+  line-height: 1.5;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+/* Di atas panggung (bawah judul), bukan di atas kertas peta yang mengintip. */
+.whyScrollHint {
+  position: absolute;
+  left: 50%;
+  top: clamp(0.25rem, 1.5vh, 1rem);
+  translate: -50% 0;
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+/* Tablet & HP (mode cerita): peta di atas, satu kartu aktif di bawahnya. */
+.whyStageNarrow {
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(0.75rem, 2.4vh, 1.25rem);
+}
+
+.whyStageNarrow .whyMapBox {
+  width: min(100%, 760px, calc((100svh - var(--why-sticky-top) - 20rem) * 1.792));
+  /* margin auto bawaan membuat peta yang lebih lebar dari layar condong ke
+     kanan; tanpa margin, align-items: center membaginya rata kiri-kanan. */
+  margin-inline: 0;
+}
+
+.whyActivePanel {
+  /* Panggung selebar layar (di luar .container): beri jarak tepi yang sama. */
+  width: min(100% - 2 * var(--space-lg), 560px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.whyActiveSlot {
+  width: 100%;
   display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  align-items: start;
 }
 
-.whyTile:hover .whyTileDescWrapper,
-.whyTile:focus-within .whyTileDescWrapper {
-  grid-template-rows: 1fr;
+/* Semua kartu menumpuk di satu sel; salinan tak terlihat menentukan tinggi. */
+.whyActiveSlot > * {
+  grid-area: 1 / 1;
 }
 
-.whyTileDesc {
-  min-height: 0;
+.whySlotSizer {
+  visibility: hidden;
+}
+
+.whyDots {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.whyDot,
+.whyDotOn {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+  transition: background-color 0.25s ease, width 0.25s ease;
+}
+
+.whyDotOn {
+  width: 22px;
+  background: var(--color-dominant);
+}
+
+.whySrOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
-  opacity: 0;
-  transform: translateY(6px);
-  padding-top: 0.4rem;
-  font-size: clamp(0.82rem, 1.25vw, 0.9rem);
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.92);
-  max-width: 44ch;
-  transition: opacity 0.3s ease 0.06s,
-              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.06s;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
-.whyTile:hover .whyTileDesc,
-.whyTile:focus-within .whyTileDesc {
-  opacity: 1;
-  transform: translateY(0);
+@media (max-width: 1023px) {
+  .whyTrack {
+    height: 250vh;
+    --why-sticky-top: 72px;
+  }
+  .whySticky .whySectionHeader { margin-bottom: 0.5rem; }
 }
 
-/* ---------- Opsi B: Sticky title + daftar alasan (editorial, text-forward) ---------- */
+/* Kartu di luar peta (kartu aktif tablet/HP & mode daftar): ukuran huruf
+   tetap, tidak ikut lebar peta (cqw). */
+.whyMapListItem .whyCardHead { gap: 0.6rem; margin-bottom: 0.4rem; }
+.whyMapListItem .whyCardNum { width: 28px; height: 28px; font-size: 0.85rem; }
+.whyMapListItem .whyMapCardTitle { font-size: clamp(1rem, 2.4vw, 1.15rem); }
+.whyMapListItem .whyMapCardDesc { font-size: clamp(0.85rem, 1.9vw, 0.95rem); }
+
+/* Mode daftar (kurangi animasi / layar pendek): kartu di bawah peta. */
+.whyMapList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+}
+
+.whyMapListItem {
+  display: block;
+  height: 100%;
+  padding: 1rem 1.15rem;
+  background: var(--color-surface-card);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgb(5 69 105 / 0.08);
+}
+
+@media (max-width: 640px) {
+  .whyMapList { grid-template-columns: minmax(0, 1fr); }
+  /* Di HP peta diperbesar melewati tepi layar (tangan terpotong di pinggir)
+     supaya kertas peta dan titik-titiknya tidak terlalu kecil. */
+  .whySection { overflow-x: clip; }
+  .whyStageStatic .whyMapBox {
+    width: 128%;
+    max-width: none;
+    margin-inline: -14%;
+  }
+  /* Mode cerita di HP: peta melebar melewati tepi layar, tetap di tengah. */
+  .whyStageNarrow .whyMapBox {
+    width: min(128%, calc((100svh - var(--why-sticky-top) - 19rem) * 1.792));
+    max-width: none;
+  }
+}
+
 .whyLayout {
   display: grid;
   grid-template-columns: minmax(260px, 0.85fr) 1.3fr;
@@ -584,33 +787,6 @@
   .whyIntro { position: static; top: auto; }
 }
 
-@media (max-width: 900px), (hover: none) {
-  .whyBento {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto;
-    grid-auto-rows: minmax(230px, auto);
-  }
-  .whyTileLarge { grid-column: span 2; grid-row: span 1; min-height: 280px; }
-  .whyTileWide  { grid-column: span 2; min-height: 230px; }
-  .whyTileSmall { grid-column: span 1; min-height: 230px; }
-  .whyTileDescWrapper { grid-template-rows: 1fr; }
-  .whyTileDesc { opacity: 1; transform: none; }
-}
-
-@media (max-width: 560px) {
-  .whyBento {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
-    grid-auto-rows: minmax(210px, auto);
-  }
-  .whyTileLarge,
-  .whyTileWide,
-  .whyTileSmall {
-    grid-column: span 1;
-    grid-row: span 1;
-    min-height: 210px;
-  }
-}
 
 
 /* ---------- FAVORITE DESTINATIONS ----------
@@ -757,38 +933,42 @@
   font-style: italic;
 }
 
+/* Poin rata tengah di semua ukuran. Ikon ikut mengalir bersama teks (inline),
+   jadi saat baris terpotong di HP ikon tetap menempel di depan kata pertama
+   dan sisa kalimat ikut rata tengah. (Dulu li = flex: ikon jadi kolom sendiri
+   dan di HP terpisah jauh dari teksnya.) */
 .testimonialHighlights {
   list-style: none;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   align-items: center;
+  margin: 0;
   padding: 0;
 }
 
 .testimonialHighlights li {
   font-size: 0.9375rem;
+  line-height: 1.5;
   color: rgba(255,255,255,0.85);
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .testimonialHighlightIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  margin-right: 0.4em;
   line-height: 1;
-  flex-shrink: 0;
 }
 
 .testimonialHighlightDot {
   display: inline-block;
   width: 6px;
   height: 6px;
+  margin-right: 0.5em;
+  vertical-align: middle;
   border-radius: 50%;
   background: var(--color-dominant);
-  flex-shrink: 0;
 }
 
 /* Gallery Masonry */
@@ -812,16 +992,19 @@
   position: relative;
 }
 
+/* Posisi & zoom per gambar diatur dari CMS (lib/image-frame): object-position +
+   transform-origin inline, zoom lewat --frame-zoom; hover menambah 6% di atasnya. */
 .galleryItem img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(var(--frame-zoom, 1));
   transition: transform 0.5s;
   display: block;
 }
 
 .galleryItem:hover img {
-  transform: scale(1.06);
+  transform: scale(calc(var(--frame-zoom, 1) * 1.06));
 }
 
 .galleryItemSmall {
@@ -922,6 +1105,10 @@
   font-style: italic;
   margin-top: 0;
   display: inline-block;
+  /* Huruf miring menjorok keluar kotak teks; tanpa ruang ini gradasi (yang
+     dipotong mengikuti kotak) tidak menutupi ekor huruf terakhir ("n" pada
+     "perjalanan" tampak terpotong). Kiri-kanan sama agar tetap di tengah. */
+  padding-inline: 0.12em;
 }
 
 .accordionItem {
@@ -998,6 +1185,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(var(--frame-zoom, 1));
   position: absolute;
   inset: 0;
 }
@@ -1426,14 +1614,6 @@
     min-height: 0;
   }
 
-  .socialProofContent {
-    grid-template-columns: 1fr;
-  }
-
-  .socialProofImageWrapper {
-    aspect-ratio: 4 / 3;
-  }
-
   .whyCardNumberLeft {
     left: 1.5rem;
   }
@@ -1499,11 +1679,6 @@
     left: auto;
     right: auto;
     margin: -2rem 1rem 0;
-  }
-
-  .testimonialHighlights {
-    align-items: flex-start;
-    padding-left: 0.5rem;
   }
 
   .hideMobile {
@@ -1613,6 +1788,46 @@
     bottom: 1rem;
   }
 
+  /* Sudut Pandang: dua kolom seperti desktop. Satu kolom membuat foto 3:2
+     selebar layar (±976x651 di 1024px) dari file 512px → raksasa & buram. */
+  .accordionLayout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 3.5vw, 2.5rem);
+  }
+
+  .accordionRight {
+    order: 0;
+    aspect-ratio: auto;
+    min-height: clamp(300px, 42vw, 550px);
+  }
+
+  /* Review: tetap dua kolom seperti desktop. Satu kolom membuat foto selebar
+     layar (±770x580 di 820px) padahal file fotonya kecil → raksasa & buram. */
+  .socialProofContent {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(1.75rem, 4vw, 2.5rem);
+  }
+}
+
+/* HP: review menumpuk satu kolom; foto dibatasi agar tidak memenuhi layar. */
+@media (max-width: 640px) {
+  .socialProofContent {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .socialProofImageWrapper {
+    aspect-ratio: 4 / 3;
+    max-width: 440px;
+    margin-inline: auto;
+  }
+
+  /* HP sempit: "?" dekoratif jangan menjulur keluar tepi layar (foto nyaris
+     selebar viewport). Sebelumnya right:-12px → terpotong ~12px; tuck sedikit
+     ke dalam agar utuh walau sudah dirotasi 15deg. */
+  .socialProofQuestionMark {
+    right: 0.5rem;
+  }
 }
 
 /* Mobile: sembunyikan slider testimoni kuning (testimonialSliderContainer).

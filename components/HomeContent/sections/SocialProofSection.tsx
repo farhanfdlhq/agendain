@@ -5,6 +5,7 @@ import type { CmsRow } from '@/lib/types/cms'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
+import { frameStyle, parseFrame } from '@/lib/image-frame'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import FadeIn from '@/components/Motion/FadeIn'
 import styles from '../HomeContent.module.css'
@@ -40,7 +41,7 @@ export default function SocialProofSection({ gs, t, locale, homeSettings, testim
             <div className={styles.socialProofImageWrapper}>
               <AnimatePresence mode="wait">
                 <motion.div key={activeTestimonial} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} style={{ position: 'absolute', inset: 0 }}>
-                  <Image src={testiItems[activeTestimonial]?.photo || gs('socialImage', undefined, '/el-rumi-syifa.webp')} alt={activeName ? `Testimoni liburan dari ${activeName}` : "Foto perjalanan bersama Agendain"} fill style={{ objectFit: 'cover' }}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
+                  <Image src={testiItems[activeTestimonial]?.photo || gs('socialImage', undefined, '/el-rumi-syifa.webp')} alt={activeName ? `Testimoni liburan dari ${activeName}` : "Foto perjalanan bersama Agendain"} fill style={{ objectFit: 'cover', ...frameStyle(parseFrame(testiItems[activeTestimonial]?.photo ? testiItems[activeTestimonial]?.photoFrame : '')), transform: 'scale(var(--frame-zoom, 1))' }}  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/>
                 </motion.div>
               </AnimatePresence>
               <div className={styles.socialProofQuestionMark}>?</div>

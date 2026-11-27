@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { frameStyle, parseFrame } from "@/lib/image-frame";
 import { cmsLocalText, cmsText } from "@/lib/types/cms";
 import FadeIn from "@/components/Motion/FadeIn";
 import DynamicIcon from "@/components/DynamicIcon/DynamicIcon";
@@ -35,7 +36,7 @@ export default function PrivateTripWhy({
 }: {
   privatetripSettings?: Record<string, unknown>;
 }) {
-  const { t, locale } = useTranslation();
+  const { locale } = useTranslation();
 
   const gs = (key: string, fallbackText: string) => {
     const v = cmsLocalText(privatetripSettings, key, locale === "en");
@@ -107,8 +108,9 @@ export default function PrivateTripWhy({
                 src={cmsText(privatetripSettings, "whyImage") || "/private_trip_why.png"}
                 alt="Private Trip di Eropa"
                 fill
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 900px) 100vw, 50vw"
                 className={styles.image}
+                style={frameStyle(parseFrame(privatetripSettings?.whyImageFrame))}
               />
             </FadeIn>
 

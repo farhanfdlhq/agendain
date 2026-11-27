@@ -10,3 +10,29 @@ export function canManageUserRole(actor: PermissionSubject, role: RoleDef | unde
       actor.permissions.includes("all") || actor.permissions.includes(permission),
   );
 }
+
+/**
+ * Prinsip yang sama untuk halaman Roles: pemegang `roles_manage` yang bukan
+ * Super Admin tidak boleh menambahkan izin yang ia sendiri tidak punya ke role
+ * mana pun (termasuk role-nya sendiri) — kalau boleh, ia bisa menaikkan haknya
+ * sendiri. Izin yang SUDAH ada di role boleh tetap ada atau dicabut.
+ *
+ * Mengembalikan daftar izin yang ditolak (kosong = boleh disimpan).
+ */
+export function forbiddenRoleGrants(
+  actor: PermissionSubject,
+  current: RoleDef[],
+  next: RoleDef[],
+): string[] {
+  if (actor.role === SUPER_ADMIN_ROLE || actor.permissions.includes("all")) return [];
+  const denied = new Set<string>();
+  for (const role of next) {
+    if (role.id === SUPER_ADMIN_ROLE) continue; // dipaksa 'all' oleh sanitizeRoles, tidak berubah
+    const before = new Set(current.find((r) => r.id === role.id)?.permissions ?? []);
+    for (const p of role.permissions) {
+      if (p === RBAC_SETTINGS_V2 || before.has(p)) continue;
+      if (!actor.permissions.includes(p)) denied.add(p);
+    }
+  }
+  return [...denied];
+}

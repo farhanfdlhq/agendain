@@ -114,6 +114,7 @@ export default function AdminInquiriesPage() {
     [handleStatusChange, pendingId]
   )
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table memang tidak bisa di-memo React Compiler; komponen ini tetap berjalan normal
   const tripsTable = useReactTable({
     data: filteredTrips,
     columns: tripColumns,

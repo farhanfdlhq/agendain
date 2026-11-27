@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { errorMessage } from "@/lib/error-message"
 import { useRouter } from "next/navigation"
 import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
@@ -93,7 +93,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
         setBaseline(serialize({ ...NILAI_KOSONG, author: nama }))
       })
       .catch(() => { setBaseline(serialize(NILAI_KOSONG)) })
-  }, [mode])
+  }, [mode, setBaseline])
 
   useEffect(() => {
     fetch("/api/blog/categories").then(r => r.json()).then(setCategories).catch(() => {})
@@ -133,7 +133,7 @@ export default function BlogEditorForm({ mode, slug }: BlogEditorFormProps) {
         })
         .catch(() => { toast.error("Gagal memuat artikel"); router.push("/admin/blog") })
     }
-  }, [mode, slug, router])
+  }, [mode, slug, router, setBaseline])
 
   // Artikel baru: slug mengikuti judul saat judul diketik.
   const changeTitle = (value: string) => {

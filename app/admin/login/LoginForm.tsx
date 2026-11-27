@@ -58,7 +58,7 @@ export default function LoginForm({ logoUrl }: { logoUrl: string }) {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:20px_20px] opacity-30" />
           <div className="relative z-10 flex flex-col items-center text-center space-y-6">
             {logoUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
+               
               <img
                 src={logoUrl}
                 alt="Logo Website"
@@ -78,7 +78,7 @@ export default function LoginForm({ logoUrl }: { logoUrl: string }) {
                 // kalau tidak ia hilang di atas latar terang.
                 <div className="md:hidden flex justify-center mb-4">
                   <div className="rounded-xl bg-primary px-5 py-3">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    { }
                     <img src={logoUrl} alt="Logo Website" className="max-h-9 w-auto object-contain" />
                   </div>
                 </div>

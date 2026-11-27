@@ -55,7 +55,7 @@ export async function POST(request: Request) {
   }
 
   const ip = getClientIp(request)
-  const rl = rateLimit(ip, 10, 60000)
+  const rl = rateLimit(`blog-create:${ip}`, 10, 60000)
   if (!rl.success) {
     return NextResponse.json({ error: 'Too Many Requests' }, { status: 429 })
   }

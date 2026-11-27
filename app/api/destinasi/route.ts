@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
   // 2. Rate Limiting (Max 5 requests per minute per IP)
   const ip = getClientIp(request)
-  const rateLimitResult = rateLimit(ip, 5, 60000)
+  const rateLimitResult = rateLimit(`destinasi-create:${ip}`, 5, 60000)
   if (!rateLimitResult.success) {
     return NextResponse.json({ error: 'Too Many Requests. Please try again later.' }, { status: 429 })
   }

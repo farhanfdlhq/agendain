@@ -84,7 +84,7 @@ export default function PrivateTripForm({
       } else {
         toast.error(t("pt.errSubmit"));
       }
-    } catch (err) {
+    } catch {
       toast.error(t("pt.errNetwork"));
     } finally {
       setLoading(false);

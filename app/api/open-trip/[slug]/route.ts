@@ -20,7 +20,7 @@ export async function GET(
     }
     
     return NextResponse.json(pkg, { headers: { 'Cache-Control': 'private, no-store' } })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch package details' }, { status: 500 })
   }
 }
@@ -109,7 +109,7 @@ export async function DELETE(
 
     revalidateOpenTrips()
     return NextResponse.json({ message: 'Package deleted successfully' })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to delete package' }, { status: 500 })
   }
 }

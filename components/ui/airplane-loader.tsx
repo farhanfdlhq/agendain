@@ -8,7 +8,8 @@ export default function AirplaneLoader({ size = 24, className = "" }: { size?: n
   const iconRef = useRef<AnimatedIconHandle>(null)
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+    let restartId: ReturnType<typeof setTimeout> | undefined
 
     const playAnimation = () => {
       iconRef.current?.startAnimation()
@@ -16,15 +17,17 @@ export default function AirplaneLoader({ size = 24, className = "" }: { size?: n
       // Replay every 1.5s
       timeoutId = setTimeout(() => {
         iconRef.current?.stopAnimation()
-        setTimeout(playAnimation, 400)
+        restartId = setTimeout(playAnimation, 400)
       }, 1100)
     }
 
     playAnimation()
 
+    // Saat unmount cukup hentikan jadwal ulang. JANGAN panggil stopAnimation di
+    // sini: elemen ikon sudah dilepas, animate() motion akan error (scope null).
     return () => {
       clearTimeout(timeoutId)
-      iconRef.current?.stopAnimation()
+      clearTimeout(restartId)
     }
   }, [])
 

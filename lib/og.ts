@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SITE_URL, absoluteUrl } from "@/lib/site";
+import { signOg } from "@/lib/og-sign";
 
 /** Kartu brand default (foto Colosseum + wordmark) untuk halaman tanpa foto khas. */
 const DEFAULT_OG = `${SITE_URL}/og-image.jpg`;
@@ -19,10 +20,15 @@ export function ogImage(src?: string | null, card?: { title?: string; subtitle?:
   const q = new URLSearchParams({ src: s });
   // Teks kartu (judul + subjudul) di-overlay di atas foto — meniru hero halaman.
   // Tanpa `card`, endpoint mengembalikan foto ter-crop apa adanya.
-  if (card?.title?.trim()) {
-    q.set("title", card.title.trim());
-    if (card.subtitle?.trim()) q.set("subtitle", card.subtitle.trim());
+  // Endpoint memotong title 120 & subtitle 200 karakter; tanda tangan dibuat
+  // atas nilai yang sudah dipotong agar keduanya cocok.
+  const title = (card?.title ?? "").slice(0, 120).trim();
+  const subtitle = title ? (card?.subtitle ?? "").slice(0, 200).trim() : "";
+  if (title) {
+    q.set("title", title);
+    if (subtitle) q.set("subtitle", subtitle);
   }
+  q.set("sig", signOg(s, title, subtitle));
   return `${SITE_URL}/og?${q.toString()}`;
 }
 

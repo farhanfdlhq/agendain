@@ -90,6 +90,7 @@ export default function PrivacyPolicyContent({ privacySettings = {} }: { privacy
     <div className={styles.page}>
       <HeroHeader
         backgroundImage={getSetting('heroImage') || '/hero-coastal.webp'}
+        imageFrame={String(getSetting('heroImageFrame') || '')}
         title={
           getSetting('heroTitle')
             ? parseGoldText(getSetting('heroTitle'), styles, getSetting('heroTitleWeight'), getSetting('heroTitleSize'))

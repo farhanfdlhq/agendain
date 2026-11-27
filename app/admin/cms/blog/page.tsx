@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { MediaPicker } from "@/components/ui/media-picker"
+import { ImageFrameEditor } from "@/components/admin/image-frame-editor"
 import { FontControls } from "@/components/ui/font-size-picker"
 
 export default function BlogCMSPage() {
@@ -83,7 +84,10 @@ export default function BlogCMSPage() {
     setData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '') => (
+  // frameAspect: bila diisi, tampil tombol "Atur posisi & zoom" (bingkai di `${fieldName}Frame`).
+  const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '', frameAspect?: number, frameHint?: string) => {
+    const frameField = `${fieldName}Frame`
+    return (
     <div className="space-y-3">
       <Label className="flex items-center gap-2">{label}</Label>
       {resolutionHint && (
@@ -93,12 +97,28 @@ export default function BlogCMSPage() {
       )}
       <MediaPicker
         value={data[fieldName] || ''}
-        onChange={(url) => setData((prev) => ({ ...prev, [fieldName]: url }))}
+        onChange={(url) => setData((prev) => ({
+          ...prev,
+          [fieldName]: url,
+          // Gambar diganti → bingkai lama tidak relevan lagi, kembali ke tengah.
+          ...(frameAspect ? { [frameField]: '' } : {}),
+        }))}
         label="Pilih Gambar"
         description={placeholder ? `Disarankan seperti: ${placeholder}` : undefined}
       />
+      {frameAspect && (
+        <ImageFrameEditor
+          src={data[fieldName] || placeholder}
+          value={data[frameField] || ''}
+          onChange={(v) => setData((prev) => ({ ...prev, [frameField]: v }))}
+          aspect={frameAspect}
+          label={label}
+          hint={frameHint}
+        />
+      )}
     </div>
-  )
+    )
+  }
 
   const renderLivePreview = (text: string) => {
     if (!text) return null;
@@ -249,7 +269,7 @@ export default function BlogCMSPage() {
           <CardContent className="pt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-4">
-                {renderImageInput('Gambar Latar Belakang (Hero Image)', 'heroImage', '/dest-italy.webp', '1920x1080 px (Landscape)')}
+                {renderImageInput('Gambar Latar Belakang (Hero Image)', 'heroImage', '/dest-italy.webp', '1920x1080 px (Landscape)', 16 / 9, 'Di HP hero tampil lebih tegak: bagian tengah bingkai tetap terlihat, sisi kiri-kanan terpotong.')}
               </div>
               <div className="space-y-4 flex flex-col justify-start">
                 {renderTextInput('Judul Utama (*Highlight Kuning*)', 'heroTitle', false, 'Jurnal *Agendain*', true, '800')}

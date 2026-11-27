@@ -65,7 +65,7 @@ export default function ProfilePage() {
         email: data.email,
         avatar: data.avatar || ""
       })
-    } catch (error) {
+    } catch {
       toast.error("Terjadi kesalahan sistem")
     } finally {
       setLoading(false)
@@ -73,6 +73,7 @@ export default function ProfilePage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- muat data saat mount; status loading di-set disengaja
     fetchProfile()
   }, [])
 

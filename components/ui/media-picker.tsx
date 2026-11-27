@@ -12,7 +12,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
@@ -54,6 +53,7 @@ export function MediaPicker({ value, onChange, label = "Upload Foto", descriptio
 
   useEffect(() => {
     if (open && activeTab === "bank") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- muat media saat dialog dibuka; status loading di-set disengaja
       fetchMedia()
     }
   }, [open, activeTab])
@@ -80,7 +80,7 @@ export function MediaPicker({ value, onChange, label = "Upload Foto", descriptio
       } else {
         toast.error("Upload gagal: " + data.error)
       }
-    } catch (err) {
+    } catch {
       toast.error("Terjadi kesalahan server saat upload.")
     } finally {
       setUploading(false)
@@ -112,7 +112,7 @@ export function MediaPicker({ value, onChange, label = "Upload Foto", descriptio
             const data = await res.json()
             toast.error("Gagal menghapus: " + data.error)
           }
-        } catch (err) {
+        } catch {
           toast.error("Terjadi kesalahan server saat menghapus.")
         } finally {
           setDeletingFile(null)

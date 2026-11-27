@@ -1,7 +1,6 @@
 'use client'
 import Link from 'next/link'
 import type { LucideIcon } from "lucide-react"
-import Image from 'next/image'
 import { Globe, Link2, Mail, MessageCircle, Music2, Phone } from 'lucide-react'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { FOOTER_SOCIAL_PLATFORMS, parseFooterSettings, safeHref, taglineToHtml } from '@/lib/footer-settings'
@@ -112,8 +111,11 @@ export default function Footer({ settings }: { settings?: Record<string, string>
         <div className={styles.topRow}>
           <Link href="/" className={styles.footerLogo}>
             {siteLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element -- logo dari CMS (bisa SVG), kecil dan di bawah layar
               <img
                 src={siteLogo}
+                loading="lazy"
+                decoding="async"
                 alt={siteName}
                 className={styles.footerLogoImg}
                 width={160}

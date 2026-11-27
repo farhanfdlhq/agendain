@@ -159,7 +159,7 @@ export async function requirePermission(
   // CSRF diperiksa lebih dulu & terpusat: setiap route admin lewat gerbang ini,
   // jadi seluruh mutasi terlindungi seragam tanpa menaruh cek di tiap handler.
   // `csrfBlocked` menolak hanya request browser lintas-origin; klien server
-  // (Hermes Agent di production) tanpa sinyal browser diloloskan — bukan vektor
+  // (skrip/cron di server) tanpa sinyal browser diloloskan — bukan vektor
   // CSRF, dan tetap dijaga oleh otentikasi di bawah ini.
   if (request && MUTATING_METHODS.has(request.method) && csrfBlocked(request)) {
     reportAuthDenied({ route, status: 403, code: "csrf_failed", req: request });

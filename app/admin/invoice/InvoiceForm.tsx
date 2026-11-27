@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import Link from "next/link"
@@ -122,7 +122,7 @@ export default function InvoiceForm({ mode, id }: { mode: "create" | "edit"; id?
         setLoading(false)
       })
       .catch(() => { toast.error("Gagal memuat invoice"); router.push("/admin/invoice") })
-  }, [mode, id, router])
+  }, [mode, id, router, setBaseline])
 
   const ubahItem = (i: number, k: keyof Item, v: string) => {
     setForm(p => {

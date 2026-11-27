@@ -74,7 +74,7 @@ export async function GET() {
         "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
       },
     });
-  } catch (err) {
+  } catch {
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

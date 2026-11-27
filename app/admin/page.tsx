@@ -6,7 +6,7 @@ type RecentBooking = Prisma.BookingGetPayload<{ include: { openTrip: true } }>
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { resolveActor, hasPermission } from "@/lib/rbac"
-import { Package, Users, MessageSquare, Plus, ArrowRight, Activity, Map, CalendarClock, CreditCard, ShoppingCart, TrendingUp } from "lucide-react"
+import { Package, MessageSquare, Plus, ArrowRight, Activity, Map, CalendarClock, CreditCard, ShoppingCart, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"

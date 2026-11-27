@@ -142,6 +142,8 @@ const en: Record<string, string> = {
   'home.why3.desc': 'Our team is on standby 24/7 to assist every step of your journey.',
   'home.why4.title': 'Pro Documentation',
   'home.why4.desc': 'Cinematic moments captured professionally without worrying about angles.',
+  'home.why.scrollHint': 'Scroll to open the map',
+  'home.why.mapAlt': 'Hands holding a map of Europe with an Agendain travel route',
   'home.acc1.title': 'Sleep Soundly with an Aesthetic City View',
   'home.acc1.desc': 'We select the best hotels in strategic locations, close to major tourist spots. Wake up to an aesthetic European city view right from your window.',
   'home.acc2.title': 'Explore Freely Without the Stress',

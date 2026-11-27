@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, Suspense } from "react"
+import dynamic from "next/dynamic"
 import { useSession } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "react-hot-toast"
@@ -17,6 +18,12 @@ import { hasPermission } from "@/lib/permissions"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ChangelogList from "@/components/admin/ChangelogList"
 import { APP_VERSION } from "@/lib/changelog"
+
+// Three.js hanya dimuat saat tab Arsitektur dibuka.
+const ArchitectureMap = dynamic(() => import("@/components/admin/ArchitectureMap"), {
+  ssr: false,
+  loading: () => <div className="flex h-64 items-center justify-center"><AirplaneLoader size={48} /></div>,
+})
 
 type AuditLog = {
   id: number
@@ -75,18 +82,20 @@ export default function AuditLogPage() {
   )
 }
 
-type TabKey = "audit" | "versi"
+type TabKey = "audit" | "versi" | "arsitektur"
 
 function AuditLogContent() {
   const { data: session } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
-  // null = izin belum diketahui. Tab Log Versi terbuka untuk semua admin;
-  // tab Audit hanya untuk pemegang `audit_view`.
+  // null = izin belum diketahui. Tab Log Versi dan Arsitektur terbuka untuk
+  // semua admin; tab Audit hanya untuk pemegang `audit_view`.
   const [canAudit, setCanAudit] = useState<boolean | null>(null)
-  const activeTab: TabKey = canAudit === false || searchParams.get("tab") === "versi" ? "versi" : "audit"
+  const tabParam = searchParams.get("tab")
+  const activeTab: TabKey =
+    tabParam === "arsitektur" ? "arsitektur" : canAudit === false || tabParam === "versi" ? "versi" : "audit"
   const changeTab = (value: string) => {
-    router.replace(value === "versi" ? "?tab=versi" : "?", { scroll: false })
+    router.replace(value === "versi" || value === "arsitektur" ? `?tab=${value}` : "?", { scroll: false })
   }
   const [logs, setLogs] = useState<AuditLog[]>([])
   const [total, setTotal] = useState(0)
@@ -166,7 +175,7 @@ function AuditLogContent() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Audit Log</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Jejak aktivitas keamanan dan riwayat pembaruan web. Versi saat ini: <span className="font-semibold text-foreground">v{APP_VERSION}</span>
+            Jejak aktivitas keamanan, riwayat pembaruan, dan peta arsitektur web. Versi saat ini: <span className="font-semibold text-foreground">v{APP_VERSION}</span>
           </p>
         </div>
         {activeTab === "audit" && (
@@ -183,7 +192,12 @@ function AuditLogContent() {
             <TabsTrigger value="audit" className="px-4">Audit</TabsTrigger>
           )}
           <TabsTrigger value="versi" className="px-4">Log Versi</TabsTrigger>
+          <TabsTrigger value="arsitektur" className="px-4">Arsitektur</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="arsitektur">
+          {activeTab === "arsitektur" && <ArchitectureMap />}
+        </TabsContent>
 
         <TabsContent value="versi">
           <Card className="border-0 shadow-sm bg-zinc-50/50 dark:bg-zinc-900/50">

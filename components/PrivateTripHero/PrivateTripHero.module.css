@@ -15,6 +15,7 @@
   object-fit: cover;
   z-index: 0;
   object-position: center;
+  transform: scale(var(--frame-zoom, 1));
 }
 
 .heroOverlay {
@@ -89,6 +90,10 @@
 }
 
 .link {
+  /* Area sentuh ≥44px (tautan berdiri sendiri di samping tombol). */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: white;
   text-decoration: none;
   font-weight: 500;

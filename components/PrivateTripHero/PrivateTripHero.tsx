@@ -2,6 +2,7 @@
 import { fontStyleFrom } from '@/lib/font-style'
 import { cmsLocalText, cmsText } from "@/lib/types/cms";
 import Image from "next/image";
+import { frameStyle, parseFrame } from "@/lib/image-frame";
 import styles from "./PrivateTripHero.module.css";
 import { Badge } from "@/components/ui/badge";
 import { WhatsAppIcon } from "@/components/HomeContent/shared";
@@ -25,6 +26,7 @@ export default function PrivateTripHero({
         alt="Private Trip Europe"
         fill
         className={styles.heroBg}
+        style={frameStyle(parseFrame(privatetripSettings?.heroImageFrame))}
         priority
         quality={85}
         sizes="100vw"

@@ -4,6 +4,7 @@ import type { CmsFields } from "@/lib/types/cms"
 import type { RecentPost } from "./page"
 import { useRef, useState } from 'react'
 import Image from 'next/image'
+import { frameStyle, parseFrame } from '@/lib/image-frame'
 import Link from 'next/link'
 import styles from './page.module.css'
 import FadeIn from '@/components/Motion/FadeIn'
@@ -15,6 +16,26 @@ import { sanitizeRichText } from '@/lib/sanitize-richtext'
 import Pagination from '@/components/Pagination/Pagination'
 
 const POSTS_PER_PAGE = 2
+
+const OPEN_QUOTE = /^["“]/
+const CLOSE_QUOTE = /["”]$/
+
+/** Kutipan tour leader. Bila teks CMS diapit tanda petik, tanda itu ditampilkan
+ *  sebagai petik emas; isi kalimat tidak diubah. Tanpa tanda petik → teks polos. */
+function GuideQuote({ text }: { text: string }) {
+  const s = text.trim()
+  if (!s) return null
+  const open = OPEN_QUOTE.test(s)
+  const close = s.length > 1 && CLOSE_QUOTE.test(s)
+  const body = s.slice(open ? 1 : 0, close ? -1 : undefined)
+  return (
+    <p className={styles.guideQuote}>
+      {open && <span className={styles.guideQuoteMark} aria-hidden="true">“</span>}
+      {body}
+      {close && <span className={styles.guideQuoteEnd} aria-hidden="true">”</span>}
+    </p>
+  )
+}
 
 export default function TentangContent({ aboutSettings = {}, recentPosts = [] }: { aboutSettings?: CmsFields, recentPosts?: RecentPost[] }) {
   const { t, locale } = useTranslation()
@@ -43,6 +64,7 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
       {/* Hero Section */}
       <HeroHeader 
         backgroundImage={getSetting('heroImage') || "/dest-swiss.webp"}
+        imageFrame={getSetting('heroImageFrame')}
         title={parseGoldText(getSetting('heroTitle') || (isEn ? 'What is *Agendain*?' : 'Apa itu *Agendain*?'), styles, getSetting('heroTitleWeight'), getSetting('heroTitleSize'))}
         subtitle={<span style={{ ...fontStyleFrom(getSetting('heroSubtitleWeight'), getSetting('heroSubtitleSize')) }}>{getSetting('heroSubtitle') || t('about.new.heroSubtitle')}</span>}
         minHeight="600px"
@@ -59,7 +81,7 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
                   src={getSetting('missionImage') || "/dest-italy.webp"} 
                   alt="Misi Agendain"
                   fill
-                  style={{ objectFit: 'cover', borderRadius: 'var(--radius-lg)' }}
+                  style={{ objectFit: 'cover', borderRadius: 'var(--radius-lg)', ...frameStyle(parseFrame(getSetting('missionImageFrame'))), transform: 'scale(var(--frame-zoom, 1))' }}
                   sizes="(max-width: 900px) 100vw, 50vw"
                 />
               </div>
@@ -94,7 +116,7 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
                             src={post.thumbnail || "/placeholder.webp"} 
                             alt={title}
                             fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            sizes="(max-width: 900px) 100vw, (max-width: 1280px) 50vw, 600px"
                             className={styles.articleImage}
                           />
                         </div>
@@ -132,22 +154,25 @@ export default function TentangContent({ aboutSettings = {}, recentPosts = [] }:
             <div className={styles.guideContent}>
               <div className={styles.guidePill}>{getSetting('guidePill') || t('about.new.guidePill')}</div>
               <h2 className={styles.guideTitle}>{parseGoldText(getSetting('guideTitle') || (isEn ? 'Meet Our *Lead Guide*' : 'Meet Our *Lead Guide*'), styles, getSetting('guideTitleWeight'), getSetting('guideTitleSize'))}</h2>
+              {/* Paragraf 1 (kutipan tour leader) ditonjolkan; teks CMS tidak diubah —
+                  tanda petik pembuka/penutup yang sudah ada hanya diberi gaya emas. */}
+              <GuideQuote text={getSetting('guideDescP1') || t('about.new.guideDescP1')} />
               <p className={styles.guideDesc} style={{ ...fontStyleFrom(getSetting('guideDescWeight'), getSetting('guideDescSize')) }}>
-                {getSetting('guideDescP1') || t('about.new.guideDescP1')}<br/><br/>
                 {getSetting('guideDescP2') || t('about.new.guideDescP2')}
               </p>
               <Link href="/private-trip" className={styles.guideBtn}>
                 {t('about.new.guideBtn')}
               </Link>
             </div>
-            <div className={styles.guideImageWrapper}>
-              <div className={styles.guideImageInner}>
-                <Image 
-                  src={getSetting('guideImage') || "/why-camera.webp"} 
-                  alt="Lead Guide"
+            <div className={styles.guidePassportWrap}>
+              <div className={styles.guidePassport}>
+                <Image
+                  src={getSetting('guideImage') || "/tour-leader-passport.webp"}
+                  alt={isEn ? 'Tour leader passport' : 'Paspor tour leader'}
                   fill
-                  sizes="(max-width: 900px) min(100vw, 420px), 40vw"
-                  style={{ objectFit: 'cover' }}
+                  quality={95}
+                  sizes="(max-width: 900px) 320px, 640px"
+                  style={{ objectFit: 'contain' }}
                 />
               </div>
             </div>

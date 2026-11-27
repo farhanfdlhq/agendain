@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Save, Image as ImageIcon, X, Plus } from "lucide-react"
+import { ArrowLeft, Save, X, Plus } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -93,6 +93,7 @@ export default function TambahPaketPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- muat data saat mount; status loading di-set disengaja
     fetchDestinations()
   }, [])
 
@@ -136,7 +137,7 @@ export default function TambahPaketPage() {
       if (uploadedDocs.length > 0) {
         setFormData(prev => ({ ...prev, fileDokumenList: [...prev.fileDokumenList, ...uploadedDocs] }))
       }
-    } catch (err) {
+    } catch {
       toast.error("Terjadi kesalahan saat upload dokumen.")
     } finally {
       setUploadingDoc(false)
@@ -297,7 +298,7 @@ export default function TambahPaketPage() {
       } else {
         toast.error("Gagal menambahkan paket. Pastikan data terisi dengan benar.")
       }
-    } catch (err) {
+    } catch {
       toast.error("Terjadi kesalahan server.")
     } finally {
       setLoading(false)

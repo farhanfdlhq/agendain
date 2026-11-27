@@ -1,6 +1,8 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "fs/promises";
 import path from "path";
+import { verifyOg } from "@/lib/og-sign";
+import { getClientIp, rateLimit } from "@/lib/security";
 
 // Butuh fs + sharp + font → runtime Node (bukan edge).
 export const runtime = "nodejs";
@@ -91,6 +93,16 @@ export async function GET(request: Request): Promise<Response> {
     const title = (sp.get("title") || "").slice(0, 120).trim();
     const subtitle = (sp.get("subtitle") || "").slice(0, 200).trim();
 
+    // Hanya URL buatan situs (lib/og.ts) yang dirender; selain itu kartu brand
+    // default. Mencegah gambar berlogo Agendain dengan teks palsu.
+    if (!verifyOg(sp.get("sig"), src, title, subtitle)) return fallback();
+
+    // URL sah hanya sedikit dan di-cache Cloudflare; batas ini menahan pemaksaan
+    // render ulang (mis. menambah parameter acak) di VPS 2 core.
+    if (!rateLimit(`og-render:${getClientIp(request)}`, 60, 5 * 60 * 1000).success) {
+      return fallback();
+    }
+
     // Hanya path lokal aman: mulai "/", bukan "//", tanpa "..", ekstensi gambar.
     if (
       !src.startsWith("/") ||
@@ -139,6 +151,7 @@ export async function GET(request: Request): Promise<Response> {
           }}
         >
           <img
+            alt=""
             src={bgDataUri}
             width={W}
             height={H}

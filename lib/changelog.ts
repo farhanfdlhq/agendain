@@ -26,6 +26,36 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.9.0',
+    date: '2026-11-27',
+    title: 'Tab Arsitektur, peta animasi Kenapa Agendain, paspor Tour Leader, tampilan tablet & HP lebih rapi',
+    added: [
+      'Tab Arsitektur di Admin → Audit Log: peta 3D cara kerja website dari HP pengunjung sampai database. Setiap bagian bisa diklik untuk melihat kegunaannya, ada simulasi alur (buka beranda, lihat paket, kirim booking, chat WhatsApp, alamat salah), dan gambarnya bisa diunduh sebagai PNG.',
+      'Section "Kenapa Agendain" di Beranda kini berupa peta Eropa yang terbuka saat digulir: rute pesawat tergambar dan titik London, Roma, Istanbul, Stockholm muncul berurutan bersama kartu keunggulan. Berjalan di desktop, tablet, dan HP.',
+      'Foto Tour Leader di Tentang Kami tampil sebagai paspor yang miring dan membesar saat disorot kursor, dan kutipan tour leader kini tampil lebih menonjol dengan tanda petik emas. Teks section dari CMS tetap seperti sebelumnya.',
+      'CMS: tombol "Atur posisi & zoom" untuk menggeser dan memperbesar bagian foto yang tampil, tanpa memotong file aslinya. Tersedia di galeri mozaik, hero, gambar Accordion, dan foto testimoni Beranda; hero dan gambar Misi Tentang Kami; hero Blog, Kebijakan Privasi, Open Trip, dan Private Trip; serta gambar Kenapa Private Trip.',
+    ],
+    improved: [
+      'Hero Beranda: garis emas dan tombol kini muncul dengan animasi halus, tanpa memperlambat tampilnya judul.',
+      'Tampilan tablet dan HP lebih rapi di Beranda, detail Open Trip, Private Trip, Tentang Kami, dan Blog: foto tidak lagi terlalu besar, rekomendasi paket dua kolom, label kecil lebih mudah dibaca, dan tautan lebih mudah disentuh.',
+      'Gambar yang diunggah lewat admin kini disimpan dengan kualitas lebih tinggi sehingga lebih tajam. Berlaku untuk unggahan baru.',
+      'Gambar situs kini dikirim dalam satu format (WebP) sehingga bisa disimpan di jaringan Cloudflare dekat pengunjung; gambar utama Beranda tidak lagi diambil dari server setiap kunjungan.',
+      'Pengunjung yang mengaktifkan "kurangi gerakan" di perangkatnya tetap mendapat animasi versi lembut tanpa gerakan besar.',
+      'CMS Beranda: kartu "Kenapa Agendain" tidak lagi meminta gambar, dan ada panduan urutan kartu di peta.',
+      'Website kini terbuka untuk asisten AI seperti ChatGPT, Gemini, Claude, dan Perplexity, sehingga Agendain bisa muncul dan ditautkan saat calon pelanggan bertanya ke AI.',
+    ],
+    fixed: [
+      'Gambar pratinjau tautan (saat halaman dibagikan ke WhatsApp/Facebook) kini hanya bisa dibuat oleh website sendiri, sehingga orang lain tidak bisa membuat gambar berlogo Agendain dengan tulisan palsu.',
+      'Pengaturan Roles: admin yang boleh mengelola role tidak bisa lagi memberi izin yang tidak dimilikinya sendiri, termasuk ke role-nya sendiri.',
+      'Halaman login tidak lagi membocorkan apakah sebuah email terdaftar sebagai admin.',
+      'Huruf terakhir subjudul Sudut Pandang ("perjalanan") tidak lagi terpotong.',
+      'Tanda tanya dekoratif di section ulasan tidak lagi terpotong di layar HP yang sempit.',
+      'Tombol "Baca Selengkapnya" dan garis kartu di Blog dan Tentang Kami tampil kembali.',
+      'Teks artikel dan halaman CMS kini hanya menerima pengaturan rata teks, sehingga gaya tampilan sembarang tidak bisa menyusup ke halaman publik.',
+      'Alamat file unggahan kini dijaga lebih ketat sehingga tidak bisa dipakai membuka file di luar folder unggahan.',
+    ],
+  },
+  {
     version: '1.8.9',
     date: '2026-11-20',
     title: 'Pembaruan keamanan, halaman tidak ditemukan terbaca benar oleh Google, perbaikan Peran & Izin',

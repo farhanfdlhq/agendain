@@ -26,6 +26,13 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    // Panel admin & pemilih media menampilkan pratinjau URL gambar apa pun (unggahan,
+    // tautan luar, SVG) di halaman yang tidak diindeks; ImageResponse (app/og) wajib
+    // memakai <img>. Optimasi next/image tidak relevan di sini.
+    files: ["app/admin/**/*.{ts,tsx}", "components/ui/media-picker*.tsx", "app/og/**/*.{ts,tsx}"],
+    rules: { "@next/next/no-img-element": "off" },
+  },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

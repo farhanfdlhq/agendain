@@ -92,6 +92,7 @@
 
 .image {
   object-fit: cover;
+  transform: scale(var(--frame-zoom, 1));
 }
 
 .ctaWrapper {
@@ -130,8 +131,16 @@
     max-width: 100%;
   }
 
+  /* Satu kolom: foto melebar, jadi rasio landscape. 1:1 membuatnya ±770x770
+     di tablet (lebih dari separuh layar). */
   .imageWrapper {
-    aspect-ratio: 1/1;
+    aspect-ratio: 16 / 10;
+  }
+}
+
+@media (max-width: 640px) {
+  .imageWrapper {
+    aspect-ratio: 4 / 3;
   }
 }
 

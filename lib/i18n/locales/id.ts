@@ -170,6 +170,8 @@ const id: Record<string, string> = {
   "home.why4.title": "Dokumentasi Pro",
   "home.why4.desc":
     "Abadikan momen sinematik terbaik tanpa perlu repot mikirin angle.",
+  "home.why.scrollHint": "Scroll untuk membuka peta",
+  "home.why.mapAlt": "Tangan memegang peta Eropa dengan rute perjalanan Agendain",
   "home.acc1.title": "Tidur Nyenyak Berlatar Sudut Kota yang Estetik",
   "home.acc1.desc":
     "Kami pilihkan hotel-hotel terbaik di lokasi strategis, dekat dengan spot wisata utama. Bangun pagi dengan pemandangan kota Eropa yang estetik langsung dari jendela kamar kamu.",

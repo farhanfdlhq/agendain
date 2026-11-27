@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect, useRef, use } from "react"
+import { useState, useEffect, use } from "react"
 import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, Save, Image as ImageIcon, X, Plus } from "lucide-react"
+import { ArrowLeft, Save, X, Plus } from "lucide-react"
 import { toast } from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -177,8 +177,10 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- muat data saat mount; status loading di-set disengaja
     fetchDestinations()
     fetchPackageData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- muat data sekali saat mount; fungsi dibuat ulang tiap render
   }, [])
 
   // Image upload and removal is now handled internally by MediaPickerMultiple.
@@ -221,7 +223,7 @@ export default function EditPaketPage(props: { params: Promise<{ slug: string }>
       if (uploadedDocs.length > 0) {
         setFormData(prev => ({ ...prev, fileDokumenList: [...prev.fileDokumenList, ...uploadedDocs] }))
       }
-    } catch (err) {
+    } catch {
       toast.error("Terjadi kesalahan saat upload dokumen.")
     } finally {
       setUploadingDoc(false)

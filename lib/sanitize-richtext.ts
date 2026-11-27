@@ -64,6 +64,25 @@ DOMPurify.addHook("afterSanitizeAttributes", (node) => {
   }
 });
 
+// Atribut `style` hanya dipakai editor untuk `text-align` (ekstensi TextAlign).
+// Membiarkannya bebas memungkinkan CSS injection oleh editor konten (mis.
+// overlay `position:fixed` menutup halaman, atau defacement di blog publik).
+// Jadi di sini SELURUH deklarasi dibuang kecuali `text-align: left|right|
+// center|justify`. DOMPurify sudah memblok `<script>`, `on*`, dan skema
+// `javascript:`; ini menutup satu-satunya atribut yang masih menerima CSS bebas.
+const SAFE_ALIGN = /(?:^|;)\s*text-align\s*:\s*(left|right|center|justify)\s*(?:;|$)/i;
+DOMPurify.addHook("uponSanitizeAttribute", (_node, data) => {
+  if (data.attrName === "style") {
+    const m = SAFE_ALIGN.exec(data.attrValue);
+    if (m) {
+      data.attrValue = `text-align:${m[1].toLowerCase()}`;
+    } else {
+      data.attrValue = "";
+      data.keepAttr = false;
+    }
+  }
+});
+
 export function sanitizeRichText(value: unknown): string {
   if (typeof value !== "string" || !value) return "";
   return DOMPurify.sanitize(value, { ALLOWED_TAGS, ALLOWED_ATTR });

@@ -17,7 +17,6 @@ import {
   AlertCircle,
   CheckCircle2,
   FileText,
-  Car,
   Users,
   BedDouble,
   Plane,
@@ -694,7 +693,7 @@ export default async function PaketDetail(props: {
                       src={tier.image || "/placeholder.webp"}
                       alt={tier.title}
                       fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      sizes="(max-width: 640px) 100vw, (max-width: 900px) 50vw, 400px"
                       className={styles.recommendImage}
                     />
                     {tier.locationTab && (

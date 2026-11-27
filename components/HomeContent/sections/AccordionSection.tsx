@@ -4,8 +4,9 @@ import type { Gs, HomeSettings, Tr } from '../types'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Image from 'next/image'
+import { frameStyle, parseFrame } from '@/lib/image-frame'
 import Link from 'next/link'
-import { ArrowRight, ArrowDown } from 'lucide-react'
+import { ArrowDown } from 'lucide-react'
 import FadeIn from '@/components/Motion/FadeIn'
 import styles from '../HomeContent.module.css'
 import { renderHighlightedTitle } from '../shared'
@@ -70,7 +71,7 @@ export default function AccordionSection({ gs, t, locale, homeSettings }: { gs: 
             </FadeIn>
           </div>
           <FadeIn direction="right" delay={0.2}>
-            <div className={styles.accordionRight}><Image src={gs('accImage', undefined, '/accordion-street.webp')} alt={gs('accTitle', 'home.acc.title') || "Suasana liburan di sudut kota Eropa bersama Agendain"} fill  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"/></div>
+            <div className={styles.accordionRight}><Image src={gs('accImage', undefined, '/accordion-street.webp')} alt={gs('accTitle', 'home.acc.title') || "Suasana liburan di sudut kota Eropa bersama Agendain"} fill  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 600px" style={frameStyle(parseFrame(gs('accImageFrame')))}/></div>
           </FadeIn>
         </div>
       </div>

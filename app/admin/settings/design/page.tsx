@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
-import { CheckCircle2, AlertCircle, Palette, Type, AlertTriangle, Box, Save, LayoutTemplate } from 'lucide-react'
+import { Palette, Type, AlertTriangle, Box, Save, LayoutTemplate } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -88,7 +88,7 @@ export default function DesignSystemPage() {
       } else {
         toast.error(data.error || 'Terjadi kesalahan saat menyimpan.')
       }
-    } catch (err) {
+    } catch {
       toast.error('Gagal terhubung ke server.')
     } finally {
       setLoading(false)

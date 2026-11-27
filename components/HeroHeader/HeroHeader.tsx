@@ -1,11 +1,14 @@
 import React from 'react'
 import Image from 'next/image'
 import styles from './HeroHeader.module.css'
+import { frameStyle, parseFrame } from '@/lib/image-frame'
 
 interface HeroHeaderProps {
   title: React.ReactNode
   subtitle?: React.ReactNode
   backgroundImage: string
+  /** Bingkai CMS "x,y,zoom" (lib/image-frame); kosong = tengah. */
+  imageFrame?: string
   minHeight?: string
   paddingBottom?: string
   children?: React.ReactNode
@@ -16,6 +19,7 @@ export default function HeroHeader({
   title, 
   subtitle, 
   backgroundImage,
+  imageFrame,
   minHeight = '50vh',
   paddingBottom = '60px',
   children,
@@ -34,7 +38,7 @@ export default function HeroHeader({
           adanya tanpa srcset/DPR. Pola & angkanya disamakan dengan hero
           beranda (components/HomeContent/sections/HeroSection.tsx). */}
       <div className={styles.heroImageWrapper}>
-        <Image src={backgroundImage} alt="" fill priority className={styles.heroImage} quality={85} sizes="100vw" />
+        <Image src={backgroundImage} alt="" fill priority className={styles.heroImage} style={frameStyle(parseFrame(imageFrame))} quality={85} sizes="100vw" />
       </div>
       <div className={styles.heroOverlay} />
       <div className={styles.heroContent} style={{ textAlign, alignItems: textAlign === 'left' ? 'flex-start' : textAlign === 'right' ? 'flex-end' : 'center' }}>

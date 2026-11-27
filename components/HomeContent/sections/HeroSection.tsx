@@ -1,8 +1,10 @@
 'use client'
 import { fontStyle } from '@/lib/font-style'
 import Image from 'next/image'
+import { frameStyle, parseFrame } from '@/lib/image-frame'
 import Link from 'next/link'
-import { motion, useReducedMotion, type Variants } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
+import { usePrefersReducedMotion } from '@/components/Motion/usePrefersReducedMotion'
 import { ChevronDown } from 'lucide-react'
 import styles from '../HomeContent.module.css'
 import { WhatsAppIcon } from '../shared'
@@ -34,8 +36,8 @@ function pecahJudul(text: string): { text: string; gold: boolean }[] {
 type Gs = (key: string, fallbackTKey?: string, defaultStatic?: string) => string
 type Tr = (key: string) => string
 
-export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: string }) {
-  const reduce = useReducedMotion()
+export default function HeroSection({ gs, waLink }: { gs: Gs; t: Tr; waLink: string }) {
+  const reduce = usePrefersReducedMotion()
   const parts = pecahJudul(gs('heroTitle', 'home.hero.title'))
 
   // Kaskade halus antar-elemen hero.
@@ -67,12 +69,28 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
           transition: { type: 'spring', stiffness: 200, damping: 15, mass: 0.7 },
         },
       }
-  const accent: Variants = reduce
-    ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
-    : {
-        hidden: { scaleX: 0, opacity: 0 },
-        visible: { scaleX: 1, opacity: 1, transition: { duration: 0.7, ease: EASE } },
-      }
+  // Elemen NON-LCP (garis emas + tombol) tetap beranimasi masuk walau judul &
+  // subjudul (elemen LCP) sengaja diam lewat initial={false} di kontainer.
+  // Key varian SELALU sama (scaleX/opacity, y) — hanya DURASI yang bergantung
+  // `reduce`. usePrefersReducedMotion memberi `false` saat hidrasi lalu beralih
+  // ke nilai asli; kalau varian reduce menghapus key-nya (mis. `visible: {}`),
+  // tak ada target saat swap → transform server tersangkut. Dengan key tetap,
+  // pengguna "kurangi gerakan" langsung ke posisi akhir (durasi 0), tanpa sisa.
+  const accent: Variants = {
+    hidden: { scaleX: 0 },
+    visible: {
+      scaleX: 1,
+      transition: reduce ? { duration: 0 } : { duration: 0.7, ease: EASE, delay: 0.15 },
+    },
+  }
+  // Tombol: transform-only (opacity tetap 1) → langsung terlihat, tanpa CLS.
+  const cta: Variants = {
+    hidden: { y: 20 },
+    visible: {
+      y: 0,
+      transition: reduce ? { duration: 0 } : { duration: 0.6, ease: EASE, delay: 0.25 },
+    },
+  }
 
   return (
     <section key="hero" className={styles.hero}>
@@ -85,6 +103,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
           priority
           fetchPriority="high"
           className={styles.heroImage}
+          style={frameStyle(parseFrame(gs('heroBgImageFrame')))}
           quality={75}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
         />
@@ -112,7 +131,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
           ))}
         </motion.h1>
 
-        <motion.div className={styles.heroAccent} variants={accent} aria-hidden="true" />
+        <motion.div className={styles.heroAccent} variants={accent} initial="hidden" animate="visible" aria-hidden="true" />
 
         <motion.p
           className={styles.heroSubtitle}
@@ -122,7 +141,7 @@ export default function HeroSection({ gs, t, waLink }: { gs: Gs; t: Tr; waLink: 
           {gs('heroSubtitle', 'home.hero.desc')}
         </motion.p>
 
-        <motion.div className={styles.heroButtons} variants={rise}>
+        <motion.div className={styles.heroButtons} variants={cta} initial="hidden" animate="visible">
           <a href={waLink} target="_blank" rel="noopener noreferrer" className={styles.btnWhatsapp}>
             <WhatsAppIcon size={20} /> {gs('heroBtnWa', 'home.hero.btnWa')}
           </a>

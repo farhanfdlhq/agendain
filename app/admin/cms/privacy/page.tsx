@@ -4,16 +4,17 @@ import { useState, useEffect, useRef } from 'react'
 import type { CmsFields } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
-import { Save, Globe } from 'lucide-react'
+import { Save } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { TiptapEditor as SharedTiptapEditor } from "@/components/ui/tiptap-editor"
 import { MediaPicker } from "@/components/ui/media-picker"
+import { ImageFrameEditor } from "@/components/admin/image-frame-editor"
 import { FontControls } from "@/components/ui/font-size-picker"
 
 const TiptapEditor = ({ value, onChange }: { value: string, onChange: (val: string) => void }) => (
@@ -137,8 +138,10 @@ export default function PrivacyCMSPage() {
     );
   };
 
-  const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '') => {
+  // frameAspect: bila diisi, tampil tombol "Atur posisi & zoom" (bingkai di `${fieldName}Frame`).
+  const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '', frameAspect?: number, frameHint?: string) => {
     const activeFieldName = fieldName; 
+    const frameField = `${fieldName}Frame`
     return (
       <div className="space-y-3">
         <Label className="flex items-center gap-2">
@@ -151,10 +154,25 @@ export default function PrivacyCMSPage() {
         )}
         <MediaPicker 
           value={data[activeFieldName] || ''}
-          onChange={(url) => setData((prev) => ({ ...prev, [activeFieldName]: url }))}
+          onChange={(url) => setData((prev) => ({
+            ...prev,
+            [activeFieldName]: url,
+            // Gambar diganti → bingkai lama tidak relevan lagi, kembali ke tengah.
+            ...(frameAspect ? { [frameField]: '' } : {}),
+          }))}
           label="Pilih Gambar"
           description={placeholder ? `Disarankan seperti: ${placeholder}` : undefined}
         />
+        {frameAspect && (
+          <ImageFrameEditor
+            src={data[activeFieldName] || placeholder}
+            value={data[frameField] || ''}
+            onChange={(v) => setData((prev) => ({ ...prev, [frameField]: v }))}
+            aspect={frameAspect}
+            label={label}
+            hint={frameHint}
+          />
+        )}
       </div>
     )
   }
@@ -307,7 +325,7 @@ export default function PrivacyCMSPage() {
           <CardContent className="p-6">
             <div className="grid sm:grid-cols-2 gap-6">
               <div className="space-y-4">
-                {renderImageInput('URL Gambar Background', 'heroImage', '/hero-coastal.webp', '1920x1080 px (Landscape)')}
+                {renderImageInput('URL Gambar Background', 'heroImage', '/hero-coastal.webp', '1920x1080 px (Landscape)', 16 / 9, 'Di HP hero tampil lebih tegak: bagian tengah bingkai tetap terlihat, sisi kiri-kanan terpotong.')}
               </div>
               <div className="space-y-4 flex flex-col justify-start">
                 {renderTextInput('Judul Utama (Gunakan *teks* untuk warna kuning)', 'heroTitle', false, '', true, '800')}

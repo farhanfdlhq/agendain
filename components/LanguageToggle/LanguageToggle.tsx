@@ -18,6 +18,7 @@ export default function LanguageToggle() {
           <motion.div layoutId="activeLangBg" className={styles.activeBg} transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
         )}
         <span className={styles.contentWrapper}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- ikon bendera 20x15 statis, tak perlu optimasi */}
           <img src="/flags/id.png" alt="" aria-hidden="true" width={20} height={15} className={styles.flag} /> ID
         </span>
       </button>
@@ -30,6 +31,7 @@ export default function LanguageToggle() {
           <motion.div layoutId="activeLangBg" className={styles.activeBg} transition={{ type: "spring", bounce: 0.2, duration: 0.5 }} />
         )}
         <span className={styles.contentWrapper}>
+          {/* eslint-disable-next-line @next/next/no-img-element -- ikon bendera 20x15 statis, tak perlu optimasi */}
           <img src="/flags/en.png" alt="" aria-hidden="true" width={20} height={15} className={styles.flag} /> EN
         </span>
       </button>

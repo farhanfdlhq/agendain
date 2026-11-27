@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useUnsavedGuardSnapshot } from "@/hooks/use-unsaved-guard"
 import Link from "next/link"
@@ -74,7 +74,7 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
         setLoading(false)
       })
       .catch(() => { toast.error("Gagal memuat itinerary"); router.push("/admin/itinerary") })
-  }, [mode, id, router])
+  }, [mode, id, router, setBaseline])
 
   // Helpers repeater
   const ubahHari = (di: number, patch: Partial<Hari>) =>
@@ -269,7 +269,7 @@ export default function ItineraryForm({ mode, id }: { mode: "create" | "edit"; i
                               trigger={
                                 <Button type="button" variant="ghost" size="icon" className="h-8 w-8" title="Gambar (opsional)">
                                   {a.gambar
-                                    ? /* eslint-disable-next-line @next/next/no-img-element */
+                                    ?  
                                       <img src={a.gambar} alt="" className="h-7 w-7 rounded object-cover" />
                                     : <ImageIcon className="h-4 w-4 text-muted-foreground" />}
                                 </Button>

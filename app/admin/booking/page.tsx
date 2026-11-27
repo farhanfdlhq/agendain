@@ -11,19 +11,15 @@ import { EmptyState } from "@/components/reui/empty-state";
 import { AdminHeader } from "@/components/reui/admin-header";
 import {
   Search,
-  Trash2,
-  Eye,
   PackageX,
   RefreshCw,
   AlertCircle,
-  CalendarDays,
   ExternalLink,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useConfirm } from "@/components/Providers/ConfirmProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   Select,
@@ -83,6 +79,7 @@ export default function AdminBookingPage() {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- muat data sekali saat mount; fungsi dibuat ulang tiap render
   }, []);
 
   const fetchBookings = useCallback(async () => {
@@ -191,6 +188,7 @@ export default function AdminBookingPage() {
     [handleStatusChange, handleDelete, setSelectedBooking],
   );
 
+  // eslint-disable-next-line react-hooks/incompatible-library -- TanStack Table memang tidak bisa di-memo React Compiler; komponen ini tetap berjalan normal
   const table = useReactTable({
     data: filteredBookings,
     columns,
@@ -261,17 +259,6 @@ export default function AdminBookingPage() {
     // Sukses: biarkan render site di CardContent (di bawah) yang menampilkan
     // DataGrid. renderState hanya menangani state offline/error/loading/kosong.
     return null;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "paid":
-        return "text-emerald-700 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800";
-      case "cancelled":
-        return "text-destructive bg-destructive/10 border-destructive/20";
-      default:
-        return "text-amber-700 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800";
-    }
   };
 
   return (

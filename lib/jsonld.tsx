@@ -1,7 +1,7 @@
 import { SITE_URL, absoluteUrl } from "@/lib/site";
 
 /**
- * Structured data Schema.org (JSON-LD). Membantu Google memahami entитas
+ * Structured data Schema.org (JSON-LD). Membantu Google memahami entitas
  * (brand, artikel, produk trip) → kandidat rich result & knowledge panel.
  *
  * Render aman: `<` di dalam data di-escape jadi `<` supaya string di dalam

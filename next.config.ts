@@ -33,11 +33,13 @@ const csp = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
-    // AVIF didahulukan, WebP sebagai fallback. Default Next hanya WebP; AVIF
-    // memangkas hero full-bleed ~30% (PageSpeed "Meningkatkan penayangan
-    // gambar" ≈ 144 KiB) tanpa kehilangan kualitas yang terlihat. Next memilih
-    // format pertama yang didukung browser lewat header Accept.
-    formats: ["image/avif", "image/webp"],
+    // WebP SAJA (23 Nov 2026). Dulu AVIF + WebP dipilih per header Accept, tetapi
+    // Cloudflare (paket Free) tidak memisah cache per Accept: bila /_next/image
+    // di-cache, versi AVIF bisa terkirim ke browser yang tidak mendukungnya.
+    // Satu format = aman di-cache di Cloudflare (Cache Rule /_next/image), dan
+    // gambar hero (LCP) tidak lagi diambil dari server Mumbai tiap kunjungan.
+    // WebP sedikit lebih besar dari AVIF, jauh lebih kecil dari jeda origin.
+    formats: ["image/webp"],
     // Next 16 hanya melayani quality yang terdaftar; default-nya [75]. Hero
     // beranda memakai quality={85} (gambar full-bleed, 75 masih terlihat
     // lunak), jadi 85 harus disebut di sini — kalau tidak, Next menolaknya

@@ -651,17 +651,17 @@ async function main() {
     update: {},
     create: { nama: 'Destinasi', namaEn: 'Destinations', slug: 'destinasi' }
   })
-  const catTips = await prisma.blogCategory.upsert({
+  await prisma.blogCategory.upsert({
     where: { slug: 'tips' },
     update: {},
     create: { nama: 'Tips', namaEn: 'Tips', slug: 'tips' }
   })
-  const catKuliner = await prisma.blogCategory.upsert({
+  await prisma.blogCategory.upsert({
     where: { slug: 'kuliner' },
     update: {},
     create: { nama: 'Kuliner', namaEn: 'Culinary', slug: 'kuliner' }
   })
-  const catItinerary = await prisma.blogCategory.upsert({
+  await prisma.blogCategory.upsert({
     where: { slug: 'itinerary' },
     update: {},
     create: { nama: 'Itinerary', namaEn: 'Itinerary', slug: 'itinerary' }

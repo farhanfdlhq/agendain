@@ -35,7 +35,7 @@ type BookingFormProps = {
   tripEnded?: boolean
 }
 
-export default function BookingForm({ openTripId, paketNama, hargaString, whatsappNumber, fixedDeparture, fixedDepartureLabel, sisaKursi, tripEnded }: BookingFormProps) {
+export default function BookingForm({ openTripId, paketNama, whatsappNumber, fixedDeparture, fixedDepartureLabel, sisaKursi, tripEnded }: BookingFormProps) {
   const router = useRouter()
 
   // Step 0: Inline form, Step 1: Modal details, Step 2: Success

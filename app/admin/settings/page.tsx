@@ -3,9 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { errorMessage } from "@/lib/error-message"
 import {
-  Settings,
   Save,
-  Link as LinkIcon,
   MessageSquare,
   CreditCard,
   LayoutTemplate,
@@ -44,7 +42,6 @@ export default function SettingsPage() {
   useRequirePermission("settings_manage");
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
-  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [formData, setFormData] = useState({
     site_name: "Agendain",
     whatsapp_number: "6281995264565",
@@ -170,7 +167,7 @@ export default function SettingsPage() {
       } else {
         toast.error("Gagal menyimpan pengaturan.");
       }
-    } catch (err) {
+    } catch {
       toast.error("Terjadi kesalahan server.");
     } finally {
       setLoading(false);

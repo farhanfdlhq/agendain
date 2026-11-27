@@ -211,6 +211,7 @@ export function LabelManagerDialog({
   // Muat awal; `load` dipakai lagi setelah tambah/edit/hapus.
   useEffect(() => {
     const controller = new AbortController()
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- muat data saat mount; status loading di-set disengaja
     void load(controller.signal)
     return () => controller.abort()
   }, [load])

@@ -62,7 +62,7 @@ export default function UserManagementPage() {
       ])
       if (usersRes.ok) setUsers(await usersRes.json())
       if (rolesRes.ok) setRoles(await rolesRes.json())
-    } catch (error) {
+    } catch {
       toast.error("Terjadi kesalahan jaringan")
     } finally {
       setLoading(false)
@@ -137,7 +137,7 @@ export default function UserManagementPage() {
       } else {
         toast.error(data.error || "Terjadi kesalahan")
       }
-    } catch (err) {
+    } catch {
       toast.error("Kesalahan jaringan")
     } finally {
       setIsSaving(false)
@@ -160,7 +160,7 @@ export default function UserManagementPage() {
       } else {
         toast.error(data.error || "Gagal menghapus pengguna");
       }
-    } catch (e) {
+    } catch {
       toast.error("Kesalahan jaringan");
     }
   }

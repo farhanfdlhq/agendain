@@ -1,4 +1,3 @@
-import styles from './page.module.css'
 import type { Prisma } from "@prisma/client"
 import type { CmsFields } from "@/lib/types/cms"
 import { prisma } from '@/lib/prisma'

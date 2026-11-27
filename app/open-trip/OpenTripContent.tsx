@@ -1,15 +1,16 @@
 "use client";
 import { useTransition } from "react";
 import type { CmsFields } from "@/lib/types/cms"
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { usePrefersReducedMotion } from "@/components/Motion/usePrefersReducedMotion";
 import { fontStyleFrom } from '@/lib/font-style'
 import Image from "next/image";
+import { frameStyle, parseFrame } from "@/lib/image-frame";
 import PackageCard from "@/components/PackageCard/PackageCard";
 import type { OpenTripCardData } from "@/lib/open-trip-card";
 import OpenTripFilter, {
   type DestOption,
 } from "@/components/OpenTripFilter/OpenTripFilter";
-import HeroHeader from "@/components/HeroHeader/HeroHeader";
 import CallToActionBanner from "@/components/CallToActionBanner/CallToActionBanner";
 import Counter from "@/components/Motion/Counter";
 import styles from "./page.module.css";
@@ -38,7 +39,7 @@ export default function OpenTripContent({
   // Navigasi filter dibungkus transition → selama data baru dimuat, grid
   // diredupkan (bukan kosong), lalu kartu keluar/masuk dengan animasi.
   const [isPending, startTransition] = useTransition();
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = usePrefersReducedMotion();
   const ease = [0.25, 1, 0.5, 1] as const;
   const getSetting = (key: string) => {
     const val = isEn
@@ -64,6 +65,7 @@ export default function OpenTripContent({
             fill
             priority
             className={styles.heroImage}
+            style={frameStyle(parseFrame(opentripSettings.heroImageFrame))}
             quality={85}
             sizes="(min-width: 1320px) 1272px, 100vw"
           />

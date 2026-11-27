@@ -4,15 +4,16 @@ import { useState, useEffect, useRef } from 'react'
 import type { CmsFields } from "@/lib/types/cms"
 import { useUnsavedGuardSnapshot } from '@/hooks/use-unsaved-guard'
 import { toast } from 'react-hot-toast'
-import { Save, Globe } from 'lucide-react'
+import { Save } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import AirplaneLoader from "@/components/ui/airplane-loader"
 import { MediaPicker } from "@/components/ui/media-picker"
+import { ImageFrameEditor } from "@/components/admin/image-frame-editor"
 import { FontControls } from "@/components/ui/font-size-picker"
 import { NumberStepper } from "@/components/ui/number-stepper"
 import { OPEN_TRIP_STAT_DEFAULTS, openTripStatFormDefaults, resolveOpenTripStats } from "@/lib/open-trip-stats"
@@ -111,8 +112,10 @@ export default function OpenTripCMSPage() {
     );
   };
 
-  const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '') => {
+  // frameAspect: bila diisi, tampil tombol "Atur posisi & zoom" (bingkai di `${fieldName}Frame`).
+  const renderImageInput = (label: string, fieldName: string, placeholder = '', resolutionHint = '', frameAspect?: number, frameHint?: string) => {
     const activeFieldName = fieldName; 
+    const frameField = `${fieldName}Frame`
     return (
       <div className="space-y-3">
         <Label className="flex items-center gap-2">
@@ -125,10 +128,25 @@ export default function OpenTripCMSPage() {
         )}
         <MediaPicker 
           value={data[activeFieldName] || ''}
-          onChange={(url) => setData((prev) => ({ ...prev, [activeFieldName]: url }))}
+          onChange={(url) => setData((prev) => ({
+            ...prev,
+            [activeFieldName]: url,
+            // Gambar diganti → bingkai lama tidak relevan lagi, kembali ke tengah.
+            ...(frameAspect ? { [frameField]: '' } : {}),
+          }))}
           label="Pilih Gambar"
           description={placeholder ? `Disarankan seperti: ${placeholder}` : undefined}
         />
+        {frameAspect && (
+          <ImageFrameEditor
+            src={data[activeFieldName] || placeholder}
+            value={data[frameField] || ''}
+            onChange={(v) => setData((prev) => ({ ...prev, [frameField]: v }))}
+            aspect={frameAspect}
+            label={label}
+            hint={frameHint}
+          />
+        )}
       </div>
     )
   }
@@ -259,7 +277,7 @@ export default function OpenTripCMSPage() {
             <CardContent className="pt-6">
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-4">
-                  {renderImageInput('Gambar Latar Belakang (Hero Image)', 'heroImage', '/dest-swiss.webp', '1920x1080 px (Landscape)')}
+                  {renderImageInput('Gambar Latar Belakang (Hero Image)', 'heroImage', '/dest-swiss.webp', '1920x1080 px (Landscape)', 16 / 9, 'Di HP hero tampil lebih tegak: bagian tengah bingkai tetap terlihat, sisi kiri-kanan terpotong.')}
                 </div>
                 <div className="space-y-4 flex flex-col justify-start">
                   {renderTextInput('Judul Utama (*Highlight Kuning*)', 'heroTitle', false, 'Eksplorasi Eropa *Lebih Seru* Bareng Teman Baru', true, '800')}

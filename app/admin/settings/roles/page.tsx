@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useDeferredValue } from "react"
+import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
@@ -129,7 +129,7 @@ export default function RolesPermissionsPage() {
     try {
       const res = await fetch("/api/admin/roles")
       if (res.ok) setRoles(await res.json())
-    } catch (e) {
+    } catch {
       toast.error("Gagal memuat roles")
     } finally {
       setLoading(false)
@@ -244,7 +244,7 @@ export default function RolesPermissionsPage() {
       } else {
         toast.error("Gagal menyimpan role")
       }
-    } catch (e) {
+    } catch {
       toast.error("Terjadi kesalahan jaringan")
     } finally {
       setIsSaving(false)
@@ -274,7 +274,7 @@ export default function RolesPermissionsPage() {
         toast.success("Role dihapus")
         fetchRoles()
       }
-    } catch (e) {
+    } catch {
       toast.error("Terjadi kesalahan jaringan")
     }
   }

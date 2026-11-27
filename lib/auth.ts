@@ -8,6 +8,10 @@ import { rateLimit, getClientIpFromHeaders } from "@/lib/security";
 import { logAudit } from "@/lib/audit";
 import { decodeSessionToken, passwordVersion } from "@/lib/session-token";
 
+// Hash bcrypt (cost 10, sama dengan hash user) dari string acak yang dibuang;
+// hanya dipakai untuk menyamakan waktu saat email tidak terdaftar.
+const DUMMY_BCRYPT_HASH = "$2b$10$Td5k8glpNRFWma/QYzNJMOsduesGutdddJ45AMstpN5zlYVfFM7B2";
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -88,6 +92,9 @@ export const authOptions: NextAuthOptions = {
         }
 
         if (!user) {
+          // Samakan waktu respons dengan email terdaftar (bcrypt ~puluhan ms):
+          // tanpa ini selisih waktu membocorkan email admin mana yang valid.
+          await bcrypt.compare(credentials.password, DUMMY_BCRYPT_HASH);
           await logAudit({
             action: "login.failed",
             actorEmail: email,

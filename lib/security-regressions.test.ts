@@ -29,6 +29,7 @@ import { PATCH as updateBooking } from "../app/api/booking/[id]/route";
 import { POST as savePrivateTrip } from "../app/api/settings/private-trip/route";
 import { GET as getTrip } from "../app/api/open-trip/[slug]/route";
 import { GET as listTrips } from "../app/api/open-trip/route";
+import { POST as saveRoles } from "../app/api/admin/roles/route";
 
 const roles = [
   { id: "super_admin", name: "Super Admin", permissions: ["all"] },
@@ -202,5 +203,46 @@ describe("draft paket hanya untuk pratinjau berizin", () => {
     state.session = null;
     db.openTrip.findUnique.mockResolvedValue({ ...trip, status });
     expect((await getTrip(url, ctx())).status).toBe(200);
+  });
+});
+
+describe("batas kelola role (roles_manage bukan Super Admin)", () => {
+  const withRoleAdmin = [
+    ...roles,
+    { id: "role_admin", name: "Role Admin", permissions: ["roles_manage", "booking_edit", "rbac_settings_v2"] },
+  ];
+  const strip = (list: typeof withRoleAdmin) =>
+    list.map(r => ({ ...r, permissions: r.permissions.filter(p => p !== "rbac_settings_v2") }));
+  const edit = (id: string, permissions: string[]) =>
+    strip(withRoleAdmin).map(r => (r.id === id ? { ...r, permissions } : r));
+
+  beforeEach(() => {
+    db.setting.findUnique.mockResolvedValue({ value: JSON.stringify(withRoleAdmin) });
+    db.adminUser.findUnique.mockImplementation(async ({ where }) => ({
+      id: where.id, role: where.id === 1 ? "super_admin" : "role_admin",
+    }));
+  });
+
+  it("tidak dapat menambahkan izin yang tidak dimiliki, termasuk ke role sendiri", async () => {
+    const own = await saveRoles(request(edit("role_admin", ["roles_manage", "booking_edit", "users_manage"])));
+    expect(own.status).toBe(403);
+    const other = await saveRoles(request(edit("viewer", ["profile_manage", "settings_manage"])));
+    expect(other.status).toBe(403);
+    expect(db.setting.upsert).not.toHaveBeenCalled();
+  });
+
+  it("boleh memberi izin yang dimiliki dan mempertahankan/mencabut izin lama", async () => {
+    const res = await saveRoles(request(
+      edit("viewer", ["profile_manage", "booking_edit"])
+        .map(r => (r.id === "manager" ? { ...r, permissions: ["users_manage", "booking_edit"] } : r)),
+    ));
+    expect(res.status).toBe(200);
+    expect(db.setting.upsert).toHaveBeenCalledTimes(1);
+  });
+
+  it("Super Admin tetap boleh memberi izin apa pun", async () => {
+    state.session!.user.id = "1";
+    const res = await saveRoles(request(edit("viewer", ["profile_manage", "settings_manage", "users_manage"])));
+    expect(res.status).toBe(200);
   });
 });
